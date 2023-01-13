@@ -3,3 +3,4 @@
 ## Group Members
 - Christopher Brubaker
 - Mike Cassara
+- Luke Finley
