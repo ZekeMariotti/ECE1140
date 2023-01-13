@@ -6,3 +6,4 @@
 - Christopher Brubaker
 - Mike Cassara
 - Luke Finley
+- Dane Krall
