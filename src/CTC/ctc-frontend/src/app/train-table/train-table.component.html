@@ -1,0 +1,18 @@
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th scope="col">ID</th>
+			<th scope="col">Line</th>
+			<th scope="col">Driver</th>
+			<th scope="col">Stops</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr *ngFor="let train of trains; index as i">
+			<th scope="row">{{ train.id }}</th>
+			<td>{{ train.line }}</td>
+			<td>{{ train.driver }}</td>
+			<td>{{ train.stops }}</td>
+		</tr>
+	</tbody>
+</table>
