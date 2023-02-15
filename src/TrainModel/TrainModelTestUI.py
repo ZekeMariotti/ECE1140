@@ -2,7 +2,8 @@
 
 # Importing all required modules
 from sys import argv
-from PyQt6.QtWidgets import QWidget, QLabel, QApplication, QGridLayout, QComboBox, QLineEdit
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QWidget, QLabel, QApplication, QGridLayout, QComboBox, QLineEdit, QPushButton
 
 class TrainModelTestUI(QWidget):
     def __init__(self):
@@ -12,138 +13,313 @@ class TrainModelTestUI(QWidget):
         layout = QGridLayout()
         self.setLayout(layout)
 
+        # Setting up all the inputs
         # Add the Power Input
         powerLabel = QLabel("Power Input")
         layout.addWidget(powerLabel, 0, 0)
-        powerInput = QLineEdit()
-        layout.addWidget(powerInput, 0, 1)
+        self.powerInput = QLineEdit()
+        self.powerInput.editingFinished.connect(self.getPowerInput)
+        layout.addWidget(self.powerInput, 0, 1)
 
-        # Add the Service Brake
+        # Add the Service Brake Switch
         serviceBrakeLabel = QLabel("Service Brake")
         layout.addWidget(serviceBrakeLabel, 1, 0)
-        serviceBrakeInput = QComboBox()
-        serviceBrakeInput.addItems(["Engaged", "Disengaged"])
-        layout.addWidget(serviceBrakeInput, 1, 1)
+        self.serviceBrakeInput = QComboBox()
+        self.serviceBrakeInput.addItems(["Disengaged", "Engaged"])
+        self.serviceBrakeInput.currentIndexChanged.connect(self.getServiceBrakeInput)
+        layout.addWidget(self.serviceBrakeInput, 1, 1)
 
-        # Add the Emergency Brake
-        emergencyBrakeLabel = QLabel("Service Brake")
+        # Add the Emergency Brake Switch
+        emergencyBrakeLabel = QLabel("Emergency Brake")
         layout.addWidget(emergencyBrakeLabel, 2, 0)
-        emergencyBrakeInput = QComboBox()
-        emergencyBrakeInput.addItems(["Engaged", "Disengaged"])
-        layout.addWidget(emergencyBrakeInput, 2, 1)
+        self.emergencyBrakeInput = QComboBox()
+        self.emergencyBrakeInput.addItems(["Disengaged", "Engaged"])
+        self.emergencyBrakeInput.currentIndexChanged.connect(self.getEmergencyBrakeInput)
+        layout.addWidget(self.emergencyBrakeInput, 2, 1)
 
         # Add the Left Door Switch
         leftDoorLabel = QLabel("Left Doors")
         layout.addWidget(leftDoorLabel, 3, 0)
-        leftDoorInput = QComboBox()
-        leftDoorInput.addItems(["Open", "Closed"])
-        layout.addWidget(leftDoorInput, 3, 1)
+        self.leftDoorInput = QComboBox()
+        self.leftDoorInput.addItems(["Closed", "Open"])
+        self.leftDoorInput.currentIndexChanged.connect(self.getLeftDoorInput)
+        layout.addWidget(self.leftDoorInput, 3, 1)
 
         # Add the Right Door Switch
         rightDoorLabel = QLabel("Right Doors")
         layout.addWidget(rightDoorLabel, 4, 0)
-        rightDoorInput = QComboBox()
-        rightDoorInput.addItems(["Open", "Closed"])
-        layout.addWidget(rightDoorInput, 4, 1)
+        self.rightDoorInput = QComboBox()
+        self.rightDoorInput.addItems(["Closed", "Open"])
+        self.rightDoorInput.currentIndexChanged.connect(self.getRightDoorInput)
+        layout.addWidget(self.rightDoorInput, 4, 1)
 
         # Add the External Lights Switch
         externalLightLabel = QLabel("External Lights")
         layout.addWidget(externalLightLabel, 5, 0)
-        externalLightInput = QComboBox()
-        externalLightInput.addItems(["On", "Off"])
-        layout.addWidget(externalLightInput, 5, 1)
+        self.externalLightInput = QComboBox()
+        self.externalLightInput.addItems(["Off", "On"])
+        self.externalLightInput.currentIndexChanged.connect(self.getExternalLightInput)
+        layout.addWidget(self.externalLightInput, 5, 1)
 
         # Add the Internal Lights Switch
         internalLightLabel = QLabel("Internal Lights")
         layout.addWidget(internalLightLabel, 6, 0)
-        internalLightInput = QComboBox()
-        internalLightInput.addItems(["On", "Off"])
-        layout.addWidget(internalLightInput, 6, 1)
+        self.internalLightInput = QComboBox()
+        self.internalLightInput.addItems(["Off", "On"])
+        self.internalLightInput.currentIndexChanged.connect(self.getInternalLightInput)
+        layout.addWidget(self.internalLightInput, 6, 1)
 
         # Add the Station Announcement Input
         stationLabel = QLabel("Station Announcement")
         layout.addWidget(stationLabel, 7, 0)
-        stationInput = QLineEdit()
-        layout.addWidget(stationInput, 7, 1)
+        self.stationInput = QLineEdit()
+        self.stationInput.editingFinished.connect(self.getStationInput)
+        layout.addWidget(self.stationInput, 7, 1)
 
         # Add the Real Time Clock Input
         realTimeClockLabel = QLabel("Real Time Clock")
         layout.addWidget(realTimeClockLabel, 8, 0)
-        realTimeClockInput = QLineEdit()
-        layout.addWidget(realTimeClockInput, 8, 1)
+        self.realTimeClockInput = QLineEdit()
+        self.realTimeClockInput.editingFinished.connect(self.getRealTimeClockInput)
+        layout.addWidget(self.realTimeClockInput, 8, 1)
 
         # Add the Authority Input
         authorityLabel = QLabel("Authority")
         layout.addWidget(authorityLabel, 9, 0)
-        authorityInput = QLineEdit()
-        layout.addWidget(authorityInput, 9, 1)
+        self.authorityInput = QLineEdit()
+        self.authorityInput.editingFinished.connect(self.getAuthorityInput)
+        layout.addWidget(self.authorityInput, 9, 1)
 
         # Add the Commanded Speed Input
         commandedSpeedLabel = QLabel("Commanded Speed")
         layout.addWidget(commandedSpeedLabel, 10, 0)
-        commandedSpeedInput = QLineEdit()
-        layout.addWidget(commandedSpeedInput, 10, 1)
+        self.commandedSpeedInput = QLineEdit()
+        self.commandedSpeedInput.editingFinished.connect(self.getCommandedSpeedInput)
+        layout.addWidget(self.commandedSpeedInput, 10, 1)
 
         # Add the Passengers Entering Input
         passengersEnteringLabel = QLabel("Passengers Entering")
         layout.addWidget(passengersEnteringLabel, 11, 0)
-        passengersEnteringInput = QLineEdit()
-        layout.addWidget(passengersEnteringInput, 11, 1)
+        self.passengersEnteringInput = QLineEdit()
+        self.passengersEnteringInput.editingFinished.connect(self.getPassengersEnteringInput)
+        layout.addWidget(self.passengersEnteringInput, 11, 1)
 
         # Add the Grade Input
         gradeLabel = QLabel("Grade")
         layout.addWidget(gradeLabel, 12, 0)
-        gradeInput = QLineEdit()
-        layout.addWidget(gradeInput, 12, 1)
+        self.gradeInput = QLineEdit()
+        self.gradeInput.editingFinished.connect(self.getGradeInput)
+        layout.addWidget(self.gradeInput, 12, 1)
+
+        # Add the Elevation Input
+        elevationLabel = QLabel ("Elevation")
+        layout.addWidget(elevationLabel, 13, 0)
+        self.elevationInput = QLineEdit()
+        self.elevationInput.editingFinished.connect(self.getElevationInput)
+        layout.addWidget(self.elevationInput, 13, 1)
 
         # Add the Speed Limit Input
         speedLimitLabel = QLabel("Speed Limit")
-        layout.addWidget(speedLimitLabel, 13, 0)
-        speedLimitInput = QLineEdit()
-        layout.addWidget(speedLimitInput, 13, 1)
+        layout.addWidget(speedLimitLabel, 14, 0)
+        self.speedLimitInput = QLineEdit()
+        self.speedLimitInput.editingFinished.connect(self.getSpeedLimitInput)
+        layout.addWidget(self.speedLimitInput, 14, 1)
 
         # Add the Acceleration Limit Input
         accelerationLimitLabel = QLabel("Acceleration Limit")
-        layout.addWidget(accelerationLimitLabel, 14, 0)
-        accelerationLimitInput = QLineEdit()
-        layout.addWidget(accelerationLimitInput, 14, 1)
+        layout.addWidget(accelerationLimitLabel, 15, 0)
+        self.accelerationLimitInput = QLineEdit()
+        self.accelerationLimitInput.editingFinished.connect(self.getAccelerationLimitInput)
+        layout.addWidget(self.accelerationLimitInput, 15, 1)
 
         # Add the Underground State Switch
         undergroundStateLabel = QLabel("Underground State")
-        layout.addWidget(undergroundStateLabel, 15, 0)
-        undergroundStateInput = QComboBox()
-        undergroundStateInput.addItems(["True", "False"])
-        layout.addWidget(undergroundStateInput, 15, 1)
+        layout.addWidget(undergroundStateLabel, 16, 0)
+        self.undergroundStateInput = QComboBox()
+        self.undergroundStateInput.addItems(["False", "True"])
+        self.undergroundStateInput.currentIndexChanged.connect(self.getUndergroundStateInput)
+        layout.addWidget(self.undergroundStateInput, 16, 1)
 
         # Add the Beacon Inputs [Station State, Next Station Name, Platform Side]
         beaconLabel = QLabel("Beacon Inputs")
-        layout.addWidget(beaconLabel, 16, 0)
+        layout.addWidget(beaconLabel, 17, 0)
         beaconLabel2 = QLabel("[Station State, Next Station Name, Platform Side]")
-        layout.addWidget(beaconLabel2, 16, 1)
+        layout.addWidget(beaconLabel2, 17, 1)
 
-        # Station State Beacon Input
+        # Station State Beacon Switch
         stationStateLabel = QLabel("Station State")
-        layout.addWidget(stationStateLabel, 17, 0)
-        stationStateInput = QComboBox()
-        stationStateInput.addItems(["True", "False"])
-        layout.addWidget(stationStateInput, 17, 1)
+        layout.addWidget(stationStateLabel, 18, 0)
+        self.stationStateInput = QComboBox()
+        self.stationStateInput.addItems(["False", "True"])
+        self.stationStateInput.currentIndexChanged.connect(self.getStationStateInput)
+        layout.addWidget(self.stationStateInput, 18, 1)
 
         # Next Station Name Beacon Input
         nextStationLabel = QLabel("Next Station Name")
-        layout.addWidget(nextStationLabel, 18, 0)
-        nextStationInput = QLineEdit()
-        layout.addWidget(nextStationInput, 18, 1)
+        layout.addWidget(nextStationLabel, 19, 0)
+        self.nextStationInput = QLineEdit()
+        self.nextStationInput.editingFinished.connect(self.getNextStationInput)
+        layout.addWidget(self.nextStationInput, 19, 1)
 
-        # Platform Side Beacon Input
+        # Platform Side Beacon Selector
         platformSideLabel = QLabel("Platform Side")
-        layout.addWidget(platformSideLabel, 19, 0)
-        platformSideInput = QComboBox()
-        platformSideInput.addItems(["Left", "Right", "Both"])
-        layout.addWidget(platformSideInput, 19, 1)
+        layout.addWidget(platformSideLabel, 20, 0)
+        self.platformSideInput = QComboBox()
+        self.platformSideInput.addItems(["Left", "Right", "Both"])
+        self.platformSideInput.currentIndexChanged.connect(self.getPlatformSideInput)
+        layout.addWidget(self.platformSideInput, 20, 1)
 
+        # Setting up all the outputs
 
+        # Adding the Real Time Clock
+        realTimeClockLabel = QLabel("Real Time Clock")
+        layout.addWidget(realTimeClockLabel, 0, 2)
 
+        # Adding the Authority
+        authorityLabel = QLabel("Authority")
+        layout.addWidget(authorityLabel, 1, 2)
+
+        # Adding the Commanded Speed
+        commandedSpeedLabel = QLabel("Commanded Speed")
+        layout.addWidget(commandedSpeedLabel, 2, 2)
+
+        # Adding the Underground State
+        undergroundStateLabel = QLabel("Underground State")
+        layout.addWidget(undergroundStateLabel, 3, 2)
+
+        # Adding the Velocity
+        velocityLabel = QLabel("Current Velocity")
+        layout.addWidget(velocityLabel, 4, 2)
+
+        # Adding the External Light State
+        externalLightLabel = QLabel("External Lights")
+        layout.addWidget(externalLightLabel, 5, 2)
+
+        # Adding the Internal Light State
+        internalLightLabel = QLabel("Internal Lights")
+        layout.addWidget(internalLightLabel, 6, 2)
+
+        # Adding the Left Door State
+        leftDoorLabel = QLabel("Left Doors")
+        layout.addWidget(leftDoorLabel, 7, 2)
+
+        # Adding the Right Door State
+        rightDoorLabel = QLabel("Right Doors")
+        layout.addWidget(rightDoorLabel, 8, 2)
+
+        # Adding the Service Brake State
+        serviceBrakeLabel = QLabel("Service Brake")
+        layout.addWidget(serviceBrakeLabel, 9, 2)
+
+        # Adding the Emergency Brake State
+        emergencyBrakeLabel = QLabel("Emergency Brake")
+        layout.addWidget(emergencyBrakeLabel, 10, 2)
+
+        # Adding the Speed Limit
+        speedLimitLabel = QLabel("Speed Limit")
+        layout.addWidget(speedLimitLabel, 11, 2)
+
+        # Adding the Beacon Outputs
+        beaconLabel = QLabel("Beacon Outputs")
+        beaconLabel2 = QLabel("[Station State, Next Station Name, Platform Side]")
+        layout.addWidget(beaconLabel, 12, 2)
+        layout.addWidget(beaconLabel2, 12, 3)
+
+        # Adding the Station State
+        stationStateLabel = QLabel("Station State")
+        layout.addWidget(stationStateLabel, 13, 2)
+
+        # Adding the Next Station Name
+        nextStationLabel = QLabel("Next Station")
+        layout.addWidget(nextStationLabel, 14, 2)
+
+        # Adding the Platform Side
+        platformSideLabel = QLabel("Platform Side")
+        layout.addWidget(platformSideLabel, 15, 2)
+
+        # Adding the Passengers Exiting
+        passengersExitingLabel = QLabel("Passengers Exiting")
+        layout.addWidget(passengersExitingLabel, 16, 2)
+
+    # Gets the Power input from the UI
+    def getPowerInput(self):
+        print("Power (W) : ", self.powerInput.text())
+
+    # Gets the Service Brake state from the UI
+    def getServiceBrakeInput(self, index):
+        print("Service Brake Index is", index)
+
+    # Gets the Emergency Brake state from the UI
+    def getEmergencyBrakeInput(self, index):
+        print("Emergency Brake Index is", index)
+
+    # Gets the Left Door state from the UI
+    def getLeftDoorInput(self, index):
+        print("Left Door Index is", index)
+
+    # Gets the Right Door state from the UI
+    def getRightDoorInput(self, index):
+        print("Right Door Index is", index)
+
+    # Gets the External Light state from the UI
+    def getExternalLightInput(self, index):
+        print("External Lights Index is", index)
+
+    # Gets the Internal Light state from the UI
+    def getInternalLightInput(self, index):
+        print("Internal Lights Index is", index)
+
+    # Gets the Station Name input from the UI
+    def getStationInput(self):
+        print("Station Input : ", self.stationInput.text())
+
+    # Gets the Real Time Clock state from the UI
+    def getRealTimeClockInput(self):
+        print("Real Time Clock : ", self.realTimeClockInput.text())
+
+    # Gets the Authority input from the UI
+    def getAuthorityInput(self):
+        print("Authority (Blocks) : ", self.authorityInput.text())
+
+    # Gets the commanded speed from the UI
+    def getCommandedSpeedInput(self):
+        print("Commanded Speed (m/s) : ", self.commandedSpeedInput.text())
+
+    # Gets the number of passengers entering the train from the UI
+    def getPassengersEnteringInput(self):
+        print("Passenged Entering : ", self.passengersEnteringInput.text())
+
+    # Gets the Gradient of the hill from the UI
+    def getGradeInput(self):
+        print("Grade (%) : ", self.gradeInput.text())
+
+    # Gets the Elevation increase of the block from the UI
+    def getElevationInput(self):
+        print("Elevation (m) : ", self.elevationInput.text())
+        
+    # Gets the Speed Limit from the UI    
+    def getSpeedLimitInput(self):
+        print("Speed Limit (m/s) : ", self.speedLimitInput.text())
+
+    # Gets the Acceleration Limit from the UI
+    def getAccelerationLimitInput(self):
+        print("Acceleration Limit (m/s^2) : ", self.accelerationLimitInput.text())
+
+    # Gets the Underground state from the UI
+    def getUndergroundStateInput(self, index):
+        print("Undergroud State Index is", index)
+
+    # Gets the Station state from the UI
+    def getStationStateInput(self, index):
+        print("Station State Index is", index)
+
+    # Gets the Next Station input from the UI
+    def getNextStationInput(self):
+        print("Next Station : ", self.nextStationInput.text())
     
+    # Gets the Platform Side input from the UI
+    def getPlatformSideInput(self, index):
+        print("Platform Side Index is", index)
 
 if __name__ == "__main__":
     app = QApplication(argv)
