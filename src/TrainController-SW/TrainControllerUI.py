@@ -41,6 +41,9 @@ class MainWindow(QMainWindow):
             self.authority = self.authoritySetup()
             self.speedLimit = self.speedLimitSetup()
             self.temperature = self.temperatureSetup()
+            self.internalLightsState = self.internalLightsStateSetup()
+            self.internalLightsEnable = self.internalLightsEnableSetup()
+            self.internalLightsDisableSetup = self.internalLightsDisableSetup()
 
 
                 
@@ -197,6 +200,31 @@ class MainWindow(QMainWindow):
             temperature.setParent(self)
             return temperature
 
+        def internalLightsStateSetup(self):
+            internalLightsState = QLabel()
+            internalLightsState.setText("Internal Lights: {State}")
+            internalLightsState.setFixedSize(QSize(round(self.labelWidth*0.8), round(self.labelHeight*0.8)))
+            internalLightsState.setWordWrap(True)
+            internalLightsState.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            internalLightsState.move(round(self.frameGeometry().width()*0.42-internalLightsState.frameGeometry().width()*0.5), round(self.frameGeometry().height()*0.45-internalLightsState.frameGeometry().height()*0.6))
+            internalLightsState.setParent(self)
+            return internalLightsState
+
+        def internalLightsEnableSetup(self):
+            internalLightsEnable = QPushButton("Enable\nInternal Lights")
+            internalLightsEnable.setFixedSize(QSize(round(self.buttonWidth*0.5), self.buttonHeight))
+            internalLightsEnable.clicked.connect(self.serviceBrakeEnableClick)
+            internalLightsEnable.move(round(self.frameGeometry().width()*0.35), round(self.frameGeometry().height()*0.5-internalLightsEnable.frameGeometry().height()*0.5))
+            internalLightsEnable.setParent(self)
+            return internalLightsEnable
+
+        def internalLightsDisableSetup(self):
+            internalLightsDisable = QPushButton("Disable\nInternal Lights")
+            internalLightsDisable.setFixedSize(QSize(round(self.buttonWidth*0.5), self.buttonHeight))
+            internalLightsDisable.clicked.connect(self.serviceBrakeDisableClick)
+            internalLightsDisable.move(round(self.frameGeometry().width()*0.35+internalLightsDisable.frameGeometry().width()), round(self.frameGeometry().height()*0.5-internalLightsDisable.frameGeometry().height()*0.5))
+            internalLightsDisable.setParent(self)
+            return internalLightsDisable
 
         # event actions
 
