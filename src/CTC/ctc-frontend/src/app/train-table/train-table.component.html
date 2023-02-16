@@ -12,7 +12,12 @@
 			<th scope="row">{{ train.id }}</th>
 			<td>{{ train.line }}</td>
 			<td>{{ train.driver }}</td>
-			<td>{{ train.stops }}</td>
+			<td>
+        <dl class="row" *ngFor="let stop of train.stops">
+          <dt class="col-sm-3">{{ stop.station }}</dt>
+          <dd class="col-sm-9">{{ stop.time | date:'d/M/Y - hh:mm:ss a z' }}</dd>
+        </dl>
+      </td>
 		</tr>
 	</tbody>
 </table>
