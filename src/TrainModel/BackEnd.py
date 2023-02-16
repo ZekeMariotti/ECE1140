@@ -1,6 +1,10 @@
 # Train Model Back End
 
 from math import sin, atan
+from time import sleep
+
+simulationSpeed = 5
+
 # Finds the current acceleration of a train
 def findCurrentAcceleration(power, prevVelocity, mass, elevation, grade) :
     if (prevVelocity == 0):
@@ -11,7 +15,7 @@ def findCurrentAcceleration(power, prevVelocity, mass, elevation, grade) :
         currAcceleration = force / mass
     else:
         # Calculating the effect of weight on the train while it is on an incline
-        currAcceleration = (force - (mass * 9.8 * sin(atan(elevation / (elevation / grade))))) / mass
+        currAcceleration = (force - (mass * 9.81 * sin(atan(elevation / (elevation / grade))))) / mass
     
     return currAcceleration
 
@@ -20,16 +24,23 @@ def findCurrentVelocity(currAcceleration, prevAcceleration, prevVelocity, time):
     currVelocity = prevVelocity + ((time / 2) * (currAcceleration + prevAcceleration))
     return currVelocity if currVelocity >= 0 else 0.0
 
-def airconditioningControl(temperature):
-    print("Do Something")
-    # Implement A/C System based on User Input
+# Air Conditioning System that changes based on user input
+def airConditioningControl(temperatureGoal, temperature):
+    while temperatureGoal != temperature:
+        sleep(1 / simulationSpeed)
+        if temperature < temperatureGoal:
+            temperature += 1
+        else:
+            temperature -= 1
+        print(temperature)
 
 
 if __name__ == "__main__":
     a = findCurrentAcceleration(12000, 0, 37103.8665, 0, 0)
     print("A:", a)
-    v = findCurrentVelocity(a, 0.0, 0.0, 3)
+    v = findCurrentVelocity(a, 0.0, 0.0, .5)
     print("V:", v)
+    airConditioningControl(100, 40)
     #v = findCurrentVelocity(12000, 15, 0, 40823, 3, 1, 0.01)
     #print("V2: ", v)
     #v = findCurrentVelocity(12000, 15, 0, 40823, 3, -3, -0.03)

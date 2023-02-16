@@ -267,7 +267,7 @@ class TrainModelTestUI(QWidget):
         layout.addWidget(commandedSpeedLabel, 8, 2)
         self.commandedSpeedOutput = QLineEdit()
         self.commandedSpeedOutput.setReadOnly(True)
-        self.commandedSpeedOutput.setText("0 mph")
+        self.commandedSpeedOutput.setText("0 m/s")
         layout.addWidget(self.commandedSpeedOutput, 8, 3)
 
         # Adding the Velocity
@@ -275,7 +275,7 @@ class TrainModelTestUI(QWidget):
         layout.addWidget(velocityLabel, 9, 2)
         self.velocityOutput = QLineEdit()
         self.velocityOutput.setReadOnly(True)
-        self.velocityOutput.setText("0 mph")
+        self.velocityOutput.setText("0 m/s")
         layout.addWidget(self.velocityOutput, 9, 3)
 
         # Adding the Underground State
@@ -291,7 +291,7 @@ class TrainModelTestUI(QWidget):
         layout.addWidget(speedLimitLabel, 11, 2)
         self.speedLimitOutput = QLineEdit()
         self.speedLimitOutput.setReadOnly(True)
-        self.speedLimitOutput.setText("0 mph")
+        self.speedLimitOutput.setText("0 km/hr")
         layout.addWidget(self.speedLimitOutput, 11, 3)
 
         # Adding the Beacon Outputs
