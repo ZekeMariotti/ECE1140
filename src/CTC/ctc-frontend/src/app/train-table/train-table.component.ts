@@ -1,6 +1,6 @@
 import { Component, Directive, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
 import { DecimalPipe, NgFor } from '@angular/common';
-import { Train } from '../train';
+import { Train } from '../models/train';
 import { BackendService } from '../services/backend.service';
 
 @Component({
