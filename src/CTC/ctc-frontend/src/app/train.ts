@@ -1,8 +1,11 @@
 import { TrainStop } from "./trainStop";
 
-export interface Train {
-  id: number;
-  line: string;
-  driver: string;
-  stops: TrainStop[]
+export class Train {
+  constructor(
+    public id: number,
+    public line: string,
+    public driver: string,
+    public stops: TrainStop[]
+  ) {  }
+
 }

@@ -1,7 +1,7 @@
 import { Component, Directive, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
 import { DecimalPipe, NgFor } from '@angular/common';
 import { Train } from '../train';
-import { BackendService } from '../backend.service';
+import { BackendService } from '../services/backend.service';
 
 @Component({
   selector: 'app-train-table',
