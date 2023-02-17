@@ -3,53 +3,62 @@
 from datetime import time
 from distutils.cmd import Command
 import sys
+import os
+import json
+from json import JSONEncoder
 
 
 
 # Class for the TrainControllerSW
-class TrainControllerSW():
+class TrainControllerSW:
     # Constructor 
-    def __init__(self):
+    def __init__(self, commandedSpeed, currentSpeed, authority, time, undergroundState, speedLimit, temperature, engineState, 
+                 stationState, stationName, platformSide, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
+                 serviceBrakeState, emergencyBrakeState, serviceBrakeStatus, engineStatus, communicationsStatus, power, leftDoorCommand, 
+                 rightDoorCommand, serviceBrakeCommand, emergencyBrakeCommand, externalLightCommand, internalLightCommand, stationAnnouncement):
         # inputs
-        commandedSpeed = None
-        currentSpeed = None
-        authority = None
-        time = None
-        undergroundState = None
-        speedLimit = None
-        temperature = None
-        engineState = None
-        stationState = None
-        stationName = None
-        platformSide = None
-        externalLightsState = None
-        internalLightsState = None
-        leftDoorState = None
-        rightDoorState = None
-        serviceBrakeState = None
-        emergencyBrakeState = None
-        serviceBrakeStatus = None
-        engineStatus = None
-        communicationsStatus = None
+        self.commandedSpeed = commandedSpeed
+        self.currentSpeed = currentSpeed
+        self.authority = authority
+        self.time = time
+        self.undergroundState = undergroundState
+        self.speedLimit = speedLimit
+        self.temperature = temperature
+        self.engineState = engineState
+        self.stationState = stationState
+        self.stationName = stationName
+        self.platformSide = platformSide
+        self.externalLightsState = externalLightsState
+        self.internalLightsState = internalLightsState
+        self.leftDoorState = leftDoorState
+        self.rightDoorState = rightDoorState
+        self.serviceBrakeState = serviceBrakeState
+        self.emergencyBrakeState = emergencyBrakeState
+        self.serviceBrakeStatus = serviceBrakeStatus
+        self.engineStatus = engineStatus
+        self.communicationsStatus = communicationsStatus
 
         # outputs
-        power = None
-        leftDoorCommand = None
-        rightDoorCommand = None
-        serviceBrakeCommand = None
-        emergencyBrakeCommand = None
-        externalLightCommand = None
-        internalLightCommand = None
-        stationAnnouncement = None   
+        self.power = power
+        self.leftDoorCommand = leftDoorCommand
+        self.rightDoorCommand = rightDoorCommand
+        self.serviceBrakeCommand = serviceBrakeCommand
+        self.emergencyBrakeCommand = emergencyBrakeCommand
+        self.externalLightCommand = externalLightCommand
+        self.internalLightCommand = internalLightCommand
+        self.stationAnnouncement = stationAnnouncement   
 
-    # methods
+    # methods   
+    
     def writeOutputs(self):
-        filename = open("TrainControllerSWOutputs.json", "w")
-        filename.write("Test")
+        print(json.dumps(self.__dict__))
+        with open(os.path.join(sys.path[0], "TrainControllerSWOutputs.json"), "w") as filename:
+            filename.write("Test")
 
 
     def readInputs(self):
-        test=None
+        with open(os.path.join(sys.path[0], "TrainControllerSWInputs.json"), "r") as filename:
+            print(filename.read())
 
     def getEngineState(self):
         if(self.engineState == 0):

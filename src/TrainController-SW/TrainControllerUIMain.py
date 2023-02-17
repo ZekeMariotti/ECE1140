@@ -16,7 +16,8 @@ class MainWindow(QMainWindow):
         def __init__(self):
             super().__init__()
 
-            self.TrainControllerSW = TrainControllerSW()
+            self.TrainControllerSW = TrainControllerSW(0, 0, 0, "setupTime", False, 0, 0, 0, 0, "setupStationName", 
+                                                       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "setupStationAnnouncement")
             testState = True
 
             if(testState):
