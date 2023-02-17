@@ -11,12 +11,95 @@ from json import JSONEncoder
 
 # Class for the TrainControllerSW
 class TrainControllerSW:
-    # Constructor 
     def __init__(self, commandedSpeed, currentSpeed, authority, time, undergroundState, speedLimit, temperature, engineState, 
                  stationState, stationName, platformSide, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
                  serviceBrakeState, emergencyBrakeState, serviceBrakeStatus, engineStatus, communicationsStatus, power, leftDoorCommand, 
                  rightDoorCommand, serviceBrakeCommand, emergencyBrakeCommand, externalLightCommand, internalLightCommand, stationAnnouncement):
-        # inputs
+        
+        self.inputs = Inputs(commandedSpeed, currentSpeed, authority, time, undergroundState, speedLimit, temperature, engineState, 
+                 stationState, stationName, platformSide, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
+                 serviceBrakeState, emergencyBrakeState, serviceBrakeStatus, engineStatus, communicationsStatus)
+        self.outputs = Outputs(power, leftDoorCommand, 
+                 rightDoorCommand, serviceBrakeCommand, emergencyBrakeCommand, externalLightCommand, internalLightCommand, stationAnnouncement)
+           
+
+    # methods   
+    
+    def writeOutputs(self):
+        with open(os.path.join(sys.path[0], "TrainControllerSWOutputs.json"), "w") as filename:
+            (json.dump(self.outputs.__dict__, filename, indent=4))
+
+
+    def readInputs(self):
+        with open(os.path.join(sys.path[0], "TrainControllerSWInputs.json"), "r") as filename:
+            self.inputs = Inputs(**json.loads(filename.read()))
+
+    def getEngineState(self):
+        if(self.inputs.engineState == 0):
+            return "OFF"
+        elif(self.inputs.engineState == 1):
+            return "ON"
+        elif(self.inputs.engineState == 2):
+            return "FAILURE"
+        else:
+            return "ERROR: UNKNOWN STATE"
+
+    def getEmergencyBrakeState(self):
+        if(self.inputs.emergencyBrakeState == False):
+            return "DISABLED"
+        elif(self.inputs.emergencyBrakeState == True):
+            return "ENABLED"
+        else:
+            return "ERROR: UNKNOWN STATE"
+
+    def getServiceBrakeState(self):
+        if(self.inputs.emergencyBrakeState == 0):
+            return "DISABLED"
+        if(self.inputs.emergencyBrakeState == 1):
+            return "ENABLED"
+        if(self.inputs.emergencyBrakeState == 2):
+            return "FAILURE"
+        else:
+            return "ERROR: UNKNOWN STATE"
+
+    def getLeftDoorState(self):
+        if(self.inputs.leftDoorState == True):
+            return "Opened"
+        elif(self.inputs.rightDoorState == False):
+            return "Closed"
+        else:
+            return "ERROR: UNKNOWN STATE"
+
+    def getRightDoorState(self):
+        if(self.inputs.rightDoorState == True):
+            return "Opened"
+        elif(self.inputs.rightDoorState == False):
+            return "Closed"
+        else:
+            return "ERROR: UNKNOWN STATE"
+
+    def getInternalLightsState(self):
+        if(self.inputs.internalLightsState == True):
+            return "ON"
+        elif(self.inputs.internalLightsState == False):
+            return "OFF"
+        else:
+            return "ERROR: UNKNOWN STATE"
+
+    def getExternalLightsState(self):
+        if(self.inputs.externalLightsState == True):
+            return "ON"
+        elif(self.inputs.externalLightsState == False):
+            return "OFF"
+        else:
+            return "ERROR: UNKNOWN STATE"
+        
+# class for TrainController ouputs
+class Inputs:
+    def __init__(self, commandedSpeed, currentSpeed, authority, time, undergroundState, speedLimit, temperature, engineState, 
+                 stationState, stationName, platformSide, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
+                 serviceBrakeState, emergencyBrakeState, serviceBrakeStatus, engineStatus, communicationsStatus):
+        # Inputs
         self.commandedSpeed = commandedSpeed
         self.currentSpeed = currentSpeed
         self.authority = authority
@@ -38,6 +121,10 @@ class TrainControllerSW:
         self.engineStatus = engineStatus
         self.communicationsStatus = communicationsStatus
 
+# class for TrainController inputs
+class Outputs:
+    def __init__(self, power, leftDoorCommand, 
+                 rightDoorCommand, serviceBrakeCommand, emergencyBrakeCommand, externalLightCommand, internalLightCommand, stationAnnouncement):
         # outputs
         self.power = power
         self.leftDoorCommand = leftDoorCommand
@@ -46,77 +133,4 @@ class TrainControllerSW:
         self.emergencyBrakeCommand = emergencyBrakeCommand
         self.externalLightCommand = externalLightCommand
         self.internalLightCommand = internalLightCommand
-        self.stationAnnouncement = stationAnnouncement   
-
-    # methods   
-    
-    def writeOutputs(self):
-        print(json.dumps(self.__dict__))
-        with open(os.path.join(sys.path[0], "TrainControllerSWOutputs.json"), "w") as filename:
-            filename.write("Test")
-
-
-    def readInputs(self):
-        with open(os.path.join(sys.path[0], "TrainControllerSWInputs.json"), "r") as filename:
-            print(filename.read())
-
-    def getEngineState(self):
-        if(self.engineState == 0):
-            return "OFF"
-        elif(self.engineState == 1):
-            return "ON"
-        elif(self.engineState == 2):
-            return "FAILURE"
-        else:
-            return "ERROR: UNKNOWN STATE"
-
-    def getEmergencyBrakeState(self):
-        if(self.emergencyBrakeState == False):
-            return "DISABLED"
-        elif(self.emergencyBrakeState == True):
-            return "ENABLED"
-        else:
-            return "ERROR: UNKNOWN STATE"
-
-    def getServiceBrakeState(self):
-        if(self.emergencyBrakeState == 0):
-            return "DISABLED"
-        if(self.emergencyBrakeState == 1):
-            return "ENABLED"
-        if(self.emergencyBrakeState == 2):
-            return "FAILURE"
-        else:
-            return "ERROR: UNKNOWN STATE"
-
-    def getLeftDoorState(self):
-        if(self.leftDoorState == True):
-            return "Opened"
-        elif(self.rightDoorState == False):
-            return "Closed"
-        else:
-            return "ERROR: UNKNOWN STATE"
-
-    def getRightDoorState(self):
-        if(self.rightDoorState == True):
-            return "Opened"
-        elif(self.rightDoorState == False):
-            return "Closed"
-        else:
-            return "ERROR: UNKNOWN STATE"
-
-    def getInternalLightsState(self):
-        if(self.internalLightsState == True):
-            return "ON"
-        elif(self.internalLightsState == False):
-            return "OFF"
-        else:
-            return "ERROR: UNKNOWN STATE"
-
-    def getExternalLightsState(self):
-        if(self.externalLightsState == True):
-            return "ON"
-        elif(self.externalLightsState == False):
-            return "OFF"
-        else:
-            return "ERROR: UNKNOWN STATE"
-        
+        self.stationAnnouncement = stationAnnouncement

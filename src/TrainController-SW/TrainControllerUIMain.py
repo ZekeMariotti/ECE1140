@@ -16,37 +16,49 @@ class MainWindow(QMainWindow):
         def __init__(self):
             super().__init__()
 
+            # initialize TrainControllerSW object
             self.TrainControllerSW = TrainControllerSW(0, 0, 0, "setupTime", False, 0, 0, 0, 0, "setupStationName", 
                                                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "setupStationAnnouncement")
-            testState = True
+            
+            testState = False
 
             if(testState):
-                self.TrainControllerSW.time = "8:46"
-                self.TrainControllerSW.stationName = "SHADYSIDE"
-                self.TrainControllerSW.currentSpeed = 20
-                self.TrainControllerSW.engineState = 1
-                self.TrainControllerSW.emergencyBrakeState = False
-                self.TrainControllerSW.serviceBrakeState = False
-                self.TrainControllerSW.commandedSpeed = 20
-                self.TrainControllerSW.authority = 600
-                self.TrainControllerSW.speedLimit = 25
-                self.TrainControllerSW.temperature = 75
-                self.TrainControllerSW.internalLightsState = True
-                self.TrainControllerSW.externalLightsState = False
-                self.TrainControllerSW.leftDoorState = False
-                self.TrainControllerSW.rightDoorState = False
+                self.TrainControllerSW.inputs.time = "8:46"
+                self.TrainControllerSW.inputs.stationName = "SHADYSIDE"
+                self.TrainControllerSW.inputs.currentSpeed = 20
+                self.TrainControllerSW.inputs.engineState = 1
+                self.TrainControllerSW.inputs.emergencyBrakeState = False
+                self.TrainControllerSW.inputs.serviceBrakeState = False
+                self.TrainControllerSW.inputs.commandedSpeed = 20
+                self.TrainControllerSW.inputs.authority = 600
+                self.TrainControllerSW.inputs.speedLimit = 25
+                self.TrainControllerSW.inputs.temperature = 75
+                self.TrainControllerSW.inputs.internalLightsState = True
+                self.TrainControllerSW.inputs.externalLightsState = False
+                self.TrainControllerSW.inputs.leftDoorState = False
+                self.TrainControllerSW.inputs.rightDoorState = False
 
+            self.TrainControllerSW.readInputs()
+
+            # set window defaults
             self.setWindowTitle("Train Controller")
-            self.resize(QSize(1366, 768))
+            self.resize(QSize(1366, 768-31))
             self.setMinimumSize(1050, 550)
 
+            # set element defaults
             self.windowWidth = self.frameGeometry().width()
             self.windowHeight = self.frameGeometry().height()
             self.buttonWidth = round(0.13*self.windowWidth)
             self.buttonHeight = round(0.06*self.windowHeight)
             self.labelWidth = self.buttonWidth*2
-            self.labelHeight = round(self.buttonHeight*1.3)             
+            self.labelHeight = round(self.buttonHeight*1.3)
+            
+            self.globalFont = "Times"     
+            self.labelFont = QFont(self.globalFont, 16)
+            self.buttonFont = QFont(self.globalFont, 9)
+            self.stationFont = QFont(self.globalFont, 24)  
                 
+            # create visual elements
             self.station = self.stationSetup()
             self.currentSpeed = self.currentSpeedSetup()
             self.manualSpeedOverride = self.manualSpeedOverrideSetup()
@@ -80,44 +92,48 @@ class MainWindow(QMainWindow):
                 
         # widget setups
         def stationSetup(self):
-            station = QLabel()          
-            station.setText("Current Station:\n" + self.TrainControllerSW.stationName)
-            station.setFixedSize(QSize(round(self.labelWidth*1.6), self.labelHeight*2))
+            station = QLabel()         
+            station.setFont(self.stationFont)
+            station.setText("Current Station:\n" + self.TrainControllerSW.inputs.stationName)
+            station.setFixedSize(QSize(round(self.labelWidth*1.6), round(self.labelHeight*2)))
             station.setAlignment(Qt.AlignmentFlag.AlignCenter)
             station.setWordWrap(True)
             x = round(self.frameGeometry().width()*0.5-station.frameGeometry().width()*.5)
-            y = round(self.frameGeometry().height()*0.05-station.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.07-station.frameGeometry().height()*0.5)
             station.move(x, y)
             station.setParent(self)
             return station
 
         def currentSpeedSetup(self):
             currentSpeed = QLabel()
-            currentSpeed.setText("Current Speed: " + str(self.TrainControllerSW.currentSpeed) + " MPH")
+            currentSpeed.setFont(self.stationFont)
+            currentSpeed.setText("Current Speed: " + str(self.TrainControllerSW.inputs.currentSpeed) + " MPH")
             currentSpeed.setFixedSize(QSize(round(self.labelWidth*1.6), round(self.labelHeight*0.5)))
             currentSpeed.setAlignment(Qt.AlignmentFlag.AlignCenter)
             currentSpeed.setWordWrap(True)
             x = round(self.frameGeometry().width()*0.5-currentSpeed.frameGeometry().width()*.5)
-            y = round(self.frameGeometry().height()*0.15-currentSpeed.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.19-currentSpeed.frameGeometry().height()*0.5)
             currentSpeed.move(x, y)
             currentSpeed.setParent(self)
             return currentSpeed
 
         def manualSpeedOverrideSetup(self):
             manualSpeedOverride = QLabel()  
+            manualSpeedOverride.setFont(self.stationFont)
             manualSpeedOverride.setText("Manual Speed Override:")
             manualSpeedOverride.setFixedSize(QSize(round(self.labelWidth*1.6), round(self.labelHeight*0.5)))
             manualSpeedOverride.setAlignment(Qt.AlignmentFlag.AlignCenter)
             manualSpeedOverride.setWordWrap(True)
             x = round(self.frameGeometry().width()*0.5-manualSpeedOverride.frameGeometry().width()*.5)
-            y = round(self.frameGeometry().height()*0.3-manualSpeedOverride.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.33-manualSpeedOverride.frameGeometry().height()*0.5)
             manualSpeedOverride.move(x, y)
             manualSpeedOverride.setParent(self)
             return manualSpeedOverride
 
         def realTimeClockSetup(self):
-            realTimeClock = QLabel()  
-            realTimeClock.setText("Time: " + self.TrainControllerSW.time)
+            realTimeClock = QLabel() 
+            realTimeClock.setFont(self.stationFont) 
+            realTimeClock.setText("Time: " + self.TrainControllerSW.inputs.time)
             realTimeClock.setFixedSize(QSize(self.labelWidth, round(self.labelHeight*0.5)))
             realTimeClock.setAlignment(Qt.AlignmentFlag.AlignCenter)
             realTimeClock.setWordWrap(True)
@@ -128,7 +144,8 @@ class MainWindow(QMainWindow):
             return realTimeClock
 
         def engineStateSetup(self):
-            engineState = QLabel()            
+            engineState = QLabel()    
+            engineState.setFont(self.labelFont)        
             engineState.setText("Engine State:\n" + self.TrainControllerSW.getEngineState())
             engineState.setFixedSize(QSize(self.labelWidth, self.labelHeight))
             engineState.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -140,65 +157,71 @@ class MainWindow(QMainWindow):
             return engineState
         
         def emergencyBrakeStateSetup(self):
-            emergencyBrakeState = QLabel()  
+            emergencyBrakeState = QLabel() 
+            emergencyBrakeState.setFont(self.labelFont) 
             emergencyBrakeState.setText("Emergency Brake:\n" + self.TrainControllerSW.getEmergencyBrakeState())
             emergencyBrakeState.setFixedSize(QSize(self.labelWidth, self.labelHeight))
             emergencyBrakeState.setAlignment(Qt.AlignmentFlag.AlignCenter)
             emergencyBrakeState.setWordWrap(True)
             x = round(self.frameGeometry().width()*0.05)
-            y = round(self.frameGeometry().height()*0.25-emergencyBrakeState.frameGeometry().height()*0.6)
+            y = round(self.frameGeometry().height()*0.27-emergencyBrakeState.frameGeometry().height()*0.6)
             emergencyBrakeState.move(x, y)
             emergencyBrakeState.setParent(self)
             return emergencyBrakeState
 
         def emergencyBrakeEnableSetup(self):
             emergencyBrakeEnable = QPushButton("Enable\nEmergency Brake")     
+            emergencyBrakeEnable.setFont(self.buttonFont)
             emergencyBrakeEnable.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
             emergencyBrakeEnable.clicked.connect(self.emergencyBrakeEnableClick)
             x = round(self.frameGeometry().width()*0.05)
-            y = round(self.frameGeometry().height()*0.3-emergencyBrakeEnable.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.34-emergencyBrakeEnable.frameGeometry().height()*0.5)
             emergencyBrakeEnable.move(x, y)
             emergencyBrakeEnable.setParent(self)
             return emergencyBrakeEnable
 
         def emergencyBrakeDisableSetup(self):
-            emergencyBrakeDisable = QPushButton("Disable\nEmergency Brake")           
+            emergencyBrakeDisable = QPushButton("Disable\nEmergency Brake")    
+            emergencyBrakeDisable.setFont(self.buttonFont)       
             emergencyBrakeDisable.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
             emergencyBrakeDisable.clicked.connect(self.emergencyBrakeDisableClick)
             x = round(self.frameGeometry().width()*0.05+emergencyBrakeDisable.frameGeometry().width())
-            y = round(self.frameGeometry().height()*0.3-emergencyBrakeDisable.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.34-emergencyBrakeDisable.frameGeometry().height()*0.5)
             emergencyBrakeDisable.move(x, y)
             emergencyBrakeDisable.setParent(self)
             return emergencyBrakeDisable
 
         def serviceBrakeStateSetup(self):
             serviceBrakeState = QLabel()
+            serviceBrakeState.setFont(self.labelFont)
             serviceBrakeState.setText("Service Brake:\n" + self.TrainControllerSW.getServiceBrakeState())
             serviceBrakeState.setFixedSize(QSize(self.labelWidth, self.labelHeight))
             serviceBrakeState.setWordWrap(True)
             serviceBrakeState.setAlignment(Qt.AlignmentFlag.AlignCenter)
             x = round(self.frameGeometry().width()*0.05)
-            y = round(self.frameGeometry().height()*0.4-serviceBrakeState.frameGeometry().height()*0.6)
+            y = round(self.frameGeometry().height()*0.45-serviceBrakeState.frameGeometry().height()*0.6)
             serviceBrakeState.move(x, y)
             serviceBrakeState.setParent(self)
             return serviceBrakeState
 
         def serviceBrakeEnableSetup(self):
             serviceBrakeEnable = QPushButton("Enable\nService Brake")  
+            serviceBrakeEnable.setFont(self.buttonFont)
             serviceBrakeEnable.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
             serviceBrakeEnable.clicked.connect(self.serviceBrakeEnableClick)
             x = round(self.frameGeometry().width()*0.05)
-            y = round(self.frameGeometry().height()*0.45-serviceBrakeEnable.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.52-serviceBrakeEnable.frameGeometry().height()*0.5)
             serviceBrakeEnable.move(x, y)
             serviceBrakeEnable.setParent(self)
             return serviceBrakeEnable
 
         def serviceBrakeDisableSetup(self):
             serviceBrakeDisable = QPushButton("Disable\nService Brake")
+            serviceBrakeDisable.setFont(self.buttonFont)
             serviceBrakeDisable.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
             serviceBrakeDisable.clicked.connect(self.serviceBrakeDisableClick)
             x = round(self.frameGeometry().width()*0.05+serviceBrakeDisable.frameGeometry().width())
-            y = round(self.frameGeometry().height()*0.45-serviceBrakeDisable.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.52-serviceBrakeDisable.frameGeometry().height()*0.5)
             serviceBrakeDisable.move(x, y)
             serviceBrakeDisable.setParent(self)
             return serviceBrakeDisable
@@ -210,183 +233,199 @@ class MainWindow(QMainWindow):
             commandedSpeedSlider.setRange(0, 100)
             commandedSpeedSlider.setSingleStep(1)
             x = round(self.frameGeometry().width()*0.5-commandedSpeedSlider.frameGeometry().width()*0.5)
-            y = round(self.frameGeometry().height()*0.325)
+            y = round(self.frameGeometry().height()*0.37)
             commandedSpeedSlider.move(x, y)
             commandedSpeedSlider.setParent(self)
             return commandedSpeedSlider
 
         def commandedSpeedSetup(self):
             commandedSpeed = QLabel()
-            commandedSpeed.setText("Commanded Speed:\n" + str(self.TrainControllerSW.commandedSpeed) + " MPH")
+            commandedSpeed.setFont(self.labelFont)
+            commandedSpeed.setText("Commanded Speed:\n" + str(self.TrainControllerSW.inputs.commandedSpeed) + " MPH")
             commandedSpeed.setFixedSize(QSize(self.labelWidth, self.labelHeight))
             commandedSpeed.setAlignment(Qt.AlignmentFlag.AlignCenter)
             commandedSpeed.setWordWrap(True)
             x = round(self.frameGeometry().width()*0.65)
-            y = round(self.frameGeometry().height()*0.05-commandedSpeed.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.08-commandedSpeed.frameGeometry().height()*0.5)
             commandedSpeed.move(x, y)
             commandedSpeed.setParent(self)
             return commandedSpeed
 
         def authoritySetup(self):
-            authority = QLabel()        
-            authority.setText("Authority:\n" + str(self.TrainControllerSW.authority) + " FEET")
+            authority = QLabel()    
+            authority.setFont(self.labelFont)    
+            authority.setText("Authority:\n" + str(self.TrainControllerSW.inputs.authority) + " FEET")
             authority.setFixedSize(QSize(self.labelWidth, self.labelHeight))
             authority.setAlignment(Qt.AlignmentFlag.AlignCenter)
             authority.setWordWrap(True)
             x = round(self.frameGeometry().width()*0.65)
-            y = round(self.frameGeometry().height()*0.15-authority.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.21-authority.frameGeometry().height()*0.5)
             authority.move(x, y)
             authority.setParent(self)
             return authority
 
         def speedLimitSetup(self):
-            speedLimit = QLabel()     
-            speedLimit.setText("Speed Limit:\n" + str(self.TrainControllerSW.speedLimit) + " MPH")
+            speedLimit = QLabel()  
+            speedLimit.setFont(self.labelFont)   
+            speedLimit.setText("Speed Limit:\n" + str(self.TrainControllerSW.inputs.speedLimit) + " MPH")
             speedLimit.setFixedSize(QSize(self.labelWidth, self.labelHeight))
             speedLimit.setAlignment(Qt.AlignmentFlag.AlignCenter)
             speedLimit.setWordWrap(True)
             x = round(self.frameGeometry().width()*0.65)
-            y = round(self.frameGeometry().height()*0.25-speedLimit.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.33-speedLimit.frameGeometry().height()*0.5)
             speedLimit.move(x, y)
             speedLimit.setParent(self)
             return speedLimit
 
         def temperatureSetup(self):
-            temperature = QLabel()        
-            temperature.setText("Temperature:\n" + str(self.TrainControllerSW.temperature) + " F")
+            temperature = QLabel()  
+            temperature.setFont(self.labelFont)      
+            temperature.setText("Temperature:\n" + str(self.TrainControllerSW.inputs.temperature) + " F")
             temperature.setFixedSize(QSize(self.labelWidth, self.labelHeight))
             temperature.setAlignment(Qt.AlignmentFlag.AlignCenter)
             temperature.setWordWrap(True)
             x = round(self.frameGeometry().width()*0.65)
-            y = round(self.frameGeometry().height()*0.35-temperature.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.46-temperature.frameGeometry().height()*0.5)
             temperature.move(x, y)
             temperature.setParent(self)
             return temperature
 
         def internalLightsStateSetup(self):
-            internalLightsState = QLabel()          
+            internalLightsState = QLabel()   
+            internalLightsState.setFont(self.labelFont)       
             internalLightsState.setText("Internal Lights: " + self.TrainControllerSW.getInternalLightsState())
             internalLightsState.setFixedSize(QSize(round(self.labelWidth*0.8), round(self.labelHeight*0.8)))
             internalLightsState.setWordWrap(True)
             internalLightsState.setAlignment(Qt.AlignmentFlag.AlignCenter)
             x = round(self.frameGeometry().width()*0.42-internalLightsState.frameGeometry().width()*0.5)
-            y = round(self.frameGeometry().height()*0.45-internalLightsState.frameGeometry().height()*0.6)
+            y = round(self.frameGeometry().height()*0.47-internalLightsState.frameGeometry().height()*0.6)
             internalLightsState.move(x, y)
             internalLightsState.setParent(self)
             return internalLightsState
 
         def internalLightsEnableSetup(self):
-            internalLightsEnable = QPushButton("Enable\nInternal Lights")      
+            internalLightsEnable = QPushButton("Enable\nInternal Lights") 
+            internalLightsEnable.setFont(self.buttonFont)     
             internalLightsEnable.setFixedSize(QSize(round(self.buttonWidth*0.5), self.buttonHeight))
             internalLightsEnable.clicked.connect(self.internalLightsEnableClick)
             x = round(self.frameGeometry().width()*0.35)
-            y = round(self.frameGeometry().height()*0.5-internalLightsEnable.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.535-internalLightsEnable.frameGeometry().height()*0.5)
             internalLightsEnable.move(x, y)
             internalLightsEnable.setParent(self)
             return internalLightsEnable
 
         def internalLightsDisableSetup(self):
-            internalLightsDisable = QPushButton("Disable\nInternal Lights")            
+            internalLightsDisable = QPushButton("Disable\nInternal Lights")      
+            internalLightsDisable.setFont(self.buttonFont)      
             internalLightsDisable.setFixedSize(QSize(round(self.buttonWidth*0.5), self.buttonHeight))
             internalLightsDisable.clicked.connect(self.internalLightsDisableClick)
             x = round(self.frameGeometry().width()*0.35+internalLightsDisable.frameGeometry().width())
-            y = round(self.frameGeometry().height()*0.5-internalLightsDisable.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.535-internalLightsDisable.frameGeometry().height()*0.5)
             internalLightsDisable.move(x, y)
             internalLightsDisable.setParent(self)
             return internalLightsDisable
 
         def externalLightsStateSetup(self):
             externalLightsState = QLabel()
+            externalLightsState.setFont(self.labelFont)
             externalLightsState.setText("External Lights: " + self.TrainControllerSW.getExternalLightsState())
             externalLightsState.setFixedSize(QSize(round(self.labelWidth*0.8), round(self.labelHeight*0.8)))
             externalLightsState.setWordWrap(True)
             externalLightsState.setAlignment(Qt.AlignmentFlag.AlignCenter)
             x = round(self.frameGeometry().width()*0.42-externalLightsState.frameGeometry().width()*0.5)
-            y = round(self.frameGeometry().height()*0.6-externalLightsState.frameGeometry().height()*0.6)
+            y = round(self.frameGeometry().height()*0.63-externalLightsState.frameGeometry().height()*0.6)
             externalLightsState.move(x, y)
             externalLightsState.setParent(self)
             return externalLightsState
 
         def externalLightsEnableSetup(self):
             externalLightsEnable = QPushButton("Enable\nExternal Lights")
+            externalLightsEnable.setFont(self.buttonFont)
             externalLightsEnable.setFixedSize(QSize(round(self.buttonWidth*0.5), self.buttonHeight))
             externalLightsEnable.clicked.connect(self.externalLightsEnableClick)
             x = round(self.frameGeometry().width()*0.35)
-            y = round(self.frameGeometry().height()*0.65-externalLightsEnable.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.695-externalLightsEnable.frameGeometry().height()*0.5)
             externalLightsEnable.move(x, y)
             externalLightsEnable.setParent(self)
             return externalLightsEnable
 
         def externalLightsDisableSetup(self):
-            externalLightsDisable = QPushButton("Disable\nExternal Lights")         
+            externalLightsDisable = QPushButton("Disable\nExternal Lights")    
+            externalLightsDisable.setFont(self.buttonFont)     
             externalLightsDisable.setFixedSize(QSize(round(self.buttonWidth*0.5), self.buttonHeight))
             externalLightsDisable.clicked.connect(self.externalLightsDisableClick)
             x = round(self.frameGeometry().width()*0.35+externalLightsDisable.frameGeometry().width())
-            y = round(self.frameGeometry().height()*0.65-externalLightsDisable.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.695-externalLightsDisable.frameGeometry().height()*0.5)
             externalLightsDisable.move(x, y)
             externalLightsDisable.setParent(self)
             return externalLightsDisable
             
         def leftDoorStateSetup(self):
             leftDoorState = QLabel()
+            leftDoorState.setFont(QFont(self.globalFont, 12))
             leftDoorState.setText("Left Door\n" + self.TrainControllerSW.getLeftDoorState())
             leftDoorState.setFixedSize(QSize(round(self.labelWidth*0.4), round(self.labelHeight*0.8)))
             leftDoorState.setWordWrap(True)
             leftDoorState.setAlignment(Qt.AlignmentFlag.AlignCenter)
             x = round(self.frameGeometry().width()*0.55-leftDoorState.frameGeometry().width()*0.5)
-            y = round(self.frameGeometry().height()*0.45-leftDoorState.frameGeometry().height()*0.6)
+            y = round(self.frameGeometry().height()*0.48-leftDoorState.frameGeometry().height()*0.6)
             leftDoorState.move(x, y)
             leftDoorState.setParent(self)
             return leftDoorState
             
         def leftDoorOpenSetup(self):
             leftDoorOpen = QPushButton("Open Doors")
+            leftDoorOpen.setFont(self.buttonFont)
             leftDoorOpen.setFixedSize(QSize(round(self.buttonWidth*0.5), round(self.buttonHeight*0.5)))
             leftDoorOpen.clicked.connect(self.leftDoorOpenClick)
             x = round(self.frameGeometry().width()*0.515)
-            y = round(self.frameGeometry().height()*0.485-leftDoorOpen.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.52-leftDoorOpen.frameGeometry().height()*0.5)
             leftDoorOpen.move(x, y)
             leftDoorOpen.setParent(self)
             return leftDoorOpen
         
         def leftDoorCloseSetup(self):
             leftDoorClose = QPushButton("Close Doors")
+            leftDoorClose.setFont(self.buttonFont)
             leftDoorClose.setFixedSize(QSize(round(self.buttonWidth*0.5), round(self.buttonHeight*0.5)))
             leftDoorClose.clicked.connect(self.leftDoorCloseClick)
             x = round(self.frameGeometry().width()*0.515)
-            y = round(self.frameGeometry().height()*0.485+leftDoorClose.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.52+leftDoorClose.frameGeometry().height()*0.5)
             leftDoorClose.move(x, y)
             leftDoorClose.setParent(self)
             return leftDoorClose
 
         def rightDoorStateSetup(self):
             rightDoorState = QLabel()
+            rightDoorState.setFont(QFont(self.globalFont, 12))
             rightDoorState.setText("Right Door\n" + self.TrainControllerSW.getRightDoorState())
             rightDoorState.setFixedSize(QSize(round(self.labelWidth*0.4), round(self.labelHeight*0.8)))
             rightDoorState.setWordWrap(True)
             rightDoorState.setAlignment(Qt.AlignmentFlag.AlignCenter)
             x = round(self.frameGeometry().width()*0.56)
-            y = round(self.frameGeometry().height()*0.45-rightDoorState.frameGeometry().height()*0.6)
+            y = round(self.frameGeometry().height()*0.48-rightDoorState.frameGeometry().height()*0.6)
             rightDoorState.move(x, y)
             rightDoorState.setParent(self)
             return rightDoorState
             
         def rightDoorOpenSetup(self):
             rightDoorOpen = QPushButton("Open Doors")
+            rightDoorOpen.setFont(self.buttonFont)
             rightDoorOpen.setFixedSize(QSize(round(self.buttonWidth*0.5), round(self.buttonHeight*0.5)))
             rightDoorOpen.clicked.connect(self.rightDoorOpenClick)
             x = round(self.frameGeometry().width()*0.515+rightDoorOpen.frameGeometry().width())
-            y = round(self.frameGeometry().height()*0.485-rightDoorOpen.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.52-rightDoorOpen.frameGeometry().height()*0.5)
             rightDoorOpen.move(x, y)
             rightDoorOpen.setParent(self)
             return rightDoorOpen
         
         def rightDoorCloseSetup(self):
             rightDoorClose = QPushButton("Close Doors")
+            rightDoorClose.setFont(self.buttonFont)
             rightDoorClose.setFixedSize(QSize(round(self.buttonWidth*0.5), round(self.buttonHeight*0.5)))
             rightDoorClose.clicked.connect(self.rightDoorCloseClick)
             x = round(self.frameGeometry().width()*0.515+rightDoorClose.frameGeometry().width())
-            y = round(self.frameGeometry().height()*0.485+rightDoorClose.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.52+rightDoorClose.frameGeometry().height()*0.5)
             rightDoorClose.move(x, y)
             rightDoorClose.setParent(self)
             return rightDoorClose
@@ -396,58 +435,66 @@ class MainWindow(QMainWindow):
 
         # might use for resizing elements - adds 31 to height for some reason
         # def resizeEvent(self, event):
-        #    self.windowWidth = self.frameGeometry().width()
-        #    self.windowHeight = self.frameGeometry().height()
-        #    self.buttonWidth = round(0.13*self.windowWidth)
-        #    self.buttonHeight = round(0.06*self.windowHeight)
-        #    self.labelWidth = self.buttonWidth*2
-        #    self.labelHeight = round(self.buttonHeight*1.3)
-        
-        #    print("width: " + str(self.frameGeometry().width()) + " Height: " + str(self.frameGeometry().height()))
-        #    emergencyBrakeEnable = self.emergencyBrakeEnable
-        #    emergencyBrakeEnable.move(round(self.frameGeometry().width()*0.05), round(self.frameGeometry().height()*0.3-emergencyBrakeEnable.frameGeometry().height()*0.5))
-        #    emergencyBrakeEnable.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
-        #    QMainWindow.resizeEvent(self, event)
+        #     self.windowWidth = self.frameGeometry().width()
+        #     self.windowHeight = self.frameGeometry().height()
+        #     self.buttonWidth = round(0.13*self.windowWidth)
+        #     self.buttonHeight = round(0.06*self.windowHeight)
+        #     self.labelWidth = self.buttonWidth*2
+        #     self.labelHeight = round(self.buttonHeight*1.3)
+        #     print("width: " + str(self.frameGeometry().width()) + " Height: " + str(self.frameGeometry().height()))
+            
+        #     emergencyBrakeState = self.emergencyBrakeState
+        #     emergencyBrakeState.move(round(self.frameGeometry().width()*0.05), round(self.frameGeometry().height()*0.25-emergencyBrakeState.frameGeometry().height()*0.6))
+        #     emergencyBrakeState.setFixedSize(QSize(self.labelWidth, self.labelHeight))
+
+        #     emergencyBrakeEnable = self.emergencyBrakeEnable
+        #     emergencyBrakeEnable.move(round(self.frameGeometry().width()*0.05), round(self.frameGeometry().height()*0.3-emergencyBrakeEnable.frameGeometry().height()*0.5))
+        #     emergencyBrakeEnable.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
+
+        #     emergencyBrakeDisable = self.emergencyBrakeDisable
+        #     emergencyBrakeDisable.move(round(self.frameGeometry().width()*0.05+emergencyBrakeDisable.frameGeometry().width()), round(self.frameGeometry().height()*0.3-emergencyBrakeDisable.frameGeometry().height()*0.5))
+        #     emergencyBrakeDisable.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
+        #     QMainWindow.resizeEvent(self, event)
            
 
         def emergencyBrakeEnableClick(self):
-            self.TrainControllerSW.emergencyBrakeCommand = True
+            self.TrainControllerSW.outputs.emergencyBrakeCommand = True
 
         def emergencyBrakeDisableClick(self):
-            self.TrainControllerSW.emergencyBrakeCommand = False
+            self.TrainControllerSW.outputs.emergencyBrakeCommand = False
 
         def serviceBrakeEnableClick(self):
-            self.TrainControllerSW.serviceBrakeCommand = True
+            self.TrainControllerSW.outputs.serviceBrakeCommand = True
 
         def serviceBrakeDisableClick(self):
-            self.TrainControllerSW.serviceBrakeCommand = False
+            self.TrainControllerSW.outputs.serviceBrakeCommand = False
 
         def commandedSpeedSliderRelease(self):
-            self.TrainControllerSW.commandedSpeed = self.commandedSpeedSlider.value()
+            self.TrainControllerSW.inputs.commandedSpeed = self.commandedSpeedSlider.value()
 
         def internalLightsEnableClick(self):
-            self.TrainControllerSW.internalLightCommand = True
+            self.TrainControllerSW.outputs.internalLightCommand = True
 
         def internalLightsDisableClick(self):
-            self.TrainControllerSW.internalLightCommand = False
+            self.TrainControllerSW.outputs.internalLightCommand = False
 
         def externalLightsEnableClick(self):
-            self.TrainControllerSW.externalLightCommand = True
+            self.TrainControllerSW.outputs.externalLightCommand = True
 
         def externalLightsDisableClick(self):
-            self.TrainControllerSW.externalLightCommand = False
+            self.TrainControllerSW.outputs.externalLightCommand = False
 
         def leftDoorOpenClick(self):
-            self.TrainControllerSW.leftDoorCommand = True
+            self.TrainControllerSW.outputs.leftDoorCommand = True
         
         def leftDoorCloseClick(self):
-            self.TrainControllerSW.leftDoorCommand = False
+            self.TrainControllerSW.outputs.leftDoorCommand = False
 
         def rightDoorOpenClick(self):
-            self.TrainControllerSW.rightDoorCommand = True
+            self.TrainControllerSW.outputs.rightDoorCommand = True
 
         def rightDoorCloseClick(self):
-            self.TrainControllerSW.rightDoorCommand = False
+            self.TrainControllerSW.outputs.rightDoorCommand = False
 
 # class to create color widgets
 class Color(QWidget):
