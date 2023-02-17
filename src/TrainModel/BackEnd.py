@@ -38,7 +38,7 @@ def airConditioningControl(temperatureGoal, temperature):
 if __name__ == "__main__":
     a = findCurrentAcceleration(12000, 0, 37103.8665, 0, 0)
     print("A:", a)
-    v = findCurrentVelocity(a, 0.0, 0.0, .5)
+    v = findCurrentVelocity(a, 0.0, 0.0, simulationSpeed)
     print("V:", v)
     airConditioningControl(100, 40)
     #v = findCurrentVelocity(12000, 15, 0, 40823, 3, 1, 0.01)

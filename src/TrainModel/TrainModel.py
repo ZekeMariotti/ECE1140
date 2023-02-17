@@ -2,7 +2,12 @@
 
 from TrainModelTestUI import TrainModelTestUI
 from BackEnd import findCurrentVelocity, findCurrentAcceleration
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import QApplication
+from sys import argv
+from time import sleep
 
-
-if __name__ == "__main__":
-    print("Hello There")
+app = QApplication(argv)
+form = TrainModelTestUI()
+form.show()
+exit(app.exec())

@@ -1,7 +1,9 @@
 # Train Model Test UI
 
 # Importing all required modules
-from sys import argv
+from sys import argv, exit
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
 from PyQt6.QtWidgets import QWidget, QLabel, QApplication, QGridLayout, QComboBox, QLineEdit
 from BackEnd import *
 
@@ -449,9 +451,6 @@ class TrainModelTestUI(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(argv)
-
     form = TrainModelTestUI()
     form.show()
-    app.exec()
-
-    print(form.data)
+    exit(app.exec())
