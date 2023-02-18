@@ -3,9 +3,9 @@
 from distutils.cmd import Command
 import sys
 
-from PyQt6.QtWidgets import *
 from PyQt6 import QtCore
-from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from TrainControllerSW import TrainControllerSW
 
