@@ -5,7 +5,7 @@ from sys import argv, exit
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import QWidget, QLabel, QApplication, QGridLayout, QComboBox, QLineEdit
-from BackEnd import *
+from TrainModelBackEnd import *
 
 # Class for the Train Model Test UI
 class TrainModelTestUI(QWidget):
@@ -13,21 +13,21 @@ class TrainModelTestUI(QWidget):
     # Define an Array to store UI data
     data = {
         "pwr" : 0.0, 
-        "sBrake" : 0, 
-        "eBrake" : 0, 
-        "lDoors" : 0, 
+        "sBrake" : 0,
+        "eBrake" : 0,
+        "lDoors" : 0,
         "rDoors" : 0,
-        "eLights" : 0, 
-        "iLights" : 0, 
-        "station" : "", 
-        "rtc" : "", 
+        "eLights" : 0,
+        "iLights" : 0,
+        "station" : "",
+        "rtc" : "",
         "authority" : 0,
-        "cmdSpeed" : 0.0, 
-        "passEnter" : 0.0, 
-        "grade" : 0,  
-        "elevation" : 0.0, 
-        "speedLimit" : 0, 
-        "accelLimit" : 0.0, 
+        "cmdSpeed" : 0.0,
+        "passEnter" : 0,
+        "grade" : 0.0,
+        "elevation" : 0.0,
+        "speedLimit" : 0,
+        "accelLimit" : 0.0,
         "underground" : 0,
         "beacon" : [0, "", 0], # [Station State, Next Station Name, Platform Side]
         "curr" : [0.0, 0.0], # Current Velocity and Acceleration
@@ -49,6 +49,9 @@ class TrainModelTestUI(QWidget):
         self.powerInput = QLineEdit()
         self.powerInput.editingFinished.connect(self.getPowerInput)
         layout.addWidget(self.powerInput, 0, 1)
+
+        #self.PowerSignal = pyqtSignal(boolean power)
+        #self.PowerSignal.emit(self.power)
 
         # Add the Service Brake Switch
         serviceBrakeLabel = QLabel("Service Brake")
@@ -341,7 +344,6 @@ class TrainModelTestUI(QWidget):
         self.data["curr"][0] = findCurrentVelocity(self.data["curr"][1], self.data["prev"][1], self.data["prev"][0], 3)
         self.velocityOutput.setText(str(self.data["curr"][0]) + " m/s")
         self.data["prev"] = self.data["curr"]
-
     # Gets the Service Brake state from the UI
     def getServiceBrakeInput(self, index):
         self.data["sBrake"] = index
@@ -421,8 +423,7 @@ class TrainModelTestUI(QWidget):
     # Gets the Underground state from the UI
     def getUndergroundStateInput(self, index):
         self.data["underground"] = index
-        outputText = "Yes" if self.data["underground"] == 1 else "No"
-        self.undergroundStateOutput.setText(outputText)
+        self.undergroundStateOutput.setText(str(self.data["underground"]))
 
     # Gets the Station state from the UI
     def getStationStateInput(self, index):
@@ -445,12 +446,12 @@ class TrainModelTestUI(QWidget):
             outputText = "Both"
         self.platformSideOutput.setText(outputText)
 
-    # Returns all the data in the inputData Array
-    def getData(self):
-        return self.data
+    def main():
+        app = QApplication(argv)
+        form = TrainModelTestUI()
+        form.show()
+        app.exec()
+        print(form.data)
 
 if __name__ == "__main__":
-    app = QApplication(argv)
-    form = TrainModelTestUI()
-    form.show()
-    exit(app.exec())
+    TrainModelTestUI.main()
