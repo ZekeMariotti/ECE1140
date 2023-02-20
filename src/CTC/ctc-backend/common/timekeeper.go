@@ -11,6 +11,11 @@ type TimeKeeper struct {
 	stopSignal      chan bool
 }
 
+// Returns a new TimeKeeper object
+func NewTimeKeeper() *TimeKeeper {
+	return &TimeKeeper{}
+}
+
 // Starts the simulation time
 // WARNING: Do not stop after starting unless ending the entire simulation
 func (t *TimeKeeper) StartSimulation() {

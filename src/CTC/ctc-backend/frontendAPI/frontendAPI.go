@@ -2,43 +2,44 @@ package frontendAPI
 
 import (
 	"net/http"
-	"time"
 
-	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/common"
+	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/datastore"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
-var trains = []common.Train{}
-
-func Start() {
-	startTime := time.Now()
-	delays := make([]time.Duration, 100)
-
-	delays[0], _ = time.ParseDuration("164s")
-
-	trains = []common.Train{
-		{
-			ID:     0,
-			Line:   "Red",
-			Driver: "Bob Builder",
-			Stops: []common.TrainStop{
-				{
-					Station: "Shadyside",
-					Time:    startTime.Add(delays[0]),
-				},
-			},
-		},
-	}
-
-	r := gin.Default()
-	r.Use(cors.Default())
-
-	r.GET("/api/trains", getTrains)
-
-	r.Run("localhost:8080")
+type FrontendAPI struct {
+	router    *gin.Engine
+	datastore *datastore.DataStore
 }
 
-func getTrains(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, trains)
+func NewFrontendAPI(ds *datastore.DataStore) *FrontendAPI {
+	api := FrontendAPI{
+		datastore: ds,
+	}
+	api.initialize()
+	return &api
+}
+
+func (a *FrontendAPI) initialize() {
+	a.router = gin.Default()
+	a.router.Use(cors.Default())
+	a.setupPaths()
+
+	a.router.Run("localhost:8080")
+}
+
+func (a *FrontendAPI) setupPaths() {
+	prefix := "/api/frontend/"
+	// GET Commands
+	a.router.GET(prefix+"trains", a.getTrains)
+	a.router.GET(prefix+"time", a.getTime)
+}
+
+func (a *FrontendAPI) getTrains(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, a.datastore.Trains)
+}
+
+func (a *FrontendAPI) getTime(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, a.datastore.TimeKeeper.GetSimulationTime())
 }

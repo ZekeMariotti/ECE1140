@@ -1,9 +1,13 @@
 package main
 
-import (
-	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/frontendAPI"
-)
+import "github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/app"
 
 func main() {
-	frontendAPI.Start()
+	app := app.NewApp()
+	app.Start()
+
+	// Hold open
+	for {
+
+	}
 }
