@@ -2,13 +2,11 @@ package common
 
 import (
 	"time"
-
-	"github.com/shopspring/decimal"
 )
 
 type TimeKeeper struct {
 	simulationTime  time.Time
-	simulationSpeed decimal.Decimal
+	simulationSpeed int
 	lastUpdateTime  time.Time
 	stopSignal      chan bool
 }
@@ -17,7 +15,7 @@ type TimeKeeper struct {
 // WARNING: Do not stop after starting unless ending the entire simulation
 func (t *TimeKeeper) StartSimulation() {
 	// Initialize variables
-	t.simulationSpeed = decimal.NewFromInt(1)
+	t.simulationSpeed = 1
 	t.simulationTime = time.Now()
 	t.lastUpdateTime = time.Now()
 
@@ -37,7 +35,7 @@ func (t *TimeKeeper) GetSimulationTime() time.Time {
 }
 
 // Gets the current speed of the simulation
-func (t *TimeKeeper) SetSimulationSpeed(simSpeed decimal.Decimal) {
+func (t *TimeKeeper) SetSimulationSpeed(simSpeed int) {
 	t.simulationSpeed = simSpeed
 }
 
@@ -58,12 +56,9 @@ func (t *TimeKeeper) simulationUpdateService() {
 // Function to handle updating the simulation time
 func (t *TimeKeeper) updateSimulationTime() {
 	// Handle real time calculations
-	delta := time.Since(t.lastUpdateTime)
+	realDelta := time.Since(t.lastUpdateTime)
 	t.lastUpdateTime = time.Now()
 	// Update simulation speed from delta
-	deltaDecimal := decimal.New(delta.Milliseconds(), 0)
-	simDeltaDecimal := deltaDecimal.Mul(t.simulationSpeed)
-	simDeltaString := simDeltaDecimal.String()
-	simDelta, _ := time.ParseDuration(simDeltaString + "ms")
+	simDelta := realDelta * time.Duration(t.simulationSpeed)
 	t.simulationTime = t.simulationTime.Add(simDelta)
 }
