@@ -35,7 +35,7 @@ class backEndCalculations():
         "iLights"          : True,           # State of the internal lights, True if they are on, False if they are off
         "eLights"          : True,           # State of the external lights, True if they are on, False if they are off
         "currTemp"         : 68.0,           # Current temperature inside the train
-        "goalTemp"         : 0.0,            # Temperature goal given by the user
+        "goalTemp"         : 68.0,            # Temperature goal given by the user
         "elevation"        : 0,              # Relative elevation increase of the block, provided by the Track Model / CSV File
         "blockLength"      : 0,              # Length of the current block, provided by the Track Model / CSV File
     }
@@ -66,6 +66,9 @@ class backEndCalculations():
 
     # Finds the current acceleration of a train
     def findCurrentAcceleration(self) :
+        if (self.data["eBrakeState"] == True | self.data["sBrakeState"]):
+            return self.data["acceleration"]
+        
         if (self.data["prevVelocity"] == 0.0):
             force = self.data["mass"] * self.constants["mediumAcceleration"]
         else:
@@ -103,8 +106,7 @@ class backEndCalculations():
 
     # Handle Emergency Brake being pulled
     def emergencyBrakeDeceleration(self):
-        if ~(self.data["eBrakeState"]):
-            print("EBrake Pulled")
+        if (self.data["eBrakeState"] == False):
             self.data["eBrakeState"] = 1
             self.data["acceleration"] = self.constants["emergencyBrake"]
         else:
@@ -112,8 +114,7 @@ class backEndCalculations():
 
     # Handle Service Brake being pulled
     def serviceBrakeDeceleration(self):
-        if ~self.data["sBrakeState"] & self.data["brakeStatus"]:
-            print("sBrake Pulled")
+        if (self.data["sBrakeState"] == False) & self.data["brakeStatus"]:
             self.data["sBrakeState"] = 1
             self.data["acceleration"] = self.constants["serviceBrake"]
         elif self.data["sBrakeState"] & self.data["brakeStatus"]:
@@ -125,7 +126,7 @@ class backEndCalculations():
 
     # Handle loss of communications
     def communicationsFailure(self):
-        if ~(self.data["commStatus"]):
+        if self.data["commStatus"] == False:
             print("Communications Failure")
             self.data["commStatus"] = 1
 
