@@ -149,3 +149,4 @@ Number,Section,Line,Length,Grade,Speed,Direction,Station,PlatformL,PlatformR,Cro
 148,Y,Green,184,0,20,ASC,,,,,,0,0.5
 149,Y,Green,40,0,20,ASC,,,,,,0,0.5
 150,Z,Green,35,0,20,ASC,,,,,,0,0.5
+0,YARD,Green,150,0,40,BOTH,,,,,,0,0.5
