@@ -43,6 +43,7 @@ class MainWindow(QMainWindow):
             # set window defaults
             self.setWindowTitle("Train Controller")
             self.resize(QSize(1366, 768-31))
+            #self.setFixedSize(QSize(960, 540))
             self.setMinimumSize(1050, 550)
 
             # set element defaults
@@ -53,10 +54,10 @@ class MainWindow(QMainWindow):
             self.labelWidth = self.buttonWidth*2
             self.labelHeight = round(self.buttonHeight*1.3)
             
-            self.globalFont = "Times"     
-            self.labelFont = QFont(self.globalFont, 16)
+            self.globalFont = "Times New Roman"     
+            self.labelFont = QFont(self.globalFont, 15)
             self.buttonFont = QFont(self.globalFont, 9)
-            self.stationFont = QFont(self.globalFont, 24)  
+            self.stationFont = QFont(self.globalFont, 20)  
                 
             # create visual elements
             self.station = self.stationSetup()
@@ -163,8 +164,8 @@ class MainWindow(QMainWindow):
             emergencyBrakeState.setFixedSize(QSize(self.labelWidth, self.labelHeight))
             emergencyBrakeState.setAlignment(Qt.AlignmentFlag.AlignCenter)
             emergencyBrakeState.setWordWrap(True)
-            x = round(self.frameGeometry().width()*0.05)
-            y = round(self.frameGeometry().height()*0.27-emergencyBrakeState.frameGeometry().height()*0.6)
+            x = round(self.frameGeometry().width()*0.5-emergencyBrakeState.frameGeometry().width()*0.5)
+            y = round(self.frameGeometry().height()*0.5-emergencyBrakeState.frameGeometry().height()*0.75)
             emergencyBrakeState.move(x, y)
             emergencyBrakeState.setParent(self)
             return emergencyBrakeState
@@ -174,8 +175,8 @@ class MainWindow(QMainWindow):
             emergencyBrakeEnable.setFont(self.buttonFont)
             emergencyBrakeEnable.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
             emergencyBrakeEnable.clicked.connect(self.emergencyBrakeEnableClick)
-            x = round(self.frameGeometry().width()*0.05)
-            y = round(self.frameGeometry().height()*0.34-emergencyBrakeEnable.frameGeometry().height()*0.5)
+            x = round(self.frameGeometry().width()*0.5-emergencyBrakeEnable.frameGeometry().width())
+            y = round(self.frameGeometry().height()*0.55-emergencyBrakeEnable.frameGeometry().height()*0.5)
             emergencyBrakeEnable.move(x, y)
             emergencyBrakeEnable.setParent(self)
             return emergencyBrakeEnable
@@ -185,8 +186,8 @@ class MainWindow(QMainWindow):
             emergencyBrakeDisable.setFont(self.buttonFont)       
             emergencyBrakeDisable.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
             emergencyBrakeDisable.clicked.connect(self.emergencyBrakeDisableClick)
-            x = round(self.frameGeometry().width()*0.05+emergencyBrakeDisable.frameGeometry().width())
-            y = round(self.frameGeometry().height()*0.34-emergencyBrakeDisable.frameGeometry().height()*0.5)
+            x = round(self.frameGeometry().width()*0.5)
+            y = round(self.frameGeometry().height()*0.55-emergencyBrakeDisable.frameGeometry().height()*0.5)
             emergencyBrakeDisable.move(x, y)
             emergencyBrakeDisable.setParent(self)
             return emergencyBrakeDisable
@@ -198,8 +199,8 @@ class MainWindow(QMainWindow):
             serviceBrakeState.setFixedSize(QSize(self.labelWidth, self.labelHeight))
             serviceBrakeState.setWordWrap(True)
             serviceBrakeState.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            x = round(self.frameGeometry().width()*0.05)
-            y = round(self.frameGeometry().height()*0.45-serviceBrakeState.frameGeometry().height()*0.6)
+            x = round(self.frameGeometry().width()*0.5-serviceBrakeState.frameGeometry().width()*0.5)
+            y = round(self.frameGeometry().height()*0.65-serviceBrakeState.frameGeometry().height()*0.75)
             serviceBrakeState.move(x, y)
             serviceBrakeState.setParent(self)
             return serviceBrakeState
@@ -209,8 +210,8 @@ class MainWindow(QMainWindow):
             serviceBrakeEnable.setFont(self.buttonFont)
             serviceBrakeEnable.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
             serviceBrakeEnable.clicked.connect(self.serviceBrakeEnableClick)
-            x = round(self.frameGeometry().width()*0.05)
-            y = round(self.frameGeometry().height()*0.52-serviceBrakeEnable.frameGeometry().height()*0.5)
+            x = round(self.frameGeometry().width()*0.5-serviceBrakeEnable.frameGeometry().width())
+            y = round(self.frameGeometry().height()*0.7-serviceBrakeEnable.frameGeometry().height()*0.5)
             serviceBrakeEnable.move(x, y)
             serviceBrakeEnable.setParent(self)
             return serviceBrakeEnable
@@ -220,8 +221,8 @@ class MainWindow(QMainWindow):
             serviceBrakeDisable.setFont(self.buttonFont)
             serviceBrakeDisable.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
             serviceBrakeDisable.clicked.connect(self.serviceBrakeDisableClick)
-            x = round(self.frameGeometry().width()*0.05+serviceBrakeDisable.frameGeometry().width())
-            y = round(self.frameGeometry().height()*0.52-serviceBrakeDisable.frameGeometry().height()*0.5)
+            x = round(self.frameGeometry().width()*0.5)
+            y = round(self.frameGeometry().height()*0.7-serviceBrakeDisable.frameGeometry().height()*0.5)
             serviceBrakeDisable.move(x, y)
             serviceBrakeDisable.setParent(self)
             return serviceBrakeDisable
@@ -297,8 +298,8 @@ class MainWindow(QMainWindow):
             internalLightsState.setFixedSize(QSize(round(self.labelWidth*0.8), round(self.labelHeight*0.8)))
             internalLightsState.setWordWrap(True)
             internalLightsState.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            x = round(self.frameGeometry().width()*0.42-internalLightsState.frameGeometry().width()*0.5)
-            y = round(self.frameGeometry().height()*0.47-internalLightsState.frameGeometry().height()*0.6)
+            x = round(self.frameGeometry().width()*0.18-internalLightsState.frameGeometry().width()*0.5)
+            y = round(self.frameGeometry().height()*0.25-internalLightsState.frameGeometry().height()*0.6)
             internalLightsState.move(x, y)
             internalLightsState.setParent(self)
             return internalLightsState
@@ -306,10 +307,10 @@ class MainWindow(QMainWindow):
         def internalLightsEnableSetup(self):
             internalLightsEnable = QPushButton("Enable\nInternal Lights") 
             internalLightsEnable.setFont(self.buttonFont)     
-            internalLightsEnable.setFixedSize(QSize(round(self.buttonWidth*0.5), self.buttonHeight))
+            internalLightsEnable.setFixedSize(QSize(round(self.buttonWidth*0.6), self.buttonHeight))
             internalLightsEnable.clicked.connect(self.internalLightsEnableClick)
-            x = round(self.frameGeometry().width()*0.35)
-            y = round(self.frameGeometry().height()*0.535-internalLightsEnable.frameGeometry().height()*0.5)
+            x = round(self.frameGeometry().width()*0.18-internalLightsEnable.frameGeometry().width())
+            y = round(self.frameGeometry().height()*0.3-internalLightsEnable.frameGeometry().height()*0.5)
             internalLightsEnable.move(x, y)
             internalLightsEnable.setParent(self)
             return internalLightsEnable
@@ -317,10 +318,10 @@ class MainWindow(QMainWindow):
         def internalLightsDisableSetup(self):
             internalLightsDisable = QPushButton("Disable\nInternal Lights")      
             internalLightsDisable.setFont(self.buttonFont)      
-            internalLightsDisable.setFixedSize(QSize(round(self.buttonWidth*0.5), self.buttonHeight))
+            internalLightsDisable.setFixedSize(QSize(round(self.buttonWidth*0.6), self.buttonHeight))
             internalLightsDisable.clicked.connect(self.internalLightsDisableClick)
-            x = round(self.frameGeometry().width()*0.35+internalLightsDisable.frameGeometry().width())
-            y = round(self.frameGeometry().height()*0.535-internalLightsDisable.frameGeometry().height()*0.5)
+            x = round(self.frameGeometry().width()*0.18)
+            y = round(self.frameGeometry().height()*0.3-internalLightsDisable.frameGeometry().height()*0.5)
             internalLightsDisable.move(x, y)
             internalLightsDisable.setParent(self)
             return internalLightsDisable
@@ -332,8 +333,8 @@ class MainWindow(QMainWindow):
             externalLightsState.setFixedSize(QSize(round(self.labelWidth*0.8), round(self.labelHeight*0.8)))
             externalLightsState.setWordWrap(True)
             externalLightsState.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            x = round(self.frameGeometry().width()*0.42-externalLightsState.frameGeometry().width()*0.5)
-            y = round(self.frameGeometry().height()*0.63-externalLightsState.frameGeometry().height()*0.6)
+            x = round(self.frameGeometry().width()*0.18-externalLightsState.frameGeometry().width()*0.5)
+            y = round(self.frameGeometry().height()*0.4-externalLightsState.frameGeometry().height()*0.6)
             externalLightsState.move(x, y)
             externalLightsState.setParent(self)
             return externalLightsState
@@ -341,10 +342,10 @@ class MainWindow(QMainWindow):
         def externalLightsEnableSetup(self):
             externalLightsEnable = QPushButton("Enable\nExternal Lights")
             externalLightsEnable.setFont(self.buttonFont)
-            externalLightsEnable.setFixedSize(QSize(round(self.buttonWidth*0.5), self.buttonHeight))
+            externalLightsEnable.setFixedSize(QSize(round(self.buttonWidth*0.6), self.buttonHeight))
             externalLightsEnable.clicked.connect(self.externalLightsEnableClick)
-            x = round(self.frameGeometry().width()*0.35)
-            y = round(self.frameGeometry().height()*0.695-externalLightsEnable.frameGeometry().height()*0.5)
+            x = round(self.frameGeometry().width()*0.18-externalLightsEnable.frameGeometry().width())
+            y = round(self.frameGeometry().height()*0.45-externalLightsEnable.frameGeometry().height()*0.5)
             externalLightsEnable.move(x, y)
             externalLightsEnable.setParent(self)
             return externalLightsEnable
@@ -352,10 +353,10 @@ class MainWindow(QMainWindow):
         def externalLightsDisableSetup(self):
             externalLightsDisable = QPushButton("Disable\nExternal Lights")    
             externalLightsDisable.setFont(self.buttonFont)     
-            externalLightsDisable.setFixedSize(QSize(round(self.buttonWidth*0.5), self.buttonHeight))
+            externalLightsDisable.setFixedSize(QSize(round(self.buttonWidth*0.6), self.buttonHeight))
             externalLightsDisable.clicked.connect(self.externalLightsDisableClick)
-            x = round(self.frameGeometry().width()*0.35+externalLightsDisable.frameGeometry().width())
-            y = round(self.frameGeometry().height()*0.695-externalLightsDisable.frameGeometry().height()*0.5)
+            x = round(self.frameGeometry().width()*0.18)
+            y = round(self.frameGeometry().height()*0.45-externalLightsDisable.frameGeometry().height()*0.5)
             externalLightsDisable.move(x, y)
             externalLightsDisable.setParent(self)
             return externalLightsDisable
@@ -364,11 +365,11 @@ class MainWindow(QMainWindow):
             leftDoorState = QLabel()
             leftDoorState.setFont(QFont(self.globalFont, 12))
             leftDoorState.setText("Left Door\n" + self.TrainControllerSW.getLeftDoorState())
-            leftDoorState.setFixedSize(QSize(round(self.labelWidth*0.4), round(self.labelHeight*0.8)))
+            leftDoorState.setFixedSize(QSize(round(self.labelWidth*0.6), round(self.labelHeight*0.8)))
             leftDoorState.setWordWrap(True)
             leftDoorState.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            x = round(self.frameGeometry().width()*0.55-leftDoorState.frameGeometry().width()*0.5)
-            y = round(self.frameGeometry().height()*0.48-leftDoorState.frameGeometry().height()*0.6)
+            x = round(self.frameGeometry().width()*0.18-leftDoorState.frameGeometry().width()*0.75)
+            y = round(self.frameGeometry().height()*0.55-leftDoorState.frameGeometry().height()*0.6)
             leftDoorState.move(x, y)
             leftDoorState.setParent(self)
             return leftDoorState
@@ -376,10 +377,10 @@ class MainWindow(QMainWindow):
         def leftDoorOpenSetup(self):
             leftDoorOpen = QPushButton("Open Doors")
             leftDoorOpen.setFont(self.buttonFont)
-            leftDoorOpen.setFixedSize(QSize(round(self.buttonWidth*0.5), round(self.buttonHeight*0.5)))
+            leftDoorOpen.setFixedSize(QSize(round(self.buttonWidth*0.6), round(self.buttonHeight*0.5)))
             leftDoorOpen.clicked.connect(self.leftDoorOpenClick)
-            x = round(self.frameGeometry().width()*0.515)
-            y = round(self.frameGeometry().height()*0.52-leftDoorOpen.frameGeometry().height()*0.5)
+            x = round(self.frameGeometry().width()*0.18-leftDoorOpen.frameGeometry().width())
+            y = round(self.frameGeometry().height()*0.6-leftDoorOpen.frameGeometry().height()*0.5)
             leftDoorOpen.move(x, y)
             leftDoorOpen.setParent(self)
             return leftDoorOpen
@@ -387,10 +388,10 @@ class MainWindow(QMainWindow):
         def leftDoorCloseSetup(self):
             leftDoorClose = QPushButton("Close Doors")
             leftDoorClose.setFont(self.buttonFont)
-            leftDoorClose.setFixedSize(QSize(round(self.buttonWidth*0.5), round(self.buttonHeight*0.5)))
+            leftDoorClose.setFixedSize(QSize(round(self.buttonWidth*0.6), round(self.buttonHeight*0.5)))
             leftDoorClose.clicked.connect(self.leftDoorCloseClick)
-            x = round(self.frameGeometry().width()*0.515)
-            y = round(self.frameGeometry().height()*0.52+leftDoorClose.frameGeometry().height()*0.5)
+            x = round(self.frameGeometry().width()*0.18-leftDoorClose.frameGeometry().width())
+            y = round(self.frameGeometry().height()*0.6+leftDoorClose.frameGeometry().height()*0.5)
             leftDoorClose.move(x, y)
             leftDoorClose.setParent(self)
             return leftDoorClose
@@ -399,11 +400,11 @@ class MainWindow(QMainWindow):
             rightDoorState = QLabel()
             rightDoorState.setFont(QFont(self.globalFont, 12))
             rightDoorState.setText("Right Door\n" + self.TrainControllerSW.getRightDoorState())
-            rightDoorState.setFixedSize(QSize(round(self.labelWidth*0.4), round(self.labelHeight*0.8)))
+            rightDoorState.setFixedSize(QSize(round(self.labelWidth*0.6), round(self.labelHeight*0.8)))
             rightDoorState.setWordWrap(True)
             rightDoorState.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            x = round(self.frameGeometry().width()*0.56)
-            y = round(self.frameGeometry().height()*0.48-rightDoorState.frameGeometry().height()*0.6)
+            x = round(self.frameGeometry().width()*0.18-rightDoorState.frameGeometry().width()*0.25)
+            y = round(self.frameGeometry().height()*0.55-rightDoorState.frameGeometry().height()*0.6)
             rightDoorState.move(x, y)
             rightDoorState.setParent(self)
             return rightDoorState
@@ -411,10 +412,10 @@ class MainWindow(QMainWindow):
         def rightDoorOpenSetup(self):
             rightDoorOpen = QPushButton("Open Doors")
             rightDoorOpen.setFont(self.buttonFont)
-            rightDoorOpen.setFixedSize(QSize(round(self.buttonWidth*0.5), round(self.buttonHeight*0.5)))
+            rightDoorOpen.setFixedSize(QSize(round(self.buttonWidth*0.6), round(self.buttonHeight*0.5)))
             rightDoorOpen.clicked.connect(self.rightDoorOpenClick)
-            x = round(self.frameGeometry().width()*0.515+rightDoorOpen.frameGeometry().width())
-            y = round(self.frameGeometry().height()*0.52-rightDoorOpen.frameGeometry().height()*0.5)
+            x = round(self.frameGeometry().width()*0.18)
+            y = round(self.frameGeometry().height()*0.6-rightDoorOpen.frameGeometry().height()*0.5)
             rightDoorOpen.move(x, y)
             rightDoorOpen.setParent(self)
             return rightDoorOpen
@@ -422,10 +423,10 @@ class MainWindow(QMainWindow):
         def rightDoorCloseSetup(self):
             rightDoorClose = QPushButton("Close Doors")
             rightDoorClose.setFont(self.buttonFont)
-            rightDoorClose.setFixedSize(QSize(round(self.buttonWidth*0.5), round(self.buttonHeight*0.5)))
+            rightDoorClose.setFixedSize(QSize(round(self.buttonWidth*0.6), round(self.buttonHeight*0.5)))
             rightDoorClose.clicked.connect(self.rightDoorCloseClick)
-            x = round(self.frameGeometry().width()*0.515+rightDoorClose.frameGeometry().width())
-            y = round(self.frameGeometry().height()*0.52+rightDoorClose.frameGeometry().height()*0.5)
+            x = round(self.frameGeometry().width()*0.18)
+            y = round(self.frameGeometry().height()*0.6+rightDoorClose.frameGeometry().height()*0.5)
             rightDoorClose.move(x, y)
             rightDoorClose.setParent(self)
             return rightDoorClose

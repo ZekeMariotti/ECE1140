@@ -1,6 +1,6 @@
 # Main Class for the Train Controller Software
 
-from datetime import time
+from datetime import *
 from distutils.cmd import Command
 import sys
 import os
@@ -35,30 +35,30 @@ class TrainControllerSW:
             self.inputs = Inputs(**json.loads(filename.read()))
 
     def getEngineState(self):
-        if(self.inputs.engineState == 0):
-            return "OFF"
-        elif(self.inputs.engineState == 1):
-            return "ON"
-        elif(self.inputs.engineState == 2):
+        if(self.inputs.engineStatus == False):
             return "FAILURE"
+        elif(self.inputs.engineState == False):
+            return "OFF"
+        elif(self.inputs.engineState == True):
+            return "ON"
         else:
             return "ERROR: UNKNOWN STATE"
 
     def getEmergencyBrakeState(self):
-        if(self.inputs.emergencyBrakeState == False):
-            return "DISABLED"
-        elif(self.inputs.emergencyBrakeState == True):
+        if(self.inputs.emergencyBrakeState == True):
             return "ENABLED"
+        elif(self.inputs.emergencyBrakeState == False):
+            return "DISABLED"
         else:
             return "ERROR: UNKNOWN STATE"
 
     def getServiceBrakeState(self):
-        if(self.inputs.emergencyBrakeState == 0):
-            return "DISABLED"
-        if(self.inputs.emergencyBrakeState == 1):
-            return "ENABLED"
-        if(self.inputs.emergencyBrakeState == 2):
+        if(self.inputs.serviceBrakeStatus == False):
             return "FAILURE"
+        elif(self.inputs.serviceBrakeState == True):
+            return "ENABLED"
+        elif(self.inputs.serviceBrakeState == False):
+            return "DISABLED"
         else:
             return "ERROR: UNKNOWN STATE"
 
