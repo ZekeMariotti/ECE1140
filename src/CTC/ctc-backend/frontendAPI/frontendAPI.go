@@ -47,24 +47,22 @@ func (a *FrontendAPI) setupPaths() {
 
 // Handler for GET /lines
 func (a *FrontendAPI) getLines(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, a.datastore.Lines)
+	c.IndentedJSON(http.StatusOK, a.datastore.Lines.GetSlice())
 }
 
 // Handler for GET /lines/{name}
 func (a *FrontendAPI) getLineByName(c *gin.Context) {
 	name := c.Param("name")
-	for _, v := range a.datastore.Lines {
-		if v.Name == name {
-			c.IndentedJSON(http.StatusOK, v)
-			return
-		}
+	if a.datastore.Lines.HasKey(name) {
+		c.IndentedJSON(http.StatusOK, a.datastore.Lines.Get(name))
+		return
 	}
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("Line %s not found", name)})
 }
 
 // Handler for GET /trains
 func (a *FrontendAPI) getTrains(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, a.datastore.Trains)
+	c.IndentedJSON(http.StatusOK, a.datastore.Trains.GetSlice())
 }
 
 // Handler for GET /time

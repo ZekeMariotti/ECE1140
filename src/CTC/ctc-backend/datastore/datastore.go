@@ -5,15 +5,15 @@ import (
 )
 
 type DataStore struct {
-	Lines      []*common.Line     `json:"lines"`
-	Trains     []*common.Train    `json:"trains"`
+	Lines      SafeLineMap        `json:"lines"`
+	Trains     SafeTrainMap       `json:"trains"`
 	TimeKeeper *common.TimeKeeper `json:"timekeeper"`
 }
 
 func NewDataStore() *DataStore {
 	ds := DataStore{
-		Lines:  make([]*common.Line, 0),
-		Trains: make([]*common.Train, 0),
+		Lines:  *NewSafeLineMap(),
+		Trains: *NewSafeTrainMap(),
 	}
 	return &ds
 }

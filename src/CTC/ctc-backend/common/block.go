@@ -17,4 +17,6 @@ type Block struct {
 	Crossing            bool            `json:"crossing"`
 	Station             *Station        `json:"station"`
 	Switch              *Switch         `json:"switch"`
+	Signal              BlockSignal     `json:"signal"`
+	Occupied            bool            `json:"occupied"`
 }

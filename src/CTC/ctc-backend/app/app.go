@@ -22,7 +22,8 @@ func NewApp() *App {
 }
 
 func (a *App) ImportLine(pathBlock string, pathSwitch string) {
-	a.DataStore.Lines = append(a.DataStore.Lines, common.ParseLine(pathBlock, pathSwitch))
+	line := common.ParseLine(pathBlock, pathSwitch)
+	a.DataStore.Lines.Set(line.Name, *line)
 }
 
 func (a *App) Start() {

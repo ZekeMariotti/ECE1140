@@ -17,3 +17,11 @@ const (
 	BLOCKDIRECTION_DESCENDING    BlockDirection = 1
 	BLOCKDIRECTION_BIDIRECTIONAL BlockDirection = 2
 )
+
+type BlockSignal string
+
+const (
+	BLOCKSIGNAL_GREEN  BlockSignal = "Green"
+	BLOCKSIGNAL_YELLOW BlockSignal = "Yellow"
+	BLOCKSIGNAL_RED    BlockSignal = "Red"
+)

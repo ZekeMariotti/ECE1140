@@ -15,7 +15,7 @@ func ParseLine(pathBlocks string, pathSwitches string) *Line {
 	// Define line
 	l := Line{
 		Name:     "",
-		Blocks:   make([]*Block, 0),
+		Blocks:   NewSafeBlockMap(),
 		Switches: make([]*Switch, 0),
 		Stations: make([]*Station, 0),
 	}
@@ -84,7 +84,7 @@ func ParseLine(pathBlocks string, pathSwitches string) *Line {
 			l.Stations = append(l.Stations, b.Station)
 		}
 
-		l.Blocks = append(l.Blocks, &b)
+		l.Blocks.Set(b.Number, b)
 
 		// Ensure line name is set
 		if l.Name == "" {
@@ -121,10 +121,10 @@ func ParseLine(pathBlocks string, pathSwitches string) *Line {
 		l.Switches = append(l.Switches, &s)
 
 		// Append switch reference to blocks switch affects
-		for _, block := range l.Blocks {
-			num := block.Number
-			if num == source || num == dest1 || num == dest2 {
-				block.Switch = &s
+		for key, val := range l.Blocks.GetCopy() {
+			if key == source || key == dest1 || key == dest2 {
+				val.Switch = &s
+				l.Blocks.Set(key, val)
 			}
 		}
 	}

@@ -6,6 +6,7 @@ require (
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.8.2
 	github.com/shopspring/decimal v1.3.1
+	golang.org/x/exp v0.0.0-20230213192124-5e25df0256eb
 )
 
 require (
