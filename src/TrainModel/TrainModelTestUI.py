@@ -5,8 +5,8 @@ from sys import argv, exit
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import QWidget, QLabel, QApplication, QGridLayout, QComboBox, QLineEdit
-from TrainModelBackEnd import *
-
+from TrainModelMainUI import *
+from TrainModelSignals import *
 # Class for the Train Model Test UI
 class TrainModelTestUI(QWidget):
 
@@ -24,7 +24,7 @@ class TrainModelTestUI(QWidget):
         "authority" : 0,
         "cmdSpeed" : 0.0,
         "passEnter" : 0,
-        "grade" : 0.0,
+        "blockLength" : 0.0,
         "elevation" : 0.0,
         "speedLimit" : 0,
         "accelLimit" : 0.0,
@@ -136,12 +136,12 @@ class TrainModelTestUI(QWidget):
         self.passengersEnteringInput.editingFinished.connect(self.getPassengersEnteringInput)
         layout.addWidget(self.passengersEnteringInput, 11, 1)
 
-        # Add the Grade Input
-        gradeLabel = QLabel("Grade")
-        layout.addWidget(gradeLabel, 12, 0)
-        self.gradeInput = QLineEdit()
-        self.gradeInput.editingFinished.connect(self.getGradeInput)
-        layout.addWidget(self.gradeInput, 12, 1)
+        # Add the Block Length Input
+        blockLengthLabel = QLabel("Block Length")
+        layout.addWidget(blockLengthLabel, 12, 0)
+        self.blockLengthInput = QLineEdit()
+        self.blockLengthInput.editingFinished.connect(self.getBlockLengthInput)
+        layout.addWidget(self.blockLengthInput, 12, 1)
 
         # Add the Elevation Input
         elevationLabel = QLabel ("Elevation")
@@ -340,9 +340,6 @@ class TrainModelTestUI(QWidget):
     # Gets the Power input from the UI
     def getPowerInput(self):
         self.data["pwr"] = float(self.powerInput.text())
-        self.data["curr"][1] = findCurrentAcceleration(self.data["pwr"], self.data["prev"][0], self.data["mass"], self.data["elevation"], self.data["grade"])
-        self.data["curr"][0] = findCurrentVelocity(self.data["curr"][1], self.data["prev"][1], self.data["prev"][0], 3)
-        self.velocityOutput.setText(str(self.data["curr"][0]) + " m/s")
         self.data["prev"] = self.data["curr"]
     # Gets the Service Brake state from the UI
     def getServiceBrakeInput(self, index):
@@ -403,9 +400,9 @@ class TrainModelTestUI(QWidget):
     def getPassengersEnteringInput(self):
         self.data["passEnter"] = int(self.passengersEnteringInput.text())
 
-    # Gets the Gradient of the hill from the UI
-    def getGradeInput(self):
-        self.data["grade"] = (float(self.gradeInput.text()) / 100)
+    # Gets the Block Length of the current Block from the UI
+    def getBlockLengthInput(self):
+        self.data["blockLength"] = float(self.blockLengthInput.text())
 
     # Gets the Elevation increase of the block from the UI
     def getElevationInput(self):

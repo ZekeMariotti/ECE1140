@@ -1,8 +1,11 @@
 # UI for the Train Model
 
+# QTimer for Simulation
+
 # Imports needed for the UI
 from sys import argv
 from TrainModelBackEnd import *
+from TrainModelSignals import *
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
@@ -10,30 +13,8 @@ from PyQt6.QtWidgets import *
 # Class for the Main UI of the Train Model
 class TrainModelMainUI(QWidget):
 
-    # Private data variable to store all the data needed for the UI
-    data = {
-        "rtc"          : "12:00:00 pm",
-        "passengers"   : 0,
-        "crew"         : 0,
-        "underground"  : True,
-        "length"       : 0.0,
-        "mass"         : 0.0,
-        "velocity"     : 0.0,
-        "acceleration" : 0.0,
-        "power"        : 0.0,
-        "station"      : 0.0,
-        "commStatus"   : True,
-        "engineStatus" : True,
-        "brakeStatus"  : True,
-        "eBrakeState"  : False,
-        "sBrakeState"  : False,
-        "lDoors"       : False,
-        "rDoors"       : False,
-        "iLights"      : True,
-        "eLights"      : True,
-        "tempInput"    : 0.0,
-        "currTemp"     : 0.0
-    }
+    # Instantiating the Back End
+    backEnd = backEndCalculations()
 
     # Fonts and Alignments to make coding easier
     timesNewRoman12 = QFont("Times New Roman", 12)
@@ -54,6 +35,8 @@ class TrainModelMainUI(QWidget):
         layout = QGridLayout()
         self.setLayout(layout)
         self.setFont(QFont("Times New Roman"))
+        orientation = self.frameGeometry()
+        self.move(orientation.center())
 
         # Real Time Clock Label and Output
         realTimeClockLabel = QLabel("Real Time Clock")
@@ -347,42 +330,57 @@ class TrainModelMainUI(QWidget):
         layout.addWidget(emergencyBrakeButton, 7, 4, 1, 2)
 
         # Temperature Labels, Input, and Output
-        temperatureLabel = QLabel("Temperature")
+        temperatureLabel = QLabel("Temperature Setpoint (F)")
         temperatureLabel.setFont(self.timesNewRoman24)
+        temperatureLabel.setWordWrap(True)
         self.temperatureInput = QLineEdit()
         self.temperatureInput.setFont(self.timesNewRoman24)
+        self.temperatureInput.setAlignment(self.alignCenter)
         self.temperatureInput.editingFinished.connect(self.tempInputChanged)
         currentTemperatureLabel = QLabel("Current Temperature")
         currentTemperatureLabel.setFont(self.timesNewRoman24)
-        currentTemperatureOutput = QLineEdit()
-        currentTemperatureOutput.setReadOnly(True)
-        currentTemperatureOutput.setFont(self.timesNewRoman24)
+        self.currentTemperatureOutput = QLineEdit()
+        self.currentTemperatureOutput.setReadOnly(True)
+        self.currentTemperatureOutput.setFont(self.timesNewRoman24)
+        self.currentTemperatureOutput.setAlignment(self.alignCenter)
+        self.currentTemperatureOutput.setText("68 F")
 
         layout.addWidget(temperatureLabel, 6, 6, self.alignCenter)
         layout.addWidget(self.temperatureInput, 7, 6)
         layout.addWidget(currentTemperatureLabel, 8, 4, 1, 2, self.alignCenter)
-        layout.addWidget(currentTemperatureOutput, 8, 6)
+        layout.addWidget(self.currentTemperatureOutput, 8, 6)
+
+        # UPDATE BUTTON FOR TESTING TO BE REMOVED
+        updateButton = QPushButton("Update Values")
+        updateButton.setFont(self.timesNewRoman24)
+        updateButton.pressed.connect(self.updateOutputs)
+        layout.addWidget(updateButton, 9, 2, 1, 2, self.alignCenter)
 
     # Handler for when Communcations Failure State button is pressed
     def communicationsButtonPressed(self):
-        print("Comms Button Pressed")
-
+        trainSignals.commButtonPressedSignal.emit()
+        
     # Handler for when Engine Failure State button is pressed
     def engineButtonPressed(self):
-        print("Engine Button Pressed")
+        trainSignals.engineButtonPressedSignal.emit()
 
     # Handler for when Brake Failure State button is pressed
     def brakeButtonPressed(self):
-        print("Brake Button Pressed")
+        trainSignals.brakeButtonPressedSignal.emit()
 
     # Handler for when the Emergency Brake is pulled
     def emergencyBrakeButtonPressed(self):
-        print("Emergency Brake Button Pressed")
+        trainSignals.eBrakePressedSignal.emit()
     
     # Handler for when the temperature from the user is set
     def tempInputChanged(self):
-        print(self.temperatureInput.text())
+        temperature = float(self.temperatureInput.text())
+        trainSignals.tempChangedSignal.emit(temperature)
 
+    # Updates outputs every time period
+    def updateOutputs(self):
+        self.backEnd.runFunctions()
+        self.currentTemperatureOutput.setText(str(self.backEnd.data["currTemp"]) + " F")
 
 def main():
     app = QApplication(argv)
