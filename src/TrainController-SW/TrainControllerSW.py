@@ -16,6 +16,8 @@ class TrainControllerSW:
                  serviceBrakeState, emergencyBrakeState, serviceBrakeStatus, engineStatus, communicationsStatus, power, leftDoorCommand, 
                  rightDoorCommand, serviceBrakeCommand, emergencyBrakeCommand, externalLightCommand, internalLightCommand, stationAnnouncement):
         
+        self.MAX_SPEED = 70
+        
         self.inputs = Inputs(commandedSpeed, currentSpeed, authority, time, undergroundState, speedLimit, temperature, engineState, 
                  stationState, stationName, platformSide, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
                  serviceBrakeState, emergencyBrakeState, serviceBrakeStatus, engineStatus, communicationsStatus)
@@ -33,6 +35,11 @@ class TrainControllerSW:
     def readInputs(self):
         with open(os.path.join(sys.path[0], "TrainControllerSWInputs.json"), "r") as filename:
             self.inputs = Inputs(**json.loads(filename.read()))
+
+    # Only used in Test UI
+    def writeInputs(self):
+        with open(os.path.join(sys.path[0], "TrainControllerSWInputs.json"), "w") as filename:
+            (json.dump(self.inputs.__dict__, filename, indent=4))
 
     def getEngineState(self):
         if(self.inputs.engineStatus == False):

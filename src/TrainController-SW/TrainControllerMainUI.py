@@ -8,6 +8,11 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from TrainControllerSW import TrainControllerSW
+from TrainControllerTestUI import TestWindow
+
+# Class for Worker (multithreading)
+class Worker(QObject):
+    finished = pyqtSignal()
 
 # Class for the main window
 class MainWindow(QMainWindow):
@@ -15,7 +20,7 @@ class MainWindow(QMainWindow):
         # Constructor 
         def __init__(self):
             super().__init__()
-
+            
             # initialize TrainControllerSW object
             self.TrainControllerSW = TrainControllerSW(0, 0, 0, "setupTime", False, 0, 0, 0, 0, "setupStationName", 
                                                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "setupStationAnnouncement")
@@ -30,7 +35,7 @@ class MainWindow(QMainWindow):
                 self.TrainControllerSW.inputs.emergencyBrakeState = False
                 self.TrainControllerSW.inputs.serviceBrakeState = False
                 self.TrainControllerSW.inputs.commandedSpeed = 20
-                self.TrainControllerSW.inputs.authority = 600
+                self.TrainControllerSW.inputs.authority = 5
                 self.TrainControllerSW.inputs.speedLimit = 25
                 self.TrainControllerSW.inputs.temperature = 75
                 self.TrainControllerSW.inputs.internalLightsState = True
@@ -60,6 +65,7 @@ class MainWindow(QMainWindow):
             self.stationFont = QFont(self.globalFont, 20)  
                 
             # create visual elements
+            self.mainTimer = self.mainTimerSetup()
             self.station = self.stationSetup()
             self.currentSpeed = self.currentSpeedSetup()
             self.manualSpeedOverride = self.manualSpeedOverrideSetup()
@@ -89,9 +95,24 @@ class MainWindow(QMainWindow):
             self.rightDoorOpen = self.rightDoorOpenSetup()
             self.rightDoorClose = self.rightDoorCloseSetup()
 
+            # Test UI
+            self.TrainControllerTestUI = TestWindow()
+
 
                 
         # widget setups
+        def mainThreadSetup(self):
+            self.timerThread = QThread()
+            self.timerThread.started.connect(self.mainTimerSetup)
+
+        def mainTimerSetup(self):     
+            mainTimer = QTimer()
+            mainTimer.setInterval(100)
+            mainTimer.timeout.connect(self.updateElements)
+            mainTimer.setParent(self)
+            mainTimer.start()
+            return mainTimer
+
         def stationSetup(self):
             station = QLabel()         
             station.setFont(self.stationFont)
@@ -138,7 +159,7 @@ class MainWindow(QMainWindow):
             realTimeClock.setFixedSize(QSize(self.labelWidth, round(self.labelHeight*0.5)))
             realTimeClock.setAlignment(Qt.AlignmentFlag.AlignCenter)
             realTimeClock.setWordWrap(True)
-            x = round(self.frameGeometry().width()*0.05)
+            x = round(self.frameGeometry().width()*0.18-realTimeClock.frameGeometry().width()*0.5)
             y = round(self.frameGeometry().height()*0.05-realTimeClock.frameGeometry().height()*0.5)
             realTimeClock.move(x, y)
             realTimeClock.setParent(self)
@@ -151,7 +172,7 @@ class MainWindow(QMainWindow):
             engineState.setFixedSize(QSize(self.labelWidth, self.labelHeight))
             engineState.setAlignment(Qt.AlignmentFlag.AlignCenter)
             engineState.setWordWrap(True)
-            x = round(self.frameGeometry().width()*0.05)
+            x = round(self.frameGeometry().width()*0.18-engineState.frameGeometry().width()*0.5)
             y = round(self.frameGeometry().height()*0.15-engineState.frameGeometry().height()*0.5)
             engineState.move(x, y)
             engineState.setParent(self)
@@ -231,7 +252,7 @@ class MainWindow(QMainWindow):
             commandedSpeedSlider = QSlider(Qt.Orientation.Horizontal)
             commandedSpeedSlider.setFixedSize(QSize(round(self.labelWidth*1.2), round(self.labelHeight*0.5)))
             commandedSpeedSlider.sliderReleased.connect(self.commandedSpeedSliderRelease)
-            commandedSpeedSlider.setRange(0, 100)
+            commandedSpeedSlider.setRange(0, self.TrainControllerSW.MAX_SPEED)
             commandedSpeedSlider.setSingleStep(1)
             x = round(self.frameGeometry().width()*0.5-commandedSpeedSlider.frameGeometry().width()*0.5)
             y = round(self.frameGeometry().height()*0.37)
@@ -255,7 +276,7 @@ class MainWindow(QMainWindow):
         def authoritySetup(self):
             authority = QLabel()    
             authority.setFont(self.labelFont)    
-            authority.setText("Authority:\n" + str(self.TrainControllerSW.inputs.authority) + " FEET")
+            authority.setText("Authority:\n" + str(self.TrainControllerSW.inputs.authority) + " Blocks")
             authority.setFixedSize(QSize(self.labelWidth, self.labelHeight))
             authority.setAlignment(Qt.AlignmentFlag.AlignCenter)
             authority.setWordWrap(True)
@@ -456,7 +477,14 @@ class MainWindow(QMainWindow):
         #     emergencyBrakeDisable.move(round(self.frameGeometry().width()*0.05+emergencyBrakeDisable.frameGeometry().width()), round(self.frameGeometry().height()*0.3-emergencyBrakeDisable.frameGeometry().height()*0.5))
         #     emergencyBrakeDisable.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
         #     QMainWindow.resizeEvent(self, event)
-           
+        
+        def closeEvent(self, event):
+            if (self.TrainControllerTestUI):
+                self.TrainControllerTestUI.close()
+
+        def updateElements(self):
+            self.TrainControllerSW.readInputs()
+            self.emergencyBrakeState.setText("Emergency Brake:\n" + self.TrainControllerTestUI.TrainControllerSW.getEmergencyBrakeState())
 
         def emergencyBrakeEnableClick(self):
             self.TrainControllerSW.outputs.emergencyBrakeCommand = True
@@ -512,5 +540,6 @@ app = QApplication(sys.argv)
 
 mainWindow = MainWindow()
 mainWindow.show()
+mainWindow.TrainControllerTestUI.show()
 
 app.exec()
