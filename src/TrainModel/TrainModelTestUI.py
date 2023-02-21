@@ -5,42 +5,31 @@ from sys import argv, exit
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import QWidget, QLabel, QApplication, QGridLayout, QComboBox, QLineEdit
-from TrainModelMainUI import *
+from TrainModelMainUI import TrainModelMainUI
 from TrainModelSignals import *
+
+
 # Class for the Train Model Test UI
 class TrainModelTestUI(QWidget):
 
-    # Define an Array to store UI data
     data = {
-        "pwr" : 0.0, 
-        "sBrake" : 0,
-        "eBrake" : 0,
-        "lDoors" : 0,
-        "rDoors" : 0,
-        "eLights" : 0,
-        "iLights" : 0,
-        "station" : "",
-        "rtc" : "",
-        "authority" : 0,
-        "cmdSpeed" : 0.0,
-        "passEnter" : 0,
-        "blockLength" : 0.0,
-        "elevation" : 0.0,
-        "speedLimit" : 0,
+        "authority"  : 0,
+        "cmdSpeed"   : 0.0,
+        "speedLimit" : 0.0,
         "accelLimit" : 0.0,
-        "underground" : 0,
-        "beacon" : [0, "", 0], # [Station State, Next Station Name, Platform Side]
-        "curr" : [0.0, 0.0], # Current Velocity and Acceleration
-        "prev" : [0.0, 0.0], # Previous Velocity and Acceleration
-        "mass" : 37103.8665}
+        "beacon"     : [False, "", 0]
+    }
 
     # Initialize the GUI
-    def __init__(self):
+    def __init__(self):        
         # Initializing the layout of the UI
-        super(TrainModelTestUI, self).__init__()
+        super().__init__()
         self.setWindowTitle("Train Model Test UI")
         layout = QGridLayout()
         self.setLayout(layout)
+        self.setFixedSize(500, 600)
+        orientation = self.frameGeometry()
+        self.move(orientation.topLeft())
 
         # Setting up all the inputs
         # Add the Power Input
@@ -49,9 +38,6 @@ class TrainModelTestUI(QWidget):
         self.powerInput = QLineEdit()
         self.powerInput.editingFinished.connect(self.getPowerInput)
         layout.addWidget(self.powerInput, 0, 1)
-
-        #self.PowerSignal = pyqtSignal(boolean power)
-        #self.PowerSignal.emit(self.power)
 
         # Add the Service Brake Switch
         serviceBrakeLabel = QLabel("Service Brake")
@@ -176,6 +162,7 @@ class TrainModelTestUI(QWidget):
         beaconLabel = QLabel("Beacon Inputs")
         layout.addWidget(beaconLabel, 17, 0)
         beaconLabel2 = QLabel("[Station State, Next Station Name, Platform Side]")
+        beaconLabel2.setWordWrap(True)
         layout.addWidget(beaconLabel2, 17, 1)
 
         # Station State Beacon Switch
@@ -302,6 +289,7 @@ class TrainModelTestUI(QWidget):
         # Adding the Beacon Outputs
         beaconLabel = QLabel("Beacon Outputs")
         beaconLabel2 = QLabel("[Station State, Next Station Name, Platform Side]")
+        beaconLabel2.setWordWrap(True)
         layout.addWidget(beaconLabel, 12, 2)
         layout.addWidget(beaconLabel2, 12, 3)
 
@@ -339,52 +327,51 @@ class TrainModelTestUI(QWidget):
 
     # Gets the Power input from the UI
     def getPowerInput(self):
-        self.data["pwr"] = float(self.powerInput.text())
-        self.data["prev"] = self.data["curr"]
+        self.mainUI.backEnd.data["power"] = float(self.powerInput.text())
     # Gets the Service Brake state from the UI
     def getServiceBrakeInput(self, index):
-        self.data["sBrake"] = index
-        outputText = "Engaged" if self.data["sBrake"] == 1 else "Disengaged"
+        self.mainUI.backEnd.data["sBrakeState"] = bool(index)
+        outputText = "Engaged" if self.mainUI.backEnd.data["sBrakeState"] == 1 else "Disengaged"
         self.serviceBrakeOutput.setText(outputText)
 
     # Gets the Emergency Brake state from the UI
     def getEmergencyBrakeInput(self, index):
-        self.data["eBrake"] = index
-        outputText = "Engaged" if self.data["eBrake"] == 1 else "Disengaged"
+        self.mainUI.backEnd.data["eBrakeState"] = bool(index)
+        outputText = "Engaged" if self.mainUI.backEnd.data["eBrake"] == 1 else "Disengaged"
         self.emergencyBrakeOutput.setText(outputText)
 
     # Gets the Left Door state from the UI
     def getLeftDoorInput(self, index):
-        self.data["lDoors"] = index
-        outputText = "Open" if self.data["lDoors"] == 1 else "Closed"
+        self.mainUI.backEnd.data["lDoors"] = bool(index)
+        outputText = "Open" if self.mainUI.backEnd.data["lDoors"] == 1 else "Closed"
         self.leftDoorOutput.setText(outputText)
 
     # Gets the Right Door state from the UI
     def getRightDoorInput(self, index):
-        self.data["rDoors"] = index
-        outputText = "Open" if self.data["rDoors"] == 1 else "Closed"
+        self.mainUI.backEnd.data["rDoors"] = bool(index)
+        outputText = "Open" if self.mainUI.backEnd.data["rDoors"] == 1 else "Closed"
         self.rightDoorOutput.setText(outputText)
 
     # Gets the External Light state from the UI
     def getExternalLightInput(self, index):
-        self.data["eLights"] = index
-        outputText = "On" if self.data["eLights"] == 1 else "Off"
+        self.mainUI.backEnd.data["eLights"] = bool(index)
+        outputText = "On" if self.mainUI.backEnd.data["eLights"] == 1 else "Off"
         self.externalLightOutput.setText(outputText)
 
     # Gets the Internal Light state from the UI
     def getInternalLightInput(self, index):
-        self.data["iLights"] = index
-        outputText = "On" if self.data["iLights"] == 1 else "Off"
+        self.mainUI.backEnd.data["iLights"] = bool(index)
+        outputText = "On" if self.mainUI.backEnd.data["iLights"] == 1 else "Off"
         self.internalLightOutput.setText(outputText)
 
     # Gets the Station Name input from the UI
     def getStationInput(self):
-        self.data["station"] = self.stationInput.text()
+        self.mainUI.backEnd.data["station"] = self.stationInput.text()
 
     # Gets the Real Time Clock state from the UI
     def getRealTimeClockInput(self):
-        self.data["rtc"] = self.realTimeClockInput.text()
-        self.realTimeClockOutput.setText(self.data["rtc"])
+        self.self.mainUI.backEnd.data["rtc"] = self.realTimeClockInput.text()
+        self.realTimeClockOutput.setText(self.self.mainUI.backEnd.data["rtc"])
 
     # Gets the Authority input from the UI
     def getAuthorityInput(self):
@@ -398,15 +385,15 @@ class TrainModelTestUI(QWidget):
 
     # Gets the number of passengers entering the train from the UI
     def getPassengersEnteringInput(self):
-        self.data["passEnter"] = int(self.passengersEnteringInput.text())
+        self.mainUI.backEnd.data["passengersOn"] = int(self.passengersEnteringInput.text())
 
     # Gets the Block Length of the current Block from the UI
     def getBlockLengthInput(self):
-        self.data["blockLength"] = float(self.blockLengthInput.text())
+        self.mainUI.backEnd.data["blockLength"] = float(self.blockLengthInput.text())
 
     # Gets the Elevation increase of the block from the UI
     def getElevationInput(self):
-        self.data["elevation"] = float(self.elevationInput.text())
+        self.mainUI.backEnd.data["elevation"] = float(self.elevationInput.text())
         
     # Gets the Speed Limit from the UI    
     def getSpeedLimitInput(self):
@@ -419,12 +406,12 @@ class TrainModelTestUI(QWidget):
 
     # Gets the Underground state from the UI
     def getUndergroundStateInput(self, index):
-        self.data["underground"] = index
-        self.undergroundStateOutput.setText(str(self.data["underground"]))
+        self.mainUI.backEnd.data["underground"] = bool(index)
+        self.undergroundStateOutput.setText(str(self.mainUI.backEnd.data["underground"]))
 
     # Gets the Station state from the UI
     def getStationStateInput(self, index):
-        self.data["beacon"][0] = index
+        self.data["beacon"][0] = bool(index)
         self.stationStateOutput.setText(str(self.data["beacon"][0]))
 
     # Gets the Next Station input from the UI
@@ -443,12 +430,13 @@ class TrainModelTestUI(QWidget):
             outputText = "Both"
         self.platformSideOutput.setText(outputText)
 
-    def main():
-        app = QApplication(argv)
-        form = TrainModelTestUI()
-        form.show()
-        app.exec()
-        print(form.data)
+def main():
+    app = QApplication(argv)
+    testUI = TrainModelTestUI()
+    testUI.show()
+    mainUI = TrainModelMainUI()
+    mainUI.show()
+    app.exec()
 
 if __name__ == "__main__":
-    TrainModelTestUI.main()
+    main()

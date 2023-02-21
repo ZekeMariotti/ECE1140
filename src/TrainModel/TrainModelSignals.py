@@ -22,10 +22,14 @@ class trainModelSignals(QObject):
     current = pyqtSignal([float, float])
     previous = pyqtSignal([float, float])
     mass = pyqtSignal(float)
+    
     commButtonPressedSignal = pyqtSignal()
     engineButtonPressedSignal = pyqtSignal()
     brakeButtonPressedSignal = pyqtSignal()
     eBrakePressedSignal = pyqtSignal()
     tempChangedSignal = pyqtSignal(float)
+    testUIFloatSignal = pyqtSignal(float)
+    testUIIntSignal = pyqtSignal(int)
+    testUIBoolSignal = pyqtSignal(int)
 
 trainSignals = trainModelSignals()

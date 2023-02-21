@@ -12,12 +12,13 @@ class backEndCalculations():
     data = {
         "rtc"              : "12:00:00 pm",  # Real Time Clock
         "simSpeed"         : 1,              # Simulation Speed of the system
-        "passengersOn"     : 0,              # Number of passengers on the train
+        "passengers"       : 0,              # Number of passengers on the train
+        "passengersOn"     : 0,              # Number of passengers getting on the train; only used in 1 function
         "passengersOff"    : 0,              # Number of passengers getting off the train; only used in 1 function
         "crew"             : 2,              # Number of crew members on the train (Default of driver and conductor)
         "underground"      : True,           # State of whether the train is underground or not
-        "length"           : 0.0,            # Length of the Train
-        "mass"             : 37103.86,            # Mass of the Train, changes based on number of passengers
+        "length"           : 32.2,           # Length of the Train
+        "mass"             : 37103.86,       # Mass of the Train, changes based on number of passengers
         "velocity"         : 0.0,            # Current Velocity of the Train
         "acceleration"     : 0.0,            # Current Acceleration of the Train
         "prevVelocity"     : 0.0,            # Previous Velocity of the Train
@@ -35,19 +36,19 @@ class backEndCalculations():
         "iLights"          : True,           # State of the internal lights, True if they are on, False if they are off
         "eLights"          : True,           # State of the external lights, True if they are on, False if they are off
         "currTemp"         : 68.0,           # Current temperature inside the train
-        "goalTemp"         : 68.0,            # Temperature goal given by the user
+        "goalTemp"         : 68.0,           # Temperature goal given by the user
         "elevation"        : 0,              # Relative elevation increase of the block, provided by the Track Model / CSV File
         "blockLength"      : 0,              # Length of the current block, provided by the Track Model / CSV File
     }
 
     # Dictionary of constants to be used througout the file
     constants = {
-        "serviceBrake"       : -1.2,
-        "emergencyBrake"     : -2.73,
-        "mediumAcceleration" : 0.5,
-        "maxSpeed"           : 70,
-        "weightUnloaded"     : 40.9,
-        "gravity"            : 9.81
+        "serviceBrake"       : -1.2,         # Deceleration due to the service brake
+        "emergencyBrake"     : -2.73,        # Deceleration due to the emergency brake
+        "mediumAcceleration" : 0.5,          # Medium acceleration used for initial second acceleration
+        "maxSpeed"           : 70,           # Maximum speed of the train
+        "weightUnloaded"     : 40.9,         # Weight of the train completely unloaded
+        "gravity"            : 9.81          # Acceleration due to gravity
     }
 
 
@@ -64,15 +65,28 @@ class backEndCalculations():
         self.findCurrentVelocity()
         self.airConditioningControl()
 
+    def moveToPrevious(self):
+        self.data["prevVelocity"] = self.data["velocity"]
+        self.data["prevAcceleration"] = self.data["acceleration"]
+
     # Finds the current acceleration of a train
     def findCurrentAcceleration(self) :
-        if (self.data["eBrakeState"] == True | self.data["sBrakeState"]):
+        # If Emergency or service brakes are enabled, do not change acceleration
+        if (self.data["eBrakeState"] | self.data["sBrakeState"]):
             return self.data["acceleration"]
         
-        if (self.data["prevVelocity"] == 0.0):
+        # If the train is not moving and has no power input
+        if ((self.data["prevVelocity"] == 0.0) & (self.data["power"] == 0.0)):
+            force = 0.0
+
+        # If the train is not moving buthas a power input
+        elif (self.data["prevVelocity"] == 0.0):
             force = self.data["mass"] * self.constants["mediumAcceleration"]
+
+        # All other cases
         else:
             force = self.data["power"] / self.data["prevVelocity"]
+
         # If the train is not on an incline or decline, use this calculation
         if (self.data["elevation"] == 0.0):
             self.data["acceleration"] = force / self.data["mass"]
@@ -107,18 +121,18 @@ class backEndCalculations():
     # Handle Emergency Brake being pulled
     def emergencyBrakeDeceleration(self):
         if (self.data["eBrakeState"] == False):
-            self.data["eBrakeState"] = 1
+            self.data["eBrakeState"] = True
             self.data["acceleration"] = self.constants["emergencyBrake"]
         else:
-            self.data["eBrakeState"] = 0
+            self.data["eBrakeState"] = False
 
     # Handle Service Brake being pulled
     def serviceBrakeDeceleration(self):
         if (self.data["sBrakeState"] == False) & self.data["brakeStatus"]:
-            self.data["sBrakeState"] = 1
+            self.data["sBrakeState"] = True
             self.data["acceleration"] = self.constants["serviceBrake"]
         elif self.data["sBrakeState"] & self.data["brakeStatus"]:
-            self.data["sBrakeState"] = 0
+            self.data["sBrakeState"] = False
 
     ##################
     # FAILURE STATES #
@@ -127,16 +141,23 @@ class backEndCalculations():
     # Handle loss of communications
     def communicationsFailure(self):
         if self.data["commStatus"] == False:
-            print("Communications Failure")
-            self.data["commStatus"] = 1
+            self.data["commStatus"] = True
+        else:
+            self.data["commStatus"] = False
 
     # Handle engine failure
     def engineFailure(self):
-        print("Engine Failure")
+        if self.data["engineStatus"] == False:
+            self.data["engineStatus"] = True
+        else:
+            self.data["engineStatus"] = False
 
     # Handle service brake failure
     def serviceBrakeFailure(self):
-        print("Service Brake Failure")
+        if self.data["brakeStatus"] == False:
+            self.data["brakeStatus"] = True
+        else:
+            self.data["brakeStatus"] = False
 
     # Handle change in input from the user about temperature
     def tempChangeHandler(self, temp):
@@ -145,8 +166,8 @@ class backEndCalculations():
     # Determines how many passengers get off at each station
     def passengersGettingOff(self):
         if self.data["atStation"]:
-            self.data["passengersOff"] = randint(0, self.data["passengersOn"])
-            self.data["passengersOn"] -= self.data["passengersOff"]
+            self.data["passengersOff"] = randint(0, self.data["passengers"])
+            self.data["passengers"] -= self.data["passengersOff"]
             self.data["passengersOff"] = 0
 
     

@@ -30,8 +30,9 @@ class TrainModelMainUI(QWidget):
 
     # Initialization of the UI
     def __init__(self):
+
         # Initializing and setting the layout of the UI
-        super(TrainModelMainUI, self).__init__()
+        super().__init__()
         self.setWindowTitle("Train Model")
         layout = QGridLayout()
         self.setLayout(layout)
@@ -342,7 +343,6 @@ class TrainModelMainUI(QWidget):
         updateButton.pressed.connect(self.updateOutputs)
         layout.addWidget(updateButton, 9, 2, 1, 2, self.alignCenter)
 
-        #self.updateOutputs()
 
     # Handler for when Communcations Failure State button is pressed
     def communicationsButtonPressed(self):
@@ -401,7 +401,7 @@ class TrainModelMainUI(QWidget):
 
         # Update Left Column of data outputs
         self.realTimeClockOutput.setText(str(self.backEnd.data["rtc"]))
-        self.passengersOutput.setText(str(self.backEnd.data["passengersOn"]))
+        self.passengersOutput.setText(str(self.backEnd.data["passengers"]))
         self.crewOutput.setText(str(self.backEnd.data["crew"]))
         self.undergroundOutput.setText(str(self.backEnd.data["underground"]))
         self.lengthOutput.setText(str(metersToFeet(self.backEnd.data["length"])) + " Feet")
@@ -423,6 +423,9 @@ class TrainModelMainUI(QWidget):
         self.iLightsOutput.setText(self.lightState(self.backEnd.data["iLights"]))
         self.eLightsOutput.setText(self.lightState(self.backEnd.data["eLights"]))
         self.currentTemperatureOutput.setText(str(self.backEnd.data["currTemp"]) + " F")
+
+        # Move curr values to previous
+        self.backEnd.moveToPrevious()
 
 def main():
     app = QApplication(argv)
