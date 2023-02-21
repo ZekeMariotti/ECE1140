@@ -2,14 +2,19 @@ package common
 
 import "github.com/shopspring/decimal"
 
+// Represents a single block on a train track
 type Block struct {
-	ID                  BlockID         `json:"blockid"`
-	Length              int             `json:"length"`
+	Number              int             `json:"number"`
+	Line                string          `json:"line"`
+	Section             string          `json:"section"`
+	Length              decimal.Decimal `json:"length"`
 	Grade               decimal.Decimal `json:"grade"`
-	SpeedLimit          int             `json:"speedlimit"`
+	SpeedLimit          decimal.Decimal `json:"speedlimit"`
+	Direction           BlockDirection  `json:"direction"`
 	Elevation           decimal.Decimal `json:"elevation"`
 	CumulativeElevation decimal.Decimal `json:"cumulative-elevation"`
 	Underground         bool            `json:"underground"`
-	Station             Station         `json:"station"`
-	Switch              Switch          `json:"switch"`
+	Crossing            bool            `json:"crossing"`
+	Station             *Station        `json:"station"`
+	Switch              *Switch         `json:"switch"`
 }

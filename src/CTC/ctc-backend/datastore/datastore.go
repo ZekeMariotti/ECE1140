@@ -5,14 +5,15 @@ import (
 )
 
 type DataStore struct {
-	Blocks     []common.Block     `json:"blocks"`
-	Lines      []common.Line      `json:"lines"`
-	Stations   []common.Station   `json:"stations"`
-	Trains     []common.Train     `json:"trains"`
+	Lines      []*common.Line     `json:"lines"`
+	Trains     []*common.Train    `json:"trains"`
 	TimeKeeper *common.TimeKeeper `json:"timekeeper"`
 }
 
 func NewDataStore() *DataStore {
-	ds := DataStore{}
+	ds := DataStore{
+		Lines:  make([]*common.Line, 0),
+		Trains: make([]*common.Train, 0),
+	}
 	return &ds
 }

@@ -21,6 +21,11 @@ func NewApp() *App {
 	return &app
 }
 
+func (a *App) ImportLine(pathBlock string, pathSwitch string) {
+	a.DataStore.Lines = append(a.DataStore.Lines, common.ParseLine(pathBlock, pathSwitch))
+}
+
 func (a *App) Start() {
 	a.TimeKeeper.StartSimulation()
+	a.FrontendAPI.Serve("localhost:8080")
 }

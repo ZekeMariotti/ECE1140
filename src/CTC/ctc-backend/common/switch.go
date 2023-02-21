@@ -1,6 +1,7 @@
 package common
 
 type Switch struct {
-	Source       BlockID   `json:"source"`
-	Destinations []BlockID `json:"destinations"`
+	Source       int `json:"source"`
+	Destination1 int `json:"destination1"`
+	Destination2 int `json:"destination2"`
 }
