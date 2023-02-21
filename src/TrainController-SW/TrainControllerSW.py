@@ -7,7 +7,10 @@ import os
 import json
 from json import JSONEncoder
 
-
+# TODO: add manual speed override toggle, add unit conversions class, 
+    # automatically: calculate power formula, update doors, update external lights, set service brake,
+    #                display communications error, display correct current/next station, import RTC as a datetime type, 
+    #                update currentTime and previousTime during each mainTimer loop, 
 
 # Class for the TrainControllerSW
 class TrainControllerSW:
@@ -27,19 +30,44 @@ class TrainControllerSW:
 
     # methods   
     
+    # Writes all output variables to output JSON file
     def writeOutputs(self):
         with open(os.path.join(sys.path[0], "TrainControllerSWOutputs.json"), "w") as filename:
             (json.dump(self.outputs.__dict__, filename, indent=4))
 
-
+    # Reads in all input fields from input JSON file and updates Input variables
     def readInputs(self):
         with open(os.path.join(sys.path[0], "TrainControllerSWInputs.json"), "r") as filename:
             self.inputs = Inputs(**json.loads(filename.read()))
 
-    # Only used in Test UI
+    # Only used in Test UI - writes to input file
     def writeInputs(self):
         with open(os.path.join(sys.path[0], "TrainControllerSWInputs.json"), "w") as filename:
             (json.dump(self.inputs.__dict__, filename, indent=4))
+
+    # Only used in Test UI - reads from output file
+    def readOutputs(self):
+        with open(os.path.join(sys.path[0], "TrainControllerSWOutputs.json"), "r") as filename:
+            self.outputs = Outputs(**json.loads(filename.read()))
+
+    # Calculates the power to output to the train model based on currentSpeed, commandedSpeed, ...
+    def calculatePower(self):
+        self.power = None
+
+    # Automatically opens/closes doors based on platformSide
+    def autoUpdateDoorState(self):
+        self.outputs.leftDoorCommand = None
+        self.outputs.rightDoorCommand = None
+    
+    # Automatically turns on/off external lights based on underground state
+    # NOTE: update based on time of day?
+    def autoUpdateExternalLights(self):
+        self.outputs.externalLightCommand = None
+
+    # Automatically enable/disables the service brake based on currentSpeed, commandedSpeed, ...
+    def autoSetServiceBrake(self):
+        self.outputs.serviceBrakeCommand = None
+            
 
     def getEngineState(self):
         if(self.inputs.engineStatus == False):
