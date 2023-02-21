@@ -16,7 +16,7 @@ class backEndCalculations():
         "passengersOn"     : 0,              # Number of passengers getting on the train; only used in 1 function
         "passengersOff"    : 0,              # Number of passengers getting off the train; only used in 1 function
         "crew"             : 2,              # Number of crew members on the train (Default of driver and conductor)
-        "underground"      : True,           # State of whether the train is underground or not
+        "underground"      : False,           # State of whether the train is underground or not
         "length"           : 32.2,           # Length of the Train
         "mass"             : 37103.86,       # Mass of the Train, changes based on number of passengers
         "velocity"         : 0.0,            # Current Velocity of the Train
@@ -24,7 +24,7 @@ class backEndCalculations():
         "prevVelocity"     : 0.0,            # Previous Velocity of the Train
         "prevAcceleration" : 0.0,            # Previous Acceleration of the Train
         "power"            : 0.0,            # Power input from the Train Controller
-        "station"          : "",             # Name of the next Station 
+        "station"          : "The Yard",     # Name of the next Station 
         "atStation"        : False,          # State of whether the train is at a station or not
         "commStatus"       : True,           # True if all communications are good, false is communications are disabled
         "engineStatus"     : True,           # True if engine is operational, false if it is disabled
@@ -53,17 +53,37 @@ class backEndCalculations():
 
 
     def __init__(self):
+        # Signals from the Main UI
         trainSignals.commButtonPressedSignal.connect(self.communicationsFailure)
         trainSignals.engineButtonPressedSignal.connect(self.engineFailure)
         trainSignals.brakeButtonPressedSignal.connect(self.serviceBrakeFailure)
         trainSignals.eBrakePressedSignal.connect(self.emergencyBrakeDeceleration)
         trainSignals.tempChangedSignal.connect(self.tempChangeHandler)
 
+        # Signals from the Test UI
+        trainSignals.power.connect(self.getPowerFromTestUI)
+        trainSignals.serviceBrake.connect(self.serviceBrakeDeceleration)
+        trainSignals.emergencyBrake.connect(self.emergencyBrakeDeceleration)
+        trainSignals.leftDoors.connect(self.leftDoorControl)
+        trainSignals.rightDoors.connect(self.rightDoorControl)
+        trainSignals.internalLights.connect(self.internalLightsControl)
+        trainSignals.externalLights.connect(self.externalLightsControl)
+        trainSignals.stationLabel.connect(self.setStationLabel)
+        trainSignals.underground.connect(self.setUndergroundState)
+        trainSignals.realTimeClock.connect(self.setRealTimeClock)
+        trainSignals.passengersEntering.connect(self.setPassengersEntering)
+        trainSignals.blockLength.connect(self.setBlockLength)
+        trainSignals.elevation.connect(self.setElevation)
+        trainSignals.stationState.connect(self.setStationState)
+
     # Function to run all internal methods when the method is called by the updater in the UI
     def runFunctions(self):
         self.findCurrentAcceleration()
         self.findCurrentVelocity()
         self.airConditioningControl()
+        self.passengersGettingOff()
+        self.passengersGettingOn()
+        
 
     def moveToPrevious(self):
         self.data["prevVelocity"] = self.data["velocity"]
@@ -118,6 +138,7 @@ class backEndCalculations():
     def getDistance(self):
         print("Hello There")
 
+    # Deal with Deceleration from 2 different sources of EBrake
     # Handle Emergency Brake being pulled
     def emergencyBrakeDeceleration(self):
         if (self.data["eBrakeState"] == False):
@@ -133,6 +154,57 @@ class backEndCalculations():
             self.data["acceleration"] = self.constants["serviceBrake"]
         elif self.data["sBrakeState"] & self.data["brakeStatus"]:
             self.data["sBrakeState"] = False
+
+    # Handle change in input from the user about temperature
+    def tempChangeHandler(self, temp):
+        self.data["goalTemp"] = temp
+
+    # Determines how many passengers get off at each station
+    def passengersGettingOff(self):
+        if self.data["atStation"]:
+            self.data["passengersOff"] = randint(0, self.data["passengers"])
+            self.data["passengers"] -= self.data["passengersOff"]
+            self.data["passengersOff"] = 0
+
+    # Adds passengers getting on to total passengers
+    def passengersGettingOn(self):
+        self.data["passengers"] += self.data["passengersOn"]
+        self.data["passengersOn"] = 0
+
+    # Opening and closing the Left Door
+    def leftDoorControl(self):
+        if self.data["lDoors"] == False:
+            self.data["lDoors"] = True
+        else:
+            self.data["lDoors"] = False
+    
+    # Opening and closing the Right Door
+    def rightDoorControl(self):
+        if self.data["rDoors"] == False:
+            self.data["rDoors"] = True
+        else:
+            self.data["rDoors"] = False
+
+    # Turning on and off the internal lights
+    def internalLightsControl(self):
+        if self.data["iLights"] == False:
+            self.data["iLights"] = True
+        else:
+            self.data["iLights"] = False
+
+    # Turning on and off the external lights
+    def externalLightsControl(self):
+        if self.data["eLights"] == False:
+            self.data["eLights"] = True
+        else:
+            self.data["eLights"] = False
+
+    # Set the underground state
+    def setUndergroundState(self):
+        if self.data["underground"] == True:
+            self.data["underground"] = False
+        else:
+            self.data["underground"] = True
 
     ##################
     # FAILURE STATES #
@@ -151,6 +223,7 @@ class backEndCalculations():
             self.data["engineStatus"] = True
         else:
             self.data["engineStatus"] = False
+        self.data["power"] = 0.0
 
     # Handle service brake failure
     def serviceBrakeFailure(self):
@@ -158,18 +231,41 @@ class backEndCalculations():
             self.data["brakeStatus"] = True
         else:
             self.data["brakeStatus"] = False
+        self.data["sBrakeState"] = False
 
-    # Handle change in input from the user about temperature
-    def tempChangeHandler(self, temp):
-        self.data["goalTemp"] = temp
+    #####################
+    # TEST UI FUNCTIONS #
+    #####################
 
-    # Determines how many passengers get off at each station
-    def passengersGettingOff(self):
-        if self.data["atStation"]:
-            self.data["passengersOff"] = randint(0, self.data["passengers"])
-            self.data["passengers"] -= self.data["passengersOff"]
-            self.data["passengersOff"] = 0
+    # Sets the power input
+    def getPowerFromTestUI(self, power):
+        if self.data["engineStatus"] == True:
+            self.data["power"] = power
+        else:
+            self.data["power"] = 0
 
+    # Sets the RTC
+    def setRealTimeClock(self, label):
+        self.data["rtc"] = label
+
+    # Setting the station label
+    def setStationLabel(self, label):
+        self.data["station"] = label
+
+    def setPassengersEntering(self, passEntering):
+        self.data["passengersOn"] = passEntering
+
+    def setBlockLength(self, blockLength):
+        self.data["blockLength"] = blockLength
+
+    def setElevation(self, elevation):
+        self.data["elevation"] = elevation
+    
+    def setStationState(self):
+        if self.data["atStation"] == True:
+            self.data["atStation"] = False
+        else:
+            self.data["atStation"] = True
     
 
 # Main function to run if this file is the file being ran as main

@@ -327,51 +327,52 @@ class TrainModelTestUI(QWidget):
 
     # Gets the Power input from the UI
     def getPowerInput(self):
-        self.mainUI.backEnd.data["power"] = float(self.powerInput.text())
+        trainSignals.power.emit(float(self.powerInput.text()))
+
     # Gets the Service Brake state from the UI
     def getServiceBrakeInput(self, index):
-        self.mainUI.backEnd.data["sBrakeState"] = bool(index)
-        outputText = "Engaged" if self.mainUI.backEnd.data["sBrakeState"] == 1 else "Disengaged"
+        trainSignals.serviceBrake.emit()
+        outputText = "Engaged" if index == 1 else "Disengaged"
         self.serviceBrakeOutput.setText(outputText)
 
     # Gets the Emergency Brake state from the UI
     def getEmergencyBrakeInput(self, index):
-        self.mainUI.backEnd.data["eBrakeState"] = bool(index)
-        outputText = "Engaged" if self.mainUI.backEnd.data["eBrake"] == 1 else "Disengaged"
+        trainSignals.emergencyBrake.emit()
+        outputText = "Engaged" if index == 1 else "Disengaged"
         self.emergencyBrakeOutput.setText(outputText)
 
     # Gets the Left Door state from the UI
     def getLeftDoorInput(self, index):
-        self.mainUI.backEnd.data["lDoors"] = bool(index)
-        outputText = "Open" if self.mainUI.backEnd.data["lDoors"] == 1 else "Closed"
+        trainSignals.leftDoors.emit()
+        outputText = "Open" if index == 1 else "Closed"
         self.leftDoorOutput.setText(outputText)
 
     # Gets the Right Door state from the UI
     def getRightDoorInput(self, index):
-        self.mainUI.backEnd.data["rDoors"] = bool(index)
-        outputText = "Open" if self.mainUI.backEnd.data["rDoors"] == 1 else "Closed"
+        trainSignals.rightDoors.emit()
+        outputText = "Open" if index == 1 else "Closed"
         self.rightDoorOutput.setText(outputText)
 
     # Gets the External Light state from the UI
     def getExternalLightInput(self, index):
-        self.mainUI.backEnd.data["eLights"] = bool(index)
-        outputText = "On" if self.mainUI.backEnd.data["eLights"] == 1 else "Off"
+        trainSignals.externalLights.emit()
+        outputText = "On" if index == 1 else "Off"
         self.externalLightOutput.setText(outputText)
 
     # Gets the Internal Light state from the UI
     def getInternalLightInput(self, index):
-        self.mainUI.backEnd.data["iLights"] = bool(index)
-        outputText = "On" if self.mainUI.backEnd.data["iLights"] == 1 else "Off"
+        trainSignals.internalLights.emit()
+        outputText = "On" if index == 1 else "Off"
         self.internalLightOutput.setText(outputText)
 
     # Gets the Station Name input from the UI
     def getStationInput(self):
-        self.mainUI.backEnd.data["station"] = self.stationInput.text()
+        trainSignals.stationLabel.emit(self.stationInput.text())
 
     # Gets the Real Time Clock state from the UI
     def getRealTimeClockInput(self):
-        self.self.mainUI.backEnd.data["rtc"] = self.realTimeClockInput.text()
-        self.realTimeClockOutput.setText(self.self.mainUI.backEnd.data["rtc"])
+        trainSignals.realTimeClock.emit(self.realTimeClockInput.text())
+        self.realTimeClockOutput.setText(self.realTimeClockInput.text())
 
     # Gets the Authority input from the UI
     def getAuthorityInput(self):
@@ -385,15 +386,15 @@ class TrainModelTestUI(QWidget):
 
     # Gets the number of passengers entering the train from the UI
     def getPassengersEnteringInput(self):
-        self.mainUI.backEnd.data["passengersOn"] = int(self.passengersEnteringInput.text())
+        trainSignals.passengersEntering.emit(int(self.passengersEnteringInput.text()))
 
     # Gets the Block Length of the current Block from the UI
     def getBlockLengthInput(self):
-        self.mainUI.backEnd.data["blockLength"] = float(self.blockLengthInput.text())
+        trainSignals.blockLength.emit(float(self.blockLengthInput.text()))
 
     # Gets the Elevation increase of the block from the UI
     def getElevationInput(self):
-        self.mainUI.backEnd.data["elevation"] = float(self.elevationInput.text())
+        trainSignals.elevation.emit(float(self.elevationInput.text()))
         
     # Gets the Speed Limit from the UI    
     def getSpeedLimitInput(self):
@@ -406,11 +407,12 @@ class TrainModelTestUI(QWidget):
 
     # Gets the Underground state from the UI
     def getUndergroundStateInput(self, index):
-        self.mainUI.backEnd.data["underground"] = bool(index)
-        self.undergroundStateOutput.setText(str(self.mainUI.backEnd.data["underground"]))
+        trainSignals.underground.emit()
+        self.undergroundStateOutput.setText(str(bool(index)))
 
     # Gets the Station state from the UI
     def getStationStateInput(self, index):
+        trainSignals.stationState.emit()
         self.data["beacon"][0] = bool(index)
         self.stationStateOutput.setText(str(self.data["beacon"][0]))
 

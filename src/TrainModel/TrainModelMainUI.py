@@ -337,6 +337,8 @@ class TrainModelMainUI(QWidget):
         layout.addWidget(currentTemperatureLabel, 8, 4, 1, 2, self.alignCenter)
         layout.addWidget(self.currentTemperatureOutput, 8, 6)
 
+        self.updateOutputs()
+
         # UPDATE BUTTON FOR TESTING TO BE REMOVED
         updateButton = QPushButton("Update Values")
         updateButton.setFont(self.timesNewRoman24)
@@ -411,6 +413,7 @@ class TrainModelMainUI(QWidget):
         self.velocityOutput.setText(str(metersPerSecondToMilesPerHour(self.backEnd.data["velocity"])) + " mph")
         self.accelerationOutput.setText(str(metersPerSecondSquaredToFeetPerSecondSquared(self.backEnd.data["acceleration"])) + " ft/s^2")
         self.powerOutput.setText(str(wattsToHorsepower(self.backEnd.data["power"])) + " hp")
+        self.stationOutput.setText(self.backEnd.data["station"])
         self.communicationsOutput.setText(self.failureBoolean(self.backEnd.data["commStatus"]))
         self.engineOutput.setText(self.failureBoolean(self.backEnd.data["engineStatus"]))
         self.brakeOutput.setText(self.failureBoolean(self.backEnd.data["brakeStatus"]))

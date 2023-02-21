@@ -1,35 +1,27 @@
 from PyQt6.QtCore import QObject, pyqtSignal
 
 class trainModelSignals(QObject):
+    # Train Model Test UI Signals
     power = pyqtSignal(float)
-    authority = pyqtSignal(int)
-    serviceBrake = pyqtSignal(bool)
-    emergencyBrake = pyqtSignal(bool)
-    leftDoors = pyqtSignal(bool)
-    rightDoors = pyqtSignal(bool)
-    internalLights = pyqtSignal(bool)
-    externalLights = pyqtSignal(bool)
+    serviceBrake = pyqtSignal()
+    emergencyBrake = pyqtSignal()
+    leftDoors = pyqtSignal()
+    rightDoors = pyqtSignal()
+    internalLights = pyqtSignal()
+    externalLights = pyqtSignal()
     stationLabel = pyqtSignal(str)
     realTimeClock = pyqtSignal(str)
-    commandedSpeed = pyqtSignal(float)
     passengersEntering = pyqtSignal(int)
-    grade = pyqtSignal(float)
     elevation = pyqtSignal(float)
-    speedLimit = pyqtSignal(int)
-    accelerationLimit = pyqtSignal(float)
-    underground = pyqtSignal(bool)
-    beacon = pyqtSignal([bool, str, int])
-    current = pyqtSignal([float, float])
-    previous = pyqtSignal([float, float])
-    mass = pyqtSignal(float)
-    
+    underground = pyqtSignal()
+    stationState = pyqtSignal()
+    blockLength = pyqtSignal(float)
+
+    # Train Model Main UI Signals
     commButtonPressedSignal = pyqtSignal()
     engineButtonPressedSignal = pyqtSignal()
     brakeButtonPressedSignal = pyqtSignal()
     eBrakePressedSignal = pyqtSignal()
     tempChangedSignal = pyqtSignal(float)
-    testUIFloatSignal = pyqtSignal(float)
-    testUIIntSignal = pyqtSignal(int)
-    testUIBoolSignal = pyqtSignal(int)
 
 trainSignals = trainModelSignals()
