@@ -23,5 +23,7 @@ class trainModelSignals(QObject):
     brakeButtonPressedSignal = pyqtSignal()
     eBrakePressedSignal = pyqtSignal()
     tempChangedSignal = pyqtSignal(float)
+    eBrakeToTestUI = pyqtSignal(bool)
+    velocityToTestUI = pyqtSignal(float)
 
 trainSignals = trainModelSignals()

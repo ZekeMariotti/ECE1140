@@ -10,20 +10,20 @@ class backEndCalculations():
 
     # Private data variable to store all the data needed for the back end
     data = {
-        "rtc"              : "12:00:00 pm",  # Real Time Clock
+        "rtc"              : "12:00:00 am",  # Real Time Clock in ISO 8601 Format
         "simSpeed"         : 1,              # Simulation Speed of the system
         "passengers"       : 0,              # Number of passengers on the train
-        "passengersOn"     : 0,              # Number of passengers getting on the train; only used in 1 function
+        "passengersOn"     : 0,              # Number of passengers getting on the train; only used in 2 functions
         "passengersOff"    : 0,              # Number of passengers getting off the train; only used in 1 function
         "crew"             : 2,              # Number of crew members on the train (Default of driver and conductor)
-        "underground"      : False,           # State of whether the train is underground or not
-        "length"           : 32.2,           # Length of the Train
-        "mass"             : 37103.86,       # Mass of the Train, changes based on number of passengers
-        "velocity"         : 0.0,            # Current Velocity of the Train
-        "acceleration"     : 0.0,            # Current Acceleration of the Train
-        "prevVelocity"     : 0.0,            # Previous Velocity of the Train
-        "prevAcceleration" : 0.0,            # Previous Acceleration of the Train
-        "power"            : 0.0,            # Power input from the Train Controller
+        "underground"      : False,          # State of whether the train is underground or not
+        "length"           : 0.0,            # Length of the Train in meters
+        "mass"             : 40900,          # Mass of the Train, changes based on number of passengers, defaults to mass of an unloaded train, in kilograms
+        "velocity"         : 0.0,            # Current Velocity of the Train in meters per second
+        "acceleration"     : 0.0,            # Current Acceleration of the Train in meters per second ^ 2
+        "prevVelocity"     : 0.0,            # Previous Velocity of the Train in meters per second
+        "prevAcceleration" : 0.0,            # Previous Acceleration of the Train in meters per second ^ 2
+        "power"            : 0.0,            # Power input from the Train Controller in watts
         "station"          : "The Yard",     # Name of the next Station 
         "atStation"        : False,          # State of whether the train is at a station or not
         "commStatus"       : True,           # True if all communications are good, false is communications are disabled
@@ -33,24 +33,32 @@ class backEndCalculations():
         "sBrakeState"      : False,          # State of the service brake, True if engaged, False if disengaged
         "lDoors"           : False,          # State of the left doors, True if doors are open, False if they are closed
         "rDoors"           : False,          # State of the right doors, True if doors are open, False if they are closed
-        "iLights"          : True,           # State of the internal lights, True if they are on, False if they are off
-        "eLights"          : True,           # State of the external lights, True if they are on, False if they are off
-        "currTemp"         : 68.0,           # Current temperature inside the train
-        "goalTemp"         : 68.0,           # Temperature goal given by the user
-        "elevation"        : 0,              # Relative elevation increase of the block, provided by the Track Model / CSV File
-        "blockLength"      : 0,              # Length of the current block, provided by the Track Model / CSV File
+        "iLights"          : False,          # State of the internal lights, True if they are on, False if they are off
+        "eLights"          : False,          # State of the external lights, True if they are on, False if they are off
+        "currTemp"         : 68.0,           # Current temperature inside the train in degrees fahrenheit
+        "goalTemp"         : 68.0,           # Temperature goal given by the user in degrees fahrenehit
+        "elevation"        : 0,              # Relative elevation increase of the block, provided by the Track Model / CSV File in meters
+        "blockLength"      : 0,              # Length of the current block, provided by the Track Model / CSV File in meters
+        "numCars"          : 1,               # Length of the train based on number of cars attached to the train
     }
 
-    # Dictionary of constants to be used througout the file
+    # Dictionary of constants to be used througout the class
     constants = {
-        "serviceBrake"       : -1.2,         # Deceleration due to the service brake
-        "emergencyBrake"     : -2.73,        # Deceleration due to the emergency brake
-        "mediumAcceleration" : 0.5,          # Medium acceleration used for initial second acceleration
-        "maxSpeed"           : 70,           # Maximum speed of the train
-        "weightUnloaded"     : 40.9,         # Weight of the train completely unloaded
-        "gravity"            : 9.81          # Acceleration due to gravity
+        "serviceBrake"       : -1.2,         # Deceleration due to the service brake in meters per second ^ 2
+        "emergencyBrake"     : -2.73,        # Deceleration due to the emergency brake in meters per second ^ 2
+        "mediumAcceleration" : 0.5,          # Medium acceleration used for initial time period acceleration in meters per second ^ 2
+        "maxSpeed"           : 70,           # Maximum speed of the train in kilometers per hour
+        "gravity"            : 9.81,         # Acceleration due to gravity in meters per second ^ 2
+        "length"             : 32.2,         # Length of one instance of the Flexity 2 Train in meters
+        "massOfTrain"        : 40900,        # Mass of an unloaded train car in kilograms
+        "massOfHuman"        : 68.0389,      # Mass of a human for this simulation in kilograms
     }
 
+    # Dictionary used for Test UI and User input EBrake States
+    eBrakes = {
+        "user" : False,
+        "trainController" : False
+    }
 
     def __init__(self):
         # Signals from the Main UI
@@ -63,7 +71,7 @@ class backEndCalculations():
         # Signals from the Test UI
         trainSignals.power.connect(self.getPowerFromTestUI)
         trainSignals.serviceBrake.connect(self.serviceBrakeDeceleration)
-        trainSignals.emergencyBrake.connect(self.emergencyBrakeDeceleration)
+        trainSignals.emergencyBrake.connect(self.emergencyBrakeDecelerationTrainController)
         trainSignals.leftDoors.connect(self.leftDoorControl)
         trainSignals.rightDoors.connect(self.rightDoorControl)
         trainSignals.internalLights.connect(self.internalLightsControl)
@@ -76,15 +84,20 @@ class backEndCalculations():
         trainSignals.elevation.connect(self.setElevation)
         trainSignals.stationState.connect(self.setStationState)
 
+        self.data["length"] = self.constants["length"] * self.data["numCars"]
+
     # Function to run all internal methods when the method is called by the updater in the UI
     def runFunctions(self):
         self.findCurrentAcceleration()
         self.findCurrentVelocity()
         self.airConditioningControl()
-        self.passengersGettingOff()
-        self.passengersGettingOn()
+        if self.data["atStation"]:
+            self.passengersGettingOff()
+            self.passengersGettingOn()
+        self.findCurrentMass()
+        trainSignals.velocityToTestUI.emit(self.data["velocity"])
         
-
+    # Function to move the current velocity and acceleration to previous in order to calculate next time periods values
     def moveToPrevious(self):
         self.data["prevVelocity"] = self.data["velocity"]
         self.data["prevAcceleration"] = self.data["acceleration"]
@@ -134,6 +147,10 @@ class backEndCalculations():
         else:
             self.data["currTemp"] -= 0.5
 
+    # Find the current mass of the entire train including passengers 
+    def findCurrentMass(self):
+        self.data["mass"] = (self.constants["massOfTrain"] * self.data["numCars"]) + (self.constants["massOfHuman"] * (self.data["passengers"] + self.data["crew"]))
+
     # Get distance since the last state update of the system
     def getDistance(self):
         print("Hello There")
@@ -141,11 +158,33 @@ class backEndCalculations():
     # Deal with Deceleration from 2 different sources of EBrake
     # Handle Emergency Brake being pulled
     def emergencyBrakeDeceleration(self):
-        if (self.data["eBrakeState"] == False):
-            self.data["eBrakeState"] = True
-            self.data["acceleration"] = self.constants["emergencyBrake"]
+        # Will be main code later on, needed to be changed for test UI
+        #if (self.data["eBrakeState"] == False):
+        #    self.data["eBrakeState"] = True
+        #    self.data["acceleration"] = self.constants["emergencyBrake"]
+        #else:
+        #    self.data["eBrakeState"] = False
+        if (self.eBrakes["user"] == False):
+            self.eBrakes["user"] = True
         else:
-            self.data["eBrakeState"] = False
+            self.eBrakes["user"] = False
+        
+        self.data["eBrakeState"] = self.eBrakes["user"] | self.eBrakes["trainController"]
+        if (self.data["eBrakeState"] == True):
+            self.data["acceleration"] = self.constants["emergencyBrake"]
+
+        #This line is used only when in correlation with the TestUI
+        trainSignals.eBrakeToTestUI.emit(self.data["eBrakeState"])
+
+    def emergencyBrakeDecelerationTrainController(self):
+        if (self.eBrakes["trainController"] == False):
+            self.eBrakes["trainController"] = True
+        else:
+            self.eBrakes["trainController"] = False
+
+        self.data["eBrakeState"] = self.eBrakes["user"] | self.eBrakes["trainController"]
+        if (self.data["eBrakeState"] == True):
+            self.data["acceleration"] = self.constants["emergencyBrake"]
 
     # Handle Service Brake being pulled
     def serviceBrakeDeceleration(self):
@@ -154,6 +193,7 @@ class backEndCalculations():
             self.data["acceleration"] = self.constants["serviceBrake"]
         elif self.data["sBrakeState"] & self.data["brakeStatus"]:
             self.data["sBrakeState"] = False
+
 
     # Handle change in input from the user about temperature
     def tempChangeHandler(self, temp):
@@ -267,6 +307,8 @@ class backEndCalculations():
         else:
             self.data["atStation"] = True
     
+if __name__ == "__main__":
+    class1 = backEndCalculations()
 
 # Main function to run if this file is the file being ran as main
 #def main():

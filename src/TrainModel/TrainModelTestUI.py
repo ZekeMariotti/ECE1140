@@ -4,7 +4,7 @@
 from sys import argv, exit
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
-from PyQt6.QtWidgets import QWidget, QLabel, QApplication, QGridLayout, QComboBox, QLineEdit
+from PyQt6.QtWidgets import *
 from TrainModelMainUI import TrainModelMainUI
 from TrainModelSignals import *
 
@@ -17,11 +17,19 @@ class TrainModelTestUI(QWidget):
         "cmdSpeed"   : 0.0,
         "speedLimit" : 0.0,
         "accelLimit" : 0.0,
-        "beacon"     : [False, "", 0]
+        "beacon"     : [False, "", 0],
+        "eBrake"     : False,
+        "eBrakeUser" : False,
+        "eBrakeTest" : False
     }
 
     # Initialize the GUI
-    def __init__(self):        
+    def __init__(self):
+        
+        # Back End Signal Handlers
+        trainSignals.velocityToTestUI.connect(self.setCurrentVelocity)
+        trainSignals.eBrakeToTestUI.connect(self.eBrakeHandler)
+
         # Initializing the layout of the UI
         super().__init__()
         self.setWindowTitle("Train Model Test UI")
@@ -338,7 +346,10 @@ class TrainModelTestUI(QWidget):
     # Gets the Emergency Brake state from the UI
     def getEmergencyBrakeInput(self, index):
         trainSignals.emergencyBrake.emit()
-        outputText = "Engaged" if index == 1 else "Disengaged"
+        self.data["eBrakeTest"] = bool(index)
+        print(self.data["eBrakeUser"], self.data["eBrakeTest"])
+        self.data["eBrake"] = self.data["eBrakeUser"] | self.data["eBrakeTest"]
+        outputText = "Engaged" if (self.data["eBrake"] == 1) else "Disengaged"
         self.emergencyBrakeOutput.setText(outputText)
 
     # Gets the Left Door state from the UI
@@ -431,6 +442,16 @@ class TrainModelTestUI(QWidget):
         else:
             outputText = "Both"
         self.platformSideOutput.setText(outputText)
+
+    # Connects the velocity from the back end to the test UI
+    def setCurrentVelocity(self, velocity):
+        self.velocityOutput.setText(str(round(velocity, 3)) + " m/s")
+
+    def eBrakeHandler(self, index):
+        self.data["eBrakeUser"] = bool(index)
+        self.data["eBrake"] = self.data["eBrakeTest"] | self.data["eBrakeUser"]
+        outputText = "Engaged" if (self.data["eBrake"] == 1) else "Disengaged"
+        self.emergencyBrakeOutput.setText(outputText)
 
 def main():
     app = QApplication(argv)

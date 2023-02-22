@@ -407,7 +407,7 @@ class TrainModelMainUI(QWidget):
         self.crewOutput.setText(str(self.backEnd.data["crew"]))
         self.undergroundOutput.setText(str(self.backEnd.data["underground"]))
         self.lengthOutput.setText(str(metersToFeet(self.backEnd.data["length"])) + " Feet")
-        self.massOutput.setText(str(kilogramsToTons(self.backEnd.data["mass"])) + " Tons")
+        self.massOutput.setText(str(kilogramsToTons(self.backEnd.data["mass"])) + " Ton")
     
         # Update Middle Column of data outputs
         self.velocityOutput.setText(str(metersPerSecondToMilesPerHour(self.backEnd.data["velocity"])) + " mph")
