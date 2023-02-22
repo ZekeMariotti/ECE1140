@@ -42,6 +42,42 @@ class TestWindow(QMainWindow):
                 
             # Create visual elements
             self.testLabel = self.testLabelSetup()
+            self.setRealTimeLabel = self.setRealTimeLabelSetup()
+            self.setRealTime = self.setRealTimeSetup()
+            self.setEngineStatusLabel = self.setEngineStatusLabelSetup()
+            self.setEngineStatus = self.setEngineStatusSetup()
+            self.setEngineStateLabel = self.setEngineStateSetup()
+            self.setEngineState = self.setEngineStateSetup()
+            self.setCommunicationsStatusLabel = self.setCommunicationsStatusLabelSetup
+            self.setCommunicationsStatus = self.setCommunicationsStatusSetup()
+            self.setStationNameLabel = self.setStationNameLabelSetup()
+            self.setStationName = self.setStationNameSetup()
+            self.setStationStateLabel = self.setStationStateLabelSetup()
+            self.setStationState = self.setStationStateSetup()
+            self.setServiceBrakeStateLabel = self.setServiceBrakeStateLabelSetup()
+            self.setServiceBrakeState = self.setServiceBrakeStateSetup()
+            self.setServiceBrakeStatusLabel = self.setServiceBrakeStatusLabelSetup()
+            self.setServiceBrakeStatus = self.setServiceBrakeStatusSetup()
+            self.commandedSpeedSliderLabel = self.commandedSpeedSliderLabelSetup()
+            self.setAuthorityLabel = self.setAuthorityLabelSetup()
+            self.setAuthority = self.setAuthoritySetup()
+            self.setSpeedLimitLabel = self.setSpeedLimitLabelSetup()
+            self.setSpeedLimit = self.setSpeedLimitSetup()
+            self.setTemperatureLabel = self.setTemperatureLabelSetup()
+            self.setTemperature = self.setTemperatureSetup()
+            self.setInternalLightStateLabel = self.setInternalLightStateLabelSetup()
+            self.setInternalLightState = self.setInternalLightStateSetup()
+            self.setExternalLightStateLabel = self.setExternalLightStateLabelSetup()
+            self.setLeftDoorStateLabel = self.setLeftDoorStateLabelSetup()
+            self.setLeftDoorState = self.setLeftDoorStateSetup()
+            self.setRightDoorStateLabel = self.setRightDoorStateLabelSetup()
+            self.setRightDoorState = self.setRightDoorStateSetup()
+            self.setUndergroundStateLabel = self.setUndergroundStateLabelSetup()
+            self.setUndergroundState = self.setUndergroundStateSetup()
+            self.setPlatformSideLabel = self.setPlatformSideLabelSetup()
+            self.setPlatformSide = self.setPlatformSideSetup()
+            self.showAllOutputsLabel = self.showAllOutputsLabelSetup()
+            self.showAllOutputs = self.showAllOutputsSetup()
             self.setEmergencyBrakeStateLabel = self.setEmergencyBrakeStateLabelSetup()
             self.setEmergencyBrakeState = self.setEmergencyBrakeStateSetup()
             self.currentSpeedSliderLabel = self.currentSpeedSliderLabelSetup()
@@ -63,8 +99,7 @@ class TestWindow(QMainWindow):
 
                 
         # widget setups
-        # TODO: commandedSpeed, authority, time, undergroundState, speedLimit, temperature, engineState, stationState, stationName, platformSide, externalLightState,
-        #       internalLightState, leftDoorState, rightDoorState, serviceBrakeState,  engineStatus, communicationsStatus
+        # TODO: add functionality to all test elements
         def testLabelSetup(self):
             testLabel = QLabel()         
             testLabel.setFont(self.stationFont)
@@ -77,6 +112,42 @@ class TestWindow(QMainWindow):
             testLabel.move(x, y)
             testLabel.setParent(self)
             return testLabel
+
+        def setRealTimeLabelSetup(self):
+            setRealTimeLabel = QLabel()
+
+        def setRealTimeSetup(self):
+            setRealTime = QDateTimeEdit()
+
+        def setEngineStatusLabelSetup(self):
+            setEngineStatusSetup = QLabel()
+
+        def setEngineStatusSetup(self):
+            setEngineStatus = QComboBox()
+
+        def setEngineStateLabelSetup(self):
+            setEngineStateSetup = QLabel()
+        
+        def setEngineStateSetup(self):
+            setEngineState = QComboBox()
+
+        def setCommunicationsStatusLabelSetup(self):
+            setCommunicationsStatusLabel = QLabel()
+        
+        def setCommunicationsStatusSetup(self):
+            setCommunicationsStatus = QComboBox()
+
+        def setStationNameLabelSetup(self):
+            setStationNameLabel = QLabel()
+
+        def setStationNameSetup(self):
+            setStationName = QLineEdit()
+
+        def setStationStateLabelSetup(self):
+            setStationStateLabel = QLabel()
+
+        def setStationStateSetup(self):
+            setStation = QComboBox()
         
         def setEmergencyBrakeStateLabelSetup(self):
             setEmergencyBrakeStateLabel = QLabel()
@@ -100,6 +171,18 @@ class TestWindow(QMainWindow):
             # setEmergencyBrakeState.move(x, y)
              setEmergencyBrakeState.setParent(self)
              return setEmergencyBrakeState
+
+        def setServiceBrakeStateLabelSetup(self):
+            setServiceBrakeStateLabel = QLabel()
+
+        def setServiceBrakeStateSetup(self):
+            setServiceBrakeState = QComboBox()
+
+        def setServiceBrakeStatusLabelSetup(self):
+            setServiceBrakeStatusLabel = QLabel()
+
+        def setServiceBrakeStatusSetup(self):
+            setServiceBrakeStatus = QComboBox()
         
         def currentSpeedSliderLabelSetup(self):
             currentSpeedSliderLabel = QLabel()
@@ -117,6 +200,82 @@ class TestWindow(QMainWindow):
             currentSpeedSlider.setSingleStep(1)
             currentSpeedSlider.setParent(self)
             return currentSpeedSlider
+
+        def commandedSpeedSliderLabelSetup(self):
+            commandedSpeedSliderLabel = QLabel()
+
+        def commandedSpeedSliderSetup(self):
+            commandedSpeedSlider = QSlider(Qt.Orientation.Horizontal)
+
+        def setAuthorityLabelSetup(self):
+            setAuthorityLabel = QLabel()
+
+        def setAuthoritySetup(self):
+            setAuthority = QLineEdit()
+
+        def setSpeedLimitLabelSetup(self):
+            setSpeedLimitLabel = QLabel()
+
+        def setSpeedLimitSetup(self):
+            setSpeedLimit = QLineEdit()
+
+        def setTemperatureLabelSetup(self):
+            setTemperatureLabel = QLabel()
+
+        def setTemperatureSetup(self):
+            setTemperature = QLineEdit()
+
+        def setInternalLightStateLabelSetup(self):
+            setInternalLightStateLabel = QLabel()
+
+        def setInternalLightStateSetup(self):
+            setInternalLightState = QComboBox()
+
+        def setExternalLightStateLabelSetup(self):
+            setExternalLightStateLabel = QLabel()
+
+        def setExternalLightStateSetup(self):
+            setExternalLightState = QComboBox()
+
+        def setLeftDoorStateLabelSetup(self):
+            setLeftDoorStateLabel = QLabel()
+
+        def setLeftDoorStateSetup(self):
+            setLeftDoorState = QComboBox()
+
+        def setRightDoorStateLabelSetup(self):
+            setRightDoorStateLabel = QLabel()
+
+        def setRightDoorStateSetup(self):
+            setRightDoorState = QComboBox()
+
+        def setUndergroundStateLabelSetup(self):
+            setUndergroundStateLabel = QLabel()
+
+        def setUndergroundStateSetup(self):
+            setUndergroundState = QComboBox()
+
+        def setPlatformSideLabelSetup(self):
+            setPlatformSideLabel = QLabel()
+
+        def setPlatformSideSetup(self):
+            setPlatformSide = QComboBox()
+
+        def showAllOutputsLabelSetup(self):
+            showAllOutputsLabel = QLabel()
+
+        def showAllOutputsSetup(self):
+            showAllOutputs = QLabel()
+            showAllOutputs.setText(
+                f''
+                f''
+                f''
+                f''
+                f''
+                f''
+                f''
+            )
+        
 
 
         # event actions
