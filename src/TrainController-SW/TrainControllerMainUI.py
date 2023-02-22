@@ -173,6 +173,8 @@ class MainWindow(QMainWindow):
             realTimeClock.setFont(self.stationFont) 
 
             hour = str(self.TrainControllerSW.realTime.hour) if self.TrainControllerSW.realTime.hour <= 12 else str(self.TrainControllerSW.realTime.hour - 12)
+            if(int(hour) == 0):
+                hour = "12"
             minute = str(self.TrainControllerSW.realTime.minute)
             second = str(self.TrainControllerSW.realTime.second)
             realTimeClock.setText(f'Time: {hour}:{minute}:{second}')
@@ -416,6 +418,7 @@ class MainWindow(QMainWindow):
             leftDoorState.setParent(self)
             return leftDoorState
             
+            
         def leftDoorOpenSetup(self):
             leftDoorOpen = QPushButton("Open Doors")
             leftDoorOpen.setFont(self.buttonFont)
@@ -516,6 +519,8 @@ class MainWindow(QMainWindow):
 
         def updateVisualElements(self):
             hour = str(self.TrainControllerSW.realTime.hour) if self.TrainControllerSW.realTime.hour <= 12 else str(self.TrainControllerSW.realTime.hour - 12)
+            if(int(hour) == 0):
+                hour = "12"
             minute = str(self.TrainControllerSW.realTime.minute)
             second = str(self.TrainControllerSW.realTime.second)
             self.realTimeClock.setText(f'Time: {hour}:{minute}:{second}')

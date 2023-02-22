@@ -80,9 +80,9 @@ class TrainControllerSW:
     def autoSetServiceBrake(self):
         self.outputs.serviceBrakeCommand = None
 
-    # Converts input time string to time object
+    # Converts input time string to time object ex "2023-02-20T04:52:48.3940347-05:00"
     def convertTime(self):
-        inputTime = self.inputs.inputTime.replace(self.inputs.inputTime[26], "")
+        inputTime = stringRemove(self.inputs.inputTime, 26)
         self.realTime = datetime.strptime(inputTime, "%Y-%m-%dT%H:%M:%S.%f%z")   
 
     def getEngineState(self):
@@ -154,7 +154,7 @@ class Inputs:
         self.commandedSpeed = commandedSpeed
         self.currentSpeed = currentSpeed
         self.authority = authority
-        self.inputTime = inputTime
+        self.inputTime = str(inputTime)
         self.undergroundState = undergroundState
         self.speedLimit = speedLimit
         self.temperature = temperature
@@ -185,3 +185,9 @@ class Outputs:
         self.externalLightCommand = externalLightCommand
         self.internalLightCommand = internalLightCommand
         self.stationAnnouncement = stationAnnouncement
+        
+# Function to remove character from a string at nth position
+def stringRemove(string, n):  
+      first = string[: n]   
+      last = string[n+1:]  
+      return first + last
