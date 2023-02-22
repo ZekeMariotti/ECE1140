@@ -31,6 +31,9 @@ class TrainModelMainUI(QWidget):
     # Initialization of the UI
     def __init__(self):
 
+        # SIGNAL USED FOR TEST UI
+        trainSignals.updateOutputs.connect(self.updateOutputs)
+
         # Initializing and setting the layout of the UI
         super().__init__()
         self.setWindowTitle("Train Model")
@@ -339,11 +342,12 @@ class TrainModelMainUI(QWidget):
 
         self.updateOutputs()
 
-        # UPDATE BUTTON FOR TESTING TO BE REMOVED
-        updateButton = QPushButton("Update Values")
-        updateButton.setFont(self.timesNewRoman24)
-        updateButton.pressed.connect(self.updateOutputs)
-        layout.addWidget(updateButton, 9, 2, 1, 2, self.alignCenter)
+        if __name__ == "__main__":
+            # UPDATE BUTTON FOR TESTING TO BE REMOVED
+            updateButton = QPushButton("Update Values")
+            updateButton.setFont(self.timesNewRoman24)
+            updateButton.pressed.connect(self.updateOutputs)
+            layout.addWidget(updateButton, 9, 2, 1, 2, self.alignCenter)
 
 
     # Handler for when Communcations Failure State button is pressed

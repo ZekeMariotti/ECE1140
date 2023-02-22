@@ -54,7 +54,7 @@ class backEndCalculations():
         "massOfHuman"        : 68.0389,      # Mass of a human for this simulation in kilograms
     }
 
-    # Dictionary used for Test UI and User input EBrake States
+    # Dictionary used for different eBrake States from train controller and user input
     eBrakes = {
         "user" : False,
         "trainController" : False
@@ -164,6 +164,7 @@ class backEndCalculations():
         #    self.data["acceleration"] = self.constants["emergencyBrake"]
         #else:
         #    self.data["eBrakeState"] = False
+
         if (self.eBrakes["user"] == False):
             self.eBrakes["user"] = True
         else:
@@ -176,23 +177,21 @@ class backEndCalculations():
         #This line is used only when in correlation with the TestUI
         trainSignals.eBrakeToTestUI.emit(self.data["eBrakeState"])
 
-    def emergencyBrakeDecelerationTrainController(self):
-        if (self.eBrakes["trainController"] == False):
-            self.eBrakes["trainController"] = True
-        else:
-            self.eBrakes["trainController"] = False
+    def emergencyBrakeDecelerationTrainController(self, index):
+        if (self.eBrakes["trainController"] != index):
+            self.eBrakes["trainController"] = index
 
         self.data["eBrakeState"] = self.eBrakes["user"] | self.eBrakes["trainController"]
         if (self.data["eBrakeState"] == True):
             self.data["acceleration"] = self.constants["emergencyBrake"]
 
     # Handle Service Brake being pulled
-    def serviceBrakeDeceleration(self):
-        if (self.data["sBrakeState"] == False) & self.data["brakeStatus"]:
-            self.data["sBrakeState"] = True
+    def serviceBrakeDeceleration(self, index):
+        if (self.data["sBrakeState"] != index) & self.data["brakeStatus"]:
+            self.data["sBrakeState"] = index
+
+        if (self.data["sBrakeState"] & self.data["brakeStatus"]):
             self.data["acceleration"] = self.constants["serviceBrake"]
-        elif self.data["sBrakeState"] & self.data["brakeStatus"]:
-            self.data["sBrakeState"] = False
 
 
     # Handle change in input from the user about temperature
@@ -203,6 +202,9 @@ class backEndCalculations():
     def passengersGettingOff(self):
         if self.data["atStation"]:
             self.data["passengersOff"] = randint(0, self.data["passengers"])
+
+            # THIS LINE USED ONLY FOR TESTING
+            trainSignals.passengersOff.emit(self.data["passengersOff"])
             self.data["passengers"] -= self.data["passengersOff"]
             self.data["passengersOff"] = 0
 
@@ -256,6 +258,9 @@ class backEndCalculations():
             self.data["commStatus"] = True
         else:
             self.data["commStatus"] = False
+        
+        # LINE USED ONLY FOR TESTING
+        trainSignals.communicationsFailure.emit()
 
     # Handle engine failure
     def engineFailure(self):
@@ -272,6 +277,7 @@ class backEndCalculations():
         else:
             self.data["brakeStatus"] = False
         self.data["sBrakeState"] = False
+        trainSignals.sBrakeFailure.emit()
 
     #####################
     # TEST UI FUNCTIONS #

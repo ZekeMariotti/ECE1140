@@ -12,15 +12,25 @@ from TrainModelSignals import *
 # Class for the Train Model Test UI
 class TrainModelTestUI(QWidget):
 
-    data = {
-        "authority"  : 0,
-        "cmdSpeed"   : 0.0,
-        "speedLimit" : 0.0,
-        "accelLimit" : 0.0,
-        "beacon"     : [False, "", 0],
-        "eBrake"     : False,
-        "eBrakeUser" : False,
-        "eBrakeTest" : False
+    testData = {
+        "rtc"            : "12:00:00 am",
+        "sBrake"         : False,
+        "eBrake"         : False,
+        "eBrakeUser"     : False,
+        "eBrakeTest"     : False,
+        "lDoors"         : False,
+        "rDoors"         : False,
+        "eLights"        : False,
+        "iLights"        : False,
+        "authority"      : 0,
+        "cmdSpeed"       : 0.0,
+        "velocity"       : 0.0,
+        "underground"    : False,
+        "speedLimit"     : 0.0,
+        "beacon"         : [False, "", 0],
+        "passengersOff"  : 0,
+        "commStatus"     : True,
+        "sBrakeStatus"   : True
     }
 
     # Initialize the GUI
@@ -29,6 +39,9 @@ class TrainModelTestUI(QWidget):
         # Back End Signal Handlers
         trainSignals.velocityToTestUI.connect(self.setCurrentVelocity)
         trainSignals.eBrakeToTestUI.connect(self.eBrakeHandler)
+        trainSignals.passengersOff.connect(self.passengersOffHandler)
+        trainSignals.communicationsFailure.connect(self.commFailureHandler)
+        trainSignals.sBrakeFailure.connect(self.sBrakeFailureHandler)
 
         # Initializing the layout of the UI
         super().__init__()
@@ -203,7 +216,7 @@ class TrainModelTestUI(QWidget):
         layout.addWidget(realTimeClockLabel, 0, 2)
         self.realTimeClockOutput = QLineEdit()
         self.realTimeClockOutput.setReadOnly(True)
-        self.realTimeClockOutput.setText("00:00:00")
+        self.realTimeClockOutput.setText("12:00:00 am")
         layout.addWidget(self.realTimeClockOutput, 0, 3)
 
         # Adding the Service Brake State
@@ -333,48 +346,45 @@ class TrainModelTestUI(QWidget):
         self.passengersExitingOutput.setText("0")
         layout.addWidget(self.passengersExitingOutput, 16, 3)
 
+        # UPDATE BUTTON FOR TESTING TO BE REMOVED
+        updateButton = QPushButton("Update Values")
+        updateButton.pressed.connect(self.updateOutputsBoth)
+        layout.addWidget(updateButton, 21, 0, 1, 4)
+
     # Gets the Power input from the UI
     def getPowerInput(self):
         trainSignals.power.emit(float(self.powerInput.text()))
 
     # Gets the Service Brake state from the UI
     def getServiceBrakeInput(self, index):
-        trainSignals.serviceBrake.emit()
-        outputText = "Engaged" if index == 1 else "Disengaged"
-        self.serviceBrakeOutput.setText(outputText)
+        trainSignals.serviceBrake.emit(bool(index))
+        self.testData["sBrake"] = bool(index)
 
     # Gets the Emergency Brake state from the UI
     def getEmergencyBrakeInput(self, index):
-        trainSignals.emergencyBrake.emit()
-        self.data["eBrakeTest"] = bool(index)
-        print(self.data["eBrakeUser"], self.data["eBrakeTest"])
-        self.data["eBrake"] = self.data["eBrakeUser"] | self.data["eBrakeTest"]
-        outputText = "Engaged" if (self.data["eBrake"] == 1) else "Disengaged"
-        self.emergencyBrakeOutput.setText(outputText)
+        trainSignals.emergencyBrake.emit(bool(index))
+        self.testData["eBrakeTest"] = bool(index)
+        self.testData["eBrake"] = self.testData["eBrakeUser"] | self.testData["eBrakeTest"]
 
     # Gets the Left Door state from the UI
     def getLeftDoorInput(self, index):
         trainSignals.leftDoors.emit()
-        outputText = "Open" if index == 1 else "Closed"
-        self.leftDoorOutput.setText(outputText)
+        self.testData["lDoors"] = bool(index)
 
     # Gets the Right Door state from the UI
     def getRightDoorInput(self, index):
         trainSignals.rightDoors.emit()
-        outputText = "Open" if index == 1 else "Closed"
-        self.rightDoorOutput.setText(outputText)
+        self.testData["rDoors"] = bool(index)
 
     # Gets the External Light state from the UI
     def getExternalLightInput(self, index):
         trainSignals.externalLights.emit()
-        outputText = "On" if index == 1 else "Off"
-        self.externalLightOutput.setText(outputText)
+        self.testData["eLights"] = bool(index)
 
     # Gets the Internal Light state from the UI
     def getInternalLightInput(self, index):
         trainSignals.internalLights.emit()
-        outputText = "On" if index == 1 else "Off"
-        self.internalLightOutput.setText(outputText)
+        self.testData["iLights"] = bool(index)
 
     # Gets the Station Name input from the UI
     def getStationInput(self):
@@ -383,17 +393,15 @@ class TrainModelTestUI(QWidget):
     # Gets the Real Time Clock state from the UI
     def getRealTimeClockInput(self):
         trainSignals.realTimeClock.emit(self.realTimeClockInput.text())
-        self.realTimeClockOutput.setText(self.realTimeClockInput.text())
+        self.testData["rtc"] = self.realTimeClockInput.text()
 
     # Gets the Authority input from the UI
     def getAuthorityInput(self):
-        self.data["authority"] = int(self.authorityInput.text())
-        self.authorityOutput.setText(str(self.data["authority"]) + " Blocks")
+        self.testData["authority"] = int(self.authorityInput.text())
 
     # Gets the commanded speed from the UI
     def getCommandedSpeedInput(self):
-        self.data["cmdSpeed"] = float(self.commandedSpeedInput.text())
-        self.commandedSpeedOutput.setText(str(self.data["cmdSpeed"]) + " m/s")
+        self.testData["cmdSpeed"] = float(self.commandedSpeedInput.text())
 
     # Gets the number of passengers entering the train from the UI
     def getPassengersEnteringInput(self):
@@ -409,49 +417,85 @@ class TrainModelTestUI(QWidget):
         
     # Gets the Speed Limit from the UI    
     def getSpeedLimitInput(self):
-        self.data["speedLimit"] = int(self.speedLimitInput.text())
-        self.speedLimitOutput.setText(str(self.data["speedLimit"]) + " km/h")
+        self.testData["speedLimit"] = int(self.speedLimitInput.text())
 
     # Gets the Acceleration Limit from the UI
     def getAccelerationLimitInput(self):
-        self.data["accelLimit"] = float(self.accelerationLimitInput.text())
+        self.testData["accelLimit"] = float(self.accelerationLimitInput.text())
 
     # Gets the Underground state from the UI
     def getUndergroundStateInput(self, index):
         trainSignals.underground.emit()
-        self.undergroundStateOutput.setText(str(bool(index)))
+        self.testData["underground"] = bool(index)
 
     # Gets the Station state from the UI
     def getStationStateInput(self, index):
         trainSignals.stationState.emit()
-        self.data["beacon"][0] = bool(index)
-        self.stationStateOutput.setText(str(self.data["beacon"][0]))
+        self.testData["beacon"][0] = bool(index)
 
     # Gets the Next Station input from the UI
     def getNextStationInput(self):
-        self.data["beacon"][1] = self.nextStationInput.text()
-        self.nextStationOutput.setText(self.data["beacon"][1])
+        self.testData["beacon"][1] = self.nextStationInput.text()
     
     # Gets the Platform Side input from the UI
     def getPlatformSideInput(self, index):
-        self.data["beacon"][2] = index
-        if self.data["beacon"][2] == 0:
-            outputText = "Left"
-        elif self.data["beacon"][2] == 1:
-            outputText = "Right"
-        else:
-            outputText = "Both"
-        self.platformSideOutput.setText(outputText)
+        self.testData["beacon"][2] = index
 
     # Connects the velocity from the back end to the test UI
     def setCurrentVelocity(self, velocity):
-        self.velocityOutput.setText(str(round(velocity, 3)) + " m/s")
+        self.testData["velocity"] = velocity
 
+    # Defines what to do when the eBrake is pulled
     def eBrakeHandler(self, index):
-        self.data["eBrakeUser"] = bool(index)
-        self.data["eBrake"] = self.data["eBrakeTest"] | self.data["eBrakeUser"]
-        outputText = "Engaged" if (self.data["eBrake"] == 1) else "Disengaged"
+        self.testData["eBrakeUser"] = bool(index)
+        self.testData["eBrake"] = self.testData["eBrakeTest"] | self.testData["eBrakeUser"]
+
+    # Defines what happens when passengers off is set
+    def passengersOffHandler(self, num):
+        self.testData["passengersOff"] = num
+
+    def commFailureHandler(self):
+        if (self.testData["commStatus"] == True):
+            self.testData["commStatus"] = False
+        else:
+            self.testData["commStatus"] = True
+
+    def sBrakeFailureHandler(self):
+        if (self.testData["sBrakeStatus"] == True):
+            self.testData["sBrakeStatus"] = False
+        else:
+            self.testData["sBrakeStatus"] = True
+
+    # Updates all functions when the button is pressed
+    def updateOutputsBoth(self):
+        trainSignals.updateOutputs.emit()
+
+        self.realTimeClockOutput.setText(self.testData["rtc"])
+        if self.testData["sBrakeStatus"]:
+            outputText = "Engaged" if (self.testData["sBrake"] == 1) else "Disengaged"
+            self.serviceBrakeOutput.setText(outputText)
+        else:
+            self.serviceBrakeOutput.setText("Disengaged")
+        outputText = "Engaged" if (self.testData["eBrake"] == 1) else "Disengaged"
         self.emergencyBrakeOutput.setText(outputText)
+        outputText = "Open" if (self.testData["lDoors"] == 1) else "Closed"
+        self.leftDoorOutput.setText(outputText)
+        outputText = "Open" if (self.testData["rDoors"] == 1) else "Closed"
+        self.rightDoorOutput.setText(outputText)
+        outputText = "On" if (self.testData["eLights"] == 1) else "Off"
+        self.externalLightOutput.setText(outputText)
+        outputText = "On" if (self.testData["iLights"] == 1) else "Off"
+        self.internalLightOutput.setText(outputText)
+        self.velocityOutput.setText(str(round(self.testData["velocity"], 2)) + " m/s")
+        if self.testData["commStatus"]:
+            self.authorityOutput.setText(str(self.testData["authority"]) + " Blocks")
+            self.commandedSpeedOutput.setText(str(self.testData["cmdSpeed"]) + " m/s")
+            self.undergroundStateOutput.setText(str(bool(self.testData["underground"])))
+            self.speedLimitOutput.setText(str(self.testData["speedLimit"]) + " km/h")
+            self.stationStateOutput.setText(str(self.testData["beacon"][0]))
+            self.nextStationOutput.setText(self.testData["beacon"][1])
+            self.platformSideOutput.setText(str(self.testData["beacon"][2]))
+            self.passengersExitingOutput.setText(str(self.testData["passengersOff"]))
 
 def main():
     app = QApplication(argv)
