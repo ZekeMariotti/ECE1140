@@ -11,17 +11,22 @@ from json import JSONEncoder
     # automatically: calculate power formula, update doors, update external lights, set service brake,
     #                display communications error, display correct current/next station, import RTC as a datetime type, 
     #                update currentTime and previousTime during each mainTimer loop, 
+    # Time Format: "2023-02-20T21:52:48.3940347-05:00"
 
 # Class for the TrainControllerSW
 class TrainControllerSW:
-    def __init__(self, commandedSpeed, currentSpeed, authority, time, undergroundState, speedLimit, temperature, engineState, 
+    def __init__(self, commandedSpeed, currentSpeed, authority, inputTime, undergroundState, speedLimit, temperature, engineState, 
                  stationState, stationName, platformSide, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
                  serviceBrakeState, emergencyBrakeState, serviceBrakeStatus, engineStatus, communicationsStatus, power, leftDoorCommand, 
                  rightDoorCommand, serviceBrakeCommand, emergencyBrakeCommand, externalLightCommand, internalLightCommand, stationAnnouncement):
         
+        # Constants
         self.MAX_SPEED = 70
+        self.MAX_POWER = None
+
+        self.realTime = None
         
-        self.inputs = Inputs(commandedSpeed, currentSpeed, authority, time, undergroundState, speedLimit, temperature, engineState, 
+        self.inputs = Inputs(commandedSpeed, currentSpeed, authority, inputTime, undergroundState, speedLimit, temperature, engineState, 
                  stationState, stationName, platformSide, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
                  serviceBrakeState, emergencyBrakeState, serviceBrakeStatus, engineStatus, communicationsStatus)
         self.outputs = Outputs(power, leftDoorCommand, 
@@ -39,6 +44,7 @@ class TrainControllerSW:
     def readInputs(self):
         with open(os.path.join(sys.path[0], "TrainControllerSWInputs.json"), "r") as filename:
             self.inputs = Inputs(**json.loads(filename.read()))
+        self.convertTime()
 
     # Only used in Test UI - writes to input file
     def writeInputs(self):
@@ -67,7 +73,11 @@ class TrainControllerSW:
     # Automatically enable/disables the service brake based on currentSpeed, commandedSpeed, ...
     def autoSetServiceBrake(self):
         self.outputs.serviceBrakeCommand = None
-            
+
+    # Converts input time string to time object
+    def convertTime(self):
+        self.inputs.inputTime = self.inputs.inputTime.replace(self.inputs.inputTime[26], "")
+        self.realTime = datetime.strptime(self.inputs.inputTime, "%Y-%m-%dT%H:%M:%S.%f%z")   
 
     def getEngineState(self):
         if(self.inputs.engineStatus == False):
@@ -131,14 +141,14 @@ class TrainControllerSW:
         
 # class for TrainController ouputs
 class Inputs:
-    def __init__(self, commandedSpeed, currentSpeed, authority, time, undergroundState, speedLimit, temperature, engineState, 
+    def __init__(self, commandedSpeed, currentSpeed, authority, inputTime, undergroundState, speedLimit, temperature, engineState, 
                  stationState, stationName, platformSide, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
                  serviceBrakeState, emergencyBrakeState, serviceBrakeStatus, engineStatus, communicationsStatus):
         # Inputs
         self.commandedSpeed = commandedSpeed
         self.currentSpeed = currentSpeed
         self.authority = authority
-        self.time = time
+        self.inputTime = inputTime
         self.undergroundState = undergroundState
         self.speedLimit = speedLimit
         self.temperature = temperature

@@ -28,7 +28,7 @@ class MainWindow(QMainWindow):
             testState = False
 
             if(testState):
-                self.TrainControllerSW.inputs.time = "8:46"
+                self.TrainControllerSW.inputs.inputTime = "8:46"
                 self.TrainControllerSW.inputs.stationName = "SHADYSIDE"
                 self.TrainControllerSW.inputs.currentSpeed = 20
                 self.TrainControllerSW.inputs.engineState = 1
@@ -155,7 +155,7 @@ class MainWindow(QMainWindow):
         def realTimeClockSetup(self):
             realTimeClock = QLabel() 
             realTimeClock.setFont(self.stationFont) 
-            realTimeClock.setText("Time: " + self.TrainControllerSW.inputs.time)
+            realTimeClock.setText("Time: " + self.TrainControllerSW.inputs.inputTime)
             realTimeClock.setFixedSize(QSize(self.labelWidth, round(self.labelHeight*0.5)))
             realTimeClock.setAlignment(Qt.AlignmentFlag.AlignCenter)
             realTimeClock.setWordWrap(True)
@@ -483,6 +483,7 @@ class MainWindow(QMainWindow):
                 self.TrainControllerTestUI.close()
 
         def updateElements(self):
+            self.TrainControllerSW.writeOutputs()
             self.TrainControllerSW.readInputs()
             self.emergencyBrakeState.setText("Emergency Brake:\n" + self.TrainControllerTestUI.TrainControllerSW.getEmergencyBrakeState())
 

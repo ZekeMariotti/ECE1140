@@ -2,7 +2,7 @@
     "commandedSpeed": 0,
     "currentSpeed": 0,
     "authority": 0,
-    "time": "setupTime",
+    "inputTime": "2023-02-20T21:52:48.3940347-05:00",
     "undergroundState": false,
     "speedLimit": 0,
     "temperature": 0,
@@ -15,7 +15,7 @@
     "leftDoorState": 0,
     "rightDoorState": 0,
     "serviceBrakeState": 0,
-    "emergencyBrakeState": false,
+    "emergencyBrakeState": true,
     "serviceBrakeStatus": 0,
     "engineStatus": 0,
     "communicationsStatus": 0
