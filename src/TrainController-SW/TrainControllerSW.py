@@ -9,9 +9,7 @@ from json import JSONEncoder
 
 # TODO: add manual speed override toggle, add unit conversions class, 
     # automatically: calculate power formula, update doors, update external lights, set service brake,
-    #                display communications error, display correct current/next station, import RTC as a datetime type, 
-    #                update currentTime and previousTime during each mainTimer loop, 
-    # Time Format: "2023-02-20T21:52:48.3940347-05:00"
+    #                display communications error, display correct current/next station, 
 
 # Class for the TrainControllerSW
 class TrainControllerSW:
@@ -21,10 +19,16 @@ class TrainControllerSW:
                  rightDoorCommand, serviceBrakeCommand, emergencyBrakeCommand, externalLightCommand, internalLightCommand, stationAnnouncement):
         
         # Constants
+        # serviceBrake deceleration = 1.2 m/s^2, e-brake deceleration = 2.73 m/s^2
+        # Max Speed in km/hr
         self.MAX_SPEED = 70
-        self.MAX_POWER = None
 
+        # Max Power in Watts
+        self.MAX_POWER = 120000
+        
         self.realTime = None
+        self.previousTime = None
+        self.currentTime = None
         
         self.inputs = Inputs(commandedSpeed, currentSpeed, authority, inputTime, undergroundState, speedLimit, temperature, engineState, 
                  stationState, stationName, platformSide, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 

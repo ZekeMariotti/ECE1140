@@ -21,12 +21,16 @@ class MainWindow(QMainWindow):
         def __init__(self):
             super().__init__()
             
-            # initialize TrainControllerSW object
+            # Initialize TrainControllerSW object
             self.TrainControllerSW = TrainControllerSW(0, 0, 0, "setupTime", False, 0, 0, 0, 0, "setupStationName", 
                                                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "setupStationAnnouncement")
             
+            # Update Inputs and Outputs
+            self.TrainControllerSW.writeOutputs()
+            self.TrainControllerSW.readInputs()
+            
+            # Temporary Testing
             testState = False
-
             if(testState):
                 self.TrainControllerSW.inputs.inputTime = "8:46"
                 self.TrainControllerSW.inputs.stationName = "SHADYSIDE"
@@ -43,15 +47,15 @@ class MainWindow(QMainWindow):
                 self.TrainControllerSW.inputs.leftDoorState = False
                 self.TrainControllerSW.inputs.rightDoorState = False
 
-            self.TrainControllerSW.readInputs()
+            
 
-            # set window defaults
+            # Set window defaults
             self.setWindowTitle("Train Controller")
             self.resize(QSize(1366, 768-31))
             #self.setFixedSize(QSize(960, 540))
             self.setMinimumSize(1050, 550)
 
-            # set element defaults
+            # Set element defaults
             self.windowWidth = self.frameGeometry().width()
             self.windowHeight = self.frameGeometry().height()
             self.buttonWidth = round(0.13*self.windowWidth)
@@ -64,7 +68,7 @@ class MainWindow(QMainWindow):
             self.buttonFont = QFont(self.globalFont, 9)
             self.stationFont = QFont(self.globalFont, 20)  
                 
-            # create visual elements
+            # Create visual elements
             self.mainTimer = self.mainTimerSetup()
             self.station = self.stationSetup()
             self.currentSpeed = self.currentSpeedSetup()
@@ -100,7 +104,7 @@ class MainWindow(QMainWindow):
 
 
                 
-        # widget setups
+        # Widget setups
         def mainThreadSetup(self):
             self.timerThread = QThread()
             self.timerThread.started.connect(self.mainTimerSetup)
@@ -108,7 +112,7 @@ class MainWindow(QMainWindow):
         def mainTimerSetup(self):     
             mainTimer = QTimer()
             mainTimer.setInterval(100)
-            mainTimer.timeout.connect(self.updateElements)
+            mainTimer.timeout.connect(self.mainEventLoop)
             mainTimer.setParent(self)
             mainTimer.start()
             return mainTimer
@@ -155,7 +159,12 @@ class MainWindow(QMainWindow):
         def realTimeClockSetup(self):
             realTimeClock = QLabel() 
             realTimeClock.setFont(self.stationFont) 
-            realTimeClock.setText("Time: " + self.TrainControllerSW.inputs.inputTime)
+
+            hour = str(self.TrainControllerSW.realTime.hour) if self.TrainControllerSW.realTime.hour <= 12 else str(self.TrainControllerSW.realTime.hour - 12)
+            minute = str(self.TrainControllerSW.realTime.minute)
+            second = str(self.TrainControllerSW.realTime.second)
+            realTimeClock.setText(f'Time: {hour}:{minute}:{second}')
+
             realTimeClock.setFixedSize(QSize(self.labelWidth, round(self.labelHeight*0.5)))
             realTimeClock.setAlignment(Qt.AlignmentFlag.AlignCenter)
             realTimeClock.setWordWrap(True)
@@ -453,7 +462,7 @@ class MainWindow(QMainWindow):
             return rightDoorClose
             
 
-        # event actions
+        # Event actions
 
         # might use for resizing elements - adds 31 to height for some reason
         # def resizeEvent(self, event):
@@ -478,13 +487,22 @@ class MainWindow(QMainWindow):
         #     emergencyBrakeDisable.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
         #     QMainWindow.resizeEvent(self, event)
         
+        # Closes test UI if main window closes
         def closeEvent(self, event):
             if (self.TrainControllerTestUI):
                 self.TrainControllerTestUI.close()
 
-        def updateElements(self):
+        # Updates everything during every each loop of the timer 
+        def mainEventLoop(self):
+            self.TrainControllerSW.currentTime = self.TrainControllerSW.realTime
+
             self.TrainControllerSW.writeOutputs()
             self.TrainControllerSW.readInputs()
+            self.updateVisualElements()
+
+            self.TrainControllerSW.previousTime = self.TrainControllerSW.realTime
+
+        def updateVisualElements(self):
             self.emergencyBrakeState.setText("Emergency Brake:\n" + self.TrainControllerTestUI.TrainControllerSW.getEmergencyBrakeState())
 
         def emergencyBrakeEnableClick(self):
@@ -526,7 +544,7 @@ class MainWindow(QMainWindow):
         def rightDoorCloseClick(self):
             self.TrainControllerSW.outputs.rightDoorCommand = False
 
-# class to create color widgets
+# Class to create color widgets
 class Color(QWidget):
 
     def __init__(self, color):
