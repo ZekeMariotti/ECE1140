@@ -34,14 +34,27 @@ func (t *TimeKeeper) StopSimulation() {
 	t.stopSignal <- true
 }
 
-// Gets the current time of the simulation
-func (t *TimeKeeper) GetSimulationTime() time.Time {
-	return time.Now()
+// Gets the current simulation parameters
+func (t *TimeKeeper) GetSimulation() Simulation {
+	s := Simulation{
+		Time:  t.simulationTime,
+		Speed: t.simulationSpeed,
+	}
+	return s
 }
 
-// Gets the current speed of the simulation
+// Gets the current time of the simulation
+func (t *TimeKeeper) GetSimulationTime() time.Time {
+	return t.simulationTime
+}
+
+// Sets the current speed of the simulation
 func (t *TimeKeeper) SetSimulationSpeed(simSpeed int) {
 	t.simulationSpeed = simSpeed
+}
+
+func (t *TimeKeeper) GetSimulationSpeed() int {
+	return t.simulationSpeed
 }
 
 // Service to continuously update the simulation time

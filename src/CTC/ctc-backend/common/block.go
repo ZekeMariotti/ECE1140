@@ -19,4 +19,7 @@ type Block struct {
 	Switch              *Switch         `json:"switch"`
 	Signal              BlockSignal     `json:"signal"`
 	Occupied            bool            `json:"occupied"`
+	SuggestedSpeed      decimal.Decimal `json:"suggested-speed"`
+	Authority           int             `json:"authority"`
+	Open                bool            `json:"open"`
 }

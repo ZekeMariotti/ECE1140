@@ -10,13 +10,15 @@ import (
 )
 
 type FrontendAPI struct {
+	port      int
 	router    *gin.Engine
 	datastore *datastore.DataStore
 }
 
 // Creates a new front end API
-func NewFrontendAPI(ds *datastore.DataStore) *FrontendAPI {
+func NewFrontendAPI(port int, ds *datastore.DataStore) *FrontendAPI {
 	api := FrontendAPI{
+		port:      port,
 		datastore: ds,
 	}
 	api.initialize()
@@ -24,8 +26,9 @@ func NewFrontendAPI(ds *datastore.DataStore) *FrontendAPI {
 }
 
 // Begins serving frontend API
-func (a *FrontendAPI) Serve(address string) {
-	a.router.Run(address)
+func (a *FrontendAPI) Serve() {
+	url := fmt.Sprintf("0.0.0.0:%d", a.port)
+	a.router.Run(url)
 }
 
 // Intializes variables for the API
