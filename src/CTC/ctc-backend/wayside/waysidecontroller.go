@@ -6,20 +6,21 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/common"
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/datastore"
 )
 
 type WaysideController struct {
-	Address string
-	Line    string
+	address string
+	line    string
 	data    *datastore.DataStore
 	stop    chan bool
 }
 
 func NewWaysideController(address string, line string, data *datastore.DataStore) *WaysideController {
 	wc := WaysideController{
-		Address: address,
-		Line:    line,
+		address: address,
+		line:    line,
 		data:    data,
 		stop:    make(chan bool),
 	}
@@ -42,13 +43,14 @@ func (c *WaysideController) updateService() {
 			return
 		default:
 			c.getBlocks()
+			c.getSwitches()
 		}
 
 	}
 }
 
 func (c *WaysideController) getBlocks() {
-	resp, err := http.Get(c.Address + "/blocks")
+	resp, err := http.Get(c.address + "/blocks")
 	if err != nil {
 		log.Default().Println(err)
 		return
@@ -57,21 +59,14 @@ func (c *WaysideController) getBlocks() {
 
 	body, _ := io.ReadAll(resp.Body)
 
-	blocks := make([]WaysideBlock, 0)
+	blocks := make([]common.BlockInfo, 0)
 	json.Unmarshal(body, &blocks)
 
-	for _, v := range blocks {
-		line := c.data.Lines.Get(c.Line)
-		block := line.Blocks.Get(v.Number)
-		block.Occupied = v.Occupied
-		block.Signal = v.Signal
-		line.Blocks.Set(block.Number, block)
-		c.data.Lines.Set(line.Name, line)
-	}
+	c.data.Lines.SetBlockInfo(c.line, blocks)
 }
 
 func (c *WaysideController) getSwitches() {
-	resp, err := http.Get(c.Address + "/switches")
+	resp, err := http.Get(c.address + "/switches")
 	if err != nil {
 		log.Default().Println(err)
 		return
@@ -80,11 +75,8 @@ func (c *WaysideController) getSwitches() {
 
 	body, _ := io.ReadAll(resp.Body)
 
-	switches := make([]WaysideSwitch, 0)
+	switches := make([]common.SwitchInfo, 0)
 	json.Unmarshal(body, &switches)
 
-	for _, v := range switches {
-		line := c.data.Lines.Get(c.Line)
-		for i, v := range line.Switches
-	}
+	c.data.Lines.SetSwitchPositions(c.line, switches)
 }

@@ -49,3 +49,21 @@ func (m *SafeLineMap) GetSlice() []common.Line {
 
 	return maps.Values(m.data)
 }
+
+func (m *SafeLineMap) SetBlockInfo(line string, blockInfo []common.BlockInfo) {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	l := m.data[line]
+	l.SetBlockInfos(blockInfo)
+	m.data[line] = l
+}
+
+func (m *SafeLineMap) SetSwitchPositions(line string, positions []common.SwitchInfo) {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	l := m.data[line]
+	l.SetSwitchPositions(positions)
+	m.data[line] = l
+}

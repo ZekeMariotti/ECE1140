@@ -20,6 +20,19 @@ func NewSafeBlockMap() *SafeBlockMap {
 	return &m
 }
 
+func NewSafeBlockMapFromSlice(slice []Block) *SafeBlockMap {
+	m := SafeBlockMap{
+		data: make(map[int]Block),
+		mute: sync.Mutex{},
+	}
+
+	for _, v := range slice {
+		m.data[v.Number] = v
+	}
+
+	return &m
+}
+
 func (m *SafeBlockMap) Get(key int) Block {
 	m.mute.Lock()
 	defer m.mute.Unlock()
@@ -54,4 +67,14 @@ func (m *SafeBlockMap) GetCopy() map[int]Block {
 	defer m.mute.Unlock()
 
 	return maps.Clone(m.data)
+}
+
+func (m *SafeBlockMap) SetBlockInfo(key int, occupied bool, signal BlockSignal) {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	block := m.data[key]
+	block.Occupied = occupied
+	block.Signal = signal
+	m.data[key] = block
 }
