@@ -7,8 +7,8 @@ import os
 import json
 from json import JSONEncoder
 
-# TODO: add manual speed override toggle, add unit conversions class, 
-    # automatically: calculate power formula, update doors, update external lights, set service brake,
+# TODO: add unit conversions class, 
+    # automatically: **calculate power formula, **set service brake, update doors, update external lights, 
     #                display communications error, display correct current/next station, 
 
 # Class for the TrainControllerSW
@@ -29,6 +29,8 @@ class TrainControllerSW:
         self.realTime = None
         self.previousTime = None
         self.currentTime = None
+        self.commandedSpeedInternal = None
+        self.manualMode = False
         
         self.inputs = Inputs(commandedSpeed, currentSpeed, authority, inputTime, undergroundState, speedLimit, temperature, engineState, 
                  stationState, stationName, platformSide, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
@@ -80,8 +82,8 @@ class TrainControllerSW:
 
     # Converts input time string to time object
     def convertTime(self):
-        self.inputs.inputTime = self.inputs.inputTime.replace(self.inputs.inputTime[26], "")
-        self.realTime = datetime.strptime(self.inputs.inputTime, "%Y-%m-%dT%H:%M:%S.%f%z")   
+        inputTime = self.inputs.inputTime.replace(self.inputs.inputTime[26], "")
+        self.realTime = datetime.strptime(inputTime, "%Y-%m-%dT%H:%M:%S.%f%z")   
 
     def getEngineState(self):
         if(self.inputs.engineStatus == False):

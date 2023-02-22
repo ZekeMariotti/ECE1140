@@ -3,12 +3,12 @@
 from distutils.cmd import Command
 import sys
 
-from PyQt6 import QtCore
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from TrainControllerSW import TrainControllerSW
 from TrainControllerTestUI import TestWindow
+from animated_toggle import AnimatedToggle
 
 # Class for Worker (multithreading)
 class Worker(QObject):
@@ -22,7 +22,7 @@ class MainWindow(QMainWindow):
             super().__init__()
             
             # Initialize TrainControllerSW object
-            self.TrainControllerSW = TrainControllerSW(0, 0, 0, "setupTime", False, 0, 0, 0, 0, "setupStationName", 
+            self.TrainControllerSW = TrainControllerSW(0, 0, 0, "2023-02-20T21:52:48.3940347-05:00", False, 0, 0, 0, 0, "setupStationName", 
                                                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "setupStationAnnouncement")
             
             # Update Inputs and Outputs
@@ -73,6 +73,7 @@ class MainWindow(QMainWindow):
             self.station = self.stationSetup()
             self.currentSpeed = self.currentSpeedSetup()
             self.manualSpeedOverride = self.manualSpeedOverrideSetup()
+            self.manualModeToggle = self.manualModeToggleSetup()
             self.realTimeClock = self.realTimeClockSetup()
             self.engineState = self.engineStateSetup()
             self.emergencyBrakeState = self.emergencyBrakeStateSetup()
@@ -101,6 +102,7 @@ class MainWindow(QMainWindow):
 
             # Test UI
             self.TrainControllerTestUI = TestWindow()
+            self.TrainControllerTestUI.move(self.frameGeometry().width(), 250)
 
 
                 
@@ -155,6 +157,16 @@ class MainWindow(QMainWindow):
             manualSpeedOverride.move(x, y)
             manualSpeedOverride.setParent(self)
             return manualSpeedOverride
+        
+        def manualModeToggleSetup(self):
+            manualModeToggle = AnimatedToggle()
+            manualModeToggle.setFixedSize(manualModeToggle.sizeHint())
+            manualModeToggle.stateChanged.connect(self.manualModeToggleEvent)
+            x = round(self.frameGeometry().width()*0.61)
+            y = round(self.frameGeometry().height()*0.36)
+            manualModeToggle.move(x, y)
+            manualModeToggle.setParent(self)
+            return manualModeToggle
 
         def realTimeClockSetup(self):
             realTimeClock = QLabel() 
@@ -259,11 +271,11 @@ class MainWindow(QMainWindow):
 
         def commandedSpeedSliderSetup(self):
             commandedSpeedSlider = QSlider(Qt.Orientation.Horizontal)
-            commandedSpeedSlider.setFixedSize(QSize(round(self.labelWidth*1.2), round(self.labelHeight*0.5)))
-            commandedSpeedSlider.sliderReleased.connect(self.commandedSpeedSliderRelease)
+            commandedSpeedSlider.setFixedSize(QSize(round(self.labelWidth*0.9), round(self.labelHeight*0.5)))
+            commandedSpeedSlider.valueChanged.connect(self.commandedSpeedSliderValueChanged)
             commandedSpeedSlider.setRange(0, self.TrainControllerSW.MAX_SPEED)
             commandedSpeedSlider.setSingleStep(1)
-            x = round(self.frameGeometry().width()*0.5-commandedSpeedSlider.frameGeometry().width()*0.5)
+            x = round(self.frameGeometry().width()*0.5-commandedSpeedSlider.frameGeometry().width()*0.55)
             y = round(self.frameGeometry().height()*0.37)
             commandedSpeedSlider.move(x, y)
             commandedSpeedSlider.setParent(self)
@@ -503,7 +515,35 @@ class MainWindow(QMainWindow):
             self.TrainControllerSW.previousTime = self.TrainControllerSW.realTime
 
         def updateVisualElements(self):
-            self.emergencyBrakeState.setText("Emergency Brake:\n" + self.TrainControllerTestUI.TrainControllerSW.getEmergencyBrakeState())
+            hour = str(self.TrainControllerSW.realTime.hour) if self.TrainControllerSW.realTime.hour <= 12 else str(self.TrainControllerSW.realTime.hour - 12)
+            minute = str(self.TrainControllerSW.realTime.minute)
+            second = str(self.TrainControllerSW.realTime.second)
+            self.realTimeClock.setText(f'Time: {hour}:{minute}:{second}')
+
+            if (self.TrainControllerSW.manualMode == False):
+                self.commandedSpeedSlider.setEnabled(False)
+            else:
+                self.commandedSpeedSlider.setEnabled(True)
+
+            self.station.setText("Current Station:\n" + self.TrainControllerSW.inputs.stationName)
+            self.currentSpeed.setText("Current Speed: " + str(self.TrainControllerSW.inputs.currentSpeed) + " MPH")
+            self.engineState.setText("Engine State:\n" + self.TrainControllerSW.getEngineState())
+            self.emergencyBrakeState.setText("Emergency Brake:\n" + self.TrainControllerSW.getEmergencyBrakeState())
+            self.serviceBrakeState.setText("Service Brake:\n" + self.TrainControllerSW.getServiceBrakeState())
+            self.commandedSpeed.setText("Commanded Speed:\n" + str(self.TrainControllerSW.inputs.commandedSpeed) + " MPH")
+            self.authority.setText("Authority:\n" + str(self.TrainControllerSW.inputs.authority) + " Blocks")
+            self.speedLimit.setText("Speed Limit:\n" + str(self.TrainControllerSW.inputs.speedLimit) + " MPH")
+            self.temperature.setText("Temperature:\n" + str(self.TrainControllerSW.inputs.temperature) + " F")
+            self.internalLightsState.setText("Internal Lights: " + self.TrainControllerSW.getInternalLightsState())
+            self.externalLightsState.setText("External Lights: " + self.TrainControllerSW.getExternalLightsState())
+            self.leftDoorState.setText("Left Door\n" + self.TrainControllerSW.getLeftDoorState())
+            self.rightDoorState.setText("Right Door\n" + self.TrainControllerSW.getRightDoorState())
+
+        def manualModeToggleEvent(self):
+            if (self.manualModeToggle.isChecked()):
+                self.TrainControllerSW.manualMode = True
+            else:
+                self.TrainControllerSW.manualMode = False
 
         def emergencyBrakeEnableClick(self):
             self.TrainControllerSW.outputs.emergencyBrakeCommand = True
@@ -517,8 +557,11 @@ class MainWindow(QMainWindow):
         def serviceBrakeDisableClick(self):
             self.TrainControllerSW.outputs.serviceBrakeCommand = False
 
-        def commandedSpeedSliderRelease(self):
+        def commandedSpeedSliderValueChanged(self):
             self.TrainControllerSW.inputs.commandedSpeed = self.commandedSpeedSlider.value()
+
+            # Need to write inputs because commandedSpeed is an internal input in manual mode
+            self.TrainControllerSW.writeInputs()
 
         def internalLightsEnableClick(self):
             self.TrainControllerSW.outputs.internalLightCommand = True
@@ -554,6 +597,8 @@ class Color(QWidget):
         palette = self.palette()
         palette.setColor(QPalette.ColorRole.Window, QColor(color))
         self.setPalette(palette)
+
+
 
 app = QApplication(sys.argv)
 
