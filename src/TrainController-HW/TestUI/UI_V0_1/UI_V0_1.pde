@@ -10,6 +10,17 @@ ControlP5 cp5;
 JSONObject jsonDataIn, jsonDataOut; 
 String dataIn, dataOut;
 
+//output variables
+int commandedSpeed, currentSpeed, authority, undergroundState, speedLimit, temperature, engineState,
+      stationState, platformSide, externalLightState, internalLightState, leftDoorState, rightDootState, 
+      serviceBrakeState, engineStatus, commsStatus, emergencyBrake, serviceBrake, internalLights, externalLights,
+      leftDoor, rightDoor, manualSpeedOverride, Kp, Ki;
+String time, beacon, nextStationName;
+
+//declaring global variables here
+JSONObject jsonDataIn, jsonDataOut; 
+String dataIn, dataOut;
+
 ////output variables
 //int testCommandedSpeed, testCurrentSpeed, testAuthority, undergroundState, testSpeedLimit, testTemperature, testEngineState,
 //      stationState, platformSide, testExternalLightState, testInternalLightState, testLeftDoorState, testRightDoorState, 
