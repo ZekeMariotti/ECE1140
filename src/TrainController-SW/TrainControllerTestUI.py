@@ -7,8 +7,10 @@ from PyQt6 import QtCore
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
-from TrainControllerSW import TrainControllerSW
+from TrainControllerSW import TrainControllerSW, Inputs, Outputs
 from datetime import *
+import os
+import json
 
 # Class for the main window
 class TestWindow(QMainWindow):
@@ -26,7 +28,7 @@ class TestWindow(QMainWindow):
 
             # Set window defaults
             self.setWindowTitle("Train Controller Test UI")
-            self.setFixedSize(QSize(600, 700))
+            self.setFixedSize(QSize(700, 700))
 
             # Set element defaults
             self.windowWidth = self.frameGeometry().width()
@@ -42,6 +44,8 @@ class TestWindow(QMainWindow):
             self.stationFont = QFont(self.globalFont, 20)  
                 
             # Create visual elements
+            self.mainTimer = self.mainTimerSetup()
+            
             self.emptyWidget = self.emptyWidgetSetup()
             self.testLabel = self.testLabelSetup()
 
@@ -111,7 +115,6 @@ class TestWindow(QMainWindow):
             # Grid Layout
             self.mainWidget = QWidget()
             self.gridLayout = QGridLayout()
-            self.gridLayout.setColumnStretch(3, 100)
 
             self.gridLayout.addWidget(self.emptyWidget, 0, 0)
 
@@ -119,26 +122,37 @@ class TestWindow(QMainWindow):
             self.gridLayout.addWidget(self.setRealTime, 1, 1)
 
             self.gridLayout.addWidget(self.setEngineStatusLabel, 2, 0)
-
+            self.gridLayout.addWidget(self.setEngineStatus, 2, 1)
 
             self.gridLayout.addWidget(self.setEngineStateLabel, 3, 0)
-
+            self.gridLayout.addWidget(self.setEngineState, 3, 1)
 
             self.gridLayout.addWidget(self.setCommunicationsStatusLabel, 4, 0)
-
+            self.gridLayout.addWidget(self.setCommunicationsStatus, 4, 1)
 
             self.gridLayout.addWidget(self.setStationNameLabel, 5, 0)
-
+            self.gridLayout.addWidget(self.setStationName, 5, 1)
 
             self.gridLayout.addWidget(self.setStationStateLabel, 6, 0)
-
+            self.gridLayout.addWidget(self.setStationState, 6, 1)
 
             self.gridLayout.addWidget(self.setEmergencyBrakeStateLabel, 7, 0)
             self.gridLayout.addWidget(self.setEmergencyBrakeState, 7, 1)
 
-            self.gridLayout.addWidget(self.currentSpeedSliderLabel, 8, 0)
-            self.gridLayout.addWidget(self.currentSpeedSlider, 8, 1)
+            self.gridLayout.addWidget(self.setServiceBrakeStateLabel, 8, 0)
+            self.gridLayout.addWidget(self.setServiceBrakeState, 8, 1)
+
+            self.gridLayout.addWidget(self.setServiceBrakeStatusLabel, 9, 0)
+            self.gridLayout.addWidget(self.setServiceBrakeStatus, 9, 1)
+
+            self.gridLayout.addWidget(self.currentSpeedSliderLabel, 1, 2)
+            self.gridLayout.addWidget(self.currentSpeedSlider, 1, 3)
+
+
             
+
+            self.gridLayout.addWidget(self.showAllOutputsLabel, 1, 5)
+            #self.gridLayout.addWidget(self.showAllOutputs, 2, 5)
 
             self.mainWidget.setLayout(self.gridLayout)
             self.setCentralWidget(self.mainWidget)
@@ -177,7 +191,6 @@ class TestWindow(QMainWindow):
         def setRealTimeSetup(self):
             setRealTime = QTimeEdit()
             setRealTime.setDisplayFormat("HH:mm:ss.zzz")
-            #setRealTime.setDateTime()
             setRealTime.timeChanged.connect(self.realTimeChanged)
             setRealTime.setParent(self)
             return setRealTime
@@ -192,6 +205,11 @@ class TestWindow(QMainWindow):
 
         def setEngineStatusSetup(self):
             setEngineStatus = QComboBox()
+            setEngineStatus.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
+            setEngineStatus.addItems(["Disabled", "Enabled"])
+            setEngineStatus.activated.connect(self.engineStatusActivated)
+            setEngineStatus.setParent(self)
+            return setEngineStatus
 
         def setEngineStateLabelSetup(self):
             setEngineStateLabel = QLabel()
@@ -203,6 +221,11 @@ class TestWindow(QMainWindow):
         
         def setEngineStateSetup(self):
             setEngineState = QComboBox()
+            setEngineState.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
+            setEngineState.addItems(["Disabled", "Enabled"])
+            setEngineState.activated.connect(self.engineStateActivated)
+            setEngineState.setParent(self)
+            return setEngineState
 
         def setCommunicationsStatusLabelSetup(self):
             setCommunicationsStatusLabel = QLabel()
@@ -214,6 +237,11 @@ class TestWindow(QMainWindow):
         
         def setCommunicationsStatusSetup(self):
             setCommunicationsStatus = QComboBox()
+            setCommunicationsStatus.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
+            setCommunicationsStatus.addItems(["Disabled", "Enabled"])
+            setCommunicationsStatus.activated.connect(self.setCommunicationsStatusActivated)
+            setCommunicationsStatus.setParent(self)
+            return setCommunicationsStatus
 
         def setStationNameLabelSetup(self):
             setStationNameLabel = QLabel()
@@ -225,6 +253,10 @@ class TestWindow(QMainWindow):
 
         def setStationNameSetup(self):
             setStationName = QLineEdit()
+            setStationName.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
+            setStationName.textChanged.connect(self.setStationNameTextChanged)
+            setStationName.setParent(self)
+            return setStationName
 
         def setStationStateLabelSetup(self):
             setStationStateLabel = QLabel()
@@ -235,7 +267,12 @@ class TestWindow(QMainWindow):
             return setStationStateLabel
 
         def setStationStateSetup(self):
-            setStation = QComboBox()
+            setStationState = QComboBox()
+            setStationState.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
+            setStationState.addItems(["Disabled", "Enabled"])
+            setStationState.activated.connect(self.setStationStateActivated)
+            setStationState.setParent(self)
+            return setStationState
         
         def setEmergencyBrakeStateLabelSetup(self):
             setEmergencyBrakeStateLabel = QLabel()
@@ -247,24 +284,45 @@ class TestWindow(QMainWindow):
 
         
         def setEmergencyBrakeStateSetup(self):
-             setEmergencyBrakeState = QComboBox()
-             setEmergencyBrakeState.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
-             setEmergencyBrakeState.addItems(["Disabled", "Enabled"])
-             setEmergencyBrakeState.activated.connect(self.setEmergencyBrakeStateActivated)
-             setEmergencyBrakeState.setParent(self)
-             return setEmergencyBrakeState
+            setEmergencyBrakeState = QComboBox()
+            setEmergencyBrakeState.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
+            setEmergencyBrakeState.addItems(["Disabled", "Enabled"])
+            setEmergencyBrakeState.activated.connect(self.setEmergencyBrakeStateActivated)
+            setEmergencyBrakeState.setParent(self)
+            return setEmergencyBrakeState
 
         def setServiceBrakeStateLabelSetup(self):
             setServiceBrakeStateLabel = QLabel()
+            setServiceBrakeStateLabel.setFixedSize(QSize(round(self.labelWidth), round(self.labelHeight)))
+            setServiceBrakeStateLabel.setText("Service\nBrake State:")
+            setServiceBrakeStateLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            setServiceBrakeStateLabel.setParent(self)
+            return setServiceBrakeStateLabel
 
         def setServiceBrakeStateSetup(self):
             setServiceBrakeState = QComboBox()
+            setServiceBrakeState.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
+            setServiceBrakeState.addItems(["Disabled", "Enabled"])
+            setServiceBrakeState.activated.connect(self.setServiceBrakeStateActivated)
+            setServiceBrakeState.setParent(self)
+            return setServiceBrakeState
 
         def setServiceBrakeStatusLabelSetup(self):
             setServiceBrakeStatusLabel = QLabel()
+            setServiceBrakeStatusLabel.setFixedSize(QSize(round(self.labelWidth), round(self.labelHeight)))
+            setServiceBrakeStatusLabel.setText("Service\nBrake Status:")
+            setServiceBrakeStatusLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            setServiceBrakeStatusLabel.setParent(self)
+            return setServiceBrakeStatusLabel
+
 
         def setServiceBrakeStatusSetup(self):
             setServiceBrakeStatus = QComboBox()
+            setServiceBrakeStatus.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
+            setServiceBrakeStatus.addItems(["Disabled", "Enabled"])
+            setServiceBrakeStatus.activated.connect(self.setServiceBrakeStatusActivated)
+            setServiceBrakeStatus.setParent(self)
+            return setServiceBrakeStatus
         
         def currentSpeedSliderLabelSetup(self):
             currentSpeedSliderLabel = QLabel()
@@ -345,17 +403,63 @@ class TestWindow(QMainWindow):
 
         def showAllOutputsLabelSetup(self):
             showAllOutputsLabel = QLabel()
+            showAllOutputsLabel.setFixedSize(QSize(round(self.labelWidth*1.5), round(self.labelHeight)))
+            showAllOutputsLabel.setText("Outputs Column:")
+            showAllOutputsLabel.setFont(QFont("Times", 14))
+            showAllOutputsLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            showAllOutputsLabel.setParent(self)
+            return showAllOutputsLabel
 
         def showAllOutputsSetup(self):
             showAllOutputs = QLabel()
+            showAllOutputs.setFixedSize(QSize(round(self.labelWidth*1.5), round(self.labelHeight)*12))
+            showAllOutputs.setAlignment(Qt.AlignmentFlag.AlignLeft)
+            showAllOutputs.move(525, 135)
+            showAllOutputs.setWordWrap(True)
+            
+
+            with open(os.path.join(sys.path[0], "TrainControllerSWOutputs.json"), "r") as filename:
+                outputs = Outputs(**json.loads(filename.read()))
+
             showAllOutputs.setText(
-                f''
-                f''
-                f''
-                f''
-                f''
-                f''
-                f''
+                f'Power: {outputs.power}\n\n'
+                f'Left Door\nCommand: {outputs.leftDoorCommand}\n\n'
+                f'Right Door\nCommand: {outputs.rightDoorCommand}\n\n'
+                f'Service Brake\nCommand: {outputs.serviceBrakeCommand}\n\n'
+                f'Emergency Brake\nCommand: {outputs.emergencyBrakeCommand}\n\n'
+                f'External\nLight Command: {outputs.externalLightCommand}\n\n'
+                f'Internal\nLight Command: {outputs.internalLightCommand}\n\n'
+                f'Station\nAnnouncement: {outputs.stationAnnouncement}\n\n'
+            )
+
+            showAllOutputs.setParent(self)
+            return showAllOutputs
+        
+        def mainThreadSetup(self):
+            self.timerThread = QThread()
+            self.timerThread.started.connect(self.mainTimerSetup)
+
+        def mainTimerSetup(self):     
+            mainTimer = QTimer()
+            mainTimer.setInterval(100)
+            mainTimer.timeout.connect(self.mainEventLoop)
+            mainTimer.setParent(self)
+            mainTimer.start()
+            return mainTimer
+            
+        def mainEventLoop(self):
+            with open(os.path.join(sys.path[0], "TrainControllerSWOutputs.json"), "r") as filename:
+                outputs = Outputs(**json.loads(filename.read()))
+
+            self.showAllOutputs.setText(
+                f'Power: {outputs.power}\n\n'
+                f'Left Door\nCommand: {outputs.leftDoorCommand}\n\n'
+                f'Right Door\nCommand: {outputs.rightDoorCommand}\n\n'
+                f'Service Brake\nCommand: {outputs.serviceBrakeCommand}\n\n'
+                f'Emergency Brake\nCommand: {outputs.emergencyBrakeCommand}\n\n'
+                f'External\nLight Command: {outputs.externalLightCommand}\n\n'
+                f'Internal\nLight Command: {outputs.internalLightCommand}\n\n'
+                f'Station\nAnnouncement:\n{outputs.stationAnnouncement}\n\n'
             )
         
 
@@ -372,13 +476,41 @@ class TestWindow(QMainWindow):
             self.TrainControllerSW.inputs.inputTime = f'2023-02-22T{hour}:{minute}:{second}.{millisecond}0000-05:00'
             self.TrainControllerSW.writeInputs()
 
+        def engineStatusActivated(self):
+            self.TrainControllerSW.inputs.engineStatus = (self.setEngineStatus.currentText() == "Enabled")
+            self.TrainControllerSW.writeInputs()
+
+        def engineStateActivated(self):
+            self.TrainControllerSW.inputs.engineState = (self.setEngineState.currentText() == "Enabled")
+            self.TrainControllerSW.writeInputs()
+
+        def setCommunicationsStatusActivated(self):
+            self.TrainControllerSW.inputs.communicationsStatus = (self.setCommunicationsStatus.currentText() == "Enabled")
+            self.TrainControllerSW.writeInputs()
+
+        def setStationNameTextChanged(self):
+            self.TrainControllerSW.inputs.stationName = self.setStationName.text()
+            self.TrainControllerSW.writeInputs()
+
+        def setStationStateActivated(self):
+            self.TrainControllerSW.inputs.stationState = (self.setStationState.currentText() == "Enabled")
+            self.TrainControllerSW.writeInputs()
+
         def currentSpeedSliderRelease(self):
-             self.TrainControllerSW.inputs.currentSpeed = self.currentSpeedSlider.value()
-             self.TrainControllerSW.writeInputs()
+            self.TrainControllerSW.inputs.currentSpeed = self.currentSpeedSlider.value()
+            self.TrainControllerSW.writeInputs()
 
         def setEmergencyBrakeStateActivated(self):
-             self.TrainControllerSW.inputs.emergencyBrakeState = (self.setEmergencyBrakeState.currentText() == "Enabled")
-             self.TrainControllerSW.writeInputs()
+            self.TrainControllerSW.inputs.emergencyBrakeState = (self.setEmergencyBrakeState.currentText() == "Enabled")
+            self.TrainControllerSW.writeInputs()
+
+        def setServiceBrakeStateActivated(self):
+            self.TrainControllerSW.inputs.serviceBrakeState = (self.setServiceBrakeState.currentText() == "Enabled")
+            self.TrainControllerSW.writeInputs()
+
+        def setServiceBrakeStatusActivated(self):
+            self.TrainControllerSW.inputs.serviceBrakeStatus = (self.setServiceBrakeStatus.currentText() == "Enabled")
+            self.TrainControllerSW.writeInputs()
 
 
 # Class to create color widgets

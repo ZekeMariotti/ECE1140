@@ -52,7 +52,7 @@ class TrainControllerSW:
             self.inputs = Inputs(**json.loads(filename.read()))
         self.convertTime()
 
-    # Only used in Test UI - writes to input file
+    # Only used in Test UI and commandedSpeed manual input - writes to input file
     def writeInputs(self):
         with open(os.path.join(sys.path[0], "TrainControllerSWInputs.json"), "w") as filename:
             (json.dump(self.inputs.__dict__, filename, indent=4))
