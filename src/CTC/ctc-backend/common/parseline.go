@@ -12,13 +12,11 @@ import (
 
 // Parses the csv files
 func ParseLine(pathBlocks string, pathSwitches string) *Line {
-	// Define line
-	l := Line{
-		Name:     "",
-		Blocks:   NewSafeBlockMap(),
-		Switches: make([]*Switch, 0),
-		Stations: make([]*Station, 0),
-	}
+	// Define line variables
+	name := ""
+	blocks := make([]Block, 0)
+	switches := make([]Switch, 0)
+	stations := make([]Station, 0)
 
 	// Import blocks
 	fBlocks, _ := os.Open(pathBlocks)
@@ -66,6 +64,11 @@ func ParseLine(pathBlocks string, pathSwitches string) *Line {
 			CumulativeElevation: cumElevation,
 			Underground:         underground,
 			Crossing:            crossing,
+			Signal:              BLOCKSIGNAL_GREEN,
+			Occupied:            false,
+			SuggestedSpeed:      decimal.NewFromInt(0),
+			Authority:           0,
+			Open:                true,
 		}
 
 		// Handle Station
@@ -77,18 +80,19 @@ func ParseLine(pathBlocks string, pathSwitches string) *Line {
 				side = STATIONSIDE_RIGHT
 			}
 
-			b.Station = &Station{
+			station := Station{
 				Name: stationName,
 				Side: side,
 			}
-			l.Stations = append(l.Stations, b.Station)
+			b.Station = &station
+			stations = append(stations, station)
 		}
 
-		l.Blocks.Set(b.Number, b)
+		blocks = append(blocks, b)
 
 		// Ensure line name is set
-		if l.Name == "" {
-			l.Name = line
+		if name == "" {
+			name = line
 		}
 	}
 
@@ -118,16 +122,16 @@ func ParseLine(pathBlocks string, pathSwitches string) *Line {
 			Destination1: dest1,
 			Destination2: dest2,
 		}
-		l.Switches = append(l.Switches, &s)
+		switches = append(switches, s)
 
 		// Append switch reference to blocks switch affects
-		for key, val := range l.Blocks.GetCopy() {
-			if key == source || key == dest1 || key == dest2 {
+		for _, val := range blocks {
+			if val.Number == source || val.Number == dest1 || val.Number == dest2 {
 				val.Switch = &s
-				l.Blocks.Set(key, val)
 			}
 		}
 	}
 
-	return &l
+	l := NewLineFromSlice(name, blocks, switches, stations)
+	return l
 }

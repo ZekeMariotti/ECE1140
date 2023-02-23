@@ -1,10 +1,33 @@
 package common
 
+import "sort"
+
 type Line struct {
 	Name     string        `json:"name"`
 	Blocks   *SafeBlockMap `json:"blocks"`
 	Switches []*Switch     `json:"switches"`
 	Stations []*Station    `json:"stations"`
+}
+
+func NewLineFromSlice(name string, blocks []Block, switches []Switch, stations []Station) *Line {
+	l := Line{
+		Name:     name,
+		Blocks:   NewSafeBlockMap(),
+		Switches: make([]*Switch, len(switches)),
+		Stations: make([]*Station, len(stations)),
+	}
+
+	for _, v := range blocks {
+		l.Blocks.Set(v.Number, v)
+	}
+	for i, v := range switches {
+		l.Switches[i] = &v
+	}
+	for i, v := range stations {
+		l.Stations[i] = &v
+	}
+
+	return &l
 }
 
 func (l *Line) SetBlockInfos(occupancies []BlockInfo) {
@@ -56,4 +79,34 @@ func (l *Line) GetLineOutput() LineOutput {
 		Blocks: l.GetBlockOutputs(),
 	}
 	return out
+}
+
+func (l *Line) GetStations() []string {
+	result := make([]string, len(l.Stations))
+	for i, v := range l.Stations {
+		result[i] = v.Name
+	}
+	return result
+}
+
+func (l *Line) GetBlocks() []BlockFrontend {
+	blocks := l.Blocks.GetSlice()
+	result := make([]BlockFrontend, len(blocks))
+	for i, v := range blocks {
+		result[i] = BlockFrontend{
+			Number:         v.Number,
+			Line:           v.Line,
+			Section:        v.Section,
+			Length:         v.Length,
+			Signal:         v.Signal,
+			Occupied:       v.Occupied,
+			SuggestedSpeed: v.SuggestedSpeed,
+			Authority:      v.Authority,
+			Open:           v.Open,
+		}
+	}
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].Number < result[j].Number
+	})
+	return result
 }

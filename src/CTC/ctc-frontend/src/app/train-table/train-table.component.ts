@@ -2,6 +2,7 @@ import { Component, Directive, EventEmitter, Input, Output, QueryList, ViewChild
 import { DecimalPipe, NgFor } from '@angular/common';
 import { Train } from '../models/train';
 import { BackendService } from '../services/backend.service';
+import { interval } from 'rxjs';
 
 @Component({
   selector: 'app-train-table',
@@ -17,6 +18,8 @@ export class TrainTableComponent {
 
   ngOnInit(): void {
     this.getData();
+
+    interval(1000).subscribe(() => {this.getData()});
   }
 
   private getData(): void {

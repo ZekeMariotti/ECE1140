@@ -1,4 +1,8 @@
-export interface TrainStop {
-  station: string;
-  time: Date;
+export class TrainStop {
+
+  constructor(
+    public station: string,
+    public time: Date
+  ) {}
+
 }

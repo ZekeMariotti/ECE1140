@@ -87,3 +87,26 @@ func (m *SafeLineMap) GetOutput() []LineOutput {
 
 	return out
 }
+
+func (m *SafeLineMap) GetLineNames() []string {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	return maps.Keys(m.data)
+}
+
+func (m *SafeLineMap) GetStations(line string) []string {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	l := m.data[line]
+	return l.GetStations()
+}
+
+func (m *SafeLineMap) GetBlocks(line string) []BlockFrontend {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	l := m.data[line]
+	return l.GetBlocks()
+}

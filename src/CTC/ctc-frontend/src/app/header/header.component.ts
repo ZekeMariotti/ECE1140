@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { interval, repeat, Subscription } from 'rxjs';
+import { BackendService } from '../services/backend.service';
 
 @Component({
   selector: 'app-header',
@@ -6,5 +8,20 @@ import { Component } from '@angular/core';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
-  public currentTime = Date.now()
+  currentTime: Date = new Date();
+
+  constructor(
+    private backendService: BackendService
+  ) {}
+
+  ngOnInit(): void {
+    this.backendService.getTime()
+    this.getTime();
+
+    interval(250).subscribe(() => {this.getTime()});
+  }
+
+  getTime(): void {
+    this.backendService.getTime().subscribe(time => this.currentTime = time);
+  }
 }
