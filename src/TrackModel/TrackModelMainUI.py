@@ -489,6 +489,19 @@ class TrackModelMainUI(QWidget):
             self.switchLabel.setText("Switch Pos: " + outTxt)
         self.tempLabel.setText("Temp: " + str(self.backEnd.data["temp"]) + " F")
 
+        # Update Signal
+        if self.backEnd.data["sigState"][self.backEnd.data["blockNo"]] == 2:
+            self.signal.setStyleSheet("background-color : green")
+        elif (self.backEnd.data["sigState"][self.backEnd.data["blockNo"]]) == 1:
+            self.signal.setStyleSheet("background-color : yellow")
+        else:
+            self.signal.setStyleSheet("background-color : red")
+
+        # Update Direction
+        outLbl2 = "Westbound" if self.backEnd.data["direction"][self.backEnd.data["blockNo"]] == 1 else "Eastbound"
+        self.directionLabel.setText(self.spaceString + "Direction: " + outLbl2)
+        
+
     # Handler for when Power Failure button is pressed
     def powerButtonPressed(self):
         trackSignals.powerPressedSignal.emit()
