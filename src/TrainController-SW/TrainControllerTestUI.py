@@ -2,6 +2,7 @@
 
 from distutils.cmd import Command
 import sys
+import Conversions
 
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import *
@@ -376,7 +377,6 @@ class TestWindow(QMainWindow):
 
         def commandedSpeedSliderSetup(self):
             commandedSpeedSlider = QSlider(Qt.Orientation.Horizontal)
-            commandedSpeedSlider = QSlider(Qt.Orientation.Horizontal)
             commandedSpeedSlider.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonWidth*0.3)))
             commandedSpeedSlider.valueChanged.connect(self.commandedSpeedSliderRelease)
             commandedSpeedSlider.setRange(0, self.TrainControllerSW.MAX_SPEED)
@@ -408,9 +408,11 @@ class TestWindow(QMainWindow):
             return setSpeedLimitLabel
 
         def setSpeedLimitSetup(self):
-            setSpeedLimit = QLineEdit()
+            setSpeedLimit = QSlider(Qt.Orientation.Horizontal)
             setSpeedLimit.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
-            setSpeedLimit.textChanged.connect(self.setSpeedLimitTextChanged)
+            setSpeedLimit.valueChanged.connect(self.setSpeedLimitValueChanged)
+            setSpeedLimit.setRange(0, self.TrainControllerSW.MAX_SPEED)
+            setSpeedLimit.setSingleStep(1)
             setSpeedLimit.setParent(self)
             return setSpeedLimit
 
@@ -423,9 +425,11 @@ class TestWindow(QMainWindow):
             return setTemperatureLabel
 
         def setTemperatureSetup(self):
-            setTemperature = QLineEdit()
+            setTemperature = QSlider(Qt.Orientation.Horizontal)
             setTemperature.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
-            setTemperature.textChanged.connect(self.setTemperatureTextChanged)
+            setTemperature.valueChanged.connect(self.setTemperatureValueChanged)
+            setTemperature.setRange(-50, 50)
+            setTemperature.setSingleStep(1)
             setTemperature.setParent(self)
             return setTemperature
 
@@ -643,12 +647,12 @@ class TestWindow(QMainWindow):
             self.TrainControllerSW.inputs.authority = self.setAuthority.text()
             self.TrainControllerSW.writeInputs()
 
-        def setSpeedLimitTextChanged(self):
-            self.TrainControllerSW.inputs.speedLimit = self.setSpeedLimit.text()
+        def setSpeedLimitValueChanged(self):
+            self.TrainControllerSW.inputs.speedLimit = self.setSpeedLimit.value()
             self.TrainControllerSW.writeInputs()
 
-        def setTemperatureTextChanged(self):
-            self.TrainControllerSW.inputs.temperature = self.setTemperature.text()
+        def setTemperatureValueChanged(self):
+            self.TrainControllerSW.inputs.temperature = self.setTemperature.value()
             self.TrainControllerSW.writeInputs()
 
         def setInternalLightStateActivated(self):

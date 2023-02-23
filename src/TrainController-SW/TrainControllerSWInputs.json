@@ -1,14 +1,14 @@
 {
-    "commandedSpeed": 0,
-    "currentSpeed": 0,
-    "authority": "13",
+    "commandedSpeed": 70,
+    "currentSpeed": 70,
+    "authority": "12",
     "inputTime": "2023-02-22T05:00:00.0000000-05:00",
     "undergroundState": false,
-    "speedLimit": "70",
-    "temperature": "122",
+    "speedLimit": 70,
+    "temperature": 50,
     "engineState": false,
     "stationState": true,
-    "stationName": "Test",
+    "stationName": "test",
     "platformSide": 1,
     "externalLightsState": false,
     "internalLightsState": false,
@@ -18,5 +18,5 @@
     "emergencyBrakeState": false,
     "serviceBrakeStatus": true,
     "engineStatus": true,
-    "communicationsStatus": false
+    "communicationsStatus": true
 }

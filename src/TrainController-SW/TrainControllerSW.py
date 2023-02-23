@@ -7,7 +7,7 @@ import os
 import json
 from json import JSONEncoder
 
-# TODO: add unit conversions class, doors must close after leaving station 
+# TODO: doors must close after leaving station 
 
 # Class for the TrainControllerSW
 class TrainControllerSW:
@@ -149,7 +149,7 @@ class TrainControllerSW:
 
     # Lowers commanded speed if it's higher than speed limit
     def stayBelowSpeedLimit(self):
-        if(int(self.inputs.commandedSpeed) > int(self.inputs.speedLimit)):
+        if(float(self.inputs.commandedSpeed) > float(self.inputs.speedLimit)):
             self.inputs.commandedSpeed = self.inputs.speedLimit
 
     # Converts input time string to time object ex "2023-02-20T04:52:48.3940347-05:00"
