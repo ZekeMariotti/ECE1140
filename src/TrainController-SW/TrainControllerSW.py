@@ -39,7 +39,7 @@ class TrainControllerSW:
         self.uk1 = 0
         
         self.T = 0.1
-        self.Kp = 5
+        self.Kp = 50
         self.Ki = 50
 
         # Variables to check states between mainEventLoops
