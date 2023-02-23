@@ -57,8 +57,10 @@ class TrainModelMainUI(QWidget):
 
         # Passengers Label and Output
         passengersLabel = QLabel("Passengers")
+        passengersLabel.setStyleSheet("color: purple")
         passengersLabel.setFont(self.timesNewRoman18)
         self.passengersOutput = QLineEdit()
+        self.passengersOutput.setStyleSheet("background-color: purple; border: purple")
         self.passengersOutput.setReadOnly(True)
         self.passengersOutput.setFont(self.timesNewRoman18)
         self.passengersOutput.setAlignment(self.alignCenter)
@@ -68,8 +70,10 @@ class TrainModelMainUI(QWidget):
 
         # Crew Label and Output
         crewLabel = QLabel("Crew")
+        crewLabel.setStyleSheet("color: rgb(65, 105, 255)")
         crewLabel.setFont(self.timesNewRoman18)
         self.crewOutput = QLineEdit()
+        self.crewOutput.setStyleSheet("background-color: rgb(65, 105, 255); border: rgb(65, 105, 255)")
         self.crewOutput.setReadOnly(True)
         self.crewOutput.setFont(self.timesNewRoman18)
         self.crewOutput.setAlignment(self.alignCenter)
@@ -79,8 +83,10 @@ class TrainModelMainUI(QWidget):
 
         # Underground Label and Output
         undergroundLabel = QLabel("Underground")
+        undergroundLabel.setStyleSheet("color: rgb(101, 67, 33)")
         undergroundLabel.setFont(self.timesNewRoman18)
         self.undergroundOutput = QLineEdit()
+        self.undergroundOutput.setStyleSheet("background-color: rgb(101, 67, 33); border: rgb(101, 67, 33)")
         self.undergroundOutput.setReadOnly(True)
         self.undergroundOutput.setFont(self.timesNewRoman18)
         self.undergroundOutput.setAlignment(self.alignCenter)
@@ -90,8 +96,10 @@ class TrainModelMainUI(QWidget):
 
         # Length Label and Output
         lengthLabel = QLabel("Length")
+        lengthLabel.setStyleSheet("color: rgb(105, 105, 105)")
         lengthLabel.setFont(self.timesNewRoman12)
         self.lengthOutput = QLineEdit()
+        self.lengthOutput.setStyleSheet("background-color: rgb(105, 105, 105); border: rgb(105, 105, 105)")
         self.lengthOutput.setReadOnly(True)
         self.lengthOutput.setFont(self.timesNewRoman12)
         self.lengthOutput.setAlignment(self.alignCenter)
@@ -101,8 +109,10 @@ class TrainModelMainUI(QWidget):
 
         # Width Label and Output
         widthLabel = QLabel("Width")
+        widthLabel.setStyleSheet("color: rgb(105, 105, 105)")
         widthLabel.setFont(self.timesNewRoman12)
         self.widthOutput = QLineEdit()
+        self.widthOutput.setStyleSheet("background-color: rgb(105, 105, 105); border: rgb(105, 105, 105)")
         self.widthOutput.setReadOnly(True)
         self.widthOutput.setFont(self.timesNewRoman12)
         self.widthOutput.setAlignment(self.alignCenter)
@@ -113,8 +123,10 @@ class TrainModelMainUI(QWidget):
 
         # Height Label and Output
         heightLabel = QLabel("Height")
+        heightLabel.setStyleSheet("color: rgb(105, 105, 105)")
         heightLabel.setFont(self.timesNewRoman12)
         self.heightOutput = QLineEdit()
+        self.heightOutput.setStyleSheet("background-color: rgb(105, 105, 105); border: rgb(105, 105, 105)")
         self.heightOutput.setReadOnly(True)
         self.heightOutput.setFont(self.timesNewRoman12)
         self.heightOutput.setAlignment(self.alignCenter)
@@ -125,8 +137,10 @@ class TrainModelMainUI(QWidget):
 
         # Mass Label and Output
         massLabel = QLabel("Mass")
+        massLabel.setStyleSheet("color: rgb(47, 79, 79)")
         massLabel.setFont(self.timesNewRoman24)
         self.massOutput = QLineEdit()
+        self.massOutput.setStyleSheet("background-color: rgb(47, 79, 79); border: rgb(47, 79, 79)")
         self.massOutput.setReadOnly(True)
         self.massOutput.setFont(self.timesNewRoman24)
         self.massOutput.setAlignment(self.alignCenter)
@@ -291,6 +305,7 @@ class TrainModelMainUI(QWidget):
 
         # Communcations Label and Button
         communicationsButton = QPushButton("Lose\nCommunications")
+        communicationsButton.setStyleSheet("background-color: orange")
         communicationsButton.setFont(self.timesNewRoman18)
         communicationsButton.pressed.connect(self.communicationsButtonPressed)
 
@@ -298,6 +313,7 @@ class TrainModelMainUI(QWidget):
 
         # Engine Label and Button
         engineButton = QPushButton("Disable\nEngine")
+        engineButton.setStyleSheet("background-color: orange")
         engineButton.pressed.connect(self.engineButtonPressed)
         engineButton.setFont(self.timesNewRoman18)
 
@@ -305,6 +321,7 @@ class TrainModelMainUI(QWidget):
 
         # Service Brake Label and Button
         brakeButton = QPushButton("Disable Service\nBrakes")
+        brakeButton.setStyleSheet("background-color: orange")
         brakeButton.pressed.connect(self.brakeButtonPressed)
         brakeButton.setFont(self.timesNewRoman18)
 
@@ -314,11 +331,13 @@ class TrainModelMainUI(QWidget):
         emergencyBrakeLabel = QLabel("Emergency Brake")
         emergencyBrakeLabel.setFont(self.timesNewRoman24)
         emergencyBrakeButton = QPushButton("Emergency Brake")
+        emergencyBrakeButton.setStyleSheet("background-color: red")
+        emergencyBrakeButton.setFixedSize(400, 100)
         emergencyBrakeButton.setFont(self.timesNewRoman24)
         emergencyBrakeButton.pressed.connect(self.emergencyBrakeButtonPressed)
 
-        layout.addWidget(emergencyBrakeLabel, 6, 4, 1, 2, self.alignCenter)
-        layout.addWidget(emergencyBrakeButton, 7, 4, 1, 2)
+        #layout.addWidget(emergencyBrakeLabel, 6, 4, 1, 2, self.alignCenter)
+        layout.addWidget(emergencyBrakeButton, 6, 4, 2, 2)
 
         # Temperature Labels, Input, and Output
         temperatureLabel = QLabel("Temperature Setpoint (F)")
@@ -368,7 +387,7 @@ class TrainModelMainUI(QWidget):
     
     # Handler for when the temperature from the user is set
     def tempInputChanged(self):
-        temperature = float(self.temperatureInput.text())
+        temperature = round(float(self.temperatureInput.text()) * 2) / 2
         trainSignals.tempChangedSignal.emit(temperature)
 
     # Function to convert boolean to string for the status messages of failure
@@ -411,25 +430,83 @@ class TrainModelMainUI(QWidget):
         self.crewOutput.setText(str(self.backEnd.data["crew"]))
         self.undergroundOutput.setText(str(self.backEnd.data["underground"]))
         self.lengthOutput.setText(str(metersToFeet(self.backEnd.data["length"])) + " Feet")
-        self.massOutput.setText(str(kilogramsToTons(self.backEnd.data["mass"])) + " Ton")
+        self.massOutput.setText(str(kilogramsToTons(self.backEnd.data["mass"])) + " Tons")
     
         # Update Middle Column of data outputs
         self.velocityOutput.setText(str(metersPerSecondToMilesPerHour(self.backEnd.data["velocity"])) + " mph")
         self.accelerationOutput.setText(str(metersPerSecondSquaredToFeetPerSecondSquared(self.backEnd.data["acceleration"])) + " ft/s^2")
         self.powerOutput.setText(str(wattsToHorsepower(self.backEnd.data["power"])) + " hp")
         self.stationOutput.setText(self.backEnd.data["station"])
-        self.communicationsOutput.setText(self.failureBoolean(self.backEnd.data["commStatus"]))
-        self.engineOutput.setText(self.failureBoolean(self.backEnd.data["engineStatus"]))
-        self.brakeOutput.setText(self.failureBoolean(self.backEnd.data["brakeStatus"]))
-        self.emergencyBrakeStateOutput.setText(self.brakeState(self.backEnd.data["eBrakeState"]))
-        self.serviceBrakeStateOutput.setText(self.brakeState(self.backEnd.data["sBrakeState"]))
 
-        # Update Right Column of data outputs
+        # Setting communication status output and color
+        self.communicationsOutput.setText(self.failureBoolean(self.backEnd.data["commStatus"]))
+        if (self.backEnd.data["commStatus"] == 1):
+            self.communicationsOutput.setStyleSheet("background-color: green; border: green")
+        else:
+            self.communicationsOutput.setStyleSheet("background-color: red; border: red")
+
+        # Setting the engine status output and color
+        self.engineOutput.setText(self.failureBoolean(self.backEnd.data["engineStatus"]))
+        if (self.backEnd.data["engineStatus"] == 1):
+            self.engineOutput.setStyleSheet("background-color: green; border: green")
+        else:
+            self.engineOutput.setStyleSheet("background-color: red; border: red")
+
+        # Setting the service brake status output and color
+        self.brakeOutput.setText(self.failureBoolean(self.backEnd.data["brakeStatus"]))
+        if (self.backEnd.data["brakeStatus"] == 1):
+            self.brakeOutput.setStyleSheet("background-color: green; border: green")
+        else:
+            self.brakeOutput.setStyleSheet("background-color: red; border: red")
+
+        # Setting emergency break output and color
+        self.emergencyBrakeStateOutput.setText(self.brakeState(self.backEnd.data["eBrakeState"]))
+        if (self.backEnd.data["eBrakeState"] == 1):
+            self.emergencyBrakeStateOutput.setStyleSheet("background-color: red; border: red")
+        else:
+            self.emergencyBrakeStateOutput.setStyleSheet("background-color: green; border: green")
+
+        # Setting service break output and color
+        self.serviceBrakeStateOutput.setText(self.brakeState(self.backEnd.data["sBrakeState"]))
+        if (self.backEnd.data["sBrakeState"] == 1):
+            self.serviceBrakeStateOutput.setStyleSheet("background-color: red; border: red")
+        else:
+            self.serviceBrakeStateOutput.setStyleSheet("background-color: green; border: green")
+
+        # Setting the left door output as well as color
         self.lDoorsOutput.setText(self.doorState(self.backEnd.data["lDoors"]))
+        if (self.backEnd.data["lDoors"] == 0):
+            self.lDoorsOutput.setStyleSheet("color: white; background-color: black; border: black")
+        else:
+            self.lDoorsOutput.setStyleSheet("background-color: white")
+
+        # Setting the right door output as well as color
         self.rDoorsOutput.setText(self.doorState(self.backEnd.data["rDoors"]))
+        if (self.backEnd.data["rDoors"] == 0):
+            self.rDoorsOutput.setStyleSheet("color: white; background-color: black; border: black")
+        else:
+            self.rDoorsOutput.setStyleSheet("background-color: white")
+
+        # Setting internal lights output as well as color
         self.iLightsOutput.setText(self.lightState(self.backEnd.data["iLights"]))
+        if (self.backEnd.data["iLights"] == 1):
+            self.iLightsOutput.setStyleSheet("background-color: rgb(255, 215, 0); border: rgb(255, 215, 0)")
+        else:
+            self.iLightsOutput.setStyleSheet("background-color: white")
+
+        # Setting external lights output as well as color
         self.eLightsOutput.setText(self.lightState(self.backEnd.data["eLights"]))
+        if (self.backEnd.data["eLights"] == 1):
+            self.eLightsOutput.setStyleSheet("background-color: rgb(255, 215, 0); border: rgb(255, 215, 0)")
+        else:
+            self.eLightsOutput.setStyleSheet("background-color: white")
+
+        # Setting the temperature output as well as color
         self.currentTemperatureOutput.setText(str(self.backEnd.data["currTemp"]) + " F")
+        if (self.backEnd.data["currTemp"] > 32.0):
+            self.currentTemperatureOutput.setStyleSheet("background-color: rgb(220, 20, 60); border: rgb(220, 20, 60)")
+        else:
+            self.currentTemperatureOutput.setStyleSheet("background-color: blue; border: blue")
 
         # Move curr values to previous
         self.backEnd.moveToPrevious()
