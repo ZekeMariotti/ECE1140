@@ -57,10 +57,9 @@ class TrainModelMainUI(QWidget):
 
         # Passengers Label and Output
         passengersLabel = QLabel("Passengers")
-        passengersLabel.setStyleSheet("color: purple")
         passengersLabel.setFont(self.timesNewRoman18)
         self.passengersOutput = QLineEdit()
-        self.passengersOutput.setStyleSheet("background-color: purple; border: purple")
+        self.passengersOutput.setStyleSheet("background-color: rgb(65, 105, 255); border: rgb(65, 105, 255)")
         self.passengersOutput.setReadOnly(True)
         self.passengersOutput.setFont(self.timesNewRoman18)
         self.passengersOutput.setAlignment(self.alignCenter)
@@ -70,7 +69,6 @@ class TrainModelMainUI(QWidget):
 
         # Crew Label and Output
         crewLabel = QLabel("Crew")
-        crewLabel.setStyleSheet("color: rgb(65, 105, 255)")
         crewLabel.setFont(self.timesNewRoman18)
         self.crewOutput = QLineEdit()
         self.crewOutput.setStyleSheet("background-color: rgb(65, 105, 255); border: rgb(65, 105, 255)")
@@ -83,10 +81,8 @@ class TrainModelMainUI(QWidget):
 
         # Underground Label and Output
         undergroundLabel = QLabel("Underground")
-        undergroundLabel.setStyleSheet("color: rgb(101, 67, 33)")
         undergroundLabel.setFont(self.timesNewRoman18)
         self.undergroundOutput = QLineEdit()
-        self.undergroundOutput.setStyleSheet("background-color: rgb(101, 67, 33); border: rgb(101, 67, 33)")
         self.undergroundOutput.setReadOnly(True)
         self.undergroundOutput.setFont(self.timesNewRoman18)
         self.undergroundOutput.setAlignment(self.alignCenter)
@@ -96,12 +92,11 @@ class TrainModelMainUI(QWidget):
 
         # Length Label and Output
         lengthLabel = QLabel("Length")
-        lengthLabel.setStyleSheet("color: rgb(105, 105, 105)")
-        lengthLabel.setFont(self.timesNewRoman12)
+        lengthLabel.setFont(self.timesNewRoman18)
         self.lengthOutput = QLineEdit()
-        self.lengthOutput.setStyleSheet("background-color: rgb(105, 105, 105); border: rgb(105, 105, 105)")
+        self.lengthOutput.setStyleSheet("background-color: rgb(129, 133, 137); border: rgb(129, 133, 137)")
         self.lengthOutput.setReadOnly(True)
-        self.lengthOutput.setFont(self.timesNewRoman12)
+        self.lengthOutput.setFont(self.timesNewRoman18)
         self.lengthOutput.setAlignment(self.alignCenter)
         
         layout.addWidget(lengthLabel, 4, 0, self.alignCenter)
@@ -109,12 +104,11 @@ class TrainModelMainUI(QWidget):
 
         # Width Label and Output
         widthLabel = QLabel("Width")
-        widthLabel.setStyleSheet("color: rgb(105, 105, 105)")
-        widthLabel.setFont(self.timesNewRoman12)
+        widthLabel.setFont(self.timesNewRoman18)
         self.widthOutput = QLineEdit()
-        self.widthOutput.setStyleSheet("background-color: rgb(105, 105, 105); border: rgb(105, 105, 105)")
+        self.widthOutput.setStyleSheet("background-color: rgb(129, 133, 137); border: rgb(129, 133, 137)")
         self.widthOutput.setReadOnly(True)
-        self.widthOutput.setFont(self.timesNewRoman12)
+        self.widthOutput.setFont(self.timesNewRoman18)
         self.widthOutput.setAlignment(self.alignCenter)
         self.widthOutput.setText("8.69 Feet")
 
@@ -123,12 +117,11 @@ class TrainModelMainUI(QWidget):
 
         # Height Label and Output
         heightLabel = QLabel("Height")
-        heightLabel.setStyleSheet("color: rgb(105, 105, 105)")
-        heightLabel.setFont(self.timesNewRoman12)
+        heightLabel.setFont(self.timesNewRoman18)
         self.heightOutput = QLineEdit()
-        self.heightOutput.setStyleSheet("background-color: rgb(105, 105, 105); border: rgb(105, 105, 105)")
+        self.heightOutput.setStyleSheet("background-color: rgb(129, 133, 137); border: rgb(129, 133, 137)")
         self.heightOutput.setReadOnly(True)
-        self.heightOutput.setFont(self.timesNewRoman12)
+        self.heightOutput.setFont(self.timesNewRoman18)
         self.heightOutput.setAlignment(self.alignCenter)
         self.heightOutput.setText("11.22 Feet")
 
@@ -137,10 +130,9 @@ class TrainModelMainUI(QWidget):
 
         # Mass Label and Output
         massLabel = QLabel("Mass")
-        massLabel.setStyleSheet("color: rgb(47, 79, 79)")
         massLabel.setFont(self.timesNewRoman24)
         self.massOutput = QLineEdit()
-        self.massOutput.setStyleSheet("background-color: rgb(47, 79, 79); border: rgb(47, 79, 79)")
+        self.massOutput.setStyleSheet("background-color: rgb(129, 133, 137); border: rgb(129, 133, 137)")
         self.massOutput.setReadOnly(True)
         self.massOutput.setFont(self.timesNewRoman24)
         self.massOutput.setAlignment(self.alignCenter)
