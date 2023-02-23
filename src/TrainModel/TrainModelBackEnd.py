@@ -1,6 +1,6 @@
 # Train Model Back End
 
-from math import sin, asin
+#from math import sin, asin
 from random import randint
 from TrainModelSignals import *
 from PyQt6.QtCore import *
@@ -15,7 +15,7 @@ class backEndCalculations():
         "passengers"       : 0,              # Number of passengers on the train
         "passengersOn"     : 0,              # Number of passengers getting on the train; only used in 2 functions
         "passengersOff"    : 0,              # Number of passengers getting off the train; only used in 1 function
-        "crew"             : 2,              # Number of crew members on the train (Default of driver and conductor)
+        "crew"             : 1,              # Number of crew members on the train (Default of driver and conductor)
         "underground"      : False,          # State of whether the train is underground or not
         "length"           : 0.0,            # Length of the Train in meters
         "mass"             : 40900,          # Mass of the Train, changes based on number of passengers, defaults to mass of an unloaded train, in kilograms
@@ -39,7 +39,7 @@ class backEndCalculations():
         "goalTemp"         : 68.0,           # Temperature goal given by the user in degrees fahrenehit
         "elevation"        : 0,              # Relative elevation increase of the block, provided by the Track Model / CSV File in meters
         "blockLength"      : 0,              # Length of the current block, provided by the Track Model / CSV File in meters
-        "numCars"          : 1,               # Length of the train based on number of cars attached to the train
+        "numCars"          : 1,              # Length of the train based on number of cars attached to the train
     }
 
     # Dictionary of constants to be used througout the class
@@ -52,6 +52,7 @@ class backEndCalculations():
         "length"             : 32.2,         # Length of one instance of the Flexity 2 Train in meters
         "massOfTrain"        : 40900,        # Mass of an unloaded train car in kilograms
         "massOfHuman"        : 68.0389,      # Mass of a human for this simulation in kilograms
+        "maxPassengers"      : 222,          # Maximum number of passengers that can be on the train at one time
     }
 
     # Dictionary used for different eBrake States from train controller and user input
@@ -127,7 +128,8 @@ class backEndCalculations():
         # If the train is on an incline or decline, use this calculation
         else:
             # Calculating the effect of weight on the train while it is on an incline
-            self.data["acceleration"] = (force - (self.data["mass"] * self.constants["gravity"] * sin(asin(self.data["elevation"] / self.data["blockLength"])))) / self.data["mass"]
+            #self.data["acceleration"] = (force - (self.data["mass"] * self.constants["gravity"] * sin(asin(self.data["elevation"] / self.data["blockLength"])))) / self.data["mass"]
+            self.data["acceleration"] = (force - (self.data["mass"] * self.constants["gravity"] * (self.data["elevation"] / self.data["blockLength"]))) / self.data["mass"]
 
             # Calculate the force due to mg differently ?
             #currAcceleration = (force - (mass * 9.81 * sin(atan(elevation / blockLength(or elevation / grade))))
@@ -155,7 +157,6 @@ class backEndCalculations():
     def getDistance(self):
         print("Hello There")
 
-    # Deal with Deceleration from 2 different sources of EBrake
     # Handle Emergency Brake being pulled
     def emergencyBrakeDeceleration(self):
         # Will be main code later on, needed to be changed for test UI

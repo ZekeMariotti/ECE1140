@@ -32,3 +32,5 @@ class trainModelSignals(QObject):
     passengersOff = pyqtSignal(int)
 
 trainSignals = trainModelSignals()
+
+# define inside

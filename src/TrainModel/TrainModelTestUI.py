@@ -1,7 +1,7 @@
 # Train Model Test UI
 
 # Importing all required modules
-from sys import argv, exit
+from sys import argv
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
@@ -48,7 +48,7 @@ class TrainModelTestUI(QWidget):
         self.setWindowTitle("Train Model Test UI")
         layout = QGridLayout()
         self.setLayout(layout)
-        self.setFixedSize(500, 600)
+        self.setFixedSize(500, 700)
         orientation = self.frameGeometry()
         self.move(orientation.topLeft())
 
