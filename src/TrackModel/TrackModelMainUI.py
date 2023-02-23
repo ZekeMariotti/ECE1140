@@ -220,11 +220,13 @@ class TrackModelMainUI(QWidget):
         stationB = QPushButton("Station B")
         stationB.setFont(self.timesNewRoman8)
         stationB.pressed.connect(self.showStationDataB)
+        stationB.setStyleSheet("background-color : white")
         layout.addWidget(stationB, 1, 10, 1, 1)
 
         stationC = QPushButton("Station C")
         stationC.setFont(self.timesNewRoman8)
         stationC.pressed.connect(self.showStationDataC)
+        stationC.setStyleSheet("background-color : white")
         layout.addWidget(stationC, 5, 10, 1, 1)
 
         # Murphy Label
@@ -482,6 +484,9 @@ class TrackModelMainUI(QWidget):
             self.numPassengersLbl.setVisible(True)
             self.cSpeedLbl.setVisible(True)
             self.authLbl.setVisible(True)
+            self.numPassengersLbl.setText("# of Passengers: " + str(self.backEnd.data["numPassengers"][self.backEnd.data["blockTrainNo"][self.backEnd.data["blockNo"]] - 1]) + " people")
+            self.cSpeedLbl.setText("Commanded Speed: " + str(self.backEnd.data["commandedSpeed"][self.backEnd.data["blockTrainNo"][self.backEnd.data["blockNo"]] - 1]) + " MPH")
+            self.authLbl.setText("Authority: " + str(self.backEnd.data["authority"][self.backEnd.data["blockTrainNo"][self.backEnd.data["blockNo"]] - 1]) + " blocks")
 
         # Update Labels
         if self.backEnd.data["blockNo"] == 4:
