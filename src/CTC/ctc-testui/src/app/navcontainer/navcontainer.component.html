@@ -1,0 +1,28 @@
+<ul ngbNav #nav="ngbNav" class="nav-tabs">
+	<li [ngbNavItem]="1">
+		<a ngbNavLink>Wayside Blocks</a>
+		<ng-template ngbNavContent>
+			<app-wayside-blocks></app-wayside-blocks>
+		</ng-template>
+	</li>
+	<li [ngbNavItem]="2">
+		<a ngbNavLink>Wayside Switches</a>
+		<ng-template ngbNavContent>
+			<app-wayside-switches></app-wayside-switches>
+		</ng-template>
+	</li>
+	<li [ngbNavItem]="3">
+		<a ngbNavLink>CTC Blocks</a>
+		<ng-template ngbNavContent>
+			<app-ctc-lines></app-ctc-lines>
+		</ng-template>
+	</li>
+  <li [ngbNavItem]="4">
+		<a ngbNavLink>CTC Simulation</a>
+		<ng-template ngbNavContent>
+			<app-ctc-simulation></app-ctc-simulation>
+		</ng-template>
+	</li>
+</ul>
+
+<div [ngbNavOutlet]="nav" class="mt-2"></div>
