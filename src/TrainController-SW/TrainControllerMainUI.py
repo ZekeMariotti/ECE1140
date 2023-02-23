@@ -55,6 +55,7 @@ class MainWindow(QMainWindow):
             self.mainTimer = self.mainTimerSetup()
             self.station = self.stationSetup()
             self.currentSpeed = self.currentSpeedSetup()
+            self.communicationsError = self.communicationsErrorSetup()
             self.manualSpeedOverride = self.manualSpeedOverrideSetup()
             self.manualModeToggle = self.manualModeToggleSetup()
             self.realTimeClock = self.realTimeClockSetup()
@@ -106,7 +107,7 @@ class MainWindow(QMainWindow):
         def stationSetup(self):
             station = QLabel()         
             station.setFont(self.stationFont)
-            station.setText("Current Station:\n" + self.TrainControllerSW.inputs.stationName)
+            station.setText(f'{"Current" if self.TrainControllerSW.inputs.stationState else "Next"} Station:\n{self.TrainControllerSW.inputs.stationName}')
             station.setFixedSize(QSize(round(self.labelWidth*1.6), round(self.labelHeight*2)))
             station.setAlignment(Qt.AlignmentFlag.AlignCenter)
             station.setWordWrap(True)
@@ -128,6 +129,25 @@ class MainWindow(QMainWindow):
             currentSpeed.move(x, y)
             currentSpeed.setParent(self)
             return currentSpeed
+        
+        def communicationsErrorSetup(self):
+            communicationsError = QLabel()
+            communicationsError.setFont(self.stationFont)
+            communicationsError.setText("ERROR: External Communications Failure")
+            communicationsError.setFixedSize(QSize(round(self.labelWidth*1.6), round(self.labelHeight*0.5)))
+            communicationsError.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            communicationsError.setWordWrap(True)
+            communicationsError.setStyleSheet("QLabel { color : Red; }")
+            x = round(self.frameGeometry().width()*0.5-communicationsError.frameGeometry().width()*.5)
+            y = round(self.frameGeometry().height()*0.26-communicationsError.frameGeometry().height()*0.5)
+            communicationsError.move(x, y)
+            communicationsError.setParent(self)
+
+            if (self.TrainControllerSW.inputs.communicationsStatus == True):
+                communicationsError.hide()
+            else:
+                communicationsError.show()
+            return communicationsError
 
         def manualSpeedOverrideSetup(self):
             manualSpeedOverride = QLabel()  
@@ -498,6 +518,9 @@ class MainWindow(QMainWindow):
 
             self.TrainControllerSW.readInputs()
             self.TrainControllerSW.calculatePower()
+            self.TrainControllerSW.stayBelowSpeedLimit()
+            self.TrainControllerSW.autoUpdateDoorState()
+            self.TrainControllerSW.autoUpdateLights()
 
             # Only run in automatic mode
             if(self.manualModeToggle.isChecked() == False):
@@ -521,7 +544,12 @@ class MainWindow(QMainWindow):
             else:
                 self.commandedSpeedSlider.setEnabled(True)
 
-            self.station.setText("Current Station:\n" + self.TrainControllerSW.inputs.stationName)
+            if (self.TrainControllerSW.inputs.communicationsStatus == True):
+                self.communicationsError.hide()
+            else:
+                self.communicationsError.show()
+
+            self.station.setText(f'{"Current" if self.TrainControllerSW.inputs.stationState else "Next"} Station:\n{self.TrainControllerSW.inputs.stationName}')
             self.currentSpeed.setText("Current Speed: " + str(self.TrainControllerSW.inputs.currentSpeed) + " MPH")
             self.engineState.setText("Engine State:\n" + self.TrainControllerSW.getEngineState())
             self.emergencyBrakeState.setText("Emergency Brake:\n" + self.TrainControllerSW.getEmergencyBrakeState())

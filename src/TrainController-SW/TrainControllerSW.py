@@ -7,9 +7,7 @@ import os
 import json
 from json import JSONEncoder
 
-# TODO: add unit conversions class, 
-    # automatically: **set service brake, update doors, update external lights, 
-    #                display communications error, display correct current/next station, prevent speeding
+# TODO: add unit conversions class, doors must close after leaving station 
 
 # Class for the TrainControllerSW
 class TrainControllerSW:
@@ -41,6 +39,10 @@ class TrainControllerSW:
         self.T = 1
         self.Kp = 1
         self.Ki = 1
+
+        # Variables to check states between mainEventLoops
+        self.lightsEnabledPrevious = None
+        self.undergroundStatePrevious = None
         
         self.inputs = Inputs(commandedSpeed, currentSpeed, authority, inputTime, undergroundState, speedLimit, temperature, engineState, 
                  stationState, stationName, platformSide, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
@@ -105,13 +107,38 @@ class TrainControllerSW:
 
     # Automatically opens/closes doors based on platformSide
     def autoUpdateDoorState(self):
-        self.outputs.leftDoorCommand = None
-        self.outputs.rightDoorCommand = None
+        if(self.inputs.stationState == True and self.inputs.currentSpeed == 0):
+            if(self.inputs.platformSide == 0):
+                self.outputs.leftDoorCommand = True
+                self.outputs.rightDoorCommand = False
+            elif(self.inputs.platformSide == 1):
+                self.outputs.leftDoorCommand = False
+                self.outputs.rightDoorCommand = True
+            elif(self.inputs.platformSide == 2):
+                self.outputs.leftDoorCommand = True
+                self.outputs.rightDoorCommand = True
+            else:
+                self.outputs.leftDoorCommand = False
+                self.outputs.rightDoorCommand = False
     
-    # Automatically turns on/off external lights based on underground state
-    # NOTE: update based on time of day?
-    def autoUpdateExternalLights(self):
-        self.outputs.externalLightCommand = None
+    # Automatically turns on/off lights based on underground state
+    # NOTE: update based on time of day? (currently always on between 8pm - 5am)
+    def autoUpdateLights(self):
+        if(self.inputs.undergroundState == True):
+            self.outputs.externalLightCommand = True
+            self.outputs.internalLightCommand = True
+            self.undergroundStatePrevious = True
+            self.lightsEnabledPrevious = True
+        else:
+            if(self.lightsEnabledPrevious == True and self.undergroundStatePrevious == True):
+                self.outputs.externalLightCommand = False
+                self.outputs.internalLightCommand = False
+                self.undergroundStatePrevious = False
+                self.lightsEnabledPrevious = False
+
+        if(self.realTime.hour >= 20 or self.realTime.hour <= 5):
+            self.outputs.externalLightCommand = True
+            self.outputs.internalLightCommand = True
 
     # Automatically enable/disables the service brake
     def autoSetServiceBrake(self):
@@ -119,6 +146,11 @@ class TrainControllerSW:
             self.outputs.serviceBrakeCommand = True
         else:
             self.outputs.serviceBrakeCommand = False
+
+    # Lowers commanded speed if it's higher than speed limit
+    def stayBelowSpeedLimit(self):
+        if(int(self.inputs.commandedSpeed) > int(self.inputs.speedLimit)):
+            self.inputs.commandedSpeed = self.inputs.speedLimit
 
     # Converts input time string to time object ex "2023-02-20T04:52:48.3940347-05:00"
     def convertTime(self):
