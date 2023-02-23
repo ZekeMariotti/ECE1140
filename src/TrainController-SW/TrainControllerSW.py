@@ -116,7 +116,7 @@ class TrainControllerSW:
     def getLeftDoorState(self):
         if(self.inputs.leftDoorState == True):
             return "Opened"
-        elif(self.inputs.rightDoorState == False):
+        elif(self.inputs.leftDoorState == False):
             return "Closed"
         else:
             return "ERROR: UNKNOWN STATE"

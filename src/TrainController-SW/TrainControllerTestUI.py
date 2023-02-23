@@ -145,14 +145,40 @@ class TestWindow(QMainWindow):
             self.gridLayout.addWidget(self.setServiceBrakeStatusLabel, 9, 0)
             self.gridLayout.addWidget(self.setServiceBrakeStatus, 9, 1)
 
+            self.gridLayout.addWidget(self.setUndergroundStateLabel, 10, 0)
+            self.gridLayout.addWidget(self.setUndergroundState, 10, 1)
+
             self.gridLayout.addWidget(self.currentSpeedSliderLabel, 1, 2)
             self.gridLayout.addWidget(self.currentSpeedSlider, 1, 3)
 
+            self.gridLayout.addWidget(self.commandedSpeedSliderLabel, 2, 2)
+            self.gridLayout.addWidget(self.commandedSpeedSlider, 2, 3)
 
-            
+            self.gridLayout.addWidget(self.setAuthorityLabel, 3, 2)
+            self.gridLayout.addWidget(self.setAuthority, 3, 3)
+
+            self.gridLayout.addWidget(self.setSpeedLimitLabel, 4, 2)
+            self.gridLayout.addWidget(self.setSpeedLimit, 4, 3)
+
+            self.gridLayout.addWidget(self.setTemperatureLabel, 5, 2)
+            self.gridLayout.addWidget(self.setTemperature, 5, 3)
+
+            self.gridLayout.addWidget(self.setInternalLightStateLabel, 6, 2)
+            self.gridLayout.addWidget(self.setInternalLightState, 6, 3)
+
+            self.gridLayout.addWidget(self.setExternalLightStateLabel, 7, 2)
+            self.gridLayout.addWidget(self.setExternalLightState, 7, 3)
+
+            self.gridLayout.addWidget(self.setLeftDoorStateLabel, 8, 2)
+            self.gridLayout.addWidget(self.setLeftDoorState, 8, 3)
+
+            self.gridLayout.addWidget(self.setRightDoorStateLabel, 9, 2)
+            self.gridLayout.addWidget(self.setRightDoorState, 9, 3)
+
+            self.gridLayout.addWidget(self.setPlatformSideLabel, 10, 2)
+            self.gridLayout.addWidget(self.setPlatformSide, 10, 3)
 
             self.gridLayout.addWidget(self.showAllOutputsLabel, 1, 5)
-            #self.gridLayout.addWidget(self.showAllOutputs, 2, 5)
 
             self.mainWidget.setLayout(self.gridLayout)
             self.setCentralWidget(self.mainWidget)
@@ -160,7 +186,6 @@ class TestWindow(QMainWindow):
 
                 
         # widget setups
-        # TODO: add functionality to all test elements
         def emptyWidgetSetup(self):
             emptyWidget = QLabel()
             emptyWidget.setFixedSize(QSize(round(self.labelWidth), round(self.buttonHeight)))
@@ -343,63 +368,162 @@ class TestWindow(QMainWindow):
 
         def commandedSpeedSliderLabelSetup(self):
             commandedSpeedSliderLabel = QLabel()
+            commandedSpeedSliderLabel.setFixedSize(QSize(round(self.labelWidth), round(self.labelHeight)))
+            commandedSpeedSliderLabel.setText("Commanded \nSpeed:")
+            commandedSpeedSliderLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            commandedSpeedSliderLabel.setParent(self)
+            return commandedSpeedSliderLabel
 
         def commandedSpeedSliderSetup(self):
             commandedSpeedSlider = QSlider(Qt.Orientation.Horizontal)
+            commandedSpeedSlider = QSlider(Qt.Orientation.Horizontal)
+            commandedSpeedSlider.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonWidth*0.3)))
+            commandedSpeedSlider.valueChanged.connect(self.commandedSpeedSliderRelease)
+            commandedSpeedSlider.setRange(0, self.TrainControllerSW.MAX_SPEED)
+            commandedSpeedSlider.setSingleStep(1)
+            commandedSpeedSlider.setParent(self)
+            return commandedSpeedSlider
 
         def setAuthorityLabelSetup(self):
             setAuthorityLabel = QLabel()
+            setAuthorityLabel.setFixedSize(QSize(round(self.labelWidth), round(self.labelHeight)))
+            setAuthorityLabel.setText("Authority:")
+            setAuthorityLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            setAuthorityLabel.setParent(self)
+            return setAuthorityLabel
 
         def setAuthoritySetup(self):
             setAuthority = QLineEdit()
+            setAuthority.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
+            setAuthority.textChanged.connect(self.setAuthorityTextChanged)
+            setAuthority.setParent(self)
+            return setAuthority
 
         def setSpeedLimitLabelSetup(self):
             setSpeedLimitLabel = QLabel()
+            setSpeedLimitLabel.setFixedSize(QSize(round(self.labelWidth), round(self.labelHeight)))
+            setSpeedLimitLabel.setText("Speed Limit:")
+            setSpeedLimitLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            setSpeedLimitLabel.setParent(self)
+            return setSpeedLimitLabel
 
         def setSpeedLimitSetup(self):
             setSpeedLimit = QLineEdit()
+            setSpeedLimit.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
+            setSpeedLimit.textChanged.connect(self.setSpeedLimitTextChanged)
+            setSpeedLimit.setParent(self)
+            return setSpeedLimit
 
         def setTemperatureLabelSetup(self):
             setTemperatureLabel = QLabel()
+            setTemperatureLabel.setFixedSize(QSize(round(self.labelWidth), round(self.labelHeight)))
+            setTemperatureLabel.setText("Temperature:")
+            setTemperatureLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            setTemperatureLabel.setParent(self)
+            return setTemperatureLabel
 
         def setTemperatureSetup(self):
             setTemperature = QLineEdit()
+            setTemperature.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
+            setTemperature.textChanged.connect(self.setTemperatureTextChanged)
+            setTemperature.setParent(self)
+            return setTemperature
 
         def setInternalLightStateLabelSetup(self):
             setInternalLightStateLabel = QLabel()
+            setInternalLightStateLabel.setFixedSize(QSize(round(self.labelWidth), round(self.labelHeight)))
+            setInternalLightStateLabel.setText("Internal\nLights:")
+            setInternalLightStateLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            setInternalLightStateLabel.setParent(self)
+            return setInternalLightStateLabel
 
         def setInternalLightStateSetup(self):
             setInternalLightState = QComboBox()
+            setInternalLightState.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
+            setInternalLightState.addItems(["Disabled", "Enabled"])
+            setInternalLightState.activated.connect(self.setInternalLightStateActivated)
+            setInternalLightState.setParent(self)
+            return setInternalLightState
 
         def setExternalLightStateLabelSetup(self):
             setExternalLightStateLabel = QLabel()
+            setExternalLightStateLabel.setFixedSize(QSize(round(self.labelWidth), round(self.labelHeight)))
+            setExternalLightStateLabel.setText("External\nLights:")
+            setExternalLightStateLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            setExternalLightStateLabel.setParent(self)
+            return setExternalLightStateLabel
 
         def setExternalLightStateSetup(self):
             setExternalLightState = QComboBox()
+            setExternalLightState.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
+            setExternalLightState.addItems(["Disabled", "Enabled"])
+            setExternalLightState.activated.connect(self.setExternalLightStateActivated)
+            setExternalLightState.setParent(self)
+            return setExternalLightState
 
         def setLeftDoorStateLabelSetup(self):
             setLeftDoorStateLabel = QLabel()
+            setLeftDoorStateLabel.setFixedSize(QSize(round(self.labelWidth), round(self.labelHeight)))
+            setLeftDoorStateLabel.setText("Left Door:")
+            setLeftDoorStateLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            setLeftDoorStateLabel.setParent(self)
+            return setLeftDoorStateLabel
 
         def setLeftDoorStateSetup(self):
             setLeftDoorState = QComboBox()
+            setLeftDoorState.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
+            setLeftDoorState.addItems(["Closed", "Opened"])
+            setLeftDoorState.activated.connect(self.setLeftDoorStateActivated)
+            setLeftDoorState.setParent(self)
+            return setLeftDoorState
 
         def setRightDoorStateLabelSetup(self):
             setRightDoorStateLabel = QLabel()
+            setRightDoorStateLabel.setFixedSize(QSize(round(self.labelWidth), round(self.labelHeight)))
+            setRightDoorStateLabel.setText("Right Door:")
+            setRightDoorStateLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            setRightDoorStateLabel.setParent(self)
+            return setRightDoorStateLabel
 
         def setRightDoorStateSetup(self):
             setRightDoorState = QComboBox()
+            setRightDoorState.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
+            setRightDoorState.addItems(["Closed", "Opened"])
+            setRightDoorState.activated.connect(self.setRightDoorStateActivated)
+            setRightDoorState.setParent(self)
+            return setRightDoorState
 
         def setUndergroundStateLabelSetup(self):
             setUndergroundStateLabel = QLabel()
+            setUndergroundStateLabel.setFixedSize(QSize(round(self.labelWidth), round(self.labelHeight)))
+            setUndergroundStateLabel.setText("Underground\nState:")
+            setUndergroundStateLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            setUndergroundStateLabel.setParent(self)
+            return setUndergroundStateLabel
 
         def setUndergroundStateSetup(self):
             setUndergroundState = QComboBox()
+            setUndergroundState.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
+            setUndergroundState.addItems(["False", "True"])
+            setUndergroundState.activated.connect(self.setUndergroundStateActivated)
+            setUndergroundState.setParent(self)
+            return setUndergroundState
 
         def setPlatformSideLabelSetup(self):
             setPlatformSideLabel = QLabel()
+            setPlatformSideLabel.setFixedSize(QSize(round(self.labelWidth), round(self.labelHeight)))
+            setPlatformSideLabel.setText("Platform Side:")
+            setPlatformSideLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            setPlatformSideLabel.setParent(self)
+            return setPlatformSideLabel
 
         def setPlatformSideSetup(self):
             setPlatformSide = QComboBox()
+            setPlatformSide.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
+            setPlatformSide.addItems(["Left", "Right", "Both"])
+            setPlatformSide.activated.connect(self.setPlatformSideActivated)
+            setPlatformSide.setParent(self)
+            return setPlatformSide
 
         def showAllOutputsLabelSetup(self):
             showAllOutputsLabel = QLabel()
@@ -416,7 +540,6 @@ class TestWindow(QMainWindow):
             showAllOutputs.setAlignment(Qt.AlignmentFlag.AlignLeft)
             showAllOutputs.move(525, 135)
             showAllOutputs.setWordWrap(True)
-            
 
             with open(os.path.join(sys.path[0], "TrainControllerSWOutputs.json"), "r") as filename:
                 outputs = Outputs(**json.loads(filename.read()))
@@ -511,6 +634,55 @@ class TestWindow(QMainWindow):
         def setServiceBrakeStatusActivated(self):
             self.TrainControllerSW.inputs.serviceBrakeStatus = (self.setServiceBrakeStatus.currentText() == "Enabled")
             self.TrainControllerSW.writeInputs()
+
+        def commandedSpeedSliderRelease(self):
+            self.TrainControllerSW.inputs.commandedSpeed = self.commandedSpeedSlider.value()
+            self.TrainControllerSW.writeInputs()
+
+        def setAuthorityTextChanged(self):
+            self.TrainControllerSW.inputs.authority = self.setAuthority.text()
+            self.TrainControllerSW.writeInputs()
+
+        def setSpeedLimitTextChanged(self):
+            self.TrainControllerSW.inputs.speedLimit = self.setSpeedLimit.text()
+            self.TrainControllerSW.writeInputs()
+
+        def setTemperatureTextChanged(self):
+            self.TrainControllerSW.inputs.temperature = self.setTemperature.text()
+            self.TrainControllerSW.writeInputs()
+
+        def setInternalLightStateActivated(self):
+            self.TrainControllerSW.inputs.internalLightsState = (self.setInternalLightState.currentText() == "Enabled")
+            self.TrainControllerSW.writeInputs()
+
+        def setExternalLightStateActivated(self):
+            self.TrainControllerSW.inputs.externalLightsState = (self.setExternalLightState.currentText() == "Enabled")
+            self.TrainControllerSW.writeInputs()
+
+        def setLeftDoorStateActivated(self):
+            self.TrainControllerSW.inputs.leftDoorState = (self.setLeftDoorState.currentText() == "Opened")
+            self.TrainControllerSW.writeInputs()
+
+        def setRightDoorStateActivated(self):
+            self.TrainControllerSW.inputs.rightDoorState = (self.setRightDoorState.currentText() == "Opened")
+            self.TrainControllerSW.writeInputs()
+
+        def setUndergroundStateActivated(self):
+            self.TrainControllerSW.inputs.undergroundState = (self.setUndergroundState.currentText() == "True")
+            self.TrainControllerSW.writeInputs()
+
+        def setPlatformSideActivated(self):
+            if(self.setPlatformSide.currentText() == "Left"):
+                self.TrainControllerSW.inputs.platformSide = 0
+            elif(self.setPlatformSide.currentText() == "Right"):
+                self.TrainControllerSW.inputs.platformSide = 1
+            elif(self.setPlatformSide.currentText() == "Both"):
+                self.TrainControllerSW.inputs.platformSide = 2
+            else:
+                self.TrainControllerSW.inputs.platformSide = 0
+
+            self.TrainControllerSW.writeInputs()
+
 
 
 # Class to create color widgets

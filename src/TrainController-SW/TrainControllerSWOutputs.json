@@ -1,10 +1,10 @@
 {
     "power": 0,
-    "leftDoorCommand": false,
-    "rightDoorCommand": false,
-    "serviceBrakeCommand": true,
-    "emergencyBrakeCommand": true,
-    "externalLightCommand": true,
-    "internalLightCommand": true,
+    "leftDoorCommand": 0,
+    "rightDoorCommand": 0,
+    "serviceBrakeCommand": 0,
+    "emergencyBrakeCommand": 0,
+    "externalLightCommand": 0,
+    "internalLightCommand": 0,
     "stationAnnouncement": "setupStationAnnouncement"
 }
