@@ -1,0 +1,218 @@
+from PyQt6 import QtCore, QtGui, QtWidgets
+from BlueLineUI import UI_BlueLine
+from waysideclass import *
+
+class Ui_TestUI(object):
+    def setupUi(self, TestUI):
+        TestUI.setObjectName("TestUI")
+        TestUI.resize(617, 618)
+        font = QtGui.QFont()
+        font.setFamily("Times New Roman")
+        font.setPointSize(12)
+        TestUI.setFont(font)
+        TestUI.setStyleSheet("QWidget{\n"
+"\n"
+"background-color:#adadad\n"
+"\n"
+"}")
+        self.label = QtWidgets.QLabel(parent=TestUI)
+        self.label.setGeometry(QtCore.QRect(60, 10, 181, 20))
+        font = QtGui.QFont()
+        font.setFamily("Times New Roman")
+        font.setPointSize(12)
+        self.label.setFont(font)
+        self.label.setObjectName("label")
+        self.label_2 = QtWidgets.QLabel(parent=TestUI)
+        self.label_2.setGeometry(QtCore.QRect(110, 80, 115, 16))
+        font = QtGui.QFont()
+        font.setFamily("Times New Roman")
+        font.setPointSize(12)
+        self.label_2.setFont(font)
+        self.label_2.setObjectName("label_2")
+        self.label_3 = QtWidgets.QLabel(parent=TestUI)
+        self.label_3.setGeometry(QtCore.QRect(100, 450, 161, 71))
+        font = QtGui.QFont()
+        font.setFamily("Times New Roman")
+        font.setPointSize(12)
+        self.label_3.setFont(font)
+        self.label_3.setObjectName("label_3")
+        self.label_5 = QtWidgets.QLabel(parent=TestUI)
+        self.label_5.setGeometry(QtCore.QRect(140, 560, 71, 16))
+        font = QtGui.QFont()
+        font.setFamily("Times New Roman")
+        font.setPointSize(12)
+        self.label_5.setFont(font)
+        self.label_5.setObjectName("label_5")
+        self.Red = QtWidgets.QPushButton(parent=TestUI)
+        self.Red.setGeometry(QtCore.QRect(280, 220, 101, 23))
+        self.Red.setObjectName("Red")
+        self.Upbutton = QtWidgets.QPushButton(parent=TestUI)
+        self.Upbutton.setGeometry(QtCore.QRect(220, 560, 75, 23))
+        self.Upbutton.setObjectName("Upbutton")
+        self.ChangeSpeed = QtWidgets.QPushButton(parent=TestUI)
+        self.ChangeSpeed.setGeometry(QtCore.QRect(394, 40, 101, 23))
+        self.ChangeSpeed.setObjectName("ChangeSpeed")
+        self.label_8 = QtWidgets.QLabel(parent=TestUI)
+        self.label_8.setGeometry(QtCore.QRect(280, 10, 41, 16))
+        font = QtGui.QFont()
+        font.setFamily("Times New Roman")
+        font.setPointSize(12)
+        self.label_8.setFont(font)
+        self.label_8.setObjectName("label_8")
+        self.label_9 = QtWidgets.QLabel(parent=TestUI)
+        self.label_9.setGeometry(QtCore.QRect(280, 80, 41, 16))
+        font = QtGui.QFont()
+        font.setFamily("Times New Roman")
+        font.setPointSize(12)
+        self.label_9.setFont(font)
+        self.label_9.setObjectName("label_9")
+        self.changeAuthority = QtWidgets.QPushButton(parent=TestUI)
+        self.changeAuthority.setGeometry(QtCore.QRect(390, 120, 111, 23))
+        font = QtGui.QFont()
+        font.setFamily("Times New Roman")
+        font.setPointSize(12)
+        self.changeAuthority.setFont(font)
+        self.changeAuthority.setObjectName("changeAuthority")
+        self.downbutton = QtWidgets.QPushButton(parent=TestUI)
+        self.downbutton.setGeometry(QtCore.QRect(320, 560, 75, 23))
+        self.downbutton.setObjectName("downbutton")
+        self.SwitchL = QtWidgets.QPushButton(parent=TestUI)
+        self.SwitchL.setGeometry(QtCore.QRect(230, 490, 75, 23))
+        self.SwitchL.setObjectName("SwitchL")
+        self.SwitchR = QtWidgets.QPushButton(parent=TestUI)
+        self.SwitchR.setGeometry(QtCore.QRect(330, 490, 75, 23))
+        self.SwitchR.setObjectName("SwitchR")
+        self.label_10 = QtWidgets.QLabel(parent=TestUI)
+        self.label_10.setGeometry(QtCore.QRect(190, 220, 41, 16))
+        font = QtGui.QFont()
+        font.setFamily("Times New Roman")
+        font.setPointSize(12)
+        self.label_10.setFont(font)
+        self.label_10.setObjectName("label_10")
+        self.Yellow = QtWidgets.QPushButton(parent=TestUI)
+        self.Yellow.setGeometry(QtCore.QRect(280, 260, 101, 23))
+        font = QtGui.QFont()
+        font.setFamily("Times New Roman")
+        font.setPointSize(12)
+        self.Yellow.setFont(font)
+        self.Yellow.setObjectName("Yellow")
+        self.Green = QtWidgets.QPushButton(parent=TestUI)
+        self.Green.setGeometry(QtCore.QRect(280, 300, 101, 23))
+        font = QtGui.QFont()
+        font.setFamily("Times New Roman")
+        font.setPointSize(12)
+        self.Green.setFont(font)
+        self.Green.setObjectName("Green")
+        self.label_11 = QtWidgets.QLabel(parent=TestUI)
+        self.label_11.setGeometry(QtCore.QRect(190, 350, 41, 16))
+        font = QtGui.QFont()
+        font.setFamily("Times New Roman")
+        font.setPointSize(12)
+        self.label_11.setFont(font)
+        self.label_11.setObjectName("label_11")
+        self.changeAuthority_2 = QtWidgets.QPushButton(parent=TestUI)
+        self.changeAuthority_2.setGeometry(QtCore.QRect(280, 390, 111, 23))
+        font = QtGui.QFont()
+        font.setFamily("Times New Roman")
+        font.setPointSize(12)
+        self.changeAuthority_2.setFont(font)
+        self.changeAuthority_2.setObjectName("changeAuthority_2")
+        self.lineEdit = QtWidgets.QLineEdit(parent=TestUI)
+        self.lineEdit.setGeometry(QtCore.QRect(80, 40, 113, 20))
+        self.lineEdit.setObjectName("lineEdit")
+        self.lineEdit_2 = QtWidgets.QLineEdit(parent=TestUI)
+        self.lineEdit_2.setGeometry(QtCore.QRect(240, 40, 113, 20))
+        self.lineEdit_2.setObjectName("lineEdit_2")
+        self.lineEdit_3 = QtWidgets.QLineEdit(parent=TestUI)
+        self.lineEdit_3.setGeometry(QtCore.QRect(90, 110, 113, 20))
+        self.lineEdit_3.setObjectName("lineEdit_3")
+        self.lineEdit_4 = QtWidgets.QLineEdit(parent=TestUI)
+        self.lineEdit_4.setGeometry(QtCore.QRect(240, 110, 113, 20))
+        self.lineEdit_4.setObjectName("lineEdit_4")
+        self.lineEdit_5 = QtWidgets.QLineEdit(parent=TestUI)
+        self.lineEdit_5.setGeometry(QtCore.QRect(140, 260, 113, 20))
+        self.lineEdit_5.setObjectName("lineEdit_5")
+        self.lineEdit_6 = QtWidgets.QLineEdit(parent=TestUI)
+        self.lineEdit_6.setGeometry(QtCore.QRect(140, 380, 113, 20))
+        self.lineEdit_6.setObjectName("lineEdit_6")
+
+        self.retranslateUi(TestUI)
+        QtCore.QMetaObject.connectSlotsByName(TestUI)
+
+    def retranslateUi(self, TestUI):
+        _translate = QtCore.QCoreApplication.translate
+        TestUI.setWindowTitle(_translate("TestUI", "Dialog"))
+        self.label.setText(_translate("TestUI", "Commanded Speed (MPH)"))
+        self.label_2.setText(_translate("TestUI", "Authority (Blocks)"))
+        self.label_3.setText(_translate("TestUI", "           Switches\n"
+"\n"
+"    (5 to 6 / 5 to 11)"))
+        self.label_5.setText(_translate("TestUI", "Gate State"))
+        self.Red.setText(_translate("TestUI", "Red"))
+        self.Upbutton.setText(_translate("TestUI", "Up"))
+        self.ChangeSpeed.setText(_translate("TestUI", "Change Speed"))
+        self.label_8.setText(_translate("TestUI", "Block"))
+        self.label_9.setText(_translate("TestUI", "Block"))
+        self.changeAuthority.setText(_translate("TestUI", "Change Authority"))
+        self.downbutton.setText(_translate("TestUI", "Down"))
+        self.SwitchL.setText(_translate("TestUI", "5 to 6"))
+        self.SwitchR.setText(_translate("TestUI", "5 to 11"))
+        self.label_10.setText(_translate("TestUI", "Block"))
+        self.Yellow.setText(_translate("TestUI", "Yellow"))
+        self.Green.setText(_translate("TestUI", "Green"))
+        self.label_11.setText(_translate("TestUI", "Block"))
+        self.changeAuthority_2.setText(_translate("TestUI", "Broken Rail"))
+
+        self.ChangeSpeed.clicked.connect(self.speed)
+        self.changeAuthority_2.clicked.connect(self.broken)
+        self.SwitchL.clicked.connect(self.switchL)
+        self.SwitchR.clicked.connect(self.switchR)
+        self.Upbutton.clicked.connect(self.gateUp)
+        self.downbutton.clicked.connect(self.gateDown)
+
+    def speed(self):
+            newBlock = "Block "+self.lineEdit_2.text()
+            newspeed = self.lineEdit.text()
+    def author(self):
+            newBlock = "Block "+self.lineEdit_4.text()
+            newAuthority = self.lineEdit_3.text()
+    def rlights(self):
+            newBlock = "Block "+self.lineEdit_5.text()
+            newLights = "RED"
+    def ylights(self):
+            newBlock = "Block "+self.lineEdit_5.text()
+            newLights = "YELLOW"
+    def glights(self):
+            newBlock = "Block "+self.lineEdit_5.text()
+            newLights = "GREEN"
+    def broken(self):
+            newBlock = "Block "+self.lineEdit_6.text()
+            newBrokenRail = True    
+    def switchL(self):
+            newSwitchPosition = True
+    def switchR(self):
+            newSwitchPosition = False
+    def gateUp(self):
+            newGatePosition = True
+    def gateDown(self):
+            newGatePosition = False    
+
+def main():
+       app = QtWidgets.QApplication(sys.argv)
+       TestUI = Ui_TestUI() 
+       ui.setupUi(TestUI)
+       TestUI.show()
+       MainUI = UI_BlueLine()
+       ui.setupUi(MainUI)
+       MainUI.show()
+       app.exec()
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    TestUI = QtWidgets.QDialog()
+    ui = Ui_TestUI()
+    ui.setupUi(TestUI)
+    TestUI.show()
+    sys.exit(app.exec())
+  
