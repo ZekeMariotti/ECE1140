@@ -5,6 +5,7 @@ import (
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/datastore"
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/frontendAPI"
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/outputs"
+	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/wayside"
 )
 
 type App struct {
@@ -12,6 +13,7 @@ type App struct {
 	FrontendAPI *frontendAPI.FrontendAPI
 	OutputAPI   *outputs.OutputAPI
 	DataStore   *datastore.DataStore
+	Waysides    []*wayside.WaysideController
 }
 
 // Returns a new instance of the application
@@ -30,6 +32,12 @@ func NewApp() *App {
 func (a *App) ImportLine(pathBlock string, pathSwitch string) {
 	line := common.ParseLine(pathBlock, pathSwitch)
 	a.DataStore.Lines.Set(line.Name, *line)
+}
+
+func (a *App) AddWayside(address string) {
+	ws := wayside.NewWaysideController(address, "Red", a.DataStore)
+	ws.StartServices()
+	a.Waysides = append(a.Waysides, ws)
 }
 
 // Starts running the app

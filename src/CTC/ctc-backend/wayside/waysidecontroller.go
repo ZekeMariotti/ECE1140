@@ -2,8 +2,8 @@ package wayside
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
-	"log"
 	"net/http"
 
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/common"
@@ -52,7 +52,7 @@ func (c *WaysideController) updateService() {
 func (c *WaysideController) getBlocks() {
 	resp, err := http.Get(c.address + "/blocks")
 	if err != nil {
-		log.Default().Println(err)
+		fmt.Println(err)
 		return
 	}
 	defer resp.Body.Close()
@@ -63,12 +63,13 @@ func (c *WaysideController) getBlocks() {
 	json.Unmarshal(body, &blocks)
 
 	c.data.Lines.SetBlockInfo(c.line, blocks)
+	fmt.Println("Block Info", blocks)
 }
 
 func (c *WaysideController) getSwitches() {
 	resp, err := http.Get(c.address + "/switches")
 	if err != nil {
-		log.Default().Println(err)
+		fmt.Println(err)
 		return
 	}
 	defer resp.Body.Close()

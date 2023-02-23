@@ -1,5 +1,29 @@
 <div>
   <div class="container text-centered">
-    <textarea class="form-control" id="waysideBlocksArea" rows="50" [(ngModel)]="waysideBlocks" (change)="setData()"></textarea>
+    <div class="mb-3 row">
+      <button type="button" class="btn btn-success" (click)="setData()">
+        Update Values
+      </button>
+    </div>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Block</th>
+          <th scope="col">Occupied</th>
+          <th scope="col">Signal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let block of waysideBlocks">
+          <th>{{block.block}}</th>
+          <td>
+            <input type="checkbox" [(ngModel)]="block.occupied">
+          </td>
+          <td>
+            <input type="text" [(ngModel)]="block.signal">
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>

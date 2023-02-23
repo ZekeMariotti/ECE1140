@@ -1,6 +1,8 @@
 package common
 
-import "sort"
+import (
+	"sort"
+)
 
 type Line struct {
 	Name     string        `json:"name"`
@@ -59,6 +61,9 @@ func (l *Line) GetBlockOutputs() []BlockOutput {
 		}
 		result[i] = out
 	}
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].Block < result[j].Block
+	})
 	return result
 }
 
