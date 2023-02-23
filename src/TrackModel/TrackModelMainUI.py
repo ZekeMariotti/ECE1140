@@ -82,140 +82,140 @@ class TrackModelMainUI(QWidget):
         layout.addWidget(self.authLbl, 6, 0)
 
         # Create track block buttons
-        trackBlock1 = QPushButton("1")
-        trackBlock1.setFont(self.timesNewRoman8)
-        trackBlock1.pressed.connect(self.showTrackData1)
+        self.trackBlock1 = QPushButton("1")
+        self.trackBlock1.setFont(self.timesNewRoman8)
+        self.trackBlock1.pressed.connect(self.showTrackData1)
         if self.backEnd.data["blockTrainNo"][0] > 0:
-            trackBlock1.setStyleSheet("background-color : light grey; color: black ")
+            self.trackBlock1.setStyleSheet("background-color : light grey; color: black ")
         else:
-            trackBlock1.setStyleSheet("background-color : blue; color: white ")
-        layout.addWidget(trackBlock1, 3, 1, 1, 1)
+            self.trackBlock1.setStyleSheet("background-color : blue; color: white ")
+        layout.addWidget(self.trackBlock1, 3, 1, 1, 1)
 
-        trackBlock2 = QPushButton("2")
-        trackBlock2.setFont(self.timesNewRoman8)
-        trackBlock2.pressed.connect(self.showTrackData2)
+        self.trackBlock2 = QPushButton("2")
+        self.trackBlock2.setFont(self.timesNewRoman8)
+        self.trackBlock2.pressed.connect(self.showTrackData2)
         if self.backEnd.data["blockTrainNo"][1] > 0:
-            trackBlock2.setStyleSheet("background-color : light grey; color: black ")
+            self.trackBlock2.setStyleSheet("background-color : light grey; color: black ")
         else:
-            trackBlock2.setStyleSheet("background-color : blue; color: white ")
-        layout.addWidget(trackBlock2, 3, 2, 1, 1)
+            self.trackBlock2.setStyleSheet("background-color : blue; color: white ")
+        layout.addWidget(self.trackBlock2, 3, 2, 1, 1)
 
-        trackBlock3 = QPushButton("3")
-        trackBlock3.setFont(self.timesNewRoman8)
-        trackBlock3.pressed.connect(self.showTrackData3)
+        self.trackBlock3 = QPushButton("3")
+        self.trackBlock3.setFont(self.timesNewRoman8)
+        self.trackBlock3.pressed.connect(self.showTrackData3)
         if self.backEnd.data["blockTrainNo"][2] > 0:
-            trackBlock3.setStyleSheet("background-color : light grey; color: black ")
+            self.trackBlock3.setStyleSheet("background-color : light grey; color: black ")
         else:
-            trackBlock3.setStyleSheet("background-color : blue; color: white ")
-        layout.addWidget(trackBlock3, 3, 3, 1, 1)
+            self.trackBlock3.setStyleSheet("background-color : blue; color: white ")
+        layout.addWidget(self.trackBlock3, 3, 3, 1, 1)
 
-        trackBlock4 = QPushButton("4")
-        trackBlock4.setFont(self.timesNewRoman8)
-        trackBlock4.pressed.connect(self.showTrackData4)
+        self.trackBlock4 = QPushButton("4")
+        self.trackBlock4.setFont(self.timesNewRoman8)
+        self.trackBlock4.pressed.connect(self.showTrackData4)
         if self.backEnd.data["blockTrainNo"][3] > 0:
-            trackBlock4.setStyleSheet("background-color : light grey; color: black ")
+            self.trackBlock4.setStyleSheet("background-color : light grey; color: black ")
         else:
-            trackBlock4.setStyleSheet("background-color : blue; color: white ")
-        layout.addWidget(trackBlock4, 3, 4, 1, 1)
+            self.trackBlock4.setStyleSheet("background-color : blue; color: white ")
+        layout.addWidget(self.trackBlock4, 3, 4, 1, 1)
 
-        trackBlock5 = QPushButton("5")
-        trackBlock5.setFont(self.timesNewRoman8)
-        trackBlock5.pressed.connect(self.showTrackData5)
+        self.trackBlock5 = QPushButton("5")
+        self.trackBlock5.setFont(self.timesNewRoman8)
+        self.trackBlock5.pressed.connect(self.showTrackData5)
         if self.backEnd.data["blockTrainNo"][4] > 0:
-            trackBlock5.setStyleSheet("background-color : light grey; color: black ")
+            self.trackBlock5.setStyleSheet("background-color : light grey; color: black ")
         else:
-            trackBlock5.setStyleSheet("background-color : blue; color: white ")
-        layout.addWidget(trackBlock5, 3, 5, 1, 1)
+            self.trackBlock5.setStyleSheet("background-color : blue; color: white ")
+        layout.addWidget(self.trackBlock5, 3, 5, 1, 1)
 
-        trackBlock6 = QPushButton("6")
-        trackBlock6.setFont(self.timesNewRoman8)
-        trackBlock6.pressed.connect(self.showTrackData6)
+        self.trackBlock6 = QPushButton("6")
+        self.trackBlock6.setFont(self.timesNewRoman8)
+        self.trackBlock6.pressed.connect(self.showTrackData6)
         if self.backEnd.data["blockTrainNo"][5] > 0:
-            trackBlock6.setStyleSheet("background-color : light grey; color: black ")
+            self.trackBlock6.setStyleSheet("background-color : light grey; color: black ")
         else:
-            trackBlock6.setStyleSheet("background-color : blue; color: white ")
-        layout.addWidget(trackBlock6, 2, 6, 1, 1)
+            self.trackBlock6.setStyleSheet("background-color : blue; color: white ")
+        layout.addWidget(self.trackBlock6, 2, 6, 1, 1)
 
-        trackBlock7 = QPushButton("7")
-        trackBlock7.setFont(self.timesNewRoman8)
-        trackBlock7.pressed.connect(self.showTrackData7)
+        self.trackBlock7 = QPushButton("7")
+        self.trackBlock7.setFont(self.timesNewRoman8)
+        self.trackBlock7.pressed.connect(self.showTrackData7)
         if self.backEnd.data["blockTrainNo"][6] > 0:
-            trackBlock7.setStyleSheet("background-color : light grey; color: black ")
+            self.trackBlock7.setStyleSheet("background-color : light grey; color: black ")
         else:
-            trackBlock7.setStyleSheet("background-color : blue; color: white ")
-        layout.addWidget(trackBlock7, 2, 7, 1, 1)
+            self.trackBlock7.setStyleSheet("background-color : blue; color: white ")
+        layout.addWidget(self.trackBlock7, 2, 7, 1, 1)
 
-        trackBlock8 = QPushButton("8")
-        trackBlock8.setFont(self.timesNewRoman8)
-        trackBlock8.pressed.connect(self.showTrackData8)
+        self.trackBlock8 = QPushButton("8")
+        self.trackBlock8.setFont(self.timesNewRoman8)
+        self.trackBlock8.pressed.connect(self.showTrackData8)
         if self.backEnd.data["blockTrainNo"][7] > 0:
-            trackBlock8.setStyleSheet("background-color : light grey; color: black ")
+            self.trackBlock8.setStyleSheet("background-color : light grey; color: black ")
         else:
-            trackBlock8.setStyleSheet("background-color : blue; color: white ")
-        layout.addWidget(trackBlock8, 2, 8, 1, 1)
+            self.trackBlock8.setStyleSheet("background-color : blue; color: white ")
+        layout.addWidget(self.trackBlock8, 2, 8, 1, 1)
 
-        trackBlock9 = QPushButton("9")
-        trackBlock9.setFont(self.timesNewRoman8)
-        trackBlock9.pressed.connect(self.showTrackData9)
+        self.trackBlock9 = QPushButton("9")
+        self.trackBlock9.setFont(self.timesNewRoman8)
+        self.trackBlock9.pressed.connect(self.showTrackData9)
         if self.backEnd.data["blockTrainNo"][8] > 0:
-            trackBlock9.setStyleSheet("background-color : light grey; color: black ")
+            self.trackBlock9.setStyleSheet("background-color : light grey; color: black ")
         else:
-            trackBlock9.setStyleSheet("background-color : blue; color: white ")
-        layout.addWidget(trackBlock9, 2, 9, 1, 1)
+            self.trackBlock9.setStyleSheet("background-color : blue; color: white ")
+        layout.addWidget(self.trackBlock9, 2, 9, 1, 1)
 
-        trackBlock10 = QPushButton("10")
-        trackBlock10.setFont(self.timesNewRoman8)
-        trackBlock10.pressed.connect(self.showTrackData10)
+        self.trackBlock10 = QPushButton("10")
+        self.trackBlock10.setFont(self.timesNewRoman8)
+        self.trackBlock10.pressed.connect(self.showTrackData10)
         if self.backEnd.data["blockTrainNo"][9] > 0:
-            trackBlock10.setStyleSheet("background-color : grey; color: black ")
+            self.trackBlock10.setStyleSheet("background-color : grey; color: black ")
         else:
-            trackBlock10.setStyleSheet("background-color : blue; color: white ")
-        layout.addWidget(trackBlock10, 2, 10, 1, 1)
+            self.trackBlock10.setStyleSheet("background-color : blue; color: white ")
+        layout.addWidget(self.trackBlock10, 2, 10, 1, 1)
 
-        trackBlock11 = QPushButton("11")
-        trackBlock11.setFont(self.timesNewRoman8)
-        trackBlock11.pressed.connect(self.showTrackData11)
+        self.trackBlock11 = QPushButton("11")
+        self.trackBlock11.setFont(self.timesNewRoman8)
+        self.trackBlock11.pressed.connect(self.showTrackData11)
         if self.backEnd.data["blockTrainNo"][10] > 0:
-            trackBlock11.setStyleSheet("background-color : light grey; color: black ")
+            self.trackBlock11.setStyleSheet("background-color : light grey; color: black ")
         else:
-            trackBlock11.setStyleSheet("background-color : blue; color: white ")
-        layout.addWidget(trackBlock11, 4, 6, 1, 1)
+            self.trackBlock11.setStyleSheet("background-color : blue; color: white ")
+        layout.addWidget(self.trackBlock11, 4, 6, 1, 1)
 
-        trackBlock12 = QPushButton("12")
-        trackBlock12.setFont(self.timesNewRoman8)
-        trackBlock12.pressed.connect(self.showTrackData12)
+        self.trackBlock12 = QPushButton("12")
+        self.trackBlock12.setFont(self.timesNewRoman8)
+        self.trackBlock12.pressed.connect(self.showTrackData12)
         if self.backEnd.data["blockTrainNo"][11] > 0:
-            trackBlock12.setStyleSheet("background-color : light grey; color: black ")
+            self.trackBlock12.setStyleSheet("background-color : light grey; color: black ")
         else:
-            trackBlock12.setStyleSheet("background-color : blue; color: white ")
-        layout.addWidget(trackBlock12, 4, 7, 1, 1)
+            self.trackBlock12.setStyleSheet("background-color : blue; color: white ")
+        layout.addWidget(self.trackBlock12, 4, 7, 1, 1)
 
-        trackBlock13 = QPushButton("13")
-        trackBlock13.setFont(self.timesNewRoman8)
-        trackBlock13.pressed.connect(self.showTrackData13)
+        self.trackBlock13 = QPushButton("13")
+        self.trackBlock13.setFont(self.timesNewRoman8)
+        self.trackBlock13.pressed.connect(self.showTrackData13)
         if self.backEnd.data["blockTrainNo"][12] > 0:
-            trackBlock13.setStyleSheet("background-color : light grey; color: black ")
+            self.trackBlock13.setStyleSheet("background-color : light grey; color: black ")
         else:
-            trackBlock13.setStyleSheet("background-color : blue; color: white ")
-        layout.addWidget(trackBlock13, 4, 8, 1, 1)
+            self.trackBlock13.setStyleSheet("background-color : blue; color: white ")
+        layout.addWidget(self.trackBlock13, 4, 8, 1, 1)
 
-        trackBlock14 = QPushButton("14")
-        trackBlock14.setFont(self.timesNewRoman8)
-        trackBlock14.pressed.connect(self.showTrackData14)
+        self.trackBlock14 = QPushButton("14")
+        self.trackBlock14.setFont(self.timesNewRoman8)
+        self.trackBlock14.pressed.connect(self.showTrackData14)
         if self.backEnd.data["blockTrainNo"][13] > 0:
-            trackBlock14.setStyleSheet("background-color : light grey; color: black ")
+            self.trackBlock14.setStyleSheet("background-color : light grey; color: black ")
         else:
-            trackBlock14.setStyleSheet("background-color : blue; color: white ")
-        layout.addWidget(trackBlock14, 4, 9, 1, 1)
+            self.trackBlock14.setStyleSheet("background-color : blue; color: white ")
+        layout.addWidget(self.trackBlock14, 4, 9, 1, 1)
 
-        trackBlock15 = QPushButton("15")
-        trackBlock15.setFont(self.timesNewRoman8)
-        trackBlock15.pressed.connect(self.showTrackData15)
+        self.trackBlock15 = QPushButton("15")
+        self.trackBlock15.setFont(self.timesNewRoman8)
+        self.trackBlock15.pressed.connect(self.showTrackData15)
         if self.backEnd.data["blockTrainNo"][14] > 0:
-            trackBlock15.setStyleSheet("background-color : light grey; color: black ")
+            self.trackBlock15.setStyleSheet("background-color : light grey; color: black ")
         else:
-            trackBlock15.setStyleSheet("background-color : blue; color: white ")
-        layout.addWidget(trackBlock15, 4, 10, 1, 1)
+            self.trackBlock15.setStyleSheet("background-color : blue; color: white ")
+        layout.addWidget(self.trackBlock15, 4, 10, 1, 1)
 
         stationB = QPushButton("Station B")
         stationB.setFont(self.timesNewRoman8)
@@ -237,7 +237,6 @@ class TrackModelMainUI(QWidget):
         self.powerButton.setStyleSheet("background-color: green; color: white")
         self.powerButton.setFont(self.timesNewRoman8)
         self.powerButton.pressed.connect(self.powerButtonPressed)
-
         layout.addWidget(self.powerButton, 7, 1)
 
         # Track circuit Label and Button
@@ -245,7 +244,6 @@ class TrackModelMainUI(QWidget):
         self.circuitButton.setStyleSheet("background-color: green; color: white")
         self.circuitButton.pressed.connect(self.trackCircuitButtonPressed)
         self.circuitButton.setFont(self.timesNewRoman8)
-
         layout.addWidget(self.circuitButton, 7, 2)
 
         # Broken Rail Label and Button
@@ -253,7 +251,6 @@ class TrackModelMainUI(QWidget):
         self.brokenRailButton.setStyleSheet("background-color: green; color: white")
         self.brokenRailButton.pressed.connect(self.brokenRailButtonPressed)
         self.brokenRailButton.setFont(self.timesNewRoman8)
-
         layout.addWidget(self.brokenRailButton, 7, 3)
 
         # Switch label
@@ -271,6 +268,9 @@ class TrackModelMainUI(QWidget):
         self.heatersLabel = QLabel("Heaters: " + outputTxt)
         self.heatersLabel.setFont(self.timesNewRoman8)
         layout.addWidget(self.heatersLabel, 7, 8)
+
+        # Call function if signal is pressed
+        trackSignals.updateSignal.connect(self.updateInterface)
 
     # Shows track block stats if track block is clicked
     def showData(self, index):
@@ -293,13 +293,16 @@ class TrackModelMainUI(QWidget):
 
         # Show train data if block has train
         if self.backEnd.data["blockTrainNo"][index] > 0:
+            self.numPassengersLbl.setVisible(True)
+            self.cSpeedLbl.setVisible(True)
+            self.authLbl.setVisible(True)
             self.numPassengersLbl.setText("# of Passengers: " + str(self.backEnd.data["numPassengers"][self.backEnd.data["blockTrainNo"][index] - 1]) + " people")
             self.cSpeedLbl.setText("Commanded Speed: " + str(self.backEnd.data["commandedSpeed"][self.backEnd.data["blockTrainNo"][index] - 1]) + " MPH")
             self.authLbl.setText("Authority: " + str(self.backEnd.data["authority"][self.backEnd.data["blockTrainNo"][index] - 1]) + " blocks")
         else:
-            self.numPassengersLbl.setText("")
-            self.cSpeedLbl.setText("")
-            self.authLbl.setText("")
+            self.numPassengersLbl.setVisible(False)
+            self.cSpeedLbl.setVisible(False)
+            self.authLbl.setVisible(False)
 
         # Update failure modes
         if (self.backEnd.data["circuitStatus"][self.backEnd.data["blockNo"]] == 0):
@@ -370,99 +373,115 @@ class TrackModelMainUI(QWidget):
         self.sNameLabel.setText("Station Name: Station B" + self.spaceString)
         self.sOccLbl.setText("Station Occupancy: " + str(self.backEnd.data["stationOccupancy"][0]))
         outLbl = "Right" if (self.backEnd.csvConstants["stationSide"][0] == 1 and self.backEnd.data["direction"][9] == 0) or (self.backEnd.csvConstants["stationSide"][0] == 0 and self.backEnd.data["direction"][9] == 1) else "Left"
-        self.stationSideLabel.setText("Station Side: " + outLbl)
+        self.stationSideLabel.setText("Doors Open: " + outLbl)
 
     def showStationDataC(self):
         self.sNameLabel.setText("Station Name: Station C" + self.spaceString)
         self.sOccLbl.setText("Station Occupancy: " + str(self.backEnd.data["stationOccupancy"][1]))
         outLbl = "Right" if (self.backEnd.csvConstants["stationSide"][1] == 1 and self.backEnd.data["direction"][14] == 0) or (self.backEnd.csvConstants["stationSide"][1] == 0 and self.backEnd.data["direction"][14] == 1) else "Left"
-        self.stationSideLabel.setText("Station Side: " + outLbl)
-        
+        self.stationSideLabel.setText("Doors Open: " + outLbl)
 
     # Updates outputs every time period
     def updateInterface(self):
         # Update track blocks
         if self.backEnd.data["blockTrainNo"][0] > 0:
-            self.trackBlock1.setStyleSheet("background-color : Blue; color: white ")
-        else:
             self.trackBlock1.setStyleSheet("background-color : light grey; color: black ")
+        else:
+            self.trackBlock1.setStyleSheet("background-color : Blue; color: white ")
       
         if self.backEnd.data["blockTrainNo"][1] > 0:
-            self.trackBlock2.setStyleSheet("background-color : Blue; color: white ")
-        else:
             self.trackBlock2.setStyleSheet("background-color : light grey; color: black ")
+        else:
+            self.trackBlock2.setStyleSheet("background-color : Blue; color: white ")
   
         if self.backEnd.data["blockTrainNo"][2] > 0:
-            self.trackBlock3.setStyleSheet("background-color : Blue; color: white ")
-        else:
             self.trackBlock3.setStyleSheet("background-color : light grey; color: black ")
+        else:
+            self.trackBlock3.setStyleSheet("background-color : Blue; color: white ")
    
         if self.backEnd.data["blockTrainNo"][3] > 0:
-            self.trackBlock4.setStyleSheet("background-color : Blue; color: white ")
-        else:
             self.trackBlock4.setStyleSheet("background-color : light grey; color: black ")
+        else:
+            self.trackBlock4.setStyleSheet("background-color : Blue; color: white ")
   
         if self.backEnd.data["blockTrainNo"][4] > 0:
-            self.trackBlock5.setStyleSheet("background-color : Blue; color: white ")
-        else:
             self.trackBlock5.setStyleSheet("background-color : light grey; color: black ")
+        else:
+            self.trackBlock5.setStyleSheet("background-color : Blue; color: white ")
     
         if self.backEnd.data["blockTrainNo"][5] > 0:
-            self.trackBlock6.setStyleSheet("background-color : Blue; color: white ")
-        else:
             self.trackBlock6.setStyleSheet("background-color : light grey; color: black ")
+        else:
+            self.trackBlock6.setStyleSheet("background-color : Blue; color: white ")
     
         if self.backEnd.data["blockTrainNo"][6] > 0:
-            self.trackBlock7.setStyleSheet("background-color : Blue; color: white ")
-        else:
             self.trackBlock7.setStyleSheet("background-color : light grey; color: black ")
+        else:
+            self.trackBlock7.setStyleSheet("background-color : Blue; color: white ")
   
         if self.backEnd.data["blockTrainNo"][7] > 0:
-            self.trackBlock8.setStyleSheet("background-color : Blue; color: white ")
-        else:
             self.trackBlock8.setStyleSheet("background-color : light grey; color: black ")
+        else:
+            self.trackBlock8.setStyleSheet("background-color : Blue; color: white ")
   
         if self.backEnd.data["blockTrainNo"][8] > 0:
-            self.trackBlock9.setStyleSheet("background-color : Blue; color: white ")
-        else:
             self.trackBlock9.setStyleSheet("background-color : light grey; color: black ")
+        else:
+            self.trackBlock9.setStyleSheet("background-color : Blue; color: white ")
      
         if self.backEnd.data["blockTrainNo"][9] > 0:
-            self.trackBlock10.setStyleSheet("background-color : Blue; color: white ")
-        else:
             self.trackBlock10.setStyleSheet("background-color : light grey; color: black ")
+        else:
+            self.trackBlock10.setStyleSheet("background-color : Blue; color: white ")
   
         if self.backEnd.data["blockTrainNo"][10] > 0:
-            self.trackBlock11.setStyleSheet("background-color : Blue; color: white ")
-        else:
             self.trackBlock11.setStyleSheet("background-color : light grey; color: black ")
+        else:
+            self.trackBlock11.setStyleSheet("background-color : Blue; color: white ")
   
         if self.backEnd.data["blockTrainNo"][11] > 0:
-            self.trackBlock12.setStyleSheet("background-color : Blue; color: white ")
-        else:
             self.trackBlock12.setStyleSheet("background-color : light grey; color: black ")
+        else:
+            self.trackBlock12.setStyleSheet("background-color : Blue; color: white ")
 
         if self.backEnd.data["blockTrainNo"][12] > 0:
-            self.trackBlock13.setStyleSheet("background-color : Blue; color: white ")
-        else:
             self.trackBlock13.setStyleSheet("background-color : light grey; color: black ")
+        else:
+            self.trackBlock13.setStyleSheet("background-color : Blue; color: white ")
   
         if self.backEnd.data["blockTrainNo"][13] > 0:
-            self.trackBlock14.setStyleSheet("background-color : Blue; color: white ")
-        else:
             self.trackBlock14.setStyleSheet("background-color : light grey; color: black ")
+        else:
+            self.trackBlock14.setStyleSheet("background-color : Blue; color: white ")
 
         if self.backEnd.data["blockTrainNo"][14] > 0:
-            self.trackBlock15.setStyleSheet("background-color : Blue; color: white ")
-        else:
             self.trackBlock15.setStyleSheet("background-color : light grey; color: black ")
+        else:
+            self.trackBlock15.setStyleSheet("background-color : Blue; color: white ")
 
         # Update Stations  
         outLbl = "Right" if (self.backEnd.csvConstants["stationSide"][0] == 1 and self.backEnd.data["direction"][9] == 0) or (self.backEnd.csvConstants["stationSide"][0] == 0 and self.backEnd.data["direction"][9] == 1) else "Left"
-        self.stationSideLabel.setText("Doors Open: " + outLbl)
+        if self.stationSideLabel.text() != "" and self.sNameLabel.text() == "Station Name: Station B" + self.spaceString:
+            self.stationSideLabel.setText("Doors Open: " + outLbl)
 
         outLbl1 = "Right" if (self.backEnd.csvConstants["stationSide"][1] == 1 and self.backEnd.data["direction"][14] == 0) or (self.backEnd.csvConstants["stationSide"][1] == 0 and self.backEnd.data["direction"][14] == 1) else "Left"
-        self.stationSideLabel.setText("Doors Open: " + outLbl1)
+        if self.stationSideLabel.text() != "" and self.sNameLabel.text() == "Station Name: Station C" + self.spaceString:
+            self.stationSideLabel.setText("Doors Open: " + outLbl1)
+
+        if self.sNameLabel.text() == "Station Name: Station B" + self.spaceString:
+            self.sOccLbl.setText("Station Occupancy: " + str(self.backEnd.data["stationOccupancy"][0]))
+        elif self.sNameLabel.text() == "Station Name: Station C" + self.spaceString:
+            self.sOccLbl.setText("Station Occupancy: " + str(self.backEnd.data["stationOccupancy"][1]))
+
+        # Update train labels
+        if self.backEnd.data["blockTrainNo"][self.backEnd.data["blockNo"]] == 0:
+            self.numPassengersLbl.setVisible(False)
+            self.cSpeedLbl.setVisible(False)
+            self.authLbl.setVisible(False)
+        else:
+            self.numPassengersLbl.setVisible(True)
+            self.cSpeedLbl.setVisible(True)
+            self.authLbl.setVisible(True)
 
         # Update Labels
         if self.backEnd.data["blockNo"] == 4:

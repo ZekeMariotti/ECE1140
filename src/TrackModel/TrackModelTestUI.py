@@ -13,7 +13,6 @@ from TrackModelSignals import *
 class TrackModelTestUI(QWidget):
 
     backEnd = backEndCalculations()
-    # mui = TrackModelMainUI()
 
     # Define an array to store block and station data
     data = {
@@ -319,7 +318,7 @@ class TrackModelTestUI(QWidget):
         self.blockNumberOutput.setText(outputText)
 
         # Refresh Main UI
-        # self.mui.updateInterface
+        trackSignals.updateSignal.emit()
     
     # Gets the Switch Position from the UI
     def getSwitchPositionInput(self, index):
@@ -328,7 +327,7 @@ class TrackModelTestUI(QWidget):
         self.switchPositionOutput.setText(outputText) # Put output text in value box
 
         # Refresh Main UI
-        # self.mui.updateInterface
+        trackSignals.updateSignal.emit()
 
     # Gets the Gate Position state from the UI
     def getGatePositionInput(self, index):
@@ -337,7 +336,7 @@ class TrackModelTestUI(QWidget):
         self.gatePositionOutput.setText(outputText)
 
         # Refresh Main UI
-        # self.mui.updateInterface
+        trackSignals.updateSignal.emit()
 
     # Gets the Signal State from the UI
     def getSignalStateInput(self, index):
@@ -351,7 +350,7 @@ class TrackModelTestUI(QWidget):
         self.signalStateOutput.setText(outputText)
 
         # Refresh Main UI
-        # self.mui.updateInterface
+        trackSignals.updateSignal.emit()
 
     # Gets the Track direction from the UI
     def getDirectionInput(self, index):
@@ -360,7 +359,7 @@ class TrackModelTestUI(QWidget):
         self.directionOutput.setText(outputText)
 
         # Refresh Main UI
-        # self.mui.updateInterface
+        trackSignals.updateSignal.emit()
 
     # Gets Signal State if block changes
     def blockChange(self, index):
@@ -392,7 +391,7 @@ class TrackModelTestUI(QWidget):
         self.blockTrainOutput.setText(str(self.backEnd.data["blockTrainNo"][self.data["blockNo"]]))
 
         # Refresh Main UI
-        # self.mui.updateInterface
+        trackSignals.updateSignal.emit()
         
 
     # Gets the Temperature from the UI
@@ -411,7 +410,7 @@ class TrackModelTestUI(QWidget):
             self.trackHeaterInput.setCurrentText("On")
 
         # Refresh Main UI
-        # self.mui.updateInterface
+        trackSignals.updateSignal.emit()
     
     # Gets the Track Heater state from the UI
     def getTrackHeaterInput(self, index):
@@ -420,7 +419,7 @@ class TrackModelTestUI(QWidget):
         self.trackHeaterOutput.setText(outputText)
 
         # Refresh Main UI
-        # self.mui.updateInterface
+        trackSignals.updateSignal.emit()
 
     # Gets the Station Name from the UI
     def getStationNameInput(self, index):
@@ -436,7 +435,7 @@ class TrackModelTestUI(QWidget):
         self.occOutput.setText(outputText1)
 
         # Refresh Main UI
-        # self.mui.updateInterface
+        trackSignals.updateSignal.emit()
 
     # Gets the Station Occupancy from the UI
     def getStationOccInput(self):
@@ -447,7 +446,7 @@ class TrackModelTestUI(QWidget):
             self.occOutput.setText(str(self.backEnd.data["stationOccupancy"][self.data["stationName"]]) + " people")
 
         # Refresh Main UI
-        # self.mui.updateInterface
+        trackSignals.updateSignal.emit()
 
     # Gets the Train Number from the UI
     def getTrainInput(self, index):
@@ -456,28 +455,27 @@ class TrackModelTestUI(QWidget):
         self.trainNumberOutput.setText(outputText)
 
         # Refresh Main UI
-        # self.mui.updateInterface
+        trackSignals.updateSignal.emit()
 
     # Gets the Train Block from the UI
     def getTrainBlockInput(self, index):
         # Update block train number
         if self.toggle != 1:
-            if index >= 2 and index < 15 and index != 10 and index != 11:
-                self.backEnd.data["blockTrainNo"][index - 2] = 0
-                self.backEnd.data["blockTrainNo"][index] = 0
-                if index == 5:
+            if self.backEnd.data["direction"][index] == 0:
+                if index == 11 and self.backEnd.data["switchPos"] == 1:
+                        self.backEnd.data["blockTrainNo"][4] = 0
+                else:
+                    self.backEnd.data["blockTrainNo"][index - 2] = 0
+            elif self.backEnd.data["direction"][index] == 1:
+                if index == 5 and self.backEnd.data["switchPos"] == 1:
                     self.backEnd.data["blockTrainNo"][10] = 0
-            elif index == 1:
-                self.backEnd.data["blockTrainNo"][index] = 0
-            elif index == 15:
-                self.backEnd.data["blockTrainNo"][index - 2] = 0
-            elif index == 10:
-                self.backEnd.data["blockTrainNo"][8] = 0
-            elif index == 11:
-                self.backEnd.data["blockTrainNo"][4] = 0
-                self.backEnd.data["blockTrainNo"][11] = 0
-            self.backEnd.data["blockTrainNo"][index - 1] = self.train["trainNo"] + 1
-            self.blockTrainOutput.setText(str(self.backEnd.data["blockTrainNo"][self.data["blockNo"]]))
+                else:
+                    self.backEnd.data["blockTrainNo"][index] = 0
+            if index != 0:
+                self.backEnd.data["blockTrainNo"][index - 1] = self.train["trainNo"] + 1
+                self.blockTrainOutput.setText(str(self.backEnd.data["blockTrainNo"][self.data["blockNo"]]))
+            else:
+                self.blockTrainOutput.setText("Yard")
 
             # Update Authority
             self.backEnd.data["authority"][self.train["trainNo"]] -= 1
@@ -495,7 +493,7 @@ class TrackModelTestUI(QWidget):
         self.trainBlockOutput.setText(outputText)
 
         # Refresh Main UI
-        # self.mui.updateInterface
+        trackSignals.updateSignal.emit()
 
     # Gets new data if train changes
     def trainChange(self, index):
@@ -526,7 +524,7 @@ class TrackModelTestUI(QWidget):
         self.cSpeedOutput.setText(str(self.backEnd.data["commandedSpeed"][self.train["trainNo"]]) + " MPH")
 
         # Refresh Main UI
-        # self.mui.updateInterface
+        trackSignals.updateSignal.emit()
 
     # Gets the number of passengers off from the UI
     def getOffInput(self):
@@ -540,7 +538,7 @@ class TrackModelTestUI(QWidget):
             self.numPassengersOutput.setText(str(self.backEnd.data["numPassengers"][self.train["trainNo"]]) + " people")
 
         # Refresh Main UI
-        # self.mui.updateInterface
+        trackSignals.updateSignal.emit()
 
     # Gets the number of passengers on from the UI
     def getOnInput(self):
@@ -568,7 +566,7 @@ class TrackModelTestUI(QWidget):
             self.numPassengersOutput.setText(str(self.backEnd.data["numPassengers"][self.train["trainNo"]]) + " people")
 
         # Refresh Main UI
-        # self.mui.updateInterface
+        trackSignals.updateSignal.emit()
 
     # Gets the authority input from the UI
     def getAuthInput(self):
@@ -579,7 +577,7 @@ class TrackModelTestUI(QWidget):
             self.authOutput.setText(str(self.backEnd.data["authority"][self.train["trainNo"]]) + " blocks")
 
         # Refresh Main UI
-        # self.mui.updateInterface
+        trackSignals.updateSignal.emit()
 
     # Gets the commanded speed input from the UI
     def getCSpeedInput(self):
@@ -587,7 +585,7 @@ class TrackModelTestUI(QWidget):
         self.cSpeedOutput.setText(str(self.backEnd.data["commandedSpeed"][self.train["trainNo"]]) + " MPH")
 
         # Refresh Main UI
-        # self.mui.updateInterface
+        trackSignals.updateSignal.emit()
 
     # Gets the Real Time Clock state from the UI
     def getRealTimeClockInput(self):
@@ -595,7 +593,7 @@ class TrackModelTestUI(QWidget):
         self.realTimeClockOutput.setText(self.backEnd.data["rtc"])
 
         # Refresh Main UI
-        # self.mui.updateInterface
+        trackSignals.updateSignal.emit()
 
     # Returns all the data in the inputData Array
     def getData(self):

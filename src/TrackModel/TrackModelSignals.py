@@ -1,7 +1,8 @@
 from PyQt6.QtCore import QObject, pyqtSignal
 
 class trackModelSignals(QObject):
-    blockTrainNumber = pyqtSignal([int, int, int, int, int, int, int, int, int, int, int, int, int, int, int])
+    updateSignal = pyqtSignal()
+
     
     powerPressedSignal = pyqtSignal()
     brokenRailPressedSignal = pyqtSignal()
