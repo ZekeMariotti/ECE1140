@@ -13,7 +13,9 @@
 #define NUMBEROFSWITCHES 10
 
 // we use includes below define so we can use definitions in library when needed
-// #include "ui.h"
+// #include "drive.cpp"
+// #include "control.cpp"
+
 #include <ArduinoJson.h>
 #include <StreamUtils.h>
 
@@ -29,7 +31,10 @@ StaticJsonDocument<768> jsonDataOut;
 String serialJSONOut;
 
 
+//output variables, 
+int power, serviceBrakeCommand, emergencyBrakeState, autoDriveCommand, currentSpeed, commandedSpeed; 
 
+int prevTime = 0; 
 
 void setup() {
   // put your setup code here, to run once:
@@ -40,14 +45,21 @@ void setup() {
   setSwitches();
   updateSwitchStates(switchStateArray);
   // engineState = 
+  
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   getJSONData();
   // delay(1000);
+  int currTime = millis();
+  int dt = currTime-prevTime;
   updateSwitchStates(switchStateArray);
+  drive(dt);
+  emergencyBrake();
+  // automaticSpeedControl();
   // delay(10);
+  prevTime = currTime;
   sendJSONData(switchStateArray);
   
   // tsUsed = millis() - tsLastLoop;
@@ -192,29 +204,93 @@ void sendJSONData(int *switchStateArray){
 }
 
 void parseJSONData(int *switchStateArray){
-  jsonDataOut["Power"] = 10;
+  jsonDataOut["Power"] = power;
   jsonDataOut["Left Door Command"] = switchStateArray[3];
   jsonDataOut["Right Door Command"] = switchStateArray[2];
-  jsonDataOut["Service Brake Command"] = 999;
+  jsonDataOut["Service Brake Command"] = serviceBrakeCommand;
   jsonDataOut["Emergency Brake Command"] = switchStateArray[6];
   jsonDataOut["External Light Command"] = switchStateArray[5];
   jsonDataOut["Internal Light Command"] = switchStateArray[4];
   jsonDataOut["AC"] = 999;
   jsonDataOut["Station Announcement"] = "text";
-  jsonDataOut["Engine State"] = 999;
-  jsonDataOut["Emergency Brake State"] = 999;
-  jsonDataOut["Service Brake State"] = 999;
-  jsonDataOut["Internal Lights State"] = 999;
-  jsonDataOut["External Lights State"] = 999;
-  jsonDataOut["Left Door State"] = 999;
-  jsonDataOut["Right Door State"] = 999;
+  jsonDataOut["Engine State"] = switchStateArray[0];
+  jsonDataOut["Emergency Brake State"] = emergencyBrakeState;
+  jsonDataOut["Service Brake State"] = jsonDataIn["Service Brake State"];
+  jsonDataOut["Internal Lights State"] = switchStateArray[4];
+  jsonDataOut["External Lights State"] = switchStateArray[5];
+  jsonDataOut["Left Door State"] = jsonDataIn["Left Door State"];
+  jsonDataOut["Right Door State"] = jsonDataIn["Right Door State"];
   jsonDataOut["Station"] = "text";
-  jsonDataOut["Current Speed"] = 999;
-  jsonDataOut["Commanded Speed"] = 999;
+  jsonDataOut["Current Speed"] = jsonDataIn["Current Speed"];
+  jsonDataOut["Commanded Speed"] = jsonDataIn["Commanded Speed"];
   jsonDataOut["Authority"] = jsonDataIn["Authority"];
-  jsonDataOut["Speed Limit"] = 999;
+  jsonDataOut["Speed Limit"] = jsonDataIn["Speed Limit"];
   jsonDataOut["Temperature"] = 999;
   jsonDataOut["Communications Status"] = 999;
   
 }
+
+////////////////////////////////Drive Shit/////////////////////////////////////Move later TODO:move it
+int previousError = 0;
+int previousU = 0; 
+
+int calculatePower(int currentSpeed, int commandedSpeed, float dt){
+  //power calculation here
+  int Kp = 1;
+  int Ki = 1;
+  int error = commandedSpeed - currentSpeed;
+
+  int power = Kp*error + Ki*(previousU + (dt/2)*(error-previousError));
+  previousU = (dt/2)*(error-previousError);
+  previousError = error;
+
+  return power;
+
+}
+
+void automaticSpeedControl(){
+
+}
+
+bool calculateBrake(bool state){
+  return state;
+}
+
+
+
+void drive(int dt){
+    //this is the main drive function to make the train move. 
+    //This also calls the power and brake functions
+  autoDriveCommand = jsonDataIn["Manual Speed Override"];
+  currentSpeed = jsonDataIn["Current Speed"];
+  commandedSpeed = jsonDataIn["Commanded Speed"];
+  if(autoDriveCommand){
+    autodrive(currentSpeed, commandedSpeed, dt);
+  }else{
+    power=1000;        
+  }
+
+}
+
+void autodrive(int currentSpeed, int commandedSpeed, int dt){
+  //autodrive code
+  int error = commandedSpeed - currentSpeed;
+  // int dt=0;
+  if(error<0){
+    power = calculatePower(currentSpeed, commandedSpeed, dt);
+    serviceBrakeCommand = calculateBrake(false);    
+  }else if (error>0){
+    serviceBrakeCommand = calculateBrake(true);
+    power = calculatePower(0, 0, dt);
+    power = 0;
+  }
+}
+
+bool emergencyBrake(){
+  emergencyBrakeState = switchStateArray[6];
+  return emergencyBrakeState; 
+}
+
+
+
 
