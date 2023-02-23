@@ -17,24 +17,13 @@ class TrackModelTestUI(QWidget):
     # Define an array to store block and station data
     data = {
         "blockNo" : 0,
-        # "switchPos" : 0, 
-        # "sigState" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        # "gatePos" : 0, 
-        # "temp" : 70.0,
-        # "trackHeater" : 0,
-        # "blockTrainNo" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         "stationName" : 0,
-        # "stationOccupancy" : [0, 0],
-        # "rtc" : ""
     }
 
     # Define an array to store train data
     train = {
         "trainNo" : 0,
         "trainBlock" : [0, 0, 0, 0, 0],
-        # "numPassengers" : [0, 0, 0, 0, 0],
-        # "authority" : [0, 0, 0, 0, 0],
-        # "commandedSpeed" : [0, 0, 0, 0, 0]
     }
 
     # Temp boolean
