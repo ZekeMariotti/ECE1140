@@ -54,6 +54,10 @@ class MainWindow(QMainWindow):
                 
             # Create visual elements
             self.mainTimer = self.mainTimerSetup()
+            self.KpLabel = self.KpLabelSetup()
+            self.Kp = self.KpSetup()
+            self.KiLabel = self.KiLabelSetup()
+            self.Ki = self.KiSetup()
             self.station = self.stationSetup()
             self.currentSpeed = self.currentSpeedSetup()
             self.communicationsError = self.communicationsErrorSetup()
@@ -104,6 +108,52 @@ class MainWindow(QMainWindow):
             mainTimer.setParent(self)
             mainTimer.start()
             return mainTimer
+        
+        def KpLabelSetup(self):
+            KpLabel = QLabel()
+            KpLabel.setFont(self.labelFont)
+            KpLabel.setText("Kp: ")
+            KpLabel.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
+            KpLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            KpLabel.setWordWrap(True)
+            x = round(self.frameGeometry().width()*0.8-KpLabel.frameGeometry().width())
+            y = round(self.frameGeometry().height()*0.8-KpLabel.frameGeometry().height()*0.5)
+            KpLabel.move(x, y)
+            KpLabel.setParent(self)
+            return KpLabel
+        
+        def KpSetup(self):
+            Kp = QLineEdit()
+            Kp.setFixedSize(QSize(round(self.buttonWidth*0.5), round(self.buttonHeight)))
+            Kp.textChanged.connect(self.kpTextChanged)
+            x = round(self.frameGeometry().width()*0.77-Kp.frameGeometry().width())
+            y = round(self.frameGeometry().height()*0.85-Kp.frameGeometry().height()*0.5)
+            Kp.move(x, y)
+            Kp.setParent(self)
+            return Kp
+        
+        def KiLabelSetup(self):
+            KiLabel = QLabel()
+            KiLabel.setFont(self.labelFont)
+            KiLabel.setText("Ki: ")
+            KiLabel.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
+            KiLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            KiLabel.setWordWrap(True)
+            x = round(self.frameGeometry().width()*0.9-KiLabel.frameGeometry().width())
+            y = round(self.frameGeometry().height()*0.8-KiLabel.frameGeometry().height()*0.5)
+            KiLabel.move(x, y)
+            KiLabel.setParent(self)
+            return KiLabel
+        
+        def KiSetup(self):
+            Ki = QLineEdit()
+            Ki.setFixedSize(QSize(round(self.buttonWidth*0.5), round(self.buttonHeight)))
+            Ki.textChanged.connect(self.kiTextChanged)
+            x = round(self.frameGeometry().width()*0.87-Ki.frameGeometry().width())
+            y = round(self.frameGeometry().height()*0.85-Ki.frameGeometry().height()*0.5)
+            Ki.move(x, y)
+            Ki.setParent(self)
+            return Ki
 
         def stationSetup(self):
             station = QLabel()         
@@ -569,6 +619,13 @@ class MainWindow(QMainWindow):
                 self.TrainControllerSW.manualMode = True
             else:
                 self.TrainControllerSW.manualMode = False
+
+        def kpTextChanged(self):
+            self.TrainControllerSW.Kp = (0 if self.Kp.text() == "" else float(self.Kp.text()))
+
+        def kiTextChanged(self):
+            self.TrainControllerSW.Ki = (0 if self.Ki.text() == "" else float(self.Ki.text()))
+            print(self.TrainControllerSW.Ki)
 
         def emergencyBrakeEnableClick(self):
             self.TrainControllerSW.outputs.emergencyBrakeCommand = True

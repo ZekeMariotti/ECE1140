@@ -77,11 +77,11 @@ class TrainControllerSW:
     # Calculates the power to output to the train model 
     def calculatePower(self):
         # ek = velocity error
-        self.ek = self.inputs.commandedSpeed - self.inputs.currentSpeed
+        self.ek = float(self.inputs.commandedSpeed) - float(self.inputs.currentSpeed)
         
         # Don't update uk if at max power
         if (self.outputs.power < self.MAX_POWER):
-            self.uk = self.uk1 + 0.5*self.T*(self.ek + self.ek1)
+            self.uk = float(self.uk1) + float(0.5*self.T*(self.ek + self.ek1))
         else:
             self.uk = self.uk1
 
@@ -91,7 +91,7 @@ class TrainControllerSW:
             self.ek = 0
             self.uk = 0
         else:
-            self.outputs.power = self.Kp*self.ek + self.Ki*self.uk
+            self.outputs.power = float(self.Kp*self.ek) + float(self.Ki*self.uk)
 
         # 0 <= power <= 120000 Watts
         if(self.outputs.power > 120000):
