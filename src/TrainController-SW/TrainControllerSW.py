@@ -8,8 +8,8 @@ import json
 from json import JSONEncoder
 
 # TODO: add unit conversions class, 
-    # automatically: **calculate power formula, **set service brake, update doors, update external lights, 
-    #                display communications error, display correct current/next station, 
+    # automatically: **set service brake, update doors, update external lights, 
+    #                display communications error, display correct current/next station, prevent speeding
 
 # Class for the TrainControllerSW
 class TrainControllerSW:
@@ -31,6 +31,16 @@ class TrainControllerSW:
         self.currentTime = None
         self.commandedSpeedInternal = None
         self.manualMode = False
+
+        # Power variables (ek1/uk1 = previous ek/uk, or e(k-1)/u(k-1) )
+        self.ek = None
+        self.ek1 = 0
+        self.uk = None
+        self.uk1 = 0
+        
+        self.T = 1
+        self.Kp = 1
+        self.Ki = 1
         
         self.inputs = Inputs(commandedSpeed, currentSpeed, authority, inputTime, undergroundState, speedLimit, temperature, engineState, 
                  stationState, stationName, platformSide, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
@@ -62,9 +72,36 @@ class TrainControllerSW:
         with open(os.path.join(sys.path[0], "TrainControllerSWOutputs.json"), "r") as filename:
             self.outputs = Outputs(**json.loads(filename.read()))
 
-    # Calculates the power to output to the train model based on currentSpeed, commandedSpeed, ...
+    # Calculates the power to output to the train model 
     def calculatePower(self):
-        self.power = None
+        # ek = velocity error
+        self.ek = self.inputs.commandedSpeed - self.inputs.currentSpeed
+        
+        # Don't update uk if at max power
+        if (self.outputs.power < self.MAX_POWER):
+            self.uk = self.uk1 + 0.5*self.T*(self.ek + self.ek1)
+        else:
+            self.uk = self.uk1
+
+        # Final power calculation - don't send power while braking
+        if(self.inputs.serviceBrakeState or self.inputs.emergencyBrakeState):
+            self.outputs.power = 0
+            self.ek = 0
+            self.uk = 0
+        else:
+            self.outputs.power = self.Kp*self.ek + self.Ki*self.uk
+
+        # 0 <= power <= 120000 Watts
+        if(self.outputs.power > 120000):
+            self.outputs.power = 120000
+        elif(self.outputs.power < 0):
+            self.outputs.power = 0
+        else:
+            self.outputs.power = self.outputs.power
+
+        # Set ek1/uk1 to current ek/uk
+        self.ek1 = self.ek
+        self.uk1 = self.uk
 
     # Automatically opens/closes doors based on platformSide
     def autoUpdateDoorState(self):
@@ -76,9 +113,12 @@ class TrainControllerSW:
     def autoUpdateExternalLights(self):
         self.outputs.externalLightCommand = None
 
-    # Automatically enable/disables the service brake based on currentSpeed, commandedSpeed, ...
+    # Automatically enable/disables the service brake
     def autoSetServiceBrake(self):
-        self.outputs.serviceBrakeCommand = None
+        if(self.inputs.commandedSpeed == 0):
+            self.outputs.serviceBrakeCommand = True
+        else:
+            self.outputs.serviceBrakeCommand = False
 
     # Converts input time string to time object ex "2023-02-20T04:52:48.3940347-05:00"
     def convertTime(self):

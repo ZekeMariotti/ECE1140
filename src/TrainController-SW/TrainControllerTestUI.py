@@ -698,7 +698,7 @@ class Color(QWidget):
 
 
 # Run Test UI Alone
-if (True):  
+if (__name__ == "__main__"):  
     app = QApplication(sys.argv)
 
     testWindow = TestWindow()

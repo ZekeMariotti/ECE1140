@@ -1,8 +1,8 @@
 {
-    "power": 0,
+    "power": 473.0,
     "leftDoorCommand": 0,
     "rightDoorCommand": 0,
-    "serviceBrakeCommand": 0,
+    "serviceBrakeCommand": false,
     "emergencyBrakeCommand": 0,
     "externalLightCommand": 0,
     "internalLightCommand": 0,

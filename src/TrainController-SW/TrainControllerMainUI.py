@@ -20,6 +20,9 @@ class MainWindow(QMainWindow):
         # Constructor 
         def __init__(self):
             super().__init__()
+
+            # Enable Test UI
+            self.testUI = True 
             
             # Initialize TrainControllerSW object
             self.TrainControllerSW = TrainControllerSW(0, 0, 0, "2023-02-20T21:52:48.3940347-05:00", False, 0, 0, 0, 0, "setupStationName", 
@@ -27,27 +30,7 @@ class MainWindow(QMainWindow):
             
             # Update Inputs and Outputs
             self.TrainControllerSW.writeOutputs()
-            self.TrainControllerSW.readInputs()
-            
-            # Temporary Testing
-            testState = False
-            if(testState):
-                self.TrainControllerSW.inputs.inputTime = "8:46"
-                self.TrainControllerSW.inputs.stationName = "SHADYSIDE"
-                self.TrainControllerSW.inputs.currentSpeed = 20
-                self.TrainControllerSW.inputs.engineState = 1
-                self.TrainControllerSW.inputs.emergencyBrakeState = False
-                self.TrainControllerSW.inputs.serviceBrakeState = False
-                self.TrainControllerSW.inputs.commandedSpeed = 20
-                self.TrainControllerSW.inputs.authority = 5
-                self.TrainControllerSW.inputs.speedLimit = 25
-                self.TrainControllerSW.inputs.temperature = 75
-                self.TrainControllerSW.inputs.internalLightsState = True
-                self.TrainControllerSW.inputs.externalLightsState = False
-                self.TrainControllerSW.inputs.leftDoorState = False
-                self.TrainControllerSW.inputs.rightDoorState = False
-
-            
+            self.TrainControllerSW.readInputs()          
 
             # Set window defaults
             self.setWindowTitle("Train Controller")
@@ -101,8 +84,9 @@ class MainWindow(QMainWindow):
             self.rightDoorClose = self.rightDoorCloseSetup()
 
             # Test UI
-            self.TrainControllerTestUI = TestWindow()
-            self.TrainControllerTestUI.move(self.frameGeometry().width(), 250)
+            if (self.testUI):
+                self.TrainControllerTestUI = TestWindow()
+                self.TrainControllerTestUI.move(self.frameGeometry().width(), 250)
 
 
                 
@@ -148,7 +132,7 @@ class MainWindow(QMainWindow):
         def manualSpeedOverrideSetup(self):
             manualSpeedOverride = QLabel()  
             manualSpeedOverride.setFont(self.stationFont)
-            manualSpeedOverride.setText("Manual Speed Override:")
+            manualSpeedOverride.setText("Manual Mode:")
             manualSpeedOverride.setFixedSize(QSize(round(self.labelWidth*1.6), round(self.labelHeight*0.5)))
             manualSpeedOverride.setAlignment(Qt.AlignmentFlag.AlignCenter)
             manualSpeedOverride.setWordWrap(True)
@@ -504,17 +488,24 @@ class MainWindow(QMainWindow):
         
         # Closes test UI if main window closes
         def closeEvent(self, event):
-            if (self.TrainControllerTestUI):
-                self.TrainControllerTestUI.close()
+            if(self.testUI):
+                if (self.TrainControllerTestUI):
+                    self.TrainControllerTestUI.close()
 
         # Updates everything during every each loop of the timer 
         def mainEventLoop(self):
             self.TrainControllerSW.currentTime = self.TrainControllerSW.realTime
 
-            self.TrainControllerSW.writeOutputs()
             self.TrainControllerSW.readInputs()
+            self.TrainControllerSW.calculatePower()
+
+            # Only run in automatic mode
+            if(self.manualModeToggle.isChecked() == False):
+                self.TrainControllerSW.autoSetServiceBrake()
+
             self.updateVisualElements()
 
+            self.TrainControllerSW.writeOutputs()
             self.TrainControllerSW.previousTime = self.TrainControllerSW.realTime
 
         def updateVisualElements(self):
@@ -609,6 +600,8 @@ app = QApplication(sys.argv)
 
 mainWindow = MainWindow()
 mainWindow.show()
-mainWindow.TrainControllerTestUI.show()
+
+if (mainWindow.testUI):
+    mainWindow.TrainControllerTestUI.show()
 
 app.exec()
