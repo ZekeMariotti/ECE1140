@@ -15,10 +15,6 @@ const httpOptions = {
   providedIn: 'root'
 })
 export class BackendService {
-  readonly headers = new HttpHeaders().set('Content-Type', 'application/json');
-
-
-
   constructor(
     private http: HttpClient
   ) { }
