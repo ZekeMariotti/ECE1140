@@ -171,7 +171,7 @@ void draw() {
   //}
    
   //-----------------------End Get Data---------------------------
-  delay(1000);
+  delay(100);
 
   
   background(255);
@@ -303,7 +303,7 @@ String getSerialData(){
 void sendJSONData(JSONObject jsonOut){
   String s = (jsonOut.toString().replace("\n ", "")).replace(": ",":").replace(", ",",").replace("{ ","{")
                   .replace(" }","}");
-  myPort.write("<"+s+">&"); //TODO: Uncomment
+  myPort.write(""+s+"&"); //TODO: Uncomment
   println("<"+s+">");
 }
 

@@ -19,12 +19,13 @@ String dataIn, dataOut;
 
 //input cariables
 int engineState, serviceBrakeState, emergencyBrakeState, internalLightState, externalLightState, leftDoorState,
-      rightDoorState, currentSpeed, commandedSpeed, authority, speedLimit, temperature, communicationState, time;
+      rightDoorState, currentSpeed, commandedSpeed, authority, speedLimit, temperature, communicationState, time,
+      power;
 String stationName;
 
 void setup(){
   //decalre screen size
-  size(900, 800);
+  size(900, 600);
 
   cp5 = new ControlP5(this);
   
@@ -100,7 +101,7 @@ void ui(){
   drawTextBoxWithBackground(50, 330, 200, 60, fontSize, "Int Lights: "+internalLightState, 167);
 
   drawTextBoxWithBackground(350, 50, 200, 60, fontSize, "Curr Station: ", 167); //TODO: implemet current station in JSON
-  drawTextBoxWithBackground(350, 120, 200, 60+80, fontSize, "Speed: 20"+currentSpeed, 167);
+  drawTextBoxWithBackground(350, 120, 200, 60+80, fontSize, "Speed: "+currentSpeed, 167);
   drawTextBoxWithBackground(350, 190+80, 200, 60, fontSize, "Manual Spd Ovrd: ", 167);
   drawTextBoxWithBackground(350, 260+80, 200, 60, fontSize, "Emergency Brake: "+emergencyBrakeState, 167);
 
@@ -109,6 +110,13 @@ void ui(){
   drawTextBoxWithBackground(650, 190, 200, 60, fontSize, "Spd Lim: "+speedLimit, 167);
   drawTextBoxWithBackground(650, 260, 200, 60, fontSize, "Right Door: "+rightDoorState, 167);
   drawTextBoxWithBackground(650, 330, 200, 60, fontSize, "Left Door: "+leftDoorState, 167);
+  
+  drawTextBoxWithBackground(50, 480, 200, 60, fontSize, "Power: "+power, 167);
+  drawTextBoxWithBackground(50, 550, 200, 60, fontSize, "Service Brake State: "+serviceBrakeState, 167);
+  drawTextBoxWithBackground(350, 480, 200, 60, fontSize, "Curr Station: ", 167); //TODO: implemet current station in JSON
+  drawTextBoxWithBackground(350, 550, 200, 60+80, fontSize, "Speed: "+currentSpeed, 167);
+  drawTextBoxWithBackground(650, 480, 200, 60, fontSize, "Comd Spd: "+commandedSpeed, 167);
+  drawTextBoxWithBackground(650, 550, 200, 60, fontSize, "Authority: "+authority, 167);
 }
 
 void updateUI(JSONObject jsonDataIn){
@@ -119,7 +127,7 @@ void updateUI(JSONObject jsonDataIn){
     //println(jsonDataIn.getInt("Right Door Command"));
     //time = jsonDataIn.getString("Time");
     engineState = jsonDataIn.getInt("Right Door Command");
-    serviceBrakeState = jsonDataIn.getInt("Service Brake State");
+    serviceBrakeState = jsonDataIn.getInt("Service Brake Command");
     externalLightState = jsonDataIn.getInt("External Lights State");
     internalLightState = jsonDataIn.getInt("Internal Lights State");
     
@@ -133,6 +141,7 @@ void updateUI(JSONObject jsonDataIn){
     speedLimit = jsonDataIn.getInt("Speed Limit");
     rightDoorState = jsonDataIn.getInt("Right Door State");
     leftDoorState = jsonDataIn.getInt("Left Door State");
+    power = jsonDataIn.getInt("Power");
 }
 
 void drawTextBoxWithBackground(int x, int y, int xsize, int ysize,

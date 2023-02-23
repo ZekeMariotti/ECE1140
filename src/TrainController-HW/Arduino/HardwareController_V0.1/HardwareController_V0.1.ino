@@ -237,11 +237,11 @@ int previousU = 0;
 int calculatePower(int currentSpeed, int commandedSpeed, float dt){
   //power calculation here
   int Kp = 1;
-  int Ki = 1;
+  int Ki = 0.1;
   int error = commandedSpeed - currentSpeed;
 
   int power = Kp*error + Ki*(previousU + (dt/2)*(error-previousError));
-  previousU = (dt/2)*(error-previousError);
+  previousU = (dt/2000)*(error-previousError);
   previousError = error;
 
   return power;
@@ -264,7 +264,7 @@ void drive(int dt){
   autoDriveCommand = jsonDataIn["Manual Speed Override"];
   currentSpeed = jsonDataIn["Current Speed"];
   commandedSpeed = jsonDataIn["Commanded Speed"];
-  if(autoDriveCommand){
+  if(true){
     autodrive(currentSpeed, commandedSpeed, dt);
   }else{
     power=1000;        
@@ -276,13 +276,15 @@ void autodrive(int currentSpeed, int commandedSpeed, int dt){
   //autodrive code
   int error = commandedSpeed - currentSpeed;
   // int dt=0;
-  if(error<0){
+  if(error>0){
     power = calculatePower(currentSpeed, commandedSpeed, dt);
     serviceBrakeCommand = calculateBrake(false);    
-  }else if (error>0){
+  }else if (error<0){
     serviceBrakeCommand = calculateBrake(true);
     power = calculatePower(0, 0, dt);
     power = 0;
+  }else{
+    power=0;
   }
 }
 
