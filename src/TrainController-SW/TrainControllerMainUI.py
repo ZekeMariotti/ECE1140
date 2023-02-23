@@ -35,22 +35,22 @@ class MainWindow(QMainWindow):
 
             # Set window defaults
             self.setWindowTitle("Train Controller")
-            self.resize(QSize(1366, 768-31))
-            #self.setFixedSize(QSize(960, 540))
+            #self.resize(QSize(1366, 768-31))
+            self.setFixedSize(QSize(960, 540))
             self.setMinimumSize(1050, 550)
 
             # Set element defaults
             self.windowWidth = self.frameGeometry().width()
             self.windowHeight = self.frameGeometry().height()
             self.buttonWidth = round(0.13*self.windowWidth)
-            self.buttonHeight = round(0.06*self.windowHeight)
+            self.buttonHeight = round(0.07*self.windowHeight)
             self.labelWidth = self.buttonWidth*2
             self.labelHeight = round(self.buttonHeight*1.3)
             
             self.globalFont = "Times New Roman"     
-            self.labelFont = QFont(self.globalFont, 15)
+            self.labelFont = QFont(self.globalFont, 13)
             self.buttonFont = QFont(self.globalFont, 9)
-            self.stationFont = QFont(self.globalFont, 20)  
+            self.stationFont = QFont(self.globalFont, 16)  
                 
             # Create visual elements
             self.mainTimer = self.mainTimerSetup()
@@ -625,7 +625,6 @@ class MainWindow(QMainWindow):
 
         def kiTextChanged(self):
             self.TrainControllerSW.Ki = (0 if self.Ki.text() == "" else float(self.Ki.text()))
-            print(self.TrainControllerSW.Ki)
 
         def emergencyBrakeEnableClick(self):
             self.TrainControllerSW.outputs.emergencyBrakeCommand = True
