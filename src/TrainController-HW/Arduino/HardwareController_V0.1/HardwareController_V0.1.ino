@@ -52,6 +52,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   getJSONData();
   // delay(1000);
+<<<<<<< HEAD
   int currTime = millis();
   int dt = currTime-prevTime;
   updateSwitchStates(switchStateArray);
@@ -60,6 +61,10 @@ void loop() {
   // automaticSpeedControl();
   // delay(10);
   prevTime = currTime;
+=======
+  updateSwitchStates(switchStateArray);
+  // delay(10);
+>>>>>>> 817da9a (Proof of concept for test UI and Main UI)
   sendJSONData(switchStateArray);
   
   // tsUsed = millis() - tsLastLoop;
@@ -192,6 +197,7 @@ void getJSONData(){
   int x = jsonDataIn["Authority"];
   Serial.println(x);
   Serial.println(dat);
+<<<<<<< HEAD
 }
 
 void sendJSONData(int *switchStateArray){
@@ -291,6 +297,44 @@ void autodrive(int currentSpeed, int commandedSpeed, int dt){
 bool emergencyBrake(){
   emergencyBrakeState = switchStateArray[6];
   return emergencyBrakeState; 
+=======
+}
+
+void sendJSONData(int *switchStateArray){
+  serialJSONOut="";
+  // StaticJsonDocument<256> JSONdataOut;
+
+  parseJSONData(switchStateArray);
+  serializeJson(jsonDataOut, serialJSONOut);
+  Serial.println(serialJSONOut);
+}
+
+void parseJSONData(int *switchStateArray){
+  jsonDataOut["Power"] = 10;
+  jsonDataOut["Left Door Command"] = switchStateArray[3];
+  jsonDataOut["Right Door Command"] = switchStateArray[2];
+  jsonDataOut["Service Brake Command"] = 999;
+  jsonDataOut["Emergency Brake Command"] = switchStateArray[6];
+  jsonDataOut["External Light Command"] = switchStateArray[5];
+  jsonDataOut["Internal Light Command"] = switchStateArray[4];
+  jsonDataOut["AC"] = 999;
+  jsonDataOut["Station Announcement"] = "text";
+  jsonDataOut["Engine State"] = 999;
+  jsonDataOut["Emergency Brake State"] = 999;
+  jsonDataOut["Service Brake State"] = 999;
+  jsonDataOut["Internal Lights State"] = 999;
+  jsonDataOut["External Lights State"] = 999;
+  jsonDataOut["Left Door State"] = 999;
+  jsonDataOut["Right Door State"] = 999;
+  jsonDataOut["Station"] = "text";
+  jsonDataOut["Current Speed"] = 999;
+  jsonDataOut["Commanded Speed"] = 999;
+  jsonDataOut["Authority"] = jsonDataIn["Authority"];
+  jsonDataOut["Speed Limit"] = 999;
+  jsonDataOut["Temperature"] = 999;
+  jsonDataOut["Communications Status"] = 999;
+  
+>>>>>>> 817da9a (Proof of concept for test UI and Main UI)
 }
 
 

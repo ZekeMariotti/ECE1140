@@ -17,14 +17,43 @@ int testCommandedSpeed, testCurrentSpeed, testAuthority, undergroundState, testS
       leftDoor, rightDoor, manualSpeedOverride, Kp, Ki;
 String time, beacon, nextStationName;
 
+<<<<<<< HEAD
+=======
+<<<<<<<< HEAD:src/TrainController-HW/TestUI/UI_V0_1/UI_V0_1.pde
+//declaring global variables here
+JSONObject jsonDataIn, jsonDataOut; 
+String dataIn, dataOut;
+
+////output variables
+//int testCommandedSpeed, testCurrentSpeed, testAuthority, undergroundState, testSpeedLimit, testTemperature, testEngineState,
+//      stationState, platformSide, testExternalLightState, testInternalLightState, testLeftDoorState, testRightDoorState, 
+//      engineStatus, commsStatus, emergencyBrake, serviceBrake, internalLights, externalLights,
+//      leftDoor, rightDoor, manualSpeedOverride, Kp, Ki;
+//String time, beacon, nextStationName;
+
+//input cariables
+int engineState, serviceBrakeState, emergencyBrakeState, internalLightState, externalLightState, leftDoorState,
+      rightDoorState, currentSpeed, commandedSpeed, authority, speedLimit, temperature, communicationState, time,
+      power;
+String stationName;
+
+void setup(){
+========
+>>>>>>> 817da9a (Proof of concept for test UI and Main UI)
 //input cariables
 int engineState, serviceBrakeState, emergencyBrakeState, internalLightState, externalLightState, leftDoorState,
       rightDoorState, currentSpeed, commandedSpeed, authority, speedLimit, temperature, communicationState, Time;
 String stationName;
 
 void setup() {
+<<<<<<< HEAD
   //decalre screen size
   size(900, 800);
+=======
+>>>>>>>> 817da9a (Proof of concept for test UI and Main UI):src/TrainController-HW/TestUI/TestUI_V0_1/TestUI_V0_1.pde
+  //decalre screen size
+  size(900, 600);
+>>>>>>> 817da9a (Proof of concept for test UI and Main UI)
 
   cp5 = new ControlP5(this);
   
@@ -33,6 +62,14 @@ void setup() {
   print("List:");
   printArray(Serial.list());
   // Open the port you are using at the rate you want:
+<<<<<<< HEAD
+=======
+<<<<<<<< HEAD:src/TrainController-HW/TestUI/UI_V0_1/UI_V0_1.pde
+  myPort = new Serial(this, "COM7", 115200); //TODO: Uncomment
+  println(Serial.list());
+  //------------------------End Serial--------------------------
+========
+>>>>>>> 817da9a (Proof of concept for test UI and Main UI)
   myPort = new Serial(this, "COM8", 115200); //TODO: Uncomment
   println(Serial.list());
   //------------------------End Serial--------------------------
@@ -159,10 +196,53 @@ void setup() {
    
    //delay(3000);
     
+<<<<<<< HEAD
 }
 
 void draw() {
   //---------------------------Get Data---------------------------
+=======
+>>>>>>>> 817da9a (Proof of concept for test UI and Main UI):src/TrainController-HW/TestUI/TestUI_V0_1/TestUI_V0_1.pde
+}
+
+void draw(){
+  //---------------------------Get Data---------------------------
+<<<<<<<< HEAD:src/TrainController-HW/TestUI/UI_V0_1/UI_V0_1.pde
+  dataIn = getSerialData();
+  //println(dataIn);
+  println(dataIn);
+  if(dataIn!=null){
+    jsonDataIn = getJSONData(dataIn);
+  }
+   
+  //-----------------------End Get Data---------------------------
+  
+  background(255);
+  
+  if (jsonDataIn!=null){
+    updateUI(jsonDataIn);
+    //println(jsonDataIn.getInt("Right Door Command"));
+    ////time = jsonDataIn.getString("Time");
+    //engineState = jsonDataIn.getInt("Right Door Command");
+    //serviceBrakeState = jsonDataIn.getInt("Service Brake State");
+    //externalLightState = jsonDataIn.getInt("External Lights State");
+    //internalLightState = jsonDataIn.getInt("Internal Lights State");
+    
+    //// //TODO: implemet current station in JSON
+    //currentSpeed = jsonDataIn.getInt("Current Speed");
+    ////jsonDataIn.getInt("Manual Speed Override"), 167);
+    //emergencyBrakeState = jsonDataIn.getInt("Emergency Brake State");
+    
+    //commandedSpeed = jsonDataIn.getInt("Commanded Speed");
+    //authority = jsonDataIn.getInt("Authority");
+    //speedLimit = jsonDataIn.getInt("Speed Limit");
+    //rightDoorState = jsonDataIn.getInt("Right Door State");
+    //leftDoorState = jsonDataIn.getInt("Left Door State");
+  }
+  
+  ui();
+========
+>>>>>>> 817da9a (Proof of concept for test UI and Main UI)
   //dataIn = getSerialData();
   //println(dataIn);
   //println(dataIn);
@@ -171,7 +251,11 @@ void draw() {
   //}
    
   //-----------------------End Get Data---------------------------
+<<<<<<< HEAD
   delay(100);
+=======
+  delay(1000);
+>>>>>>> 817da9a (Proof of concept for test UI and Main UI)
 
   
   background(255);
@@ -198,6 +282,10 @@ void draw() {
   //}
   
   //ui();
+<<<<<<< HEAD
+=======
+>>>>>>>> 817da9a (Proof of concept for test UI and Main UI):src/TrainController-HW/TestUI/TestUI_V0_1/TestUI_V0_1.pde
+>>>>>>> 817da9a (Proof of concept for test UI and Main UI)
 
   //draw a line to seprate the test UI
   rectMode(CORNER);  // Default rectMode is CORNER
@@ -211,12 +299,26 @@ void draw() {
   //drawTextBoxWithBackground(50, 660, 200, 60, 32, "Temp: ", 167);
   
 
+<<<<<<< HEAD
+=======
+<<<<<<<< HEAD:src/TrainController-HW/TestUI/UI_V0_1/UI_V0_1.pde
+  //jsonDataOut = packJSONData();
+  //sendJSONData(jsonDataOut);
+  //delay(1000);
+}
+
+========
+>>>>>>> 817da9a (Proof of concept for test UI and Main UI)
   jsonDataOut = packJSONData();
   sendJSONData(jsonDataOut);
   //delay(1000);
 }
 
 
+<<<<<<< HEAD
+=======
+>>>>>>>> 817da9a (Proof of concept for test UI and Main UI):src/TrainController-HW/TestUI/TestUI_V0_1/TestUI_V0_1.pde
+>>>>>>> 817da9a (Proof of concept for test UI and Main UI)
 void ui(){
   int fontSize = 20;
   drawTextBoxWithBackground(50, 50, 200, 60, fontSize, "Time: "+time, 167);
@@ -226,7 +328,15 @@ void ui(){
   drawTextBoxWithBackground(50, 330, 200, 60, fontSize, "Int Lights: "+internalLightState, 167);
 
   drawTextBoxWithBackground(350, 50, 200, 60, fontSize, "Curr Station: ", 167); //TODO: implemet current station in JSON
+<<<<<<< HEAD
   drawTextBoxWithBackground(350, 120, 200, 60+80, fontSize, "Speed: 20"+currentSpeed, 167);
+=======
+<<<<<<<< HEAD:src/TrainController-HW/TestUI/UI_V0_1/UI_V0_1.pde
+  drawTextBoxWithBackground(350, 120, 200, 60+80, fontSize, "Speed: "+currentSpeed, 167);
+========
+  drawTextBoxWithBackground(350, 120, 200, 60+80, fontSize, "Speed: 20"+currentSpeed, 167);
+>>>>>>>> 817da9a (Proof of concept for test UI and Main UI):src/TrainController-HW/TestUI/TestUI_V0_1/TestUI_V0_1.pde
+>>>>>>> 817da9a (Proof of concept for test UI and Main UI)
   drawTextBoxWithBackground(350, 190+80, 200, 60, fontSize, "Manual Spd Ovrd: ", 167);
   drawTextBoxWithBackground(350, 260+80, 200, 60, fontSize, "Emergency Brake: "+emergencyBrakeState, 167);
 
@@ -235,6 +345,19 @@ void ui(){
   drawTextBoxWithBackground(650, 190, 200, 60, fontSize, "Spd Lim: "+speedLimit, 167);
   drawTextBoxWithBackground(650, 260, 200, 60, fontSize, "Right Door: "+rightDoorState, 167);
   drawTextBoxWithBackground(650, 330, 200, 60, fontSize, "Left Door: "+leftDoorState, 167);
+<<<<<<< HEAD
+=======
+<<<<<<<< HEAD:src/TrainController-HW/TestUI/UI_V0_1/UI_V0_1.pde
+  
+  drawTextBoxWithBackground(50, 480, 200, 60, fontSize, "Power: "+power, 167);
+  drawTextBoxWithBackground(50, 550, 200, 60, fontSize, "Service Brake State: "+serviceBrakeState, 167);
+  drawTextBoxWithBackground(350, 480, 200, 60, fontSize, "Curr Station: ", 167); //TODO: implemet current station in JSON
+  drawTextBoxWithBackground(350, 550, 200, 60+80, fontSize, "Speed: "+currentSpeed, 167);
+  drawTextBoxWithBackground(650, 480, 200, 60, fontSize, "Comd Spd: "+commandedSpeed, 167);
+  drawTextBoxWithBackground(650, 550, 200, 60, fontSize, "Authority: "+authority, 167);
+========
+>>>>>>>> 817da9a (Proof of concept for test UI and Main UI):src/TrainController-HW/TestUI/TestUI_V0_1/TestUI_V0_1.pde
+>>>>>>> 817da9a (Proof of concept for test UI and Main UI)
 }
 
 void updateUI(JSONObject jsonDataIn){
@@ -245,7 +368,15 @@ void updateUI(JSONObject jsonDataIn){
     //println(jsonDataIn.getInt("Right Door Command"));
     //time = jsonDataIn.getString("Time");
     engineState = jsonDataIn.getInt("Right Door Command");
+<<<<<<< HEAD
     serviceBrakeState = jsonDataIn.getInt("Service Brake State");
+=======
+<<<<<<<< HEAD:src/TrainController-HW/TestUI/UI_V0_1/UI_V0_1.pde
+    serviceBrakeState = jsonDataIn.getInt("Service Brake Command");
+========
+    serviceBrakeState = jsonDataIn.getInt("Service Brake State");
+>>>>>>>> 817da9a (Proof of concept for test UI and Main UI):src/TrainController-HW/TestUI/TestUI_V0_1/TestUI_V0_1.pde
+>>>>>>> 817da9a (Proof of concept for test UI and Main UI)
     externalLightState = jsonDataIn.getInt("External Lights State");
     internalLightState = jsonDataIn.getInt("Internal Lights State");
     
@@ -259,6 +390,13 @@ void updateUI(JSONObject jsonDataIn){
     speedLimit = jsonDataIn.getInt("Speed Limit");
     rightDoorState = jsonDataIn.getInt("Right Door State");
     leftDoorState = jsonDataIn.getInt("Left Door State");
+<<<<<<< HEAD
+=======
+<<<<<<<< HEAD:src/TrainController-HW/TestUI/UI_V0_1/UI_V0_1.pde
+    power = jsonDataIn.getInt("Power");
+========
+>>>>>>>> 817da9a (Proof of concept for test UI and Main UI):src/TrainController-HW/TestUI/TestUI_V0_1/TestUI_V0_1.pde
+>>>>>>> 817da9a (Proof of concept for test UI and Main UI)
 }
 
 void drawTextBoxWithBackground(int x, int y, int xsize, int ysize,
@@ -267,6 +405,7 @@ void drawTextBoxWithBackground(int x, int y, int xsize, int ysize,
   //rectMode(CORNER);  // Default rectMode is CORNER
   //fill(0);  // Set fill to white
   //rect(50, 50, 400, 200);  // Draw white rect using CORNER mode
+<<<<<<< HEAD
 
   //fill(255);
   //textSize(128);
@@ -284,6 +423,26 @@ void drawTextBoxWithBackground(int x, int y, int xsize, int ysize,
 }
 
 
+=======
+  
+  //fill(255);
+  //textSize(128);
+  //textAlign(LEFT);
+  //text("word111", 50, 55, 410, 200); 
+  
+  rectMode(CORNER);  // Default rectMode is CORNER
+  fill(colour);  // Set fill to white
+  rect(x, y, xsize, ysize);  // Draw white rect using CORNER mode
+  
+  fill(0);
+  textSize(textSize);
+  textAlign(LEFT);
+  text(text, x, y+5, xsize+10, ysize); 
+}
+
+
+
+>>>>>>> 817da9a (Proof of concept for test UI and Main UI)
 JSONObject getJSONData(String dataIn){
   //println(dataIn);
  JSONObject jsonIn = parseJSONObject(dataIn);
@@ -298,12 +457,21 @@ String getSerialData(){
   //println(data);
   return data;
 }
+<<<<<<< HEAD
+=======
+<<<<<<<< HEAD:src/TrainController-HW/TestUI/UI_V0_1/UI_V0_1.pde
+========
+>>>>>>> 817da9a (Proof of concept for test UI and Main UI)
 
 //this will collect all the data and make a json object to send out
 void sendJSONData(JSONObject jsonOut){
   String s = (jsonOut.toString().replace("\n ", "")).replace(": ",":").replace(", ",",").replace("{ ","{")
                   .replace(" }","}");
+<<<<<<< HEAD
   myPort.write(""+s+"&"); //TODO: Uncomment
+=======
+  myPort.write("<"+s+">&"); //TODO: Uncomment
+>>>>>>> 817da9a (Proof of concept for test UI and Main UI)
   println("<"+s+">");
 }
 
@@ -343,3 +511,7 @@ JSONObject packJSONData(){
   
   return json;
 }
+<<<<<<< HEAD
+=======
+>>>>>>>> 817da9a (Proof of concept for test UI and Main UI):src/TrainController-HW/TestUI/TestUI_V0_1/TestUI_V0_1.pde
+>>>>>>> 817da9a (Proof of concept for test UI and Main UI)
