@@ -25,10 +25,12 @@ class TrainControllerSW:
         self.MAX_POWER = 120000
         
         self.realTime = None
+        self.manualMode = False
+        
         self.previousTime = None
         self.currentTime = None
         self.commandedSpeedInternal = None
-        self.manualMode = False
+        
 
         # Power variables (ek1/uk1 = previous ek/uk, or e(k-1)/u(k-1) )
         self.ek = None
@@ -36,9 +38,9 @@ class TrainControllerSW:
         self.uk = None
         self.uk1 = 0
         
-        self.T = 1
-        self.Kp = 1
-        self.Ki = 1
+        self.T = 0.1
+        self.Kp = 5
+        self.Ki = 50
 
         # Variables to check states between mainEventLoops
         self.lightsEnabledPrevious = None
@@ -142,7 +144,7 @@ class TrainControllerSW:
 
     # Automatically enable/disables the service brake
     def autoSetServiceBrake(self):
-        if(self.inputs.commandedSpeed == 0):
+        if(self.inputs.currentSpeed > self.inputs.commandedSpeed + 1):
             self.outputs.serviceBrakeCommand = True
         else:
             self.outputs.serviceBrakeCommand = False
@@ -157,6 +159,7 @@ class TrainControllerSW:
         inputTime = stringRemove(self.inputs.inputTime, 26)
         self.realTime = datetime.strptime(inputTime, "%Y-%m-%dT%H:%M:%S.%f%z")   
 
+    # Returns a string that represents the state of the engine
     def getEngineState(self):
         if(self.inputs.engineStatus == False):
             return "FAILURE"
@@ -166,7 +169,8 @@ class TrainControllerSW:
             return "ON"
         else:
             return "ERROR: UNKNOWN STATE"
-
+    
+    # Returns a string that represents the state of the emergency brake
     def getEmergencyBrakeState(self):
         if(self.inputs.emergencyBrakeState == True):
             return "ENABLED"
@@ -175,6 +179,7 @@ class TrainControllerSW:
         else:
             return "ERROR: UNKNOWN STATE"
 
+    # Returns a string that represents the state of the service brake
     def getServiceBrakeState(self):
         if(self.inputs.serviceBrakeStatus == False):
             return "FAILURE"
@@ -185,6 +190,7 @@ class TrainControllerSW:
         else:
             return "ERROR: UNKNOWN STATE"
 
+    # Returns a string that represents the state of the left door
     def getLeftDoorState(self):
         if(self.inputs.leftDoorState == True):
             return "Opened"
@@ -193,6 +199,7 @@ class TrainControllerSW:
         else:
             return "ERROR: UNKNOWN STATE"
 
+    # Returns a string that represents the state of the right door
     def getRightDoorState(self):
         if(self.inputs.rightDoorState == True):
             return "Opened"
@@ -201,6 +208,7 @@ class TrainControllerSW:
         else:
             return "ERROR: UNKNOWN STATE"
 
+    # Returns a string that represents the state of the internal lights
     def getInternalLightsState(self):
         if(self.inputs.internalLightsState == True):
             return "ON"
@@ -209,6 +217,7 @@ class TrainControllerSW:
         else:
             return "ERROR: UNKNOWN STATE"
 
+    # Returns a string that represents the state of the external lights
     def getExternalLightsState(self):
         if(self.inputs.externalLightsState == True):
             return "ON"

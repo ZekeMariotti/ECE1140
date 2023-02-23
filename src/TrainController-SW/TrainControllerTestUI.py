@@ -10,6 +10,7 @@ from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from TrainControllerSW import TrainControllerSW, Inputs, Outputs
 from datetime import *
+from animated_toggle import AnimatedToggle
 import os
 import json
 
@@ -25,7 +26,8 @@ class TestWindow(QMainWindow):
                                                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "setupStationAnnouncement")    
 
             # Update Inputs
-            self.TrainControllerSW.readInputs()               
+            self.TrainControllerSW.readInputs()      
+            self.connectIO = False         
 
             # Set window defaults
             self.setWindowTitle("Train Controller Test UI")
@@ -110,6 +112,9 @@ class TestWindow(QMainWindow):
             self.setPlatformSideLabel = self.setPlatformSideLabelSetup()
             self.setPlatformSide = self.setPlatformSideSetup()
 
+            self.connectOutputsToInputs = self.connectOutputsToInputsSetup()
+            self.toggleOutputToInputConnection = self.toggleOutputToInputConnectionSetup()
+
             self.showAllOutputsLabel = self.showAllOutputsLabelSetup()
             self.showAllOutputs = self.showAllOutputsSetup()
 
@@ -178,6 +183,9 @@ class TestWindow(QMainWindow):
 
             self.gridLayout.addWidget(self.setPlatformSideLabel, 10, 2)
             self.gridLayout.addWidget(self.setPlatformSide, 10, 3)
+
+            #self.gridLayout.addWidget(self.connectOutputsToInputs, 9, 5)
+            self.gridLayout.addWidget(self.toggleOutputToInputConnection, 9, 6)
 
             self.gridLayout.addWidget(self.showAllOutputsLabel, 1, 5)
 
@@ -528,6 +536,23 @@ class TestWindow(QMainWindow):
             setPlatformSide.activated.connect(self.setPlatformSideActivated)
             setPlatformSide.setParent(self)
             return setPlatformSide
+        
+        def connectOutputsToInputsSetup(self):
+            connectOutputsToInputs = QLabel()
+            connectOutputsToInputs.setFixedSize(QSize(round(self.labelWidth*0.75), round(self.labelHeight)))
+            connectOutputsToInputs.setText("Connect Inputs\nand Outputs:")
+            connectOutputsToInputs.setFont(QFont("Times", 10))
+            connectOutputsToInputs.setAlignment(Qt.AlignmentFlag.AlignLeft)
+            connectOutputsToInputs.move(525, 565)
+            connectOutputsToInputs.setParent(self)
+            return connectOutputsToInputs
+        
+        def toggleOutputToInputConnectionSetup(self):
+            toggleOutputToInputConnection = AnimatedToggle()
+            toggleOutputToInputConnection.setFixedSize(toggleOutputToInputConnection.sizeHint())
+            toggleOutputToInputConnection.stateChanged.connect(self.ioConnectionToggled)
+            toggleOutputToInputConnection.setParent(self)
+            return toggleOutputToInputConnection
 
         def showAllOutputsLabelSetup(self):
             showAllOutputsLabel = QLabel()
@@ -549,7 +574,7 @@ class TestWindow(QMainWindow):
                 outputs = Outputs(**json.loads(filename.read()))
 
             showAllOutputs.setText(
-                f'Power: {outputs.power}\n\n'
+                f'Power: {round(outputs.power, 1)}\n\n'
                 f'Left Door\nCommand: {outputs.leftDoorCommand}\n\n'
                 f'Right Door\nCommand: {outputs.rightDoorCommand}\n\n'
                 f'Service Brake\nCommand: {outputs.serviceBrakeCommand}\n\n'
@@ -579,7 +604,7 @@ class TestWindow(QMainWindow):
                 outputs = Outputs(**json.loads(filename.read()))
 
             self.showAllOutputs.setText(
-                f'Power: {outputs.power}\n\n'
+                f'Power: {round(outputs.power, 1)}\n\n'
                 f'Left Door\nCommand: {outputs.leftDoorCommand}\n\n'
                 f'Right Door\nCommand: {outputs.rightDoorCommand}\n\n'
                 f'Service Brake\nCommand: {outputs.serviceBrakeCommand}\n\n'
@@ -588,6 +613,15 @@ class TestWindow(QMainWindow):
                 f'Internal\nLight Command: {outputs.internalLightCommand}\n\n'
                 f'Station\nAnnouncement:\n{outputs.stationAnnouncement}\n\n'
             )
+
+            if(self.connectIO == True):
+                self.TrainControllerSW.inputs.emergencyBrakeState = outputs.emergencyBrakeCommand
+                self.TrainControllerSW.inputs.serviceBrakeState = outputs.serviceBrakeCommand
+                self.TrainControllerSW.inputs.internalLightsState = outputs.internalLightCommand
+                self.TrainControllerSW.inputs.externalLightsState = outputs.externalLightCommand
+                self.TrainControllerSW.inputs.leftDoorState = outputs.leftDoorCommand
+                self.TrainControllerSW.inputs.rightDoorState = outputs.rightDoorCommand
+                self.TrainControllerSW.writeInputs()
         
 
 
@@ -686,6 +720,12 @@ class TestWindow(QMainWindow):
                 self.TrainControllerSW.inputs.platformSide = 0
 
             self.TrainControllerSW.writeInputs()
+
+        def ioConnectionToggled(self):
+            if (self.toggleOutputToInputConnection.isChecked()):
+                self.connectIO = True
+            else:
+                self.connectIO = False
 
 
 

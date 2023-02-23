@@ -11,6 +11,7 @@ from TrainControllerSW import TrainControllerSW
 from TrainControllerTestUI import TestWindow
 from animated_toggle import AnimatedToggle
 
+
 # Class for Worker (multithreading)
 class Worker(QObject):
     finished = pyqtSignal()
@@ -38,6 +39,7 @@ class MainWindow(QMainWindow):
             #self.resize(QSize(1366, 768-31))
             self.setFixedSize(QSize(960, 540))
             self.setMinimumSize(1050, 550)
+            self.move(100, 200)
 
             # Set element defaults
             self.windowWidth = self.frameGeometry().width()
@@ -51,6 +53,8 @@ class MainWindow(QMainWindow):
             self.labelFont = QFont(self.globalFont, 13)
             self.buttonFont = QFont(self.globalFont, 9)
             self.stationFont = QFont(self.globalFont, 16)  
+
+
                 
             # Create visual elements
             self.mainTimer = self.mainTimerSetup()
@@ -92,7 +96,7 @@ class MainWindow(QMainWindow):
             # Test UI
             if (self.testUI):
                 self.TrainControllerTestUI = TestWindow()
-                self.TrainControllerTestUI.move(self.frameGeometry().width(), 250)
+                self.TrainControllerTestUI.move(self.frameGeometry().width()+round(1.1*self.frameGeometry().x()), 200)
 
 
                 
@@ -203,7 +207,7 @@ class MainWindow(QMainWindow):
         def manualSpeedOverrideSetup(self):
             manualSpeedOverride = QLabel()  
             manualSpeedOverride.setFont(self.stationFont)
-            manualSpeedOverride.setText("Manual Mode:")
+            manualSpeedOverride.setText(f'Manual Mode: {"Enabled" if self.TrainControllerSW.manualMode else "Disabled"}')
             manualSpeedOverride.setFixedSize(QSize(round(self.labelWidth*1.6), round(self.labelHeight*0.5)))
             manualSpeedOverride.setAlignment(Qt.AlignmentFlag.AlignCenter)
             manualSpeedOverride.setWordWrap(True)
@@ -574,7 +578,7 @@ class MainWindow(QMainWindow):
             self.TrainControllerSW.autoUpdateLights()
 
             # Only run in automatic mode
-            if(self.manualModeToggle.isChecked() == False):
+            if(self.TrainControllerSW.manualMode == False):
                 self.TrainControllerSW.autoSetServiceBrake()
 
             self.updateVisualElements()
@@ -601,6 +605,7 @@ class MainWindow(QMainWindow):
                 self.communicationsError.show()
 
             self.station.setText(f'{"Current" if self.TrainControllerSW.inputs.stationState else "Next"} Station:\n{self.TrainControllerSW.inputs.stationName}')
+            self.manualSpeedOverride.setText(f'Manual Mode: {"Enabled" if self.TrainControllerSW.manualMode else "Disabled"}')
             self.currentSpeed.setText("Current Speed: " + str(Conversions.kilometersToMiles(float(self.TrainControllerSW.inputs.currentSpeed))) + " MPH")
             self.engineState.setText("Engine State:\n" + self.TrainControllerSW.getEngineState())
             self.emergencyBrakeState.setText("Emergency Brake:\n" + self.TrainControllerSW.getEmergencyBrakeState())
