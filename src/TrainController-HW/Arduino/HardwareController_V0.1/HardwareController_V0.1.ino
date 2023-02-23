@@ -63,6 +63,9 @@ void loop() {
   prevTime = currTime;
 =======
   updateSwitchStates(switchStateArray);
+  drive(dt);
+  emergencyBrake();
+  // automaticSpeedControl();
   // delay(10);
 >>>>>>> 817da9a (Proof of concept for test UI and Main UI)
   sendJSONData(switchStateArray);
@@ -234,6 +237,7 @@ void parseJSONData(int *switchStateArray){
   jsonDataOut["Temperature"] = 999;
   jsonDataOut["Communications Status"] = 999;
   
+>>>>>>> 817da9a (Proof of concept for test UI and Main UI)
 }
 
 ////////////////////////////////Drive Shit/////////////////////////////////////Move later TODO:move it
@@ -310,33 +314,30 @@ void sendJSONData(int *switchStateArray){
 }
 
 void parseJSONData(int *switchStateArray){
-  jsonDataOut["Power"] = 10;
+  jsonDataOut["Power"] = power;
   jsonDataOut["Left Door Command"] = switchStateArray[3];
   jsonDataOut["Right Door Command"] = switchStateArray[2];
-  jsonDataOut["Service Brake Command"] = 999;
+  jsonDataOut["Service Brake Command"] = serviceBrakeCommand;
   jsonDataOut["Emergency Brake Command"] = switchStateArray[6];
   jsonDataOut["External Light Command"] = switchStateArray[5];
   jsonDataOut["Internal Light Command"] = switchStateArray[4];
   jsonDataOut["AC"] = 999;
   jsonDataOut["Station Announcement"] = "text";
-  jsonDataOut["Engine State"] = 999;
-  jsonDataOut["Emergency Brake State"] = 999;
-  jsonDataOut["Service Brake State"] = 999;
-  jsonDataOut["Internal Lights State"] = 999;
-  jsonDataOut["External Lights State"] = 999;
-  jsonDataOut["Left Door State"] = 999;
-  jsonDataOut["Right Door State"] = 999;
+  jsonDataOut["Engine State"] = switchStateArray[0];
+  jsonDataOut["Emergency Brake State"] = emergencyBrakeState;
+  jsonDataOut["Service Brake State"] = jsonDataIn["Service Brake State"];
+  jsonDataOut["Internal Lights State"] = switchStateArray[4];
+  jsonDataOut["External Lights State"] = switchStateArray[5];
+  jsonDataOut["Left Door State"] = jsonDataIn["Left Door State"];
+  jsonDataOut["Right Door State"] = jsonDataIn["Right Door State"];
   jsonDataOut["Station"] = "text";
-  jsonDataOut["Current Speed"] = 999;
-  jsonDataOut["Commanded Speed"] = 999;
+  jsonDataOut["Current Speed"] = jsonDataIn["Current Speed"];
+  jsonDataOut["Commanded Speed"] = jsonDataIn["Commanded Speed"];
   jsonDataOut["Authority"] = jsonDataIn["Authority"];
-  jsonDataOut["Speed Limit"] = 999;
+  jsonDataOut["Speed Limit"] = jsonDataIn["Speed Limit"];
   jsonDataOut["Temperature"] = 999;
   jsonDataOut["Communications Status"] = 999;
   
 >>>>>>> 817da9a (Proof of concept for test UI and Main UI)
 }
-
-
-
 
