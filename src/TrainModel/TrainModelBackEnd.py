@@ -1,15 +1,15 @@
 # Train Model Back End
 
-#from math import sin, asin
 from random import randint
 from TrainModelSignals import *
 from PyQt6.QtCore import *
 
 
-class backEndCalculations():
+class TrainModel():
 
-    # Private data variable to store all the data needed for the back end
+    # data variable to store all the data needed for the back end
     data = {
+        "id"               : 0,              # Train ID for if there are multiple trains instantiated
         "rtc"              : "12:00:00 am",  # Real Time Clock in ISO 8601 Format
         "simSpeed"         : 1,              # Simulation Speed of the system
         "passengers"       : 0,              # Number of passengers on the train
@@ -18,7 +18,7 @@ class backEndCalculations():
         "crew"             : 1,              # Number of crew members on the train (Default of driver and conductor)
         "underground"      : False,          # State of whether the train is underground or not
         "length"           : 0.0,            # Length of the Train in meters
-        "mass"             : 40900,          # Mass of the Train, changes based on number of passengers, defaults to mass of an unloaded train, in kilograms
+        "mass"             : 40900.0,        # Mass of the Train, changes based on number of passengers, defaults to mass of an unloaded train, in kilograms
         "velocity"         : 0.0,            # Current Velocity of the Train in meters per second
         "acceleration"     : 0.0,            # Current Acceleration of the Train in meters per second ^ 2
         "prevVelocity"     : 0.0,            # Previous Velocity of the Train in meters per second
@@ -50,15 +50,15 @@ class backEndCalculations():
         "maxSpeed"           : 70,           # Maximum speed of the train in kilometers per hour
         "gravity"            : 9.81,         # Acceleration due to gravity in meters per second ^ 2
         "length"             : 32.2,         # Length of one instance of the Flexity 2 Train in meters
-        "massOfTrain"        : 40900,        # Mass of an unloaded train car in kilograms
+        "massOfTrain"        : 40900.0,      # Mass of an unloaded train car in kilograms
         "massOfHuman"        : 68.0389,      # Mass of a human for this simulation in kilograms
         "maxPassengers"      : 222,          # Maximum number of passengers that can be on the train at one time
     }
 
     # Dictionary used for different eBrake States from train controller and user input
     eBrakes = {
-        "user" : False,
-        "trainController" : False
+        "user"               : False,        # State of the emergency brake from the passenger
+        "trainController"    : False         # State of the emergency brake from the driver
     }
 
     def __init__(self):
@@ -128,12 +128,7 @@ class backEndCalculations():
         # If the train is on an incline or decline, use this calculation
         else:
             # Calculating the effect of weight on the train while it is on an incline
-            #self.data["acceleration"] = (force - (self.data["mass"] * self.constants["gravity"] * sin(asin(self.data["elevation"] / self.data["blockLength"])))) / self.data["mass"]
             self.data["acceleration"] = (force - (self.data["mass"] * self.constants["gravity"] * (self.data["elevation"] / self.data["blockLength"]))) / self.data["mass"]
-
-            # Calculate the force due to mg differently ?
-            #currAcceleration = (force - (mass * 9.81 * sin(atan(elevation / blockLength(or elevation / grade))))
-
 
     # Finds the current velocity of a train given 7 inputs
     def findCurrentVelocity(self, time = 1):
@@ -159,13 +154,6 @@ class backEndCalculations():
 
     # Handle Emergency Brake being pulled
     def emergencyBrakeDeceleration(self):
-        # Will be main code later on, needed to be changed for test UI
-        #if (self.data["eBrakeState"] == False):
-        #    self.data["eBrakeState"] = True
-        #    self.data["acceleration"] = self.constants["emergencyBrake"]
-        #else:
-        #    self.data["eBrakeState"] = False
-
         if (self.eBrakes["user"] == False):
             self.eBrakes["user"] = True
         else:
@@ -315,7 +303,7 @@ class backEndCalculations():
             self.data["atStation"] = True
     
 if __name__ == "__main__":
-    class1 = backEndCalculations()
+    class1 = TrainModel()
 
 # Main function to run if this file is the file being ran as main
 #def main():

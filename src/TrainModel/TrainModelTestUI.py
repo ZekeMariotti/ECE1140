@@ -5,7 +5,7 @@ from sys import argv
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
-from TrainModelMainUI import TrainModelMainUI
+from TrainModelMainUI import TrainModelUI
 from TrainModelSignals import *
 
 
@@ -501,7 +501,7 @@ def main():
     app = QApplication(argv)
     testUI = TrainModelTestUI()
     testUI.show()
-    mainUI = TrainModelMainUI()
+    mainUI = TrainModelUI()
     mainUI.show()
     app.exec()
 
