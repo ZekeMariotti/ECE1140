@@ -10,7 +10,7 @@
 
 # Imports needed for the UI
 from sys import argv
-from TrainModelBackEnd import *
+from TrainModel import TrainModel
 from TrainModelSignals import *
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
@@ -50,8 +50,8 @@ class TrainModelUI(QWidget):
         self.move(orientation.center())
 
         # Real Time Clock Label and Output
-        realTimeClockLabel = QLabel("Real Time Clock")
-        realTimeClockLabel.setFont(self.timesNewRoman18)
+        #realTimeClockLabel = QLabel("Real Time Clock")
+        #realTimeClockLabel.setFont(self.timesNewRoman18)
         self.realTimeClockOutput = QLabel("")
         #self.realTimeClockOutput = QLineEdit()
         #self.realTimeClockOutput.setReadOnly(True)
@@ -318,8 +318,8 @@ class TrainModelUI(QWidget):
         self.communicationsOutput.setFont(self.timesNewRoman18)
         self.communicationsOutput.setAlignment(self.alignCenter)
 
-        layout.addWidget(communicationsLabel, 4, 4, self.alignCenter)
-        layout.addWidget(self.communicationsOutput, 5, 4, self.alignCenter)
+        layout.addWidget(communicationsLabel, 5, 4, self.alignCenter)
+        layout.addWidget(self.communicationsOutput, 6, 4, self.alignCenter)
 
         # Engine State Label and Output
         engineLabel = QLabel("Engine Status")
@@ -329,8 +329,8 @@ class TrainModelUI(QWidget):
         self.engineOutput.setFont(self.timesNewRoman18)
         self.engineOutput.setAlignment(self.alignCenter)
 
-        layout.addWidget(engineLabel, 4, 5, self.alignCenter)
-        layout.addWidget(self.engineOutput, 5, 5, self.alignCenter)
+        layout.addWidget(engineLabel, 5, 5, self.alignCenter)
+        layout.addWidget(self.engineOutput, 6, 5, self.alignCenter)
 
         # Service Brake State Label and Output
         brakeLabel = QLabel("Service Brake Status")
@@ -339,29 +339,31 @@ class TrainModelUI(QWidget):
         self.brakeOutput.setReadOnly(True)
         self.brakeOutput.setFont(self.timesNewRoman18)
         self.brakeOutput.setAlignment(self.alignCenter)
+        self.brakeOutput.setFixedWidth(170)
 
-        layout.addWidget(brakeLabel, 4, 6, self.alignCenter)
-        layout.addWidget(self.brakeOutput, 5, 6, self.alignCenter)
+        layout.addWidget(brakeLabel, 5, 6, self.alignCenter)
+        layout.addWidget(self.brakeOutput, 6, 6, self.alignCenter)
 
         # Temperature Labels, Input, and Output
-        temperatureLabel = QLabel("Temperature Setpoint (F)")
+        temperatureLabel = QLabel("Temperature Setpoint")
         temperatureLabel.setFont(self.timesNewRoman24)
         temperatureLabel.setWordWrap(True)
         self.temperatureInput = QLineEdit()
         self.temperatureInput.setFont(self.timesNewRoman24)
         self.temperatureInput.setAlignment(self.alignCenter)
         self.temperatureInput.editingFinished.connect(self.tempInputChanged)
-        currentTemperatureLabel = QLabel("Current Temperature")
-        currentTemperatureLabel.setFont(self.timesNewRoman24)
+        #currentTemperatureLabel = QLabel("Current Temperature")
+        #currentTemperatureLabel.setFont(self.timesNewRoman24)
         self.currentTemperatureOutput = QLineEdit()
         self.currentTemperatureOutput.setReadOnly(True)
         self.currentTemperatureOutput.setFont(self.timesNewRoman24)
         self.currentTemperatureOutput.setAlignment(self.alignCenter)
+        self.currentTemperatureOutput.setFixedHeight(100)
 
-        layout.addWidget(temperatureLabel, 6, 6, self.alignCenter)
-        layout.addWidget(self.temperatureInput, 7, 6)
-        layout.addWidget(currentTemperatureLabel, 8, 4, 1, 2, self.alignCenter)
-        layout.addWidget(self.currentTemperatureOutput, 8, 6)
+        layout.addWidget(temperatureLabel, 7, 4, 1, 2, self.alignCenter)
+        layout.addWidget(self.temperatureInput, 8, 4, 1, 2)
+        #layout.addWidget(currentTemperatureLabel, 8, 4, 1, 2, self.alignCenter)
+        layout.addWidget(self.currentTemperatureOutput, 7, 6, 2, 1, self.alignCenter)
 
         self.updateOutputs()
 

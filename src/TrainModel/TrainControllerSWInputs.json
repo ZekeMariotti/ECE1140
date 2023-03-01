@@ -1,0 +1,22 @@
+{
+    "commandedSpeed": 0,
+    "currentSpeed": 0,
+    "authority": 0,
+    "inputTime": "2023-02-22T11:00:00.0000000-05:00",
+    "undergroundState": false,
+    "speedLimit": 0,
+    "temperature": 0,
+    "engineState": true,
+    "stationState": false,
+    "stationName": "The Yard",
+    "platformSide": 0,
+    "externalLightsState": false,
+    "internalLightsState": false,
+    "leftDoorState": false,
+    "rightDoorState": false,
+    "serviceBrakeState": false,
+    "emergencyBrakeState": false,
+    "serviceBrakeStatus": true,
+    "engineStatus": true,
+    "communicationsStatus": true
+}

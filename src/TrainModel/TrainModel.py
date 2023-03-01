@@ -3,6 +3,10 @@
 from random import randint
 from TrainModelSignals import *
 from PyQt6.QtCore import *
+import sys
+import os
+import json
+from json import JSONEncoder
 
 
 class TrainModel():
@@ -40,6 +44,42 @@ class TrainModel():
         "elevation"        : 0,              # Relative elevation increase of the block, provided by the Track Model / CSV File in meters
         "blockLength"      : 0,              # Length of the current block, provided by the Track Model / CSV File in meters
         "numCars"          : 1,              # Length of the train based on number of cars attached to the train
+    }
+
+    # Dictionary for inputs from the Train Controller JSON File
+    trainControllerInputs = {
+        "power"                 : 0.0,       # Power input from the Train Controller
+        "leftDoorCommand"       : False,     # Left Door Command from the Train Controller, False if closed, True if open
+        "rightDoorCommand"      : False,     # Right Door Command from the Train Controller, False if closed, True if open
+        "serviceBrakeCommand"   : False,     # Service Brake Command from the Train Controller, True if engaged, False is disengaged
+        "emergencyBrakeCommand" : False,     # Emergency Brake Command from the Train Controller, True if engaged, False is isengaged
+        "externalLightCommand"  : False,     # External Light Command from the Train Controller, True if on, False if off
+        "InternalLightCommand"  : False,     # External Light Command from the Train Controller, True if on, False if off
+        "stationAnnouncement"   : "The Yard" # Station Announcement from the Train Controller
+    }
+
+    # Dictionary for outputs to the Train Controller
+    trainControllerOutputs = {
+        "commandedSpeed"        : 0,                                   # Commanded Speed in m/s
+        "currentSpeed"          : 0,                                   # Current Speed in m/s
+        "authority"             : 0,                                   # Authority in Blocks
+        "inputTime"             : "2023-02-22T11:00:00.0000000-05:00", # RTC Clock in ISO 8601
+        "undergroundState"      : False,                               # Underground State
+        "speedLimit"            : 0,                                   # Speed Limit in m/s
+        "temperature"           : 0,                                   # Temperature inside the Train in degrees Fahrenheit
+        "engineState"           : True,                                # State of the Engine, True if on, False if off
+        "stationState"          : False,                               # Station State, True if at a station, False otherwise
+        "stationName"           : "The Yard",                          # Station Name
+        "platformSide"          : 0,                                   # Platform Side, 0 if left, 1 if right, 2 if both
+        "externalLightsState"   : False,                               # State of the External Lights, True if on, False if off
+        "internalLightsState"   : False,                               # State of the Internal Lights, True if on, False if off
+        "leftDoorState"         : False,                               # State of the Left Doors, True if open, False if closed
+        "rightDoorState"        : False,                               # State of the Right Doors, True if open, False if closed
+        "serviceBrakeState"     : False,                               # State of the Service Brake, True if engaged, False if disengaged
+        "emergencyBrakeState"   : False,                               # State of the Emergency Brake, True if engaged, Flase if disengaged
+        "serviceBrakeStatus"    : True,                                # Status of the Service Brake, True if operational, False if offline
+        "engineStatus"          : True,                                # Status of the Engine, True if operational, False if offline
+        "communicationsStatus"  : True                                 # Status of the Communications with the Track, True if operational, False if offline
     }
 
     # Dictionary of constants to be used througout the class
@@ -87,8 +127,27 @@ class TrainModel():
 
         self.data["length"] = self.constants["length"] * self.data["numCars"]
 
+    # JSON function to write outputs to a JSON file
+    def writeTrainControllerInputs(self):
+        with open(os.path.join(sys.path[0], "TrainControllerSWInputs.json"), "w") as filename:
+            (json.dump(self.trainControllerOutputs, filename, indent = 4))
+
+    # JSON function to read inputs from a JSON file
+    def readTrainControllerOutputs(self):
+        with open(os.path.join(sys.path[0], "TrainModelInputs.json"), "r") as filename:
+            self.trainControllerInputs = json.loads(filename.read())
+        self.data["power"] = self.trainControllerInputs["power"]
+        self.data["lDoors"] = self.trainControllerInputs["leftDoorCommand"]
+        self.data["rDoors"] = self.trainControllerInputs["rightDoorCommand"]
+        self.data["sBrakeState"] = self.trainControllerInputs["serviceBrakeCommand"]
+        self.eBrakes["trainController"] = self.trainControllerInputs["emergencyBrakeCommand"]
+        self.data["eLights"] = self.trainControllerInputs["externalLightCommand"]
+        self.data["iLights"] = self.trainControllerInputs["internalLightCommand"]
+        self.data["station"] = self.trainControllerInputs["stationAnnouncement"]
+
     # Function to run all internal methods when the method is called by the updater in the UI
     def runFunctions(self):
+        self.readTrainControllerOutputs()
         self.findCurrentAcceleration()
         self.findCurrentVelocity()
         self.airConditioningControl()
@@ -96,6 +155,7 @@ class TrainModel():
             self.passengersGettingOff()
             self.passengersGettingOn()
         self.findCurrentMass()
+        self.writeTrainControllerInputs()
         trainSignals.velocityToTestUI.emit(self.data["velocity"])
         
     # Function to move the current velocity and acceleration to previous in order to calculate next time periods values
@@ -107,7 +167,7 @@ class TrainModel():
     def findCurrentAcceleration(self) :
         # If Emergency or service brakes are enabled, do not change acceleration
         if (self.data["eBrakeState"] | self.data["sBrakeState"]):
-            return self.data["acceleration"]
+            return
         
         # If the train is not moving and has no power input
         if ((self.data["prevVelocity"] == 0.0) & (self.data["power"] == 0.0)):
@@ -304,6 +364,7 @@ class TrainModel():
     
 if __name__ == "__main__":
     class1 = TrainModel()
+    class1.runFunctions()
 
 # Main function to run if this file is the file being ran as main
 #def main():
