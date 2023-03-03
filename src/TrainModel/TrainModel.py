@@ -89,13 +89,13 @@ class TrainModel():
     # Dictionary for outputs to the Train Controller
     trainControllerOutputs = {
         "id"                    : 0,                                   # ID number for the train
-        "commandedSpeed"        : 0,                                   # Commanded Speed in m/s
-        "currentSpeed"          : 0,                                   # Current Speed in m/s
+        "commandedSpeed"        : 0.0,                                 # Commanded Speed in m/s
+        "currentSpeed"          : 0.0,                                 # Current Speed in m/s
         "authority"             : 0,                                   # Authority in Blocks
         "inputTime"             : "2023-02-22T11:00:00.0000000-05:00", # RTC Clock in ISO 8601
         "undergroundState"      : False,                               # Underground State
-        "speedLimit"            : 0,                                   # Speed Limit in m/s
-        "temperature"           : 0,                                   # Temperature inside the Train in degrees Fahrenheit
+        "speedLimit"            : 0.0,                                 # Speed Limit in m/s
+        "temperature"           : 0.0,                                 # Temperature inside the Train in degrees Fahrenheit
         "engineState"           : True,                                # State of the Engine, True if on, False if off
         "stationState"          : False,                               # Station State, True if at a station, False otherwise
         "stationName"           : "The Yard",                          # Station Name
@@ -115,9 +115,9 @@ class TrainModel():
     trackModelOutputs = {
         "rtc"                : "2023-02-22T11:00:00.0000000-05:00",
         "authority"          : 0,
-        "commandedSpeed"     : 0, 
+        "commandedSpeed"     : 0.0, 
         "passengersEntering" : 0,
-        "speedLimit"         : 0,
+        "speedLimit"         : 0.0,
         "undergroundState"   : False,
         "beacon"             : [False, "The Yard", 0]
     }
