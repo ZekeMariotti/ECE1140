@@ -161,9 +161,13 @@ class TrainControllerSW:
             self.inputs.commandedSpeed = self.MAX_SPEED
 
     # Runs when there is a communications failure
-    def communicationsFailureMode(self):
+    def failureMode(self):
         if(self.inputs.communicationsStatus == False):
-            self.outputs.emergencyBrakeCommand = True        
+            self.outputs.emergencyBrakeCommand = True   
+        elif(self.inputs.serviceBrakeStatus == False):
+            self.outputs.emergencyBrakeCommand = True
+        elif(self.inputs.engineStatus == False):
+            self.outputs.emergencyBrakeCommand = True   
 
     # Converts input time string to time object ex "2023-02-20T04:52:48.3940347-05:00"
     def convertTime(self):
