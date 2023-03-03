@@ -604,7 +604,7 @@ class TestWindow(QMainWindow):
                 outputs = Outputs(**json.loads(filename.read()))
 
             self.showAllOutputs.setText(
-                f'Power: {round(outputs.power, 1)}\n\n'
+                f'Power: {outputs.power}\n\n'
                 f'Left Door\nCommand: {outputs.leftDoorCommand}\n\n'
                 f'Right Door\nCommand: {outputs.rightDoorCommand}\n\n'
                 f'Service Brake\nCommand: {outputs.serviceBrakeCommand}\n\n'
@@ -678,7 +678,7 @@ class TestWindow(QMainWindow):
             self.TrainControllerSW.writeInputs()
 
         def setAuthorityTextChanged(self):
-            self.TrainControllerSW.inputs.authority = self.setAuthority.text()
+            self.TrainControllerSW.inputs.authority = int(self.setAuthority.text() if self.setAuthority.text() != "" else 0)
             self.TrainControllerSW.writeInputs()
 
         def setSpeedLimitValueChanged(self):

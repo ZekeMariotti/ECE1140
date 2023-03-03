@@ -96,12 +96,14 @@ class TrainControllerSW:
             self.outputs.power = float(self.Kp*self.ek) + float(self.Ki*self.uk)
 
         # 0 <= power <= 120000 Watts
-        if(self.outputs.power > 120000):
+        if (self.inputs.authority == 0):
+            self.outputs.power = 0
+        elif(self.outputs.power > 120000):
             self.outputs.power = 120000
         elif(self.outputs.power < 0):
             self.outputs.power = 0
         else:
-            self.outputs.power = self.outputs.power
+            self.outputs.power = round(self.outputs.power, 1)
 
         # Set ek1/uk1 to current ek/uk
         self.ek1 = self.ek
@@ -144,7 +146,9 @@ class TrainControllerSW:
 
     # Automatically enable/disables the service brake
     def autoSetServiceBrake(self):
-        if(self.inputs.currentSpeed > self.inputs.commandedSpeed + 1):
+        if (self.inputs.authority == 0):
+            self.outputs.serviceBrakeCommand = True
+        elif(self.inputs.currentSpeed > self.inputs.commandedSpeed + 1):
             self.outputs.serviceBrakeCommand = True
         else:
             self.outputs.serviceBrakeCommand = False
