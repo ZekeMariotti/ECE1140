@@ -573,7 +573,8 @@ class MainWindow(QMainWindow):
 
             self.TrainControllerSW.readInputs()
             self.TrainControllerSW.calculatePower()
-            self.TrainControllerSW.stayBelowSpeedLimit()
+            self.TrainControllerSW.stayBelowSpeedLimitAndMaxSpeed()
+            self.TrainControllerSW.communicationsFailureMode()
             self.TrainControllerSW.autoUpdateDoorState()
             self.TrainControllerSW.autoUpdateLights()
 

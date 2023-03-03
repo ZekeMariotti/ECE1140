@@ -1,10 +1,10 @@
 {
-    "commandedSpeed": 37,
-    "currentSpeed": 7,
+    "commandedSpeed": 16,
+    "currentSpeed": 32,
     "authority": 1,
     "inputTime": "2023-02-22T11:00:00.0000000-05:00",
     "undergroundState": false,
-    "speedLimit": 33,
+    "speedLimit": 70,
     "temperature": 1,
     "engineState": true,
     "stationState": false,

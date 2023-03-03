@@ -387,7 +387,7 @@ class TestWindow(QMainWindow):
             commandedSpeedSlider = QSlider(Qt.Orientation.Horizontal)
             commandedSpeedSlider.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonWidth*0.3)))
             commandedSpeedSlider.valueChanged.connect(self.commandedSpeedSliderRelease)
-            commandedSpeedSlider.setRange(0, self.TrainControllerSW.MAX_SPEED)
+            commandedSpeedSlider.setRange(0, self.TrainControllerSW.MAX_SPEED*2)
             commandedSpeedSlider.setSingleStep(1)
             commandedSpeedSlider.setParent(self)
             return commandedSpeedSlider

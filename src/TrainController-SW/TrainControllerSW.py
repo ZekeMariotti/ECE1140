@@ -154,9 +154,16 @@ class TrainControllerSW:
             self.outputs.serviceBrakeCommand = False
 
     # Lowers commanded speed if it's higher than speed limit
-    def stayBelowSpeedLimit(self):
+    def stayBelowSpeedLimitAndMaxSpeed(self):
         if(float(self.inputs.commandedSpeed) > float(self.inputs.speedLimit)):
             self.inputs.commandedSpeed = self.inputs.speedLimit
+        elif(float(self.inputs.commandedSpeed) > self.MAX_SPEED):
+            self.inputs.commandedSpeed = self.MAX_SPEED
+
+    # Runs when there is a communications failure
+    def communicationsFailureMode(self):
+        if(self.inputs.communicationsStatus == False):
+            self.outputs.emergencyBrakeCommand = True        
 
     # Converts input time string to time object ex "2023-02-20T04:52:48.3940347-05:00"
     def convertTime(self):
