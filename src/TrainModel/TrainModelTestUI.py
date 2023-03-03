@@ -53,6 +53,7 @@ class TrainModelTestUI(QWidget):
         self.move(orientation.topLeft())
 
         # Setting up all the inputs
+        
         # Add the Power Input
         powerLabel = QLabel("Power Input")
         layout.addWidget(powerLabel, 0, 0)
