@@ -1,9 +1,13 @@
 {
-    "rtc"                : "2023-02-22T11:00:00.0000000-05:00",
-    "authority"          : 0,
-    "commandedSpeed"     : 0, 
-    "passengersEntering" : 0,
-    "speedLimit"         : 0,
-    "undergroundState"   : false,
-    "beacon"             : [true, "Test Station", 2]
+    "rtc": "",
+    "authority": 0,
+    "commandedSpeed": 0.0,
+    "passengersEntering": 222,
+    "speedLimit": 0.0,
+    "undergroundState": false,
+    "beacon": [
+        true,
+        "",
+        0
+    ]
 }

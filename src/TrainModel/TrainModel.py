@@ -6,6 +6,7 @@ from PyQt6.QtCore import *
 import sys
 import os
 import json
+import csv
 #from json import JSONEncoder
 
 
@@ -44,6 +45,9 @@ class TrainModel():
         "elevation"        : 0,              # Relative elevation increase of the block, provided by the Track Model / CSV File in meters
         "blockLength"      : 0,              # Length of the current block, provided by the Track Model / CSV File in meters
         "numCars"          : 1,              # Length of the train based on number of cars attached to the train
+        "currBlock"        : 0,              # Current block that the train is on, ONLY USED BY TRAIN MODEL AND TRACK MODEL
+        "prevBlock"        : 0,              # Previous block that the train was on, ONLY USED BY TRAIN MODEL AND TRACK MODEL
+        "distance"         : 0.0             # Distance the train has traveled since the last time period in meters
     }
 
     # Dictionary of constants to be used througout the class
@@ -137,26 +141,10 @@ class TrainModel():
         trainSignals.eBrakePressedSignal.connect(self.emergencyBrakeDeceleration)
         trainSignals.tempChangedSignal.connect(self.tempChangeHandler)
 
-        # Signals from the Test UI
-        trainSignals.power.connect(self.getPowerFromTestUI)
-        trainSignals.serviceBrake.connect(self.serviceBrakeDeceleration)
-        trainSignals.emergencyBrake.connect(self.emergencyBrakeDecelerationTrainController)
-        trainSignals.leftDoors.connect(self.leftDoorControl)
-        trainSignals.rightDoors.connect(self.rightDoorControl)
-        trainSignals.internalLights.connect(self.internalLightsControl)
-        trainSignals.externalLights.connect(self.externalLightsControl)
-        trainSignals.stationLabel.connect(self.setStationLabel)
-        trainSignals.underground.connect(self.setUndergroundState)
-        trainSignals.realTimeClock.connect(self.setRealTimeClock)
-        trainSignals.passengersEntering.connect(self.setPassengersEntering)
-        trainSignals.blockLength.connect(self.setBlockLength)
-        trainSignals.elevation.connect(self.setElevation)
-        trainSignals.stationState.connect(self.setStationState)
-
         self.data["length"] = self.constants["length"] * self.data["numCars"]
 
     # JSON function to write outputs to a JSON file for the Train Controller
-    def writeTrainModelSWOutputs(self):
+    def writeTrainModelToTrainController(self):
 
         # Loading the output data dictionary
         self.trainModelToTrainController["id"]                   = self.data["id"]
@@ -185,7 +173,7 @@ class TrainModel():
             (json.dump(self.trainModelToTrainController, filename, indent = 4))
 
     # JSON function to read inputs from a JSON file from the Train Controller
-    def readTrainControllerSWOutputs(self):
+    def readTrainControllerToTrainModel(self):
         with open(os.path.join(sys.path[0], "TrainControllerSWToTrainModel.json"), "r") as filename:
             self.trainControllerToTrainModel = json.loads(filename.read())
 
@@ -201,7 +189,7 @@ class TrainModel():
         self.data["station"]            = self.trainControllerToTrainModel["stationAnnouncement"]
 
     # JSON function to write outputs to a JSON file for the Track Model
-    def writetrackModelToTrainModel(self):
+    def writeTrainModelToTrackModel(self):
 
         self.trainModelToTrackModel["currBlock"]     = 0
         self.trainModelToTrackModel["prevBlock"]     = 0
@@ -211,7 +199,7 @@ class TrainModel():
             (json.dump(self.trainModelToTrackModel, filename, indent = 4))
 
     # JSON function to read inputs from a JSON file from the Track Model
-    def readTrackModelInputs(self):
+    def readTrackModelToTrainModel(self):
         with open(os.path.join(sys.path[0], "TrackModelToTrainModel.json"), "r") as filename:
             self.trackModelToTrainModel = json.loads(filename.read())
 
@@ -222,21 +210,25 @@ class TrainModel():
         self.passThroughData["speedLimit"]     = self.trackModelToTrainModel["speedLimit"]
         self.data["underground"]               = self.trackModelToTrainModel["undergroundState"]
         self.passThroughData["beacon"]         = self.trackModelToTrainModel["beacon"]
+        self.data["atStation"]                 = self.trackModelToTrainModel["beacon"][0]
 
     # Function to run all internal methods when the method is called by the updater in the UI
     def runFunctions(self):
-        self.readTrainControllerSWOutputs()
-        self.readTrackModelInputs()
+        self.readTrainControllerToTrainModel()
+        self.readTrackModelToTrainModel()
+        self.failureStates()
+        self.brakeCaclulator()
         self.findCurrentAcceleration()
         self.findCurrentVelocity()
+        self.findCurrentDistance
         self.airConditioningControl()
         if self.data["atStation"]:
             self.passengersGettingOff()
             self.passengersGettingOn()
         self.findCurrentMass()
-        self.writetrackModelToTrainModel()
-        self.writeTrainModelSWOutputs()
-        trainSignals.velocityToTestUI.emit(self.data["velocity"])
+        self.moveToPrevious()
+        self.writeTrainModelToTrackModel()
+        self.writeTrainModelToTrainController()
         
     # Function to move the current velocity and acceleration to previous in order to calculate next time periods values
     def moveToPrevious(self):
@@ -245,6 +237,10 @@ class TrainModel():
 
     # Finds the current acceleration of a train
     def findCurrentAcceleration(self) :
+        # Limits the power of the engine
+        if self.data["power"] > 120000:
+            self.data["power"] = 120000
+
         # If Emergency or service brakes are enabled, do not change acceleration
         if (self.data["eBrakeState"] | self.data["sBrakeState"]):
             return
@@ -253,7 +249,7 @@ class TrainModel():
         if ((self.data["prevVelocity"] == 0.0) & (self.data["power"] == 0.0)):
             force = 0.0
 
-        # If the train is not moving buthas a power input
+        # If the train is not moving but has a power input
         elif (self.data["prevVelocity"] == 0.0):
             force = self.data["mass"] * self.constants["mediumAcceleration"]
 
@@ -275,6 +271,18 @@ class TrainModel():
         currVelocity = self.data["prevVelocity"] + ((time / 2) * (self.data["acceleration"] + self.data["prevAcceleration"]))
         self.data["velocity"] = currVelocity if currVelocity >= 0 else 0.0
 
+    # Get distance since the last state update of the system
+    def findCurrentDistance(self, time = 1):
+        self.data["distance"] = ((time / 2) * (self.data["prevVelocity"] + self.data["currVelocity"]))
+
+    # Finds the elevation of the block the train is currently on
+    def findCurrentElevation(self):
+        with open("greenLineBlocks.txt", newline = '') as csvFile:
+            csvReader = csv.reader(csvFile, delimiter = ',')
+            for row in csvReader:
+                if (row[0]) == self.data["currBlock"]:
+                    self.data["elevation"] = row[12]
+
     # Air Conditioning System that changes based on user input
     def airConditioningControl(self):
         if self.data["currTemp"] < self.data["goalTemp"]:
@@ -288,41 +296,20 @@ class TrainModel():
     def findCurrentMass(self):
         self.data["mass"] = (self.constants["massOfTrain"] * self.data["numCars"]) + (self.constants["massOfHuman"] * (self.data["passengers"] + self.data["crew"]))
 
-    # Get distance since the last state update of the system
-    def getDistance(self):
-        print("Hello There")
-
     # Handle Emergency Brake being pulled by the Passenger
     def emergencyBrakeDeceleration(self):
         if (self.eBrakes["user"] == False):
             self.eBrakes["user"] = True
         else:
             self.eBrakes["user"] = False
-        
+
+    # Function to be called when updating the values to set the emergency brake state
+    def brakeCaclulator(self):
         self.data["eBrakeState"] = self.eBrakes["user"] | self.eBrakes["trainController"]
         if (self.data["eBrakeState"] == True):
             self.data["acceleration"] = self.constants["emergencyBrake"]
-
-        #This line is used only when in correlation with the TestUI
-        trainSignals.eBrakeToTestUI.emit(self.data["eBrakeState"])
-
-    # Handles if the emergency brake is being pulled by the Train Controller
-    def emergencyBrakeDecelerationTrainController(self, index):
-        if (self.eBrakes["trainController"] != index):
-            self.eBrakes["trainController"] = index
-
-        self.data["eBrakeState"] = self.eBrakes["user"] | self.eBrakes["trainController"]
-        if (self.data["eBrakeState"] == True):
-            self.data["acceleration"] = self.constants["emergencyBrake"]
-
-    # Handle Service Brake being pulled
-    def serviceBrakeDeceleration(self, index):
-        if (self.data["sBrakeState"] != index) & self.data["brakeStatus"]:
-            self.data["sBrakeState"] = index
-
-        if (self.data["sBrakeState"] & self.data["brakeStatus"]):
+        elif (self.data["sBrakeState"] == True):
             self.data["acceleration"] = self.constants["serviceBrake"]
-
 
     # Handle change in input from the user about temperature
     def tempChangeHandler(self, temp):
@@ -333,15 +320,14 @@ class TrainModel():
         if self.data["atStation"]:
             self.data["passengersOff"] = randint(0, self.data["passengers"])
 
-            # THIS LINE USED ONLY FOR TESTING
-            trainSignals.passengersOff.emit(self.data["passengersOff"])
             self.data["passengers"] -= self.data["passengersOff"]
-            self.data["passengersOff"] = 0
 
     # Adds passengers getting on to total passengers
     def passengersGettingOn(self):
-        self.data["passengers"] += self.data["passengersOn"]
-        self.data["passengersOn"] = 0
+        if (self.data["passengers"] + self.data["passengersOn"]) > 222:
+            self.data["passengers"] = 222
+        else:
+            self.data["passengers"] += self.data["passengersOn"]
 
     # Opening and closing the Left Door
     def leftDoorControl(self):
@@ -382,15 +368,23 @@ class TrainModel():
     # FAILURE STATES #
     ##################
 
+    def failureStates(self):
+        if self.data["commStatus"] == False:
+            self.passThroughData["commandedSpeed"] = 0.0
+            self.passThroughData["speedLimit"] = 0.0
+            self.passThroughData["authority"] = 0
+            self.passThroughData["beacon"] = [False, "", 0]
+        if self.data["engineStatus"] == False:
+            self.data["power"] = 0.0
+        if self.data["brakeStatus"] == False:
+            self.data["sBrakeState"] = False
+
     # Handle loss of communications
     def communicationsFailure(self):
         if self.data["commStatus"] == False:
             self.data["commStatus"] = True
         else:
             self.data["commStatus"] = False
-        
-        # LINE USED ONLY FOR TESTING
-        trainSignals.communicationsFailure.emit()
 
     # Handle engine failure
     def engineFailure(self):
@@ -407,45 +401,6 @@ class TrainModel():
         else:
             self.data["brakeStatus"] = False
         self.data["sBrakeState"] = False
-        trainSignals.sBrakeFailure.emit()
-
-    #####################
-    # TEST UI FUNCTIONS #
-    #####################
-
-    # Sets the power input
-    def getPowerFromTestUI(self, power):
-        if self.data["engineStatus"] == True:
-            self.data["power"] = power
-        else:
-            self.data["power"] = 0
-
-    # Sets the RTC
-    def setRealTimeClock(self, label):
-        self.data["rtc"] = label
-
-    # Setting the station label
-    def setStationLabel(self, label):
-        self.data["station"] = label
-
-    # Adds the number of passengers entering the train from the platform
-    def setPassengersEntering(self, passEntering):
-        self.data["passengersOn"] = passEntering
-
-    # Function to set the length of the current block
-    def setBlockLength(self, blockLength):
-        self.data["blockLength"] = blockLength
-
-    # Function to set the elevation of the current block
-    def setElevation(self, elevation):
-        self.data["elevation"] = elevation
-    
-    # Function to set the station state
-    def setStationState(self):
-        if self.data["atStation"] == True:
-            self.data["atStation"] = False
-        else:
-            self.data["atStation"] = True
     
 if __name__ == "__main__":
     class1 = TrainModel()
