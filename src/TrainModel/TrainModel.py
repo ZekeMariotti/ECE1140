@@ -7,7 +7,6 @@ import sys
 import os
 import json
 import csv
-#from json import JSONEncoder
 
 
 class TrainModel():
@@ -218,9 +217,10 @@ class TrainModel():
         self.readTrackModelToTrainModel()
         self.failureStates()
         self.brakeCaclulator()
+        self.findCurrentBlockInfo()
         self.findCurrentAcceleration()
         self.findCurrentVelocity()
-        self.findCurrentDistance
+        self.findCurrentDistance()
         self.airConditioningControl()
         if self.data["atStation"]:
             self.passengersGettingOff()
@@ -273,15 +273,18 @@ class TrainModel():
 
     # Get distance since the last state update of the system
     def findCurrentDistance(self, time = 1):
-        self.data["distance"] = ((time / 2) * (self.data["prevVelocity"] + self.data["currVelocity"]))
+        self.data["distance"] = ((time / 2) * (self.data["prevVelocity"] + self.data["velocity"]))
 
-    # Finds the elevation of the block the train is currently on
-    def findCurrentElevation(self):
+    # Finds the elevation and block length of the block the train is currently on
+    def findCurrentBlockInfo(self):
+        os.chdir("src/TrainModel")
         with open("greenLineBlocks.txt", newline = '') as csvFile:
             csvReader = csv.reader(csvFile, delimiter = ',')
             for row in csvReader:
                 if (row[0]) == self.data["currBlock"]:
+                    self.data["blockLength"] = row[3]
                     self.data["elevation"] = row[12]
+        os.chdir("../../")
 
     # Air Conditioning System that changes based on user input
     def airConditioningControl(self):
@@ -328,41 +331,6 @@ class TrainModel():
             self.data["passengers"] = 222
         else:
             self.data["passengers"] += self.data["passengersOn"]
-
-    # Opening and closing the Left Door
-    def leftDoorControl(self):
-        if self.data["lDoors"] == False:
-            self.data["lDoors"] = True
-        else:
-            self.data["lDoors"] = False
-    
-    # Opening and closing the Right Door
-    def rightDoorControl(self):
-        if self.data["rDoors"] == False:
-            self.data["rDoors"] = True
-        else:
-            self.data["rDoors"] = False
-
-    # Turning on and off the internal lights
-    def internalLightsControl(self):
-        if self.data["iLights"] == False:
-            self.data["iLights"] = True
-        else:
-            self.data["iLights"] = False
-
-    # Turning on and off the external lights
-    def externalLightsControl(self):
-        if self.data["eLights"] == False:
-            self.data["eLights"] = True
-        else:
-            self.data["eLights"] = False
-
-    # Set the underground state
-    def setUndergroundState(self):
-        if self.data["underground"] == True:
-            self.data["underground"] = False
-        else:
-            self.data["underground"] = True
 
     ##################
     # FAILURE STATES #

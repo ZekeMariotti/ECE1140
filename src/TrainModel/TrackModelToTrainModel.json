@@ -2,7 +2,7 @@
     "rtc": "",
     "authority": 0,
     "commandedSpeed": 0.0,
-    "passengersEntering": 222,
+    "passengersEntering": 0,
     "speedLimit": 0.0,
     "undergroundState": false,
     "beacon": [
