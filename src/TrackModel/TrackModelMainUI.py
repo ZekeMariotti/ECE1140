@@ -9,7 +9,6 @@ from TrackModelSignals import *
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
-from Conversions import *
 
 # Class for the Main UI of the Train Model
 class TrackModelMainUI(QWidget):
