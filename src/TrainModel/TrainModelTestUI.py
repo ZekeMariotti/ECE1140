@@ -31,7 +31,9 @@ class TrainModelTestUI(QWidget):
         "emergencyBrakeCommand" : False,
         "externalLightCommand"  : False,
         "internalLightCommand"  : False,
-        "stationAnnouncement"   : ""
+        "stationAnnouncement"   : "",
+        "switch"                : True,
+        "switchState"           : 0
     }
 
     testDataOutputs = {
@@ -107,7 +109,9 @@ class TrainModelTestUI(QWidget):
         "passengersEntering" : 0,                                      # Number of passengers entering the train
         "speedLimit"         : 0.0,                                    # Speed limit of the current block that the train is on in m/s
         "undergroundState"   : False,                                  # State of whether the train is underground or not
-        "beacon"             : [False, "The Yard", 0]                  # Array to store the beacon inputs [Station State, Station Name, Platform Side]
+        "beacon"             : [False, "The Yard", 0],                 # Array to store the beacon inputs [Station State, Station Name, Platform Side]
+        "switch"             : True,                                   # True if the block the train is currently on is a switch, false otherwise                      
+        "switchState"        : 1                                       # 0 if the switch is in a default position, 1 otherwise
     }
 
     # Dictionary for outputs to the Track Model
@@ -208,78 +212,94 @@ class TrainModelTestUI(QWidget):
         self.platformSideInput.currentIndexChanged.connect(self.getPlatformSideInput)
         layout.addWidget(self.platformSideInput, 10, 1)
 
+        # Add the Switch Input
+        switchLabel = QLabel("Switch")
+        layout.addWidget(switchLabel, 11, 0)
+        self.switchInput = QComboBox()
+        self.switchInput.addItems(["False", "True"])
+        self.switchInput.currentIndexChanged.connect(self.getSwitchInput)
+        layout.addWidget(self.switchInput, 11, 1)
+
+        # Add the Switch State Input
+        switchStateLabel = QLabel("Switch State")
+        layout.addWidget(switchStateLabel, 12, 0)
+        self.switchStateInput = QComboBox()
+        self.switchStateInput.addItems(["0", "1"])
+        self.switchStateInput.currentIndexChanged.connect(self.getSwitchStateInput)
+        layout.addWidget(self.switchStateInput, 12, 1)
+
         # Adding the Train Controller Label
         trainControllerLabel = QLabel("Train Controller Inputs")
-        layout.addWidget(trainControllerLabel, 11, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(trainControllerLabel, 13, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
 
         # Train ID Input
         idLabel = QLabel("Train ID")
-        layout.addWidget(idLabel, 12, 0)
+        layout.addWidget(idLabel, 14, 0)
         self.idLabelInput = QLineEdit()
         self.idLabelInput.editingFinished.connect(self.getIDLabelInput)
-        layout.addWidget(self.idLabelInput, 12, 1)
+        layout.addWidget(self.idLabelInput, 14, 1)
 
         # Add the Power Input
         powerLabel = QLabel("Power Input")
-        layout.addWidget(powerLabel, 13, 0)
+        layout.addWidget(powerLabel, 15, 0)
         self.powerInput = QLineEdit()
         self.powerInput.editingFinished.connect(self.getPowerInput)
-        layout.addWidget(self.powerInput, 13, 1)
+        layout.addWidget(self.powerInput, 15, 1)
 
         # Add the Left Door Switch
         leftDoorLabel = QLabel("Left Doors")
-        layout.addWidget(leftDoorLabel, 14, 0)
+        layout.addWidget(leftDoorLabel, 16, 0)
         self.leftDoorInput = QComboBox()
         self.leftDoorInput.addItems(["Closed", "Open"])
         self.leftDoorInput.currentIndexChanged.connect(self.getLeftDoorInput)
-        layout.addWidget(self.leftDoorInput, 14, 1)
+        layout.addWidget(self.leftDoorInput, 16, 1)
 
         # Add the Right Door Switch
         rightDoorLabel = QLabel("Right Doors")
-        layout.addWidget(rightDoorLabel, 15, 0)
+        layout.addWidget(rightDoorLabel, 17, 0)
         self.rightDoorInput = QComboBox()
         self.rightDoorInput.addItems(["Closed", "Open"])
         self.rightDoorInput.currentIndexChanged.connect(self.getRightDoorInput)
-        layout.addWidget(self.rightDoorInput, 15, 1)
+        layout.addWidget(self.rightDoorInput, 17, 1)
 
         # Add the Service Brake Switch
         serviceBrakeLabel = QLabel("Service Brake")
-        layout.addWidget(serviceBrakeLabel, 16, 0)
+        layout.addWidget(serviceBrakeLabel, 18, 0)
         self.serviceBrakeInput = QComboBox()
         self.serviceBrakeInput.addItems(["Disengaged", "Engaged"])
         self.serviceBrakeInput.currentIndexChanged.connect(self.getServiceBrakeInput)
-        layout.addWidget(self.serviceBrakeInput, 16, 1)
+        layout.addWidget(self.serviceBrakeInput, 18, 1)
 
         # Add the Emergency Brake Switch
         emergencyBrakeLabel = QLabel("Emergency Brake")
-        layout.addWidget(emergencyBrakeLabel, 17, 0)
+        layout.addWidget(emergencyBrakeLabel, 19, 0)
         self.emergencyBrakeInput = QComboBox()
         self.emergencyBrakeInput.addItems(["Disengaged", "Engaged"])
         self.emergencyBrakeInput.currentIndexChanged.connect(self.getEmergencyBrakeInput)
-        layout.addWidget(self.emergencyBrakeInput, 17, 1)
+        layout.addWidget(self.emergencyBrakeInput, 19, 1)
 
         # Add the External Lights Switch
         externalLightLabel = QLabel("External Lights")
-        layout.addWidget(externalLightLabel, 18, 0)
+        layout.addWidget(externalLightLabel, 20, 0)
         self.externalLightInput = QComboBox()
         self.externalLightInput.addItems(["Off", "On"])
         self.externalLightInput.currentIndexChanged.connect(self.getExternalLightInput)
-        layout.addWidget(self.externalLightInput, 18, 1)
+        layout.addWidget(self.externalLightInput, 20, 1)
 
         # Add the Internal Lights Switch
         internalLightLabel = QLabel("Internal Lights")
-        layout.addWidget(internalLightLabel, 19, 0)
+        layout.addWidget(internalLightLabel, 21, 0)
         self.internalLightInput = QComboBox()
         self.internalLightInput.addItems(["Off", "On"])
         self.internalLightInput.currentIndexChanged.connect(self.getInternalLightInput)
-        layout.addWidget(self.internalLightInput, 19, 1)
+        layout.addWidget(self.internalLightInput, 21, 1)
 
         # Add the Station Announcement Input
         stationLabel = QLabel("Station Announcement")
-        layout.addWidget(stationLabel, 20, 0)
+        layout.addWidget(stationLabel, 22, 0)
         self.stationInput = QLineEdit()
         self.stationInput.editingFinished.connect(self.getStationInput)
-        layout.addWidget(self.stationInput, 20, 1)
+        layout.addWidget(self.stationInput, 22, 1)
 
 
         # Setting up all the outputs
@@ -412,7 +432,6 @@ class TrainModelTestUI(QWidget):
         self.platformSideOutput.setText("Left")
         layout.addWidget(self.platformSideOutput, 16, 3)
 
-
         # Adding the External Light State
         externalLightLabel = QLabel("External Lights")
         layout.addWidget(externalLightLabel, 17, 2)
@@ -531,6 +550,8 @@ class TrainModelTestUI(QWidget):
         self.trackModelToTrainModel["speedLimit"]         = self.testDataInputs["speedLimit"]
         self.trackModelToTrainModel["undergroundState"]   = self.testDataInputs["undergroundState"]
         self.trackModelToTrainModel["beacon"]             = self.testDataInputs["beacon"]
+        self.trackModelToTrainModel["switch"]             = self.testDataInputs["switch"]
+        self.trackModelToTrainModel["switchState"]        = self.testDataInputs["switchState"]
         with open(os.path.join(sys.path[0], "TrackModelToTrainModel.json"), "w") as filename:
             (json.dump(self.trackModelToTrainModel, filename, indent=4))
 
@@ -547,6 +568,12 @@ class TrainModelTestUI(QWidget):
         self.trainControllerToTrainModel["stationAnnouncement"]   = self.testDataInputs["stationAnnouncement"]
         with open(os.path.join(sys.path[0], "TrainControllerSWToTrainModel.json"), "w") as filename:
             (json.dump(self.trainControllerToTrainModel, filename, indent=4))
+
+    def getSwitchInput(self, index):
+        self.testDataInputs["switch"] = bool(index)
+    
+    def getSwitchStateInput(self, index):
+        self.testDataInputs["switchState"] = index
 
     def getIDLabelInput(self):
         self.testDataInputs["id"] = int(self.idLabelInput.text())

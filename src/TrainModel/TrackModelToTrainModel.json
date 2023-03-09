@@ -9,5 +9,7 @@
         true,
         "",
         0
-    ]
+    ],
+    "switch": false,
+    "switchState": 0
 }

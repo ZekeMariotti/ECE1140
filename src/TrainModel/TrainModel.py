@@ -8,15 +8,6 @@ import os
 import json
 import csv
 
-#57
-#58
-#59
-#60
-#[75, 76, 77]
-#[101, 102, etc]
-#[78, 79, 80]
-
-
 class TrainModel():
 
     # data variable to store all the data needed for the back end
@@ -49,13 +40,50 @@ class TrainModel():
         "eLights"          : False,          # State of the external lights, True if they are on, False if they are off
         "currTemp"         : 68.0,           # Current temperature inside the train in degrees fahrenheit
         "goalTemp"         : 68.0,           # Temperature goal given by the user in degrees fahrenehit
-        "elevation"        : 0,              # Relative elevation increase of the block, provided by the Track Model / CSV File in meters
-        "blockLength"      : 0,              # Length of the current block, provided by the Track Model / CSV File in meters
         "numCars"          : 1,              # Length of the train based on number of cars attached to the train
-        "currBlock"        : 0,              # Current block that the train is on, ONLY USED BY TRAIN MODEL AND TRACK MODEL
-        "prevBlock"        : 0,              # Previous block that the train was on, ONLY USED BY TRAIN MODEL AND TRACK MODEL
-        "distance"         : 0.0             # Distance the train has traveled since the last time period in meters
     }
+
+    # Dictionary used for intercommunication between the track model and train model only
+    trackData = {
+        "currBlock"        : 63,             # Current block that the train is on, ONLY USED BY TRAIN MODEL AND TRACK MODEL
+        "prevBlock"        : 0,              # Previous block that the train was on, ONLY USED BY TRAIN MODEL AND TRACK MODEL
+        "distance"         : 0.0,            # Distance the train has traveled since the last time period in meters
+        "remDistance"      : 100.0,          # Distance remaining in the current block, if any, in meters
+        "switch"           : True,           # If the current block is attached to a switch, True if on a switch, false if otherwise
+        "switchState"      : 1,              # State of the switch if the current block is attached to one (default is 0)
+        "blockLength"      : 0,              # Length of the current block, provided by the Track Model / CSV File in meters
+        "elevation"        : 0,              # Relative elevation increase of the block, provided by the Track Model / CSV File in meters
+        "trainLine"        : "Green",        # Line the train is on
+        "trackSection"     : [0, 63]          # Section of the track that the train is on
+    }
+
+    # Green Line Track Sections
+    greenSection0  = [0, 63]    # Yard to Block 63
+    greenSection1  = [63, 76]   # Sections K, L, and M
+    greenSection2  = [77, 85]   # Section N
+    greenSection3  = [86, 100]  # Sections O, P, Q
+    greenSection2R = [85, 77]   # Section N
+    greenSection4  = [101, 150] # Sections R, S, T, U, V, W, X, Y, Z
+    greenSection5  = [29, 13]   # Sections F, E, D
+    greenSection6  = [12, 1]    # Sections C, B, A
+    greenSection5R = [13, 29]   # Sections F, E, D
+    greenSection7  = [30, 57]   # Sections G, H, I
+    greenSection8  = [58, 62]   # Section J
+    greenSection9  = [57, 0]    # Block 57 to Yard
+
+    # Red Line Track Sections
+    redSection0  = [0, 9]   # Yard to Block 9
+    redSection0R = [9, 0]   # Block 9 to Yard
+    redSection1  = [9, 1]   # Sections C, B, A
+    redSection2  = [16, 27] # Sections F, G, Part 1 of H 
+    redSection3  = [28, 32] # Part 2 of H
+    redSection4  = [33, 38] # Part 3 of H
+    redSection5  = [39, 43] # Part 4 of H
+    redSection6  = [44, 52] # Part 5 of H and Part 1 of J
+    redSection7  = [53, 66] # Part 2 of J, Sections K, L, M
+    redSection8  = [67, 71] # Sections O, P, Q
+    redSection9  = [72, 76] # Sections R, S, T
+    redSection10 = [15, 10] # Sections E, D
 
     # Dictionary of constants to be used througout the class
     constants = {
@@ -130,7 +158,9 @@ class TrainModel():
         "passengersEntering" : 0,                                      # Number of passengers entering the train
         "speedLimit"         : 0.0,                                    # Speed limit of the current block that the train is on in m/s
         "undergroundState"   : False,                                  # State of whether the train is underground or not
-        "beacon"             : [False, "The Yard", 0]                  # Array to store the beacon inputs [Station State, Station Name, Platform Side]
+        "beacon"             : [False, "The Yard", 0],                 # Array to store the beacon inputs [Station State, Station Name, Platform Side]
+        "switch"             : True,                                   # True if the block the train is currently on is a switch, false otherwise                      
+        "switchState"        : 1                                       # 0 if the switch is in a default position, 1 otherwise
     }
 
     # Dictionary for outputs to the Track Model
@@ -139,34 +169,6 @@ class TrainModel():
         "prevBlock"     : 0, # Block the train is exiting
         "passengersOff" : 0  # Passengers getting off of the train
     }
-
-    # Green Line Track Sections
-    greenSection0  = [0, 63]    # Yard to Block 63
-    greenSection1  = [63, 76]   # Sections K, L, and M
-    greenSection2  = [77, 85]   # Section N
-    greenSection3  = [86, 100]  # Sections O, P, Q
-    greenSection2R = [85, 77]   # Section N
-    greenSection4  = [101, 150] # Sections R, S, T, U, V, W, X, Y, Z
-    greenSection5  = [29, 13]   # Sections F, E, D
-    greenSection6  = [12, 1]    # Sections C, B, A
-    greenSection5R = [13, 29]   # Sections F, E, D
-    greenSection7  = [30, 57]   # Sections G, H, I
-    greenSection8  = [58, 62]   # Section J
-    greenSection9  = [57, 0]    # Block 57 to Yard
-
-    # Red Line Track Sections
-    redSection0  = [0, 9]   # Yard to Block 9
-    redSection0R = [9, 0]   # Block 9 to Yard
-    redSection1  = [9, 1]   # Sections C, B, A
-    redSection2  = [16, 27] # Sections F, G, Part 1 of H 
-    redSection3  = [28, 32] # Part 2 of H
-    redSection4  = [33, 38] # Part 3 of H
-    redSection5  = [39, 43] # Part 4 of H
-    redSection6  = [44, 52] # Part 5 of H and Part 1 of J
-    redSection7  = [53, 66] # Part 2 of J, Sections K, L, M
-    redSection8  = [67, 71] # Sections O, P, Q
-    redSection9  = [72, 76] # Sections R, S, T
-    redSection10 = [15, 10] # Sections E, D
 
     def __init__(self):
         # Signals from the Main UI
@@ -190,7 +192,7 @@ class TrainModel():
         self.trainModelToTrainController["undergroundState"]     = self.data["underground"]
         self.trainModelToTrainController["speedLimit"]           = self.passThroughData["speedLimit"]
         self.trainModelToTrainController["temperature"]          = self.data["currTemp"]
-        self.trainModelToTrainController["engineState"]          = True
+        self.trainModelToTrainController["engineState"]          = True if self.data["power"] > 0 else False
         self.trainModelToTrainController["stationState"]         = self.passThroughData["beacon"][0]
         self.trainModelToTrainController["stationName"]          = self.passThroughData["beacon"][1]
         self.trainModelToTrainController["platformSide"]         = self.passThroughData["beacon"][2]
@@ -226,8 +228,8 @@ class TrainModel():
     # JSON function to write outputs to a JSON file for the Track Model
     def writeTrainModelToTrackModel(self):
 
-        self.trainModelToTrackModel["currBlock"]     = 0
-        self.trainModelToTrackModel["prevBlock"]     = 0
+        self.trainModelToTrackModel["currBlock"]     = self.trackData["currBlock"]
+        self.trainModelToTrackModel["prevBlock"]     = self.trackData["prevBlock"]
         self.trainModelToTrackModel["passengersOff"] = self.data["passengersOff"]
 
         with open(os.path.join(sys.path[0], "TrainModelToTrackModel.json"), "w") as filename:
@@ -246,6 +248,8 @@ class TrainModel():
         self.data["underground"]               = self.trackModelToTrainModel["undergroundState"]
         self.passThroughData["beacon"]         = self.trackModelToTrainModel["beacon"]
         self.data["atStation"]                 = self.trackModelToTrainModel["beacon"][0]
+        self.trackData["switch"]               = self.trackModelToTrainModel["switch"]
+        self.trackData["switchState"]          = self.trackModelToTrainModel["switchState"]
 
     # Function to run all internal methods when the method is called by the updater in the UI
     def runFunctions(self):
@@ -295,37 +299,161 @@ class TrainModel():
             force = self.data["power"] / self.data["prevVelocity"]
 
         # If the train is not on an incline or decline, use this calculation
-        if (self.data["elevation"] == 0.0):
-            self.data["acceleration"] = force / self.data["mass"]
+        if (self.trackData["elevation"] == 0.0):
+            tempAcceleration = force / self.data["mass"]
 
         # If the train is on an incline or decline, use this calculation
         else:
             # Calculating the effect of mass * gravity wen on an incline
-            self.data["acceleration"] = (force - (self.data["mass"] * self.constants["gravity"] * (self.data["elevation"] / self.data["blockLength"]))) / self.data["mass"]
+            tempAcceleration= (force - (self.data["mass"] * self.constants["gravity"] * (self.trackData["elevation"] / self.trackData["blockLength"]))) / self.data["mass"]
 
+        # Limit the acceleration to something that is possible for the train according to F = ma
+        self.data["acceleration"] = tempAcceleration if tempAcceleration <= (force / self.data["mass"]) else (force / self.data["mass"])
     # Finds the current velocity of a train given 7 inputs
     def findCurrentVelocity(self, time = 1):
         currVelocity = self.data["prevVelocity"] + ((time / 2) * (self.data["acceleration"] + self.data["prevAcceleration"]))
-        self.data["velocity"] = currVelocity if currVelocity >= 0 else 0.0
+        currVelocity = currVelocity if currVelocity >= 0 else 0.0
+        self.data["velocity"] = currVelocity if currVelocity <= 19.4444 else 19.4444
 
     # Get distance since the last state update of the system
     def findCurrentDistance(self, time = 1):
-        self.data["distance"] = ((time / 2) * (self.data["prevVelocity"] + self.data["velocity"]))
+        self.trackData["distance"] = ((time / 2) * (self.data["prevVelocity"] + self.data["velocity"]))
 
     # Finds the elevation and block length of the block the train is currently on
     def findCurrentBlockInfo(self):
+        # Case if the train is in the yard
+        if (self.trackData["currBlock"] == 0):
+            return
+        
+        # Case otherwise
         os.chdir("src/TrainModel")
         with open("greenLineBlocks.txt", newline = '') as csvFile:
             csvReader = csv.reader(csvFile, delimiter = ',')
             for row in csvReader:
-                if (row[0]) == self.data["currBlock"]:
-                    self.data["blockLength"] = row[3]
-                    self.data["elevation"] = row[12]
+                if (row[0] == "Number"):
+                    continue
+                if (int(row[0])) == self.trackData["currBlock"]:
+                    self.trackData["blockLength"] = float(row[3])
+                    self.trackData["elevation"] = float(row[12])
+                    break
         os.chdir("../../")
 
     # Finds the Block the train is on and the Block the train is exiting
     def findBlockExiting(self):
-        print("hi")
+        # Case if the distance traveled leaves you somewhere in the block you started in
+        if self.trackData["distance"] < self.trackData["remDistance"]:
+            self.trackData["remDistance"] -= self.trackData["distance"]
+            self.trackData["prevBlock"] = self.trackData["currBlock"]
+        # Case otherwise
+        else:
+            # Find total overflow distance into the next block
+            tempDistance = self.trackData["distance"] - self.trackData["remDistance"]
+            self.trackData["currBlock"] = self.findNextBlock()
+            self.findCurrentBlockInfo()
+            self.trackData["remDistance"] = self.trackData["blockLength"] - tempDistance
+            
+    # Finds the next block in sequence based on a switch state saved internally
+    def findNextBlock(self):
+        # If the train is on the green line
+        if self.trackData["trainLine"] == "Green":
+            # If the train is in the yard, done with it's cycle
+            if (self.trackData["trackSection"] == [0, 0]):
+                print("inside the yard")
+                self.trackData["prevBlock"] = self.trackData["currBlock"]
+                return 0
+            
+            # If the train is on a switch block and the switch state is 0
+            elif (self.trackData["switch"] == True) & (self.trackData["switchState"] == 0):
+                print("inside switch block state 0")
+                print("currBlock: ", self.trackData["currBlock"], " int version: ", int(self.trackData["currBlock"]))
+                # Cases for where the train would proceed normally
+                if (self.trackData["currBlock"] == 76) | (self.trackData["currBlock"] == 85) | (self.trackData["currBlock"] == 13) | (self.trackData["currBlock"] == 29) | (self.trackData["currBlock"] == 57) | (self.trackData["currBlock"] == 62):
+                    print("inside normal case :)")
+                    match self.trackData["currBlock"]:
+                        case 76:
+                            self.trackData["trackSection"] = self.greenSection2
+                        case 85:
+                            self.trackData["trackSection"] = self.greenSection3
+                        case 13:
+                            self.trackData["trackSection"] = self.greenSection6
+                        case 29:
+                            self.trackData["trackSection"] = self.greenSection7
+                        case 57:
+                            self.trackData["trackSection"] = self.greenSection8
+                        case 62:
+                            self.trackData["trackSection"] = self.greenSection1
+                    self.trackData["prevBlock"] = self.trackData["currBlock"]
+                    print("prevBlock", self.trackData["currBlock"])
+                    print("New Block with a Switch: ", self.trackData["trackSection"][0])
+                    return self.trackData["trackSection"][0]
+                # Cases for derailment
+                elif (self.trackData["currBlock"] == 77) | (self.trackData["currBlock"] == 100) | (self.trackData["currBlock"] == 150) | (self.trackData["currBlock"] == 1):
+                    print("derailment case")
+                    match self.trackData["currBlock"]:
+                        case 77:
+                            print("Derailment")
+                        case 100:
+                            print("Derailment")
+                        case 150:
+                            print("Derailment")
+                        case 1:
+                            print("Derailment")
+                    return 0
+            # If the train is on a switch block and the switch state is 1
+            elif (self.trackData["switch"] == True) & (self.trackData["switchState"] == 1):
+                print("inside switch block state 1")
+                # Cases for derailment
+                if (self.trackData["currBlock"] == 76) | (self.trackData["currBlock"]) == 85 | (self.trackData["currBlock"] == 13) | (self.trackData["currBlock"] == 29 | (self.trackData["currBlock"] == 62)):
+                    match self.trackData["currBlock"]:
+                        case 76:
+                            print("Derailment")
+                        case 85:
+                            print("Derailment")
+                        case 13:
+                            print("Derailment")
+                        case 29:
+                            print("Derailment")
+                        case 57:
+                            print("Derailment")
+                        case 62:
+                            print("Derailment")
+                    return 0
+                # Cases where the train would proceed normally
+                elif (self.trackData["currBlock"] == 77) | (self.trackData["currBlock"] == 100) | (self.trackData["currBlock"] == 150) | (self.trackData["currBlock"] == 1) | (self.trackData["currBlock"] == 57) | (self.trackData["currBlock"] == 0):
+                    match self.trackData["currBlock"]:
+                        case 77:
+                            self.trackData["trackSection"] = self.greenSection4
+                        case 100:
+                            self.trackData["trackSection"] = self.greenSection2R
+                        case 150:
+                            self.trackData["trackSection"] = self.greenSection5
+                        case 1:
+                            self.trackData["trackSection"] = self.greenSection5R
+                        case 57:
+                            self.trackData["trackSection"] = [0, 0]
+                            self.trackData["prevBlock"] = self.trackData["currBlock"]
+                            return 0
+                        case 0:
+                            self.trackData["trackSection"] = self.greenSection1
+                    self.trackData["prevBlock"] = self.trackData["currBlock"]
+                    print("prevBlock", self.trackData["currBlock"])
+                    print("New Block with a Switch: ", self.trackData["trackSection"][0])
+                    return self.trackData["trackSection"][0]
+                
+            # Case where the train needs to just increase block by 1
+            else:
+                print("regular block")
+                if self.trackData["trackSection"][0] < self.trackData["trackSection"][1]:
+                    self.trackData["prevBlock"] = self.trackData["currBlock"]
+                    return (self.trackData["currBlock"] + 1)
+                elif self.trackData["trackSection"][0] > self.trackData["trackSection"][1]:
+                    self.trackData["prevBlock"] = self.trackData["currBlock"]
+                    return (self.trackData["currBlock"] - 1)
+        elif self.trackData["trainLine"] == "Red":
+            print("Red Line")
+        else:
+            print("IDK How I even got here")
+
 
     # Air Conditioning System that changes based on user input
     def airConditioningControl(self):
@@ -410,23 +538,3 @@ class TrainModel():
         else:
             self.data["brakeStatus"] = False
         self.data["sBrakeState"] = False
-    
-if __name__ == "__main__":
-    class1 = TrainModel()
-    class1.runFunctions()
-
-# Main function to run if this file is the file being ran as main
-#def main():
-#    test = backEndCalculations()
-#    a = test.findCurrentAcceleration()
-#    print("A:", a)
-#    v = test.findCurrentVelocity()
-#    print("V:", v)
-    #test.airConditioningControl(100)
-    #v = test.findCurrentVelocity(12000, 0, 40823, 3, 1, 100)
-    #print("V2: ", v)
-    #v = test.findCurrentVelocity(12000, 0, 40823, 3, -3, 100)
-    #print("V3: ", v)
-
-#if __name__ == "__main__":
-    #main()
