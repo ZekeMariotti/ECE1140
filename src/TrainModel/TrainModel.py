@@ -8,6 +8,14 @@ import os
 import json
 import csv
 
+#57
+#58
+#59
+#60
+#[75, 76, 77]
+#[101, 102, etc]
+#[78, 79, 80]
+
 
 class TrainModel():
 
@@ -132,6 +140,34 @@ class TrainModel():
         "passengersOff" : 0  # Passengers getting off of the train
     }
 
+    # Green Line Track Sections
+    greenSection0  = [0, 63]    # Yard to Block 63
+    greenSection1  = [63, 76]   # Sections K, L, and M
+    greenSection2  = [77, 85]   # Section N
+    greenSection3  = [86, 100]  # Sections O, P, Q
+    greenSection2R = [85, 77]   # Section N
+    greenSection4  = [101, 150] # Sections R, S, T, U, V, W, X, Y, Z
+    greenSection5  = [29, 13]   # Sections F, E, D
+    greenSection6  = [12, 1]    # Sections C, B, A
+    greenSection5R = [13, 29]   # Sections F, E, D
+    greenSection7  = [30, 57]   # Sections G, H, I
+    greenSection8  = [58, 62]   # Section J
+    greenSection9  = [57, 0]    # Block 57 to Yard
+
+    # Red Line Track Sections
+    redSection0  = [0, 9]   # Yard to Block 9
+    redSection0R = [9, 0]   # Block 9 to Yard
+    redSection1  = [9, 1]   # Sections C, B, A
+    redSection2  = [16, 27] # Sections F, G, Part 1 of H 
+    redSection3  = [28, 32] # Part 2 of H
+    redSection4  = [33, 38] # Part 3 of H
+    redSection5  = [39, 43] # Part 4 of H
+    redSection6  = [44, 52] # Part 5 of H and Part 1 of J
+    redSection7  = [53, 66] # Part 2 of J, Sections K, L, M
+    redSection8  = [67, 71] # Sections O, P, Q
+    redSection9  = [72, 76] # Sections R, S, T
+    redSection10 = [15, 10] # Sections E, D
+
     def __init__(self):
         # Signals from the Main UI
         trainSignals.commButtonPressedSignal.connect(self.communicationsFailure)
@@ -221,6 +257,7 @@ class TrainModel():
         self.findCurrentAcceleration()
         self.findCurrentVelocity()
         self.findCurrentDistance()
+        self.findBlockExiting()
         self.airConditioningControl()
         if self.data["atStation"]:
             self.passengersGettingOff()
@@ -285,6 +322,10 @@ class TrainModel():
                     self.data["blockLength"] = row[3]
                     self.data["elevation"] = row[12]
         os.chdir("../../")
+
+    # Finds the Block the train is on and the Block the train is exiting
+    def findBlockExiting(self):
+        print("hi")
 
     # Air Conditioning System that changes based on user input
     def airConditioningControl(self):
