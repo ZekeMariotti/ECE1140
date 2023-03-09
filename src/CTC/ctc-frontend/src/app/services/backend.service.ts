@@ -46,6 +46,10 @@ export class BackendService {
     return this.http.put<number>(`${environment.api_be}/api/frontend/simulationspeed`, speed, httpOptions);
   }
 
+  putBlockOpen(line: string, block: number, open: boolean): Observable<Block[]> {
+    return this.http.put<Block[]>(`${environment.api_be}/api/frontend/lines/${line}/blocks/${block}/open`, open, httpOptions);
+  }
+
   postTrain(train: Train): Observable<Train> {
     return this.http.post<Train>(`${environment.api_be}/api/frontend/trains`, train, httpOptions)
   }

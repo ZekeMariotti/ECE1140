@@ -3,6 +3,7 @@ package common
 import (
 	"sync"
 
+	"github.com/shopspring/decimal"
 	"golang.org/x/exp/maps"
 )
 
@@ -109,4 +110,27 @@ func (m *SafeLineMap) GetBlocks(line string) []BlockFrontend {
 
 	l := m.data[line]
 	return l.GetBlocks()
+}
+
+func (m *SafeLineMap) GetBlocksUI(line string) []BlockFrontend {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	l := m.data[line]
+	blocks := l.GetBlocks()
+	mftconv, _ := decimal.NewFromString(METERS_TO_FEET_STR)
+	kmphmphconv, _ := decimal.NewFromString(KMPH_TO_MPH_STR)
+	for i, _ := range blocks {
+		blocks[i].Length = blocks[i].Length.Mul(mftconv)
+		blocks[i].SuggestedSpeed = blocks[i].SuggestedSpeed.Mul(kmphmphconv)
+	}
+
+	return blocks
+}
+
+func (m *SafeLineMap) SetBlockOpen(line string, block int, open bool) {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	m.data[line].Blocks.SetBlockOpen(block, open)
 }

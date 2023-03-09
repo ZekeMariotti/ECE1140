@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/common"
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/datastore"
@@ -54,6 +55,7 @@ func (a *FrontendAPI) setupPaths() {
 	// POST (Create) Commands
 	a.router.POST("/api/frontend/trains", a.postTrains)
 	a.router.PUT("/api/frontend/simulationspeed", a.putSimulationSpeed)
+	a.router.PUT("/api/frontend/lines/:name/blocks/:block/open", a.putBlockOpen)
 }
 
 // Handler for GET /lines
@@ -75,7 +77,7 @@ func (a *FrontendAPI) getLineByName(c *gin.Context) {
 func (a *FrontendAPI) getBlocks(c *gin.Context) {
 	name := c.Param("name")
 	if a.datastore.Lines.HasKey(name) {
-		c.IndentedJSON(http.StatusOK, a.datastore.Lines.GetBlocks(name))
+		c.IndentedJSON(http.StatusOK, a.datastore.Lines.GetBlocksUI(name))
 		return
 	}
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("Line %s stations not found", name)})
@@ -121,4 +123,15 @@ func (a *FrontendAPI) putSimulationSpeed(c *gin.Context) {
 	body, _ := io.ReadAll(c.Request.Body)
 	json.Unmarshal(body, &result)
 	a.datastore.TimeKeeper.SetSimulationSpeed(result)
+}
+
+// Handler for PUT /lines/:name/blocks/:block/open
+func (a *FrontendAPI) putBlockOpen(c *gin.Context) {
+	result := bool(true)
+	line := c.Param("name")
+	blockStr := c.Param("block")
+	block, _ := strconv.Atoi(blockStr)
+	body, _ := io.ReadAll(c.Request.Body)
+	json.Unmarshal(body, &result)
+	a.datastore.Lines.SetBlockOpen(line, block, result)
 }

@@ -78,3 +78,12 @@ func (m *SafeBlockMap) SetBlockInfo(key int, occupied bool, signal BlockSignal) 
 	block.Signal = signal
 	m.data[key] = block
 }
+
+func (m *SafeBlockMap) SetBlockOpen(key int, open bool) {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	block := m.data[key]
+	block.Open = open
+	m.data[key] = block
+}

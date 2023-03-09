@@ -20,11 +20,19 @@ export class BlockTableComponent {
   ngOnInit() {
     this.getBlocks();
 
-    interval(500).subscribe(() => this.getBlocks())
+    interval(30*1000).subscribe(() => this.getBlocks())
   }
 
   setLine(line: string) {
     this.line = line;
+
+    this.getBlocks();
+  }
+
+  putBlockOpen(block: number, open: boolean) {
+    this.backend.putBlockOpen(this.line, block, open).subscribe();
+
+    this.getBlocks();
   }
 
   getBlocks() {

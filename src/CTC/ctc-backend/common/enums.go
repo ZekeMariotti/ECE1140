@@ -25,3 +25,9 @@ const (
 	BLOCKSIGNAL_YELLOW BlockSignal = "Yellow"
 	BLOCKSIGNAL_RED    BlockSignal = "Red"
 )
+
+// Units
+const (
+	METERS_TO_FEET_STR string = "3.280839895"
+	KMPH_TO_MPH_STR    string = "0.6213711922"
+)
