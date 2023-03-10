@@ -431,7 +431,7 @@ class TrainModelUI(QWidget):
         self.TrainModel.runFunctions()
 
         # Update Left Column of data outputs
-        self.realTimeClockOutput.setText(str(self.TrainModel.data["rtc"]))
+        self.realTimeClockOutput.setText(str(ISO8601ToHumanTime(self.TrainModel.data["rtc"]))[:-6])
         self.passengersOutput.setText(str(self.TrainModel.data["passengers"]))
         self.crewOutput.setText(str(self.TrainModel.data["crew"]))
         self.undergroundOutput.setText(str(self.TrainModel.data["underground"]))

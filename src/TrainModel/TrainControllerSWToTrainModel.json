@@ -1,5 +1,5 @@
 {
-    "id": 0,
+    "id": 1,
     "power": 120000.0,
     "leftDoorCommand": false,
     "rightDoorCommand": false,
@@ -7,6 +7,6 @@
     "emergencyBrakeCommand": false,
     "externalLightCommand": false,
     "InternalLightCommand": false,
-    "stationAnnouncement": "",
+    "stationAnnouncement": "PNC Park",
     "internalLightCommand": false
 }

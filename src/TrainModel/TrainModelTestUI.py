@@ -16,13 +16,13 @@ from TrainModelSignals import *
 class TrainModelTestUI(QWidget):
 
     testDataInputs = {
-        "rtc"                   : "",
+        "rtc"                   : "2023-02-22T11:00:00.0000000-05:00",
         "authority"             : 0,
         "commandedSpeed"        : 0.0,
         "passengersEntering"    : 0,
         "speedLimit"            : 0.0,
         "undergroundState"      : False,
-        "beacon"                : [True, "", 0],
+        "beacon"                : [True, "The Yard", 0],
         "id"                    : 0,
         "power"                 : 0.0,
         "leftDoorCommand"       : False,
@@ -31,8 +31,8 @@ class TrainModelTestUI(QWidget):
         "emergencyBrakeCommand" : False,
         "externalLightCommand"  : False,
         "internalLightCommand"  : False,
-        "stationAnnouncement"   : "",
-        "switch"                : True,
+        "stationAnnouncement"   : "The Yard",
+        "switch"                : False,
         "switchState"           : 0
     }
 
@@ -110,8 +110,8 @@ class TrainModelTestUI(QWidget):
         "speedLimit"         : 0.0,                                    # Speed limit of the current block that the train is on in m/s
         "undergroundState"   : False,                                  # State of whether the train is underground or not
         "beacon"             : [False, "The Yard", 0],                 # Array to store the beacon inputs [Station State, Station Name, Platform Side]
-        "switch"             : True,                                   # True if the block the train is currently on is a switch, false otherwise                      
-        "switchState"        : 1                                       # 0 if the switch is in a default position, 1 otherwise
+        "switch"             : False,                                  # True if the block the train is currently on is a switch, false otherwise                      
+        "switchState"        : 0                                       # 0 if the switch is in a default position, 1 otherwise
     }
 
     # Dictionary for outputs to the Track Model
@@ -129,7 +129,7 @@ class TrainModelTestUI(QWidget):
         self.setWindowTitle("Train Model Test UI")
         layout = QGridLayout()
         self.setLayout(layout)
-        self.setFixedSize(600, 750)
+        self.setFixedSize(700, 750)
         orientation = self.frameGeometry()
         self.move(orientation.topLeft())
 
@@ -301,7 +301,6 @@ class TrainModelTestUI(QWidget):
         self.stationInput.editingFinished.connect(self.getStationInput)
         layout.addWidget(self.stationInput, 22, 1)
 
-
         # Setting up all the outputs
 
         # Adding the Track Model Label
@@ -374,6 +373,7 @@ class TrainModelTestUI(QWidget):
         self.realTimeClockOutput = QLineEdit()
         self.realTimeClockOutput.setReadOnly(True)
         self.realTimeClockOutput.setText("12:00:00 am")
+        self.realTimeClockOutput.setFixedWidth(200)
         layout.addWidget(self.realTimeClockOutput, 9, 3)
 
         # Adding the Underground State
@@ -506,6 +506,9 @@ class TrainModelTestUI(QWidget):
         updateButton = QPushButton("Update Values")
         updateButton.pressed.connect(self.updateOutputsBoth)
         layout.addWidget(updateButton, 26, 0, 1, 4)
+
+        # Update Outputs to
+        self.updateOutputsBoth()
 
     # Function to read the outputs from the Train Model to Train Controller
     def readTrainModelToTrackModel(self):
@@ -648,6 +651,13 @@ class TrainModelTestUI(QWidget):
 
     # Updates all functions when the button is pressed
     def updateOutputsBoth(self):
+        # Wipe Output files so they are clean
+        with open(os.path.join(sys.path[0], "TrainControllerSWToTrainModel.json"), "w") as filename:
+            (json.dump({}, filename, indent=4))
+        with open(os.path.join(sys.path[0], "TrackModelToTrainModel.json"), "w") as filename:
+            (json.dump({}, filename, indent=4))
+
+        # Write Data To Output Module
         self.writeTrackModelToTrainModel()
         self.writeTrainControllerToTrainModel()
         trainSignals.updateOutputs.emit()

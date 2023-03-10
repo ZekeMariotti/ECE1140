@@ -1,5 +1,5 @@
 {
-    "currBlock": 65,
-    "prevBlock": 65,
-    "passengersOff": 0
+    "currBlock": null,
+    "prevBlock": 101,
+    "passengersOff": 107
 }

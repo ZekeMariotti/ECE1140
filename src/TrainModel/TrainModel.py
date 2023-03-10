@@ -13,7 +13,7 @@ class TrainModel():
     # data variable to store all the data needed for the back end
     data = {
         "id"               : 0,              # Train ID for if there are multiple trains instantiated
-        "rtc"              : "12:00:00 am",  # Real Time Clock in ISO 8601 Format
+        "rtc"              : "",             # Real Time Clock in ISO 8601 Format
         "simSpeed"         : 1,              # Simulation Speed of the system
         "passengers"       : 0,              # Number of passengers on the train
         "passengersOn"     : 0,              # Number of passengers getting on the train
