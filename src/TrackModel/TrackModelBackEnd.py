@@ -51,6 +51,7 @@ class backEndCalculations():
         "undergroundRed" : DynamicArray(),
         "stationRed" : DynamicArray(),
         "switchRed" : DynamicArray(),
+        "signalRed" : DynamicArray(),
         "crossingRed" : DynamicArray(),
         "noGoRed" : DynamicArray(),
         "elevationGreen" : DynamicArray(),
@@ -61,6 +62,7 @@ class backEndCalculations():
         "stationGreen" : DynamicArray(),
         "switchGreen" : DynamicArray(),
         "crossingGreen" : DynamicArray(),
+        "signalGreen" : DynamicArray(),
         "noGoGreen" : DynamicArray(),
         "stationName" : DynamicArray(),
         "stationSide" : DynamicArray(),
@@ -99,13 +101,16 @@ with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/RedLine.csv
         backEndCalculations.csvConstants["undergroundRed"].append(row["Underground"])
         backEndCalculations.csvConstants["stationRed"].append(row["StationID"])
         backEndCalculations.csvConstants["switchRed"].append(row["Switch"])
+        backEndCalculations.csvConstants["signalRed"].append(row["Signal"])
         backEndCalculations.csvConstants["crossingRed"].append(row["Crossing"])
         backEndCalculations.csvConstants["noGoRed"].append(row["NoGo"])
         backEndCalculations.data["blockTrainNoRed"].append(0)
         backEndCalculations.data["circuitStatusRed"].append(0)
         backEndCalculations.data["railStatusRed"].append(0)
-        if row["Crossing"] == 1:
+        if int(row["Crossing"]) > 1:
             backEndCalculations.data["gatePos"].append(0)
+        if int(row["Signal"]) > 1:
+            backEndCalculations.data["sigState"].append(0)
 
 
 with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/GreenLine.csv", 'r') as greenLn:
@@ -120,13 +125,16 @@ with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/GreenLine.c
         backEndCalculations.csvConstants["undergroundGreen"].append(row["Underground"])
         backEndCalculations.csvConstants["stationGreen"].append(row["StationID"])
         backEndCalculations.csvConstants["switchGreen"].append(row["Switch"])
+        backEndCalculations.csvConstants["signalGreen"].append(row["Signal"])
         backEndCalculations.csvConstants["crossingGreen"].append(row["Crossing"])
         backEndCalculations.csvConstants["noGoGreen"].append(row["NoGo"])
         backEndCalculations.data["blockTrainNoGreen"].append(0)
         backEndCalculations.data["circuitStatusGreen"].append(0)
         backEndCalculations.data["railStatusGreen"].append(0)
-        if row["Crossing"] == 1:
+        if int(row["Crossing"]) > 1:
             backEndCalculations.data["gatePos"].append(0)
+        if int(row["Signal"]) > 1:
+            backEndCalculations.data["sigState"].append(0)
 
 with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/Stations.csv", 'r') as sta:
     stations = csv.DictReader(sta)
