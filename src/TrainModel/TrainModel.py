@@ -54,36 +54,46 @@ class TrainModel():
         "blockLength"      : 0,              # Length of the current block, provided by the Track Model / CSV File in meters
         "elevation"        : 0,              # Relative elevation increase of the block, provided by the Track Model / CSV File in meters
         "trainLine"        : "Green",        # Line the train is on
-        "trackSection"     : [0, 63]          # Section of the track that the train is on
+        "trackSection"     : [0, 63]         # Section of the track that the train is on
     }
 
     # Green Line Track Sections
     greenSection0  = [0, 63]    # Yard to Block 63
     greenSection1  = [63, 76]   # Sections K, L, and M
     greenSection2  = [77, 85]   # Section N
+    greenSection2R = [85, 77]   # Section N Reverse
     greenSection3  = [86, 100]  # Sections O, P, Q
-    greenSection2R = [85, 77]   # Section N
     greenSection4  = [101, 150] # Sections R, S, T, U, V, W, X, Y, Z
     greenSection5  = [29, 13]   # Sections F, E, D
+    greenSection5R = [13, 29]   # Sections F, E, D Reverse
     greenSection6  = [12, 1]    # Sections C, B, A
-    greenSection5R = [13, 29]   # Sections F, E, D
     greenSection7  = [30, 57]   # Sections G, H, I
     greenSection8  = [58, 62]   # Section J
     greenSection9  = [57, 0]    # Block 57 to Yard
 
     # Red Line Track Sections
-    redSection0  = [0, 9]   # Yard to Block 9
-    redSection0R = [9, 0]   # Block 9 to Yard
-    redSection1  = [9, 1]   # Sections C, B, A
-    redSection2  = [16, 27] # Sections F, G, Part 1 of H 
-    redSection3  = [28, 32] # Part 2 of H
-    redSection4  = [33, 38] # Part 3 of H
-    redSection5  = [39, 43] # Part 4 of H
-    redSection6  = [44, 52] # Part 5 of H and Part 1 of J
-    redSection7  = [53, 66] # Part 2 of J, Sections K, L, M
-    redSection8  = [67, 71] # Sections O, P, Q
-    redSection9  = [72, 76] # Sections R, S, T
-    redSection10 = [15, 10] # Sections E, D
+    redSection0   = [0, 9]   # Yard to Block 9
+    redSection0R  = [9, 0]   # Block 9 to Yard
+    redSection1   = [9, 1]   # Sections C, B, A
+    redSection1R  = [1, 9]   # Sections C, B, A Reverse
+    redSection2   = [16, 27] # Sections F, G, Part 1 of H
+    redSection2R  = [27, 16] # Sections F, G, Part 1 of H Reverse
+    redSection3   = [28, 32] # Part 2 of H
+    redSection3R  = [32, 28] # Part 2 of H Reverse
+    redSection4   = [33, 38] # Part 3 of H
+    redSection4R  = [38, 33] # Part 3 of H Reverse
+    redSection5   = [39, 43] # Part 4 of H
+    redSection5R  = [43, 39] # Part 4 of H Reverse
+    redSection6   = [44, 52] # Part 5 of H and Part 1 of J
+    redSection6R  = [52, 44] # Part 5 of H and Part 1 of J Reverse
+    redSection7   = [53, 66] # Part 2 of J, Sections K, L, M
+    redSection7R  = [66, 53] # Part 2 of J, Sections K, L, M Reverse
+    redSection8   = [67, 71] # Sections O, P, Q
+    redSection8R  = [71, 67] # Sections O, P, Q Reverse
+    redSection9   = [72, 76] # Sections R, S, T
+    redSection9R  = [76, 72] # Sections R, S, T Revese
+    redSection10  = [15, 10] # Sections E, D
+    redSection10R = [10, 15] # Sections E, D Reverse
 
     # Dictionary of constants to be used througout the class
     constants = {
@@ -340,8 +350,11 @@ class TrainModel():
 
     # Finds the Block the train is on and the Block the train is exiting
     def findBlockExiting(self):
+        # If the train is derailed (Block 333)
+        if (self.trackData["currBlock"] == 333):
+            return
         # Case if the distance traveled leaves you somewhere in the block you started in
-        if self.trackData["distance"] < self.trackData["remDistance"]:
+        elif self.trackData["distance"] < self.trackData["remDistance"]:
             self.trackData["remDistance"] -= self.trackData["distance"]
             self.trackData["prevBlock"] = self.trackData["currBlock"]
         # Case otherwise
@@ -356,19 +369,17 @@ class TrainModel():
     def findNextBlock(self):
         # If the train is on the green line
         if self.trackData["trainLine"] == "Green":
+
             # If the train is in the yard, done with it's cycle
             if (self.trackData["trackSection"] == [0, 0]):
-                print("inside the yard")
                 self.trackData["prevBlock"] = self.trackData["currBlock"]
                 return 0
             
             # If the train is on a switch block and the switch state is 0
             elif (self.trackData["switch"] == True) & (self.trackData["switchState"] == 0):
-                print("inside switch block state 0")
-                print("currBlock: ", self.trackData["currBlock"], " int version: ", int(self.trackData["currBlock"]))
+
                 # Cases for where the train would proceed normally
                 if (self.trackData["currBlock"] == 76) | (self.trackData["currBlock"] == 85) | (self.trackData["currBlock"] == 13) | (self.trackData["currBlock"] == 29) | (self.trackData["currBlock"] == 57) | (self.trackData["currBlock"] == 62):
-                    print("inside normal case :)")
                     match self.trackData["currBlock"]:
                         case 76:
                             self.trackData["trackSection"] = self.greenSection2
@@ -383,41 +394,21 @@ class TrainModel():
                         case 62:
                             self.trackData["trackSection"] = self.greenSection1
                     self.trackData["prevBlock"] = self.trackData["currBlock"]
-                    print("prevBlock", self.trackData["currBlock"])
-                    print("New Block with a Switch: ", self.trackData["trackSection"][0])
                     return self.trackData["trackSection"][0]
+                
                 # Cases for derailment
                 elif (self.trackData["currBlock"] == 77) | (self.trackData["currBlock"] == 100) | (self.trackData["currBlock"] == 150) | (self.trackData["currBlock"] == 1):
-                    print("derailment case")
-                    match self.trackData["currBlock"]:
-                        case 77:
-                            print("Derailment")
-                        case 100:
-                            print("Derailment")
-                        case 150:
-                            print("Derailment")
-                        case 1:
-                            print("Derailment")
-                    return 0
+                    print("Derailment")
+                    return 333
+                
             # If the train is on a switch block and the switch state is 1
             elif (self.trackData["switch"] == True) & (self.trackData["switchState"] == 1):
-                print("inside switch block state 1")
+
                 # Cases for derailment
-                if (self.trackData["currBlock"] == 76) | (self.trackData["currBlock"]) == 85 | (self.trackData["currBlock"] == 13) | (self.trackData["currBlock"] == 29 | (self.trackData["currBlock"] == 62)):
-                    match self.trackData["currBlock"]:
-                        case 76:
-                            print("Derailment")
-                        case 85:
-                            print("Derailment")
-                        case 13:
-                            print("Derailment")
-                        case 29:
-                            print("Derailment")
-                        case 57:
-                            print("Derailment")
-                        case 62:
-                            print("Derailment")
-                    return 0
+                if (self.trackData["currBlock"] == 76) | (self.trackData["currBlock"] == 85) | (self.trackData["currBlock"] == 13) | (self.trackData["currBlock"] == 29) | (self.trackData["currBlock"] == 62):
+                    print("Derailment")
+                    return 333
+                
                 # Cases where the train would proceed normally
                 elif (self.trackData["currBlock"] == 77) | (self.trackData["currBlock"] == 100) | (self.trackData["currBlock"] == 150) | (self.trackData["currBlock"] == 1) | (self.trackData["currBlock"] == 57) | (self.trackData["currBlock"] == 0):
                     match self.trackData["currBlock"]:
@@ -436,10 +427,7 @@ class TrainModel():
                         case 0:
                             self.trackData["trackSection"] = self.greenSection1
                     self.trackData["prevBlock"] = self.trackData["currBlock"]
-                    print("prevBlock", self.trackData["currBlock"])
-                    print("New Block with a Switch: ", self.trackData["trackSection"][0])
                     return self.trackData["trackSection"][0]
-                
             # Case where the train needs to just increase block by 1
             else:
                 print("regular block")
@@ -449,8 +437,91 @@ class TrainModel():
                 elif self.trackData["trackSection"][0] > self.trackData["trackSection"][1]:
                     self.trackData["prevBlock"] = self.trackData["currBlock"]
                     return (self.trackData["currBlock"] - 1)
+        # Case if the train is on the red line
         elif self.trackData["trainLine"] == "Red":
-            print("Red Line")
+            # If the train is in the yard, done with it's cycle
+            if (self.trackData["trackSection"] == [0, 0]):
+                self.trackData["prevBlock"] = self.trackData["currBlock"]
+                return 0
+
+            elif (self.trackData["switch"] == True) & (self.trackData["switchState"] == 0):
+                if (self.trackData["currBlock"] == 0) | (self.trackData["currBlock"] == 9) | (self.trackData["currBlock"] == 10) | (self.trackData["currBlock"] == 15) | (self.trackData["currBlock"] == 16) | (self.trackData["currBlock"] == 27) | (self.trackData["currBlock"] == 28) | (self.trackData["currBlock"] == 32) | (self.trackData["currBlock"] == 33) | (self.trackData["currBlock"] == 38) | (self.trackData["currBlock"] == 39) | (self.trackData["currBlock"] == 43) | (self.trackData["currBlock"] == 44) | (self.trackData["currBlock"] == 52) | (self.trackData["currBlock"] == 53):
+                    match self.trackData["currBlock"]:
+                        case 0:
+                            print("Derailment")
+                            return 333
+                        case 9:
+                            self.trackData["trackSection"] = self.redSection10R
+                        case 10:
+                            self.trackData["trackSection"] = self.redSection1
+                        case 15:
+                            self.trackData["trackSection"] = self.redSection2
+                        case 16:
+                            self.trackData["trackSection"] = self.redSection10
+                        case 27:
+                            self.trackData["trackSection"] = self.redSection3
+                        case 28:
+                            self.trackData["trackSection"] = self.redSection2R
+                        case 32:
+                            self.trackData["trackSection"] = self.redSection4
+                        case 33:
+                            self.trackData["trackSection"] = self.redSection3R
+                        case 38:
+                            self.trackData["trackSection"] = self.redSection5
+                        case 39:
+                            self.trackData["trackSection"] = self.redSection4R
+                        case 43:
+                            self.trackData["trackSection"] = self.redSection6
+                        case 44:
+                            self.trackData["trackSection"] = self.redSection5R
+                        case 52:
+                            self.trackData["trackSection"] = self.redSection7
+                        case 53:
+                            self.trackData["trackSection"] = self.redSection6R
+                    self.trackData["prevBlock"] = self.trackData["currBlock"]
+                    return self.trackData["trackSection"][0]
+
+                elif (self.trackData["currBlock"] == 1) | (self.trackData["currBlock"] == 66) | (self.trackData["currBlock"] == 67) | (self.trackData["currBlock"] == 71) | (self.trackData["currBlock"] == 72) | (self.trackData["currBlock"] == 76):
+                    print("Derailment")
+                    return 333
+            elif (self.trackData["switch"] == True) & (self.trackData["switchState"] == 1):
+                if (self.trackData["currBlock"] == 0) | (self.trackData["currBlock"] == 1) | (self.trackData["currBlock"] == 9)  | (self.trackData["currBlock"] == 16) | (self.trackData["currBlock"] == 27) | (self.trackData["currBlock"] == 33) | (self.trackData["currBlock"] == 38) | (self.trackData["currBlock"] == 44) | (self.trackData["currBlock"] == 52) | (self.trackData["currBlock"] == 66) | (self.trackData["currBlock"] == 67) | (self.trackData["currBlock"] == 71) | (self.trackData["currBlock"] == 72) | (self.trackData["currBlock"] == 76):
+                    match self.trackData["currBlock"]:
+                        case 0:
+                            self.trackData["trackSection"] = self.redSection1
+                        case 1:
+                            self.trackData["trackSection"] = self.redSection2
+                        case 9:
+                            self.trackData["trackSection"] = [0, 0]
+                            self.trackData["prevBlock"] = self.trackData["currBlock"]
+                            return 0
+                        case 16:
+                            self.trackData["trackSection"] = self.redSection1R
+                        case 27:
+                            self.trackData["trackSection"] = self.redSection9R
+                        case 33:
+                            self.trackData["trackSection"] = self.redSection9
+                        case 38:
+                            self.trackData["trackSection"] = self.redSection8R
+                        case 44:
+                            self.trackData["trackSection"] = self.redSection8
+                        case 52:
+                            self.trackData["trackSection"] = self.redSection7R
+                        case 66:
+                            self.trackData["trackSection"] = self.redSection6R
+                        case 67:
+                            self.trackData["trackSection"] = self.redSection6
+                        case 71:
+                            self.trackData["trackSection"] = self.redSection4R
+                        case 72:
+                            self.trackData["trackSection"] = self.redSection4
+                        case 76:
+                            self.trackData["trackSection"] = self.redSection2R
+                    self.trackData["prevBlock"] = self.trackData["currBlock"]
+                    return self.trackData["trackSection"][0]
+                elif (self.trackData["currBlock"] == 10) | (self.trackData["currBlock"] == 15) | (self.trackData["currBlock"] == 28) | (self.trackData["currBlock"] == 32) | (self.trackData["currBlock"] == 39) | (self.trackData["currBlock"] == 43) | (self.trackData["currBlock"] == 53):
+                    print("Derailment")
+                    return 333
         else:
             print("IDK How I even got here")
 

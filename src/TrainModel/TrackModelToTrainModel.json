@@ -6,8 +6,8 @@
     "speedLimit": 0.0,
     "undergroundState": false,
     "beacon": [
-        false,
-        "PNC Park",
+        true,
+        "The Yard",
         0
     ],
     "switch": true,
