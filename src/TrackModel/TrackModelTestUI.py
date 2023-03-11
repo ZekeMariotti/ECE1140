@@ -118,7 +118,10 @@ class TrackModelTestUI(QWidget):
         stationNameLabel = QLabel("Station Name")
         layout.addWidget(stationNameLabel, 7, 0)
         self.stationNameInput = QComboBox()
-        self.stationNameInput.addItems(["Station B", "Station C"])
+        i = 0
+        while i < int(self.backEnd.csvConstants["stationName"].__len__()):
+            self.stationNameInput.addItem(self.backEnd.csvConstants["stationName"].__getitem__(i))
+            i += 1
         self.stationNameInput.currentIndexChanged.connect(self.getStationNameInput)
         layout.addWidget(self.stationNameInput, 7, 1)
 
@@ -264,7 +267,7 @@ class TrackModelTestUI(QWidget):
         layout.addWidget(stationNameLabel, 7, 2)
         self.stationNameOutput = QLineEdit()
         self.stationNameOutput.setReadOnly(True)
-        self.stationNameOutput.setText("Station B")
+        self.stationNameOutput.setText(self.backEnd.csvConstants["stationName"].__getitem__(0))
         layout.addWidget(self.stationNameOutput, 7, 3)
 
         # Adding the Station Occupancy
@@ -428,7 +431,12 @@ class TrackModelTestUI(QWidget):
         # Set new switch states
         self.toggleSwitch = 1
         if self.data["line"] == 0 and index != -1 and int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) > 0 and index + 1 == int(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1)):
-            outputText1 = str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1)) + "-" + str(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1)) if self.backEnd.data["switchPos"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1) == 1 else str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1)) + "-" + str(self.backEnd.csvConstants["switchBlockC"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1))
+            if self.backEnd.data["switchPos"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1) == 1 and int(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1)) != 0:
+                outputText1 = str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1)) + "-" + str(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1))
+            elif self.backEnd.data["switchPos"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1) == 1 and int(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1)) == 0:
+                outputText1 = str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1)) + "-Yard"
+            else:
+                outputText1 = str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1)) + "-" + str(self.backEnd.csvConstants["switchBlockC"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1))
             self.switchPositionInput.setEnabled(True)
             self.switchPositionOutput.setText(outputText1)
 
@@ -438,10 +446,19 @@ class TrackModelTestUI(QWidget):
                 i -= 1
 
             self.switchPositionInput.addItem(str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1)) + "-" + str(self.backEnd.csvConstants["switchBlockC"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1)))
-            self.switchPositionInput.addItem(str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1)) + "-" + str(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1)))
+            if int(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1)) != 0:
+                self.switchPositionInput.addItem(str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1)) + "-" + str(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1)))
+            elif int(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1)) == 0:
+                self.switchPositionInput.addItem(str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(index)) - 1)) + "-Yard")
             self.switchPositionInput.setCurrentText(outputText1)
+
         elif self.data["line"] == 1 and index != -1 and int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) > 0 and index + 1 == int(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1)):
-            outputText1 = str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1)) + "-" + str(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1)) if self.backEnd.data["switchPos"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1) == 1 else str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1)) + "-" + str(self.backEnd.csvConstants["switchBlockC"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1))
+            if self.backEnd.data["switchPos"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1) == 1 and int(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1)) != 0:
+                outputText1 = str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1)) + "-" + str(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1))
+            elif self.backEnd.data["switchPos"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1) == 1 and int(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1)) == 0:
+                outputText1 = str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1)) + "-Yard"
+            else:
+                outputText1 = str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1)) + "-" + str(self.backEnd.csvConstants["switchBlockC"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1))
             self.switchPositionInput.setEnabled(True)
             self.switchPositionOutput.setText(outputText1)
 
@@ -451,7 +468,10 @@ class TrackModelTestUI(QWidget):
                 i -= 1
 
             self.switchPositionInput.addItem(str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1)) + "-" + str(self.backEnd.csvConstants["switchBlockC"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1)))
-            self.switchPositionInput.addItem(str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1)) + "-" + str(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1)))
+            if int(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1)) != 0:
+                self.switchPositionInput.addItem(str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1)) + "-" + str(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1)))
+            elif int(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1)) == 0:
+                self.switchPositionInput.addItem(str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(index)) - 1)) + "-Yard")
             self.switchPositionInput.setCurrentText(outputText1)
         else:
             i = self.switchPositionInput.count() - 1
@@ -606,14 +626,14 @@ class TrackModelTestUI(QWidget):
     # Gets the Station Name from the UI
     def getStationNameInput(self, index):
         self.data["stationName"] = index
-        outputText = "Station C" if self.data["stationName"] == 1 else "Station B"
+        outputText = self.backEnd.csvConstants["stationName"].__getitem__(self.data["stationName"])
         self.stationNameOutput.setText(outputText)
 
         # Set new station occupancy
-        if self.backEnd.data["stationOccupancy"][index] == 1:
+        if self.backEnd.data["stationOccupancy"].__getitem__(index) == 1:
             outputText1  = "1 person"
         else:
-            outputText1 = str(self.backEnd.data["stationOccupancy"][index]) + " people"
+            outputText1 = str(self.backEnd.data["stationOccupancy"].__getitem__(index)) + " people"
         self.occOutput.setText(outputText1)
 
         # Refresh Main UI
@@ -621,11 +641,12 @@ class TrackModelTestUI(QWidget):
 
     # Gets the Station Occupancy from the UI
     def getStationOccInput(self):
-        self.backEnd.data["stationOccupancy"][self.data["stationName"]] = int(self.stationOccInput.text())
-        if self.backEnd.data["stationOccupancy"][self.data["stationName"]] == 1:
+        self.backEnd.data["stationOccupancy"].removeAt(self.data["stationName"])
+        self.backEnd.data["stationOccupancy"].insertAt(int(self.stationOccInput.text()), self.data["stationName"])
+        if self.backEnd.data["stationOccupancy"].__getitem__(self.data["stationName"]) == 1:
             self.occOutput.setText("1 person")
         else:
-            self.occOutput.setText(str(self.backEnd.data["stationOccupancy"][self.data["stationName"]]) + " people")
+            self.occOutput.setText(str(self.backEnd.data["stationOccupancy"].__getitem__(self.data["stationName"])) + " people")
 
         # Refresh Main UI
         trackSignals.updateSignal.emit()
@@ -689,6 +710,12 @@ class TrackModelTestUI(QWidget):
             elif self.data["moves"][0] == 0:
                 self.trainLnInput.setEnabled(True)
 
+            # Update the block train number
+            if self.data["line"] == 0:
+                self.blockTrainOutput.setText(str(self.backEnd.data["blockTrainNoRed"].__getitem__(self.data["blockNo"])))
+            elif self.data["line"] == 1:
+                self.blockTrainOutput.setText(str(self.backEnd.data["blockTrainNoGreen"].__getitem__(self.data["blockNo"])))
+
             # Refresh Main UI
             trackSignals.updateSignal.emit()
 
@@ -740,10 +767,15 @@ class TrackModelTestUI(QWidget):
 
     # Gets the number of passengers off from the UI
     def getOffInput(self):
-        if (self.train["trainBlock"][self.train["trainNo"]] == 10 or self.train["trainBlock"][self.train["trainNo"]] == 15) and self.backEnd.data["numPassengers"][self.train["trainNo"]] - int(self.offInput.text()) >= 0:
-            self.backEnd.data["numPassengers"][self.train["trainNo"]] -= int(self.offInput.text())
-        elif self.backEnd.data["numPassengers"][self.train["trainNo"]] - int(self.offInput.text()) < 0:
-            self.backEnd.data["numPassengers"][self.train["trainNo"]] = 0
+        if self.backEnd.csvConstants["stationLine"].__getitem__(self.data["stationName"]) == 0:
+            for i in range(self.backEnd.data["blockTrainNoRed"].__len__()):
+                if int(self.backEnd.csvConstants["stationRed"].__getitem__(i)) > 0 and self.train["trainBlock"][self.train["trainNo"]] == i + 1 and self.backEnd.data["numPassengers"][self.train["trainNo"]] - int(self.offInput.text()) >= 0:
+                    self.backEnd.data["numPassengers"][self.train["trainNo"]] -= int(self.offInput.text())
+        elif self.backEnd.csvConstants["stationLine"].__getitem__(self.data["stationName"]) == 1:
+            for i in range(self.backEnd.data["blockTrainNoGreen"].__len__()):
+                if int(self.backEnd.csvConstants["stationGreen"].__getitem__(i)) > 0 and self.train["trainBlock"][self.train["trainNo"]] == i + 1 and self.backEnd.data["numPassengers"][self.train["trainNo"]] - int(self.offInput.text()) >= 0:
+                    self.backEnd.data["numPassengers"][self.train["trainNo"]] -= int(self.offInput.text())
+
         if self.backEnd.data["numPassengers"][self.train["trainNo"]] == 1:
             self.numPassengersOutput.setText("1 person")
         else:
@@ -754,23 +786,25 @@ class TrackModelTestUI(QWidget):
 
     # Gets the number of passengers on from the UI
     def getOnInput(self):
-        if self.backEnd.data["blockTrainNo"][9] > 0 and self.data["stationName"] == 0 and self.backEnd.data["stationOccupancy"][self.data["stationName"]] - int(self.onInput.text()) >= 0:
-            self.backEnd.data["numPassengers"][self.backEnd.data["blockTrainNo"][9] - 1] += int(self.onInput.text())
-            self.backEnd.data["stationOccupancy"][self.data["stationName"]] -= int(self.onInput.text())
-        elif self.backEnd.data["blockTrainNo"][14] > 0 and self.data["stationName"] == 1 and self.backEnd.data["stationOccupancy"][self.data["stationName"]] - int(self.onInput.text()) >= 0:
-            self.backEnd.data["numPassengers"][self.backEnd.data["blockTrainNo"][14] - 1] += int(self.onInput.text())
-            self.backEnd.data["stationOccupancy"][self.data["stationName"]] -= int(self.onInput.text())
-        elif self.backEnd.data["blockTrainNo"][9] > 0 and self.data["stationName"] == 0 and self.backEnd.data["stationOccupancy"][self.data["stationName"]] - int(self.onInput.text()) < 0:
-            self.backEnd.data["numPassengers"][self.backEnd.data["blockTrainNo"][9] - 1] += self.backEnd.data["stationOccupancy"][self.data["stationName"]]
-            self.backEnd.data["stationOccupancy"][self.data["stationName"]] = 0
-        elif self.backEnd.data["blockTrainNo"][14] > 0 and self.data["stationName"] == 1 and self.backEnd.data["stationOccupancy"][self.data["stationName"]] - int(self.onInput.text()) < 0:
-            self.backEnd.data["numPassengers"][self.backEnd.data["blockTrainNo"][14] - 1] += self.backEnd.data["stationOccupancy"][self.data["stationName"]]
-            self.backEnd.data["stationOccupancy"][self.data["stationName"]] = 0
+        if self.backEnd.csvConstants["stationLine"].__getitem__(self.data["stationName"]) == 0:
+            for i in range(self.backEnd.data["blockTrainNoRed"].__len__()):
+                if int(self.backEnd.data["blockTrainNoRed"].__getitem__(i)) > 0 and int(self.backEnd.csvConstants["stationRed"].__getitem__(i)) > 0 and int(self.backEnd.csvConstants["stationRed"].__getitem__(i)) - 1 == int(self.data["stationName"]) and int(self.backEnd.data["stationOccupancy"].__getitem__(self.data["stationName"])) - int(self.onInput.text()) >= 0:
+                    self.backEnd.data["numPassengers"][self.backEnd.data["blockTrainNoRed"].__getitem__(i) - 1] += int(self.onInput.text())
+                    currOcc = self.backEnd.data["stationOccupancy"].__getitem__(self.data["stationName"])
+                    self.backEnd.data["stationOccupancy"].removeAt(self.data["stationName"])
+                    self.backEnd.data["stationOccupancy"].insertAt(currOcc - int(self.onInput.text()), self.data["stationName"])
+        elif self.backEnd.csvConstants["stationLine"].__getitem__(self.data["stationName"]) == 1:
+            for i in range(self.backEnd.data["blockTrainNoGreen"].__len__()):
+                if int(self.backEnd.data["blockTrainNoGreen"].__getitem__(i)) > 0 and int(self.backEnd.csvConstants["stationGreen"].__getitem__(i)) > 0 and int(self.backEnd.csvConstants["stationGreen"].__getitem__(i)) - 1 == int(self.data["stationName"]) and int(self.backEnd.data["stationOccupancy"].__getitem__(self.data["stationName"])) - int(self.onInput.text()) >= 0:
+                    self.backEnd.data["numPassengers"][self.backEnd.data["blockTrainNoGreen"].__getitem__(i) - 1] += int(self.onInput.text())
+                    currOcc = self.backEnd.data["stationOccupancy"].__getitem__(self.data["stationName"])
+                    self.backEnd.data["stationOccupancy"].removeAt(self.data["stationName"])
+                    self.backEnd.data["stationOccupancy"].insertAt(currOcc - int(self.onInput.text()), self.data["stationName"])
 
-        if self.backEnd.data["stationOccupancy"][self.data["stationName"]] == 1:
+        if int(self.backEnd.data["stationOccupancy"].__getitem__(self.data["stationName"])) == 1:
             self.occOutput.setText("1 person")
         else:
-            self.occOutput.setText(str(self.backEnd.data["stationOccupancy"][self.data["stationName"]]) + " people")
+            self.occOutput.setText(str(self.backEnd.data["stationOccupancy"].__getitem__(self.data["stationName"])) + " people")
 
         if self.backEnd.data["numPassengers"][self.train["trainNo"]] == 1:
             self.numPassengersOutput.setText("1 person")

@@ -66,7 +66,7 @@ class backEndCalculations():
         "noGoGreen" : DynamicArray(),
         "stationName" : DynamicArray(),
         "stationSide" : DynamicArray(),
-        "switchLine" : DynamicArray(),
+        "stationLine" : DynamicArray(),
         "switchBlockA" : DynamicArray(),
         "switchBlockB" : DynamicArray(),
         "switchBlockC" : DynamicArray()
@@ -143,15 +143,15 @@ with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/Stations.cs
         backEndCalculations.csvConstants["stationName"].append(row["StationName"])
         backEndCalculations.csvConstants["stationSide"].append(row["StationSide"])
         backEndCalculations.data["stationOccupancy"].append(0)
+        if row["Line"] == "RED":
+            backEndCalculations.csvConstants["stationLine"].append(0)
+        elif row["Line"] == "GREEN":
+            backEndCalculations.csvConstants["stationLine"].append(1)
 
 with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/Switches.csv", 'r') as swi:
     switches = csv.DictReader(swi)
 
     for row in switches:
-        if row["Line"] == "RED":
-            backEndCalculations.csvConstants["switchLine"].append(0)
-        elif row["Line"] == "GREEN":
-            backEndCalculations.csvConstants["switchLine"].append(1)
         backEndCalculations.csvConstants["switchBlockA"].append(row["BlockA"])
         backEndCalculations.csvConstants["switchBlockB"].append(row["BlockB"])
         backEndCalculations.csvConstants["switchBlockC"].append(row["BlockC"])
