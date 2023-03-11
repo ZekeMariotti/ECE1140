@@ -23,5 +23,7 @@
    "Speed Limit": 10,
    "Temperature": 10,
    "Communications Status": 1
+   "Kp": 1
+   "Ki": 1
  }
 ]
