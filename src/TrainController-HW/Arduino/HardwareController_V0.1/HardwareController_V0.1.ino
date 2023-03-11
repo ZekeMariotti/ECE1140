@@ -30,6 +30,9 @@ StaticJsonDocument<768> jsonDataIn;
 StaticJsonDocument<768> jsonDataOut;
 String serialJSONOut;
 
+int Kp = 1;
+int Ki = 0.1;
+
 
 //output variables, 
 int power, serviceBrakeCommand, emergencyBrakeState, autoDriveCommand, currentSpeed, commandedSpeed; 
@@ -53,6 +56,7 @@ void loop() {
   getJSONData();
   // delay(1000);
   int currTime = millis();
+  // int currTime = jsonDataIn["Time"];
   int dt = currTime-prevTime;
   updateSwitchStates(switchStateArray);
   drive(dt);
@@ -227,6 +231,8 @@ void parseJSONData(int *switchStateArray){
   jsonDataOut["Speed Limit"] = jsonDataIn["Speed Limit"];
   jsonDataOut["Temperature"] = 999;
   jsonDataOut["Communications Status"] = 999;
+  jsonDataOut["Kp"] = Kp;
+  jsonDataOut["Ki"] = Ki;
   
 }
 
@@ -234,10 +240,8 @@ void parseJSONData(int *switchStateArray){
 int previousError = 0;
 int previousU = 0; 
 
-int calculatePower(int currentSpeed, int commandedSpeed, float dt){
+int calculatePower(int currentSpeed, int commandedSpeed, float dt, int Kp, int Ki){
   //power calculation here
-  int Kp = 1;
-  int Ki = 0.1;
   int error = commandedSpeed - currentSpeed;
 
   int power = Kp*error + Ki*(previousU + (dt/2)*(error-previousError));
@@ -261,13 +265,17 @@ bool calculateBrake(bool state){
 void drive(int dt){
     //this is the main drive function to make the train move. 
     //This also calls the power and brake functions
-  autoDriveCommand = jsonDataIn["Manual Speed Override"];
+  autoDriveCommand = switchStateArray[1];//jsonDataIn["Manual Speed Override"];
   currentSpeed = jsonDataIn["Current Speed"];
   commandedSpeed = jsonDataIn["Commanded Speed"];
-  if(true){
+  if(autoDriveCommand){
     autodrive(currentSpeed, commandedSpeed, dt);
   }else{
-    power=1000;        
+    power = calculatePower(currentSpeed, commandedSpeed, dt, Kp, Ki);  
+    serviceBrakeCommand = calculateBrake((bool)switchStateArray[7]);
+    if(serviceBrakeCommand || emergencyBrakeState){
+      power=0; //set the power to 0 if service brake or emergency brake requested - redundancy for emergency brake
+    }
   }
 
 }
@@ -277,11 +285,11 @@ void autodrive(int currentSpeed, int commandedSpeed, int dt){
   int error = commandedSpeed - currentSpeed;
   // int dt=0;
   if(error>0){
-    power = calculatePower(currentSpeed, commandedSpeed, dt);
+    power = calculatePower(currentSpeed, commandedSpeed, dt, Kp, Ki);
     serviceBrakeCommand = calculateBrake(false);    
   }else if (error<0){
     serviceBrakeCommand = calculateBrake(true);
-    power = calculatePower(0, 0, dt);
+    power = calculatePower(0, 0, dt, Kp, Ki);
     power = 0;
   }else{
     power=0;
