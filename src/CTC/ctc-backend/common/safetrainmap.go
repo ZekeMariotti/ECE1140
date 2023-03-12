@@ -1,6 +1,7 @@
 package common
 
 import (
+	"sort"
 	"sync"
 
 	"golang.org/x/exp/maps"
@@ -47,4 +48,25 @@ func (m *SafeTrainMap) GetSlice() []Train {
 	defer m.mute.Unlock()
 
 	return maps.Values(m.data)
+}
+
+func (m *SafeTrainMap) GetFrontendSlice() []TrainFrontend {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	trainsReal := maps.Values(m.data)
+	trains := make([]TrainFrontend, len(trainsReal))
+	for i, v := range trainsReal {
+		trains[i] = TrainFrontend{
+			ID:       v.ID,
+			Line:     v.Line,
+			Driver:   v.Driver,
+			Location: v.Location,
+			Stops:    TrainStopsToFrontend(v.Stops),
+		}
+	}
+	sort.Slice(trains, func(i, j int) bool {
+		return trains[i].ID < trains[j].ID
+	})
+	return trains
 }

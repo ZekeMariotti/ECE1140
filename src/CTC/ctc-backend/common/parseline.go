@@ -3,7 +3,6 @@ package common
 import (
 	"encoding/csv"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 
@@ -102,7 +101,6 @@ func ParseLine(pathBlocks string, pathSwitches string) *Line {
 	switchCSV, err := rSwitch.ReadAll()
 	if err != nil {
 		fmt.Println(err)
-		log.Fatalln(err)
 	}
 	defer fSwitch.Close()
 

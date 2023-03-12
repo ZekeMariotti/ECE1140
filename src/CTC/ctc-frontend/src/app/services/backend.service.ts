@@ -23,6 +23,10 @@ export class BackendService {
     return this.http.get<Train[]>(`${environment.api_be}/api/frontend/trains`, {responseType: 'json'});
   }
 
+  getNextTrainID(): Observable<number> {
+    return this.http.get<number>(`${environment.api_be}/api/frontend/nexttrainid`, {responseType: 'json'});
+  }
+
   getTime(): Observable<Date> {
     return this.http.get<Date>(`${environment.api_be}/api/frontend/time`, {responseType: 'json'});
   }

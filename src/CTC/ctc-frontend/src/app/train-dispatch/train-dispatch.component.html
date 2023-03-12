@@ -6,7 +6,7 @@
   <div (ngSubmit)="onSubmit()" class="form p-md-3">
     <div class="mb-3 row">
       <label class="form-label">Train Number</label>
-      <input type="number" class="form-control" [(ngModel)]="id"/>
+      <input type="number" class="form-control" [(ngModel)]="id" disabled="true"/>
     </div>
     <div class="mb-3 row">
       <label class="form-label">Line</label>
@@ -25,14 +25,26 @@
     </div>
     <div class="mb-3 row">
       <label class="form-label">Stops</label>
-      <div class="form-check" *ngFor="let station of stations; let index = index;">
-        <label class="form-check-label">
-          <input type="checkbox" class="form-check-input">
-          {{station}}
-          <label class="form-label">
-            <input type="time" class="form-control" [(ngModel)]="stationTimes[index]">
-          </label>
-        </label>
+      <div class="container text-center">
+        <table class="table table-striped">
+          <thead>
+            <th>Station</th>
+            <th>Stop At</th>
+            <th>Stop Time</th>
+          </thead>
+          <tbody>
+            <tr *ngFor="let station of stations; let index = index;">
+              <td>{{station}}</td>
+              <td>
+                <input type="checkbox" class="form-check-input p-md-2" [(ngModel)]="stationSelect[index]">
+              </td>
+              <td>
+                <input type="datetime-local" class="form-control" [(ngModel)]="stationTimes[index]">
+                <label>{{stationTimes[index]}}</label>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
     <div class="mb-3 row">

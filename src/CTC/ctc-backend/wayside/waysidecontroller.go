@@ -63,7 +63,6 @@ func (c *WaysideController) getBlocks() {
 	json.Unmarshal(body, &blocks)
 
 	c.data.Lines.SetBlockInfo(c.line, blocks)
-	fmt.Println("Block Info", blocks)
 }
 
 func (c *WaysideController) getSwitches() {

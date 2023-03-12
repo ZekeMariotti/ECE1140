@@ -50,6 +50,7 @@ func (a *FrontendAPI) setupPaths() {
 	a.router.GET("/api/frontend/lines/:name/blocks", a.getBlocks)
 	a.router.GET("/api/frontend/lines/:name/stations", a.getStations)
 	a.router.GET("/api/frontend/trains", a.getTrains)
+	a.router.GET("/api/frontend/nexttrainid", a.getNextTrainID)
 	a.router.GET("/api/frontend/time", a.getTime)
 	a.router.GET("/api/frontend/simulationspeed", a.getSimulationSpeed)
 	// POST (Create) Commands
@@ -95,7 +96,12 @@ func (a *FrontendAPI) getStations(c *gin.Context) {
 
 // Handler for GET /trains
 func (a *FrontendAPI) getTrains(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, a.datastore.Trains.GetSlice())
+	c.IndentedJSON(http.StatusOK, a.datastore.Trains.GetFrontendSlice())
+}
+
+// Handler for GET /nexttrainid
+func (a *FrontendAPI) getNextTrainID(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, a.datastore.GetNextTrainID())
 }
 
 // Handler for GET /time
@@ -111,10 +117,10 @@ func (a *FrontendAPI) getSimulationSpeed(c *gin.Context) {
 
 // Handler for POST /trains
 func (a *FrontendAPI) postTrains(c *gin.Context) {
-	result := common.Train{}
+	result := common.TrainFrontend{}
 	body, _ := io.ReadAll(c.Request.Body)
 	json.Unmarshal(body, &result)
-	a.datastore.Trains.Set(result.ID, result)
+	a.datastore.Trains.Set(result.ID, a.datastore.TrainFrontendToBackend(result))
 }
 
 // Handler for PUT /simulationSpeed
