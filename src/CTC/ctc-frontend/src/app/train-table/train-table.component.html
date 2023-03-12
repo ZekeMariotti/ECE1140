@@ -7,6 +7,7 @@
 			<th scope="col">ID</th>
 			<th scope="col">Line</th>
 			<th scope="col">Driver</th>
+      <th scope="col">Block(s)</th>
 			<th scope="col">Stops</th>
 		</tr>
 	</thead>
@@ -15,6 +16,7 @@
 			<th scope="row row-no-gutters my-0">{{ train.id }}</th>
 			<td>{{ train.line }}</td>
 			<td>{{ train.driver }}</td>
+      <td>{{ train.location.blocks}}</td>
 			<td>
         <dl class="row row-no-gutters my-0" *ngFor="let stop of train.stops">
           <dd class="col-sm-3 my-0">{{ stop.station }}</dd>
