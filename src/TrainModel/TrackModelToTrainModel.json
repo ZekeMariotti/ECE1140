@@ -10,6 +10,6 @@
         "The Yard",
         0
     ],
-    "switch": true,
-    "switchState": 1
+    "switch": false,
+    "switchState": 0
 }

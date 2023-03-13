@@ -45,12 +45,12 @@ class TrainModel():
 
     # Dictionary used for intercommunication between the track model and train model only
     trackData = {
-        "currBlock"        : 63,             # Current block that the train is on, ONLY USED BY TRAIN MODEL AND TRACK MODEL
+        "currBlock"        : 0,              # Current block that the train is on, ONLY USED BY TRAIN MODEL AND TRACK MODEL
         "prevBlock"        : 0,              # Previous block that the train was on, ONLY USED BY TRAIN MODEL AND TRACK MODEL
         "distance"         : 0.0,            # Distance the train has traveled since the last time period in meters
         "remDistance"      : 100.0,          # Distance remaining in the current block, if any, in meters
         "switch"           : True,           # If the current block is attached to a switch, True if on a switch, false if otherwise
-        "switchState"      : 1,              # State of the switch if the current block is attached to one (default is 0)
+        "switchState"      : 0,              # State of the switch if the current block is attached to one (default is 0)
         "blockLength"      : 0,              # Length of the current block, provided by the Track Model / CSV File in meters
         "elevation"        : 0,              # Relative elevation increase of the block, provided by the Track Model / CSV File in meters
         "trainLine"        : "Green",        # Line the train is on
@@ -337,7 +337,7 @@ class TrainModel():
         
         # Case otherwise
         os.chdir("src/TrainModel")
-        with open("greenLineBlocks.txt", newline = '') as csvFile:
+        with open("redLineBlocks.txt", newline = '') as csvFile:
             csvReader = csv.reader(csvFile, delimiter = ',')
             for row in csvReader:
                 if (row[0] == "Number"):
@@ -428,6 +428,7 @@ class TrainModel():
                             self.trackData["trackSection"] = self.greenSection1
                     self.trackData["prevBlock"] = self.trackData["currBlock"]
                     return self.trackData["trackSection"][0]
+                
             # Case where the train needs to just increase block by 1
             else:
                 print("regular block")
@@ -522,6 +523,15 @@ class TrainModel():
                 elif (self.trackData["currBlock"] == 10) | (self.trackData["currBlock"] == 15) | (self.trackData["currBlock"] == 28) | (self.trackData["currBlock"] == 32) | (self.trackData["currBlock"] == 39) | (self.trackData["currBlock"] == 43) | (self.trackData["currBlock"] == 53):
                     print("Derailment")
                     return 333
+                        # Case where the train needs to just increase block by 1
+            else:
+                print("regular block")
+                if self.trackData["trackSection"][0] < self.trackData["trackSection"][1]:
+                    self.trackData["prevBlock"] = self.trackData["currBlock"]
+                    return (self.trackData["currBlock"] + 1)
+                elif self.trackData["trackSection"][0] > self.trackData["trackSection"][1]:
+                    self.trackData["prevBlock"] = self.trackData["currBlock"]
+                    return (self.trackData["currBlock"] - 1)
         else:
             print("IDK How I even got here")
 
