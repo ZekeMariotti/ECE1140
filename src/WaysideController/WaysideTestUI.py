@@ -205,7 +205,7 @@ def main():
        MainUI = UI_BlueLine()
        ui.setupUi(MainUI)
        MainUI.show()
-       app.exec()
+       sys.exit(app.exec())
 
 if __name__ == "__main__":
     import sys
