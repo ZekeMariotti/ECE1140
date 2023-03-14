@@ -83,6 +83,7 @@ suggestedSpeed = {
     75: 0,
     76: 0
 }
+
 #dictionary of commanded speeds
 commandedSpeed = {
     1: 0,
@@ -162,6 +163,7 @@ commandedSpeed = {
     75: 0,
     76: 0,
 }
+
 #dictionary of authority
 authority = {
     1: 0,
@@ -241,6 +243,7 @@ authority = {
     75: 0,
     76: 0,
 }
+
 #dictionary of Light states
 signalLights = {
     1: "R",
@@ -321,6 +324,7 @@ signalLights = {
     75: "R",
     76: "R",
 }
+
 #Dictionary of block occupancy
 occupancy = {
     1: True,
@@ -400,6 +404,7 @@ occupancy = {
     75: True,
     76: True
 }
+
 brokenrail = {
      1: False,
      2: False,
@@ -478,6 +483,7 @@ brokenrail = {
     75: False,
     76: False
 }
+
 switches = {
        1: True,
        2: True,
@@ -487,9 +493,27 @@ switches = {
        6: True,
        7: True
 }
+
 gates = {
        1: True
 }
+
+WaysidetoCTC ={
+        "SwitchPosition" :switches,
+        "Occupancy"      :occupancy,
+        "BrokenRail"     :brokenrail,
+        "Switches"       :switches
+}
+
+WaysidetoTrackModel ={
+       "GatePosition"   : gates,
+       "Authority"      : authority,
+       "CommandedSpeed" : commandedSpeed,
+       "SimTime"        : "2023-02-22T11:00:00.0000000-05:00",
+       "SwitchPositon"  : switches,
+       "SignalLights"   : signalLights
+}
+
 class WaysideControllerRed:
     def __init__(self,inputTime,trackOperational):
             self.realTime=None
@@ -566,6 +590,15 @@ class WaysideControllerRed:
     def convertTime(self):
             inputTime = stringRemove(self.time, 26)
             self.realTime = datetime.strptime(inputTime, "%Y-%m-%dT%H:%M:%S.%f%z")  
+
+    def WaysideToCTC():
+        with open(os.path.join(sys.path[0], "WaysidetoCTCRed.json"), "w") as filename:
+            (json.dump(WaysidetoCTC, filename, indent = 4))
+
+    def WaysideToTrack():
+        with open(os.path.join(sys.path[0], "WaysidetoTrackRed.json"), "w") as filename:
+            (json.dump(WaysidetoTrackModel, filename, indent = 4))
+
     #unfinishedPLC
     def uploadPLC(self,file):
             return()     

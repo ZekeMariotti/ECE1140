@@ -310,6 +310,7 @@ commandedSpeed = {
     149: 0,
     150: 0
 }
+
 #dictionary of authority
 authority = {
     1: 0,
@@ -617,6 +618,7 @@ signalLights = {
     149: "R",
     150: "R"
 }
+
 #Dictionary of block occupancy
 occupancy = {
     1: True,
@@ -770,6 +772,7 @@ occupancy = {
     149: True,
     150: True
 }
+
 brokenrail = {
      1: False,
      2: False,
@@ -922,6 +925,7 @@ brokenrail = {
     149: False,
     150: False
 }
+
 switches = {
        1: True,
        2: True,
@@ -929,9 +933,27 @@ switches = {
        4: True,
        5: True
 }
+
 gates = {
        1: True
 }
+
+WaysidetoCTC ={
+        "SwitchPosition" :switches,
+        "Occupancy"      :occupancy,
+        "BrokenRail"     :brokenrail,
+        "Switches"       :switches
+}
+
+WaysidetoTrackModel ={
+       "GatePosition"   : gates,
+       "Authority"      : authority,
+       "CommandedSpeed" : commandedSpeed,
+       "SimTime"        : "2023-02-22T11:00:00.0000000-05:00",
+       "SwitchPositon"  : switches,
+       "SignalLights"   : signalLights
+}
+
 class WaysideControllerGreen:
     def __init__(self,inputTime,trackOperational):
             self.realTime=None
@@ -1000,7 +1022,16 @@ class WaysideControllerGreen:
 
     def convertTime(self):
             inputTime = stringRemove(self.time, 26)
-            self.realTime = datetime.strptime(inputTime, "%Y-%m-%dT%H:%M:%S.%f%z")  
+            self.realTime = datetime.strptime(inputTime, "%Y-%m-%dT%H:%M:%S.%f%z") 
+            
+    def WaysideToCTC():
+        with open(os.path.join(sys.path[0], "WaysidetoCTC.json"), "w") as filename:
+            (json.dump(WaysidetoCTC, filename, indent = 4))
+
+    def WaysideToTrack():
+        with open(os.path.join(sys.path[0], "WaysidetoTrack.json"), "w") as filename:
+            (json.dump(WaysidetoTrackModel, filename, indent = 4))
+
     #unfinishedPLC
     def uploadPLC(self,file):
             return()     
@@ -1010,3 +1041,7 @@ def stringRemove(string, n):
         last = string[n+1:]  
         return first + last
 
+
+
+    
+   

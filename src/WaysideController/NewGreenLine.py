@@ -20,7 +20,7 @@ class MainWindow(QMainWindow):
 
         #Intialize Wayside class
         self.WaysideControllerGreen = WaysideControllerGreen(1,True)
-        self.TestUI = True
+        self.TestUI = False
         #self.WaysideController.writeOutputs()
         #self.WaysideController.readInputs()
 
@@ -81,6 +81,9 @@ class MainWindow(QMainWindow):
         #Gate
         self.GateLabel = self.GateLabelSetup()
         self.Gate = self.GateSetup()
+
+        #PLC
+        self.PLC = self.PLCButton()
 
         #Test UI
         if self.TestUI :
@@ -474,7 +477,16 @@ class MainWindow(QMainWindow):
           Output5.setParent(self)
           Output5.move(1000,105)
           return(Output5)
-        
+    
+    def PLCButton(self):
+         PLCButton = QPushButton("PLC")
+         PLCButton.setFont(self.labelFont) 
+         PLCButton.setFixedSize(QSize(70,40))  
+         #PLCButton.clicked.connect()
+         PLCButton.setParent(self)
+         PLCButton.move(870,450)
+         return(PLCButton) 
+            
     #Clicking stuff    
     def Switch1ButtonLClick(self):
           self.WaysideControllerGreen.setSwitchPositions(True,1)
@@ -553,19 +565,19 @@ class MainWindow(QMainWindow):
           i=0
           j=1
           for k in range(1,151):
-                value=self.WaysideControllerGreen.getAuthority(k)
+                value=self.WaysideControllerGreen.getCommandedSpeed(k)
                 self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
-                 j=0
-                 i=i+1           
+                        j=0
+                        i=i+1           
           #self.BrokenRail 
           i=0
           j=1
           for k in range(1,151):
-                value=self.WaysideControllerGreen.getAuthority(k)
-                self.BrokenRail.setItem(i,j,QTableWidgetItem(str(value)))
-                j=j+1
+                if value == self.WaysideControllerGreen.getBrokenRail(k)== True:
+                        self.BrokenRail.setItem(i,j,QTableWidgetItem(str("ERROR")))
+                        j=j+1
                 if j>9:
                  j=0
                  i=i+1
@@ -573,7 +585,7 @@ class MainWindow(QMainWindow):
           i=0
           j=1
           for k in range(1,151):
-                value=self.WaysideControllerGreen.getAuthority(k)
+                value=self.WaysideControllerGreen.getSignalLights(k)
                 self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
@@ -583,12 +595,12 @@ class MainWindow(QMainWindow):
           i=0
           j=1
           for k in range(1,151):
-                value=self.WaysideControllerGreen.getAuthority(k)
-                self.Occupancy.setItem(i,j,QTableWidgetItem(str(value)))
-                j=j+1
+                if value == self.WaysideControllerGreen.getOccupancy(k):
+                        self.Occupancy.setItem(i,j,QTableWidgetItem(str("X")))
+                        j=j+1
                 if j>9:
-                 j=0
-                 i=i+1        
+                        j=0
+                        i=i+1        
           if self.WaysideControllerGreen.getGatePositions()==True:
                 self.Gate.setText("Block 19 Gate:  UP")
           else:
@@ -600,6 +612,9 @@ class MainWindow(QMainWindow):
           self.updateVisualElements()
 
           self.WaysideControllerGreen.previousTime = self.WaysideControllerGreen.realTime
+          WaysideControllerGreen.WaysideToCTC()
+          WaysideControllerGreen.WaysideToTrack()
+
           
 app = QApplication(sys.argv)
 
