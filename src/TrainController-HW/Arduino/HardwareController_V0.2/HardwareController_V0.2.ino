@@ -12,18 +12,16 @@
 
 #define NUMBEROFSWITCHES 10
 
-// we use includes below define so we can use definitions in library when needed
-// #include "drive.cpp"
-#include "TControl.h"
-TControl tControl;
 
 #include <ArduinoJson.h>
 #include <StreamUtils.h>
 
-unsigned long update_period = 1000.0f / 50.0f; // in ms
-unsigned long tsLastLoop = millis();
-long tsUsed; // in ms
+//output variables, 
+int power, serviceBrakeCommand, emergencyBrakeState, autoDriveCommand, currentSpeed, commandedSpeed; 
 
+int prevTime = 0; 
+int Kp = 1;
+int Ki = 0.1;
 
 //Global and system wide variables 
 int switchStateArray[NUMBEROFSWITCHES];
@@ -31,14 +29,21 @@ StaticJsonDocument<768> jsonDataIn;
 StaticJsonDocument<768> jsonDataOut;
 String serialJSONOut;
 
-int Kp = 1;
-int Ki = 0.1;
+
+// we use includes below define so we can use definitions in library when needed
+// #include "drive.cpp"
+#include "TControl.h"
+TControl tControl;
+
+#include "Drive.h"
+Drive driv(&tControl, &Kp, &Ki, &power, &serviceBrakeCommand, &emergencyBrakeState, switchStateArray);
 
 
-//output variables, 
-int power, serviceBrakeCommand, emergencyBrakeState, autoDriveCommand, currentSpeed, commandedSpeed; 
+unsigned long update_period = 1000.0f / 50.0f; // in ms
+unsigned long tsLastLoop = millis();
+long tsUsed; // in ms
 
-int prevTime = 0; 
+
 
 void setup() {
   // put your setup code here, to run once:
