@@ -5,6 +5,9 @@ port = 27000
 msg = b"hello world"
 counter = 0
 
+def readjson:
+    
+
 while True:
     print(f'Sending {msg} to {ip}:{port}    Counter:{counter}')
     sock = socket.socket(socket.AF_INET,
