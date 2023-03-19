@@ -28,4 +28,5 @@ def wattsToHorsepower(number):
 # Converts a string for ISO8601 format to a human readable string
 def ISO8601ToHumanTime(string):
     inputTime = string[:26] + string[27:]
-    return datetime.strptime(inputTime, "%Y-%m-%dT%H:%M:%S.%f%z")
+    temp = datetime.strptime(inputTime, "%Y-%m-%dT%H:%M:%S.%f%z")
+    return temp

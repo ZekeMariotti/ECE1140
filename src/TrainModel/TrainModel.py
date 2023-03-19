@@ -2,6 +2,7 @@
 
 from random import randint
 from math import cos, asin
+from datetime import *
 from TrainModelSignals import *
 from PyQt6.QtCore import *
 import sys
@@ -15,6 +16,7 @@ class TrainModel():
     data = {
         "id"               : 0,              # Train ID for if there are multiple trains instantiated
         "rtc"              : "",             # Real Time Clock in ISO 8601 Format
+        "prevRTC"          : "",             # Previous State RTC in ISO 8601 Format
         "simSpeed"         : 1,              # Simulation Speed of the system
         "passengers"       : 0,              # Number of passengers on the train
         "passengersOn"     : 0,              # Number of passengers getting on the train
@@ -52,8 +54,8 @@ class TrainModel():
         "remDistance"      : 10.0,           # Distance remaining in the current block, if any, in meters (Initialized as 10 meters for coming out of the yard)
         "switch"           : True,           # If the current block is attached to a switch, True if on a switch, false if otherwise
         "switchState"      : 0,              # State of the switch if the current block is attached to one (default is 0)
-        "blockLength"      : 10.0,           # Length of the current block, provided by the Track Model / CSV File in meters
-        "elevation"        : 0.0,            # Relative elevation increase of the block, provided by the Track Model / CSV File in meters
+        "blockLength"      : 10.0,           # Length of the current block, provided by the Track Model
+        "elevation"        : 0.0,            # Relative elevation increase of the block, provided by the Track Model
         "trainLine"        : "Green",        # Line the train is on
         "trackSection"     : [0, 63]         # Section of the track that the train is on
     }
@@ -269,19 +271,21 @@ class TrainModel():
     def runFunctions(self):
         self.readTrainControllerToTrainModel()
         self.readTrackModelToTrainModel()
+        tempTimeDiff = self.findTimeDifference()
         self.failureStates()
         self.brakeCaclulator()
         self.findCurrentBlockInfo()
         self.findCurrentAcceleration()
-        self.findCurrentVelocity()
-        self.findCurrentDistance()
+        self.findCurrentVelocity(tempTimeDiff)
+        self.findCurrentDistance(tempTimeDiff)
         self.findBlockExiting()
         self.airConditioningControl()
         if self.data["atStation"]:
             self.passengersGettingOff()
             self.passengersGettingOn()
         self.findCurrentMass()
-        self.moveToPrevious()
+        if tempTimeDiff != 0:
+            self.moveToPrevious()
         self.writeTrainModelToTrackModel()
         self.writeTrainModelToTrainController()
         
@@ -289,6 +293,7 @@ class TrainModel():
     def moveToPrevious(self):
         self.data["prevVelocity"] = self.data["velocity"]
         self.data["prevAcceleration"] = self.data["acceleration"]
+        self.data["prevRTC"] = self.data["rtc"]
 
     # Finds the current acceleration of a train
     def findCurrentAcceleration(self) :
@@ -369,6 +374,16 @@ class TrainModel():
     def findCurrentDistance(self, time = 1):
         self.trackData["distance"] = ((time / 2) * (self.data["prevVelocity"] + self.data["velocity"]))
 
+    # Find the difference in time between current iteration and previous iteration of data in seconds from ISO 8601 Format
+    def findTimeDifference(self):
+        if (self.data["prevRTC"] == "") & (self.data["rtc"] != ""):
+            return 1
+        currTime = datetime.fromisoformat(self.data["rtc"])
+        prevTime = datetime.fromisoformat(self.data["prevRTC"])
+        return int((currTime - prevTime).seconds)
+
+
+    # NEEDS TO BE REMOVED. MUST GET BLOCK LENGTH AND ELEVATION FROM THE TRAIN MODEL
     # Finds the elevation and block length of the block the train is currently on
     def findCurrentBlockInfo(self):
         # Case if the train is in the yard
