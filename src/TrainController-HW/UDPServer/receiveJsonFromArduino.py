@@ -61,3 +61,7 @@ while True:
 
     print(f"received message: {data}")
 
+
+while True:
+    data, addr = sock.recvfrom(1024) # buffer
+    print(f"received message: {data}")
