@@ -101,13 +101,13 @@ void ui(){
   drawTextBoxWithBackground(50, 330, 200, 60, fontSize, "Int Lights: "+internalLightState, 167);
 
   drawTextBoxWithBackground(350, 50, 200, 60, fontSize, "Curr Station: ", 167); //TODO: implemet current station in JSON
-  drawTextBoxWithBackground(350, 120, 200, 60+80, fontSize, "Speed: "+currentSpeed, 167);
+  drawTextBoxWithBackground(350, 120, 200, 60+80, fontSize, "Speed: "+currentSpeed+"MPH", 167);
   drawTextBoxWithBackground(350, 190+80, 200, 60, fontSize, "Manual Spd Ovrd: ", 167);
   drawTextBoxWithBackground(350, 260+80, 200, 60, fontSize, "Emergency Brake: "+emergencyBrakeState, 167);
 
-  drawTextBoxWithBackground(650, 50, 200, 60, fontSize, "Comd Spd: "+commandedSpeed, 167);
-  drawTextBoxWithBackground(650, 120, 200, 60, fontSize, "Authority: "+authority, 167);
-  drawTextBoxWithBackground(650, 190, 200, 60, fontSize, "Spd Lim: "+speedLimit, 167);
+  drawTextBoxWithBackground(650, 50, 200, 60, fontSize, "Comd Spd: "+commandedSpeed+"MPH", 167);
+  drawTextBoxWithBackground(650, 120, 200, 60, fontSize, "Authority: "+authority+"Blocks", 167);
+  drawTextBoxWithBackground(650, 190, 200, 60, fontSize, "Spd Lim: "+speedLimit+"MPH", 167);
   drawTextBoxWithBackground(650, 260, 200, 60, fontSize, "Right Door: "+rightDoorState, 167);
   drawTextBoxWithBackground(650, 330, 200, 60, fontSize, "Left Door: "+leftDoorState, 167);
   
