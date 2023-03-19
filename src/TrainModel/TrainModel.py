@@ -1,6 +1,7 @@
 # Train Model Back End
 
 from random import randint
+from math import cos, asin
 from TrainModelSignals import *
 from PyQt6.QtCore import *
 import sys
@@ -51,7 +52,7 @@ class TrainModel():
         "remDistance"      : 10.0,           # Distance remaining in the current block, if any, in meters (Initialized as 10 meters for coming out of the yard)
         "switch"           : True,           # If the current block is attached to a switch, True if on a switch, false if otherwise
         "switchState"      : 0,              # State of the switch if the current block is attached to one (default is 0)
-        "blockLength"      : 0.0,            # Length of the current block, provided by the Track Model / CSV File in meters
+        "blockLength"      : 10.0,           # Length of the current block, provided by the Track Model / CSV File in meters
         "elevation"        : 0.0,            # Relative elevation increase of the block, provided by the Track Model / CSV File in meters
         "trainLine"        : "Green",        # Line the train is on
         "trackSection"     : [0, 63]         # Section of the track that the train is on
@@ -120,7 +121,7 @@ class TrainModel():
         "commandedSpeed"  : 0.0,                   # Commanded speed for the train in m/s
         "speedLimit"      : 0.0,                   # Speed limit of the train in m/s
         "authority"       : 0,                     # Authority of the train in blocks
-        "beacon"          : [False, "The Yard", 0] # Beacon Inputs from the most recent Beacon
+        "beacon"          : ["", 0, "", False]     # Beacon Inputs from the most recent Beacon
     }
 
     # Dictionary for inputs from the Train Controller JSON File
@@ -147,9 +148,10 @@ class TrainModel():
         "speedLimit"            : 0.0,                                 # Speed Limit in m/s
         "temperature"           : 0.0,                                 # Temperature inside the Train in degrees Fahrenheit
         "engineState"           : True,                                # State of the Engine, True if on, False if off
-        "stationState"          : False,                               # Station State, True if at a station, False otherwise
-        "stationName"           : "The Yard",                          # Station Name
-        "platformSide"          : 0,                                   # Platform Side, 0 if left, 1 if right, 2 if both
+        "stationName"           : "The Yard",                          # Station Name, from the beacon
+        "platformSide"          : 0,                                   # Platform Side, 0 if left, 1 if right, 2 if both, from the beacon
+        "nextStationName"       : "",                                  # Name of the next station, from the beacon
+        "isBeacon"              : False,                               # Whether or not a beacon is active
         "externalLightsState"   : False,                               # State of the External Lights, True if on, False if off
         "internalLightsState"   : False,                               # State of the Internal Lights, True if on, False if off
         "leftDoorState"         : False,                               # State of the Left Doors, True if open, False if closed
@@ -169,7 +171,7 @@ class TrainModel():
         "passengersEntering" : 0,                                      # Number of passengers entering the train
         "speedLimit"         : 0.0,                                    # Speed limit of the current block that the train is on in m/s
         "undergroundState"   : False,                                  # State of whether the train is underground or not
-        "beacon"             : [False, "The Yard", 0],                 # Array to store the beacon inputs [Station State, Station Name, Platform Side]
+        "beacon"             : ["", 0, "", False],                     # Array to store the beacon inputs [stationName, platformSide, nextStationName, isBeacon]
         "switch"             : True,                                   # True if the block the train is currently on is a switch, false otherwise                      
         "switchState"        : 1                                       # 0 if the switch is in a default position, 1 otherwise
     }
@@ -204,9 +206,10 @@ class TrainModel():
         self.trainModelToTrainController["speedLimit"]           = self.passThroughData["speedLimit"]
         self.trainModelToTrainController["temperature"]          = self.data["currTemp"]
         self.trainModelToTrainController["engineState"]          = True if self.data["power"] > 0 else False
-        self.trainModelToTrainController["stationState"]         = self.passThroughData["beacon"][0]
-        self.trainModelToTrainController["stationName"]          = self.passThroughData["beacon"][1]
-        self.trainModelToTrainController["platformSide"]         = self.passThroughData["beacon"][2]
+        self.trainModelToTrainController["stationName"]          = self.passThroughData["beacon"][0]
+        self.trainModelToTrainController["platformSide"]         = self.passThroughData["beacon"][1]
+        self.trainModelToTrainController["nextStationName"]      = self.passThroughData["beacon"][2]
+        self.trainModelToTrainController["isBeacon"]             = self.passThroughData["beacon"][3]
         self.trainModelToTrainController["externalLightsState"]  = self.data["eLights"]
         self.trainModelToTrainController["internalLightsState"]  = self.data["iLights"]
         self.trainModelToTrainController["leftDoorState"]        = self.data["lDoors"]
@@ -258,7 +261,7 @@ class TrainModel():
         self.passThroughData["speedLimit"]     = self.trackModelToTrainModel["speedLimit"]
         self.data["underground"]               = self.trackModelToTrainModel["undergroundState"]
         self.passThroughData["beacon"]         = self.trackModelToTrainModel["beacon"]
-        self.data["atStation"]                 = self.trackModelToTrainModel["beacon"][0]
+        self.data["atStation"]                 = self.trackModelToTrainModel["beacon"][3]
         self.trackData["switch"]               = self.trackModelToTrainModel["switch"]
         self.trackData["switchState"]          = self.trackModelToTrainModel["switchState"]
 
@@ -290,6 +293,41 @@ class TrainModel():
     # Finds the current acceleration of a train
     def findCurrentAcceleration(self) :
         # Limits the power of the engine
+        #if self.data["power"] > 120000:
+        #    self.data["power"] = 120000
+
+        # Find the force of friction and the force of mass on the train
+        #frictionalForce = -(self.data["mass"] * self.constants["gravity"] * self.constants["friction"] * cos(asin(self.trackData["elevation"] / self.trackData["blockLength"])))
+        #gravitationalForce = -(self.data["mass"] * self.constants["gravity"] * (self.trackData["elevation"] / self.trackData["blockLength"]))
+        #powerForce = 0
+        #brakeForce = 0
+
+        # Deal with finding the force from the power input
+
+        # If the train is not moving, but has power input, set the medium acceleration to 0.5 m/s^2 regardless of
+        #if (self.data["prevVelocity"] == 0.0) & (self.data["power"] > 0.0):
+        #    self.data["acceleration"] = self.constants["mediumAcceleration"]
+        #    return
+        
+        # If the train is moving and has power input
+        #elif (self.data["power"] > 0.0):
+        #    powerForce = self.data["power"] / self.data["prevVelocity"]
+        #    frictionalForce = 0.0
+
+        # Deal with the force from brakes, if any
+        #if (self.data["eBrakeState"] | self.data["sBrakeState"]):
+        #    brakeForce = self.data["acceleration"] * self.data["mass"]
+
+        # Calculate the sum of the forces and current Acceleration
+        #print("powerForce: ", powerForce, " brakeForce: ", brakeForce, " frictionalForce: ", frictionalForce, " gravitationalForce: ", gravitationalForce)
+        #forces = powerForce + brakeForce + frictionalForce + gravitationalForce
+        #tempAcceleration = forces / self.data["mass"]
+
+        # Limit the acceleration to follow F = ma
+        #self.data["acceleration"] = tempAcceleration if tempAcceleration <= (forces / self.data["mass"]) else (forces / self.data["mass"])
+        #print(self.data["acceleration"])
+
+        # Limits the power of the engine
         if self.data["power"] > 120000:
             self.data["power"] = 120000
 
@@ -315,16 +353,17 @@ class TrainModel():
 
         # If the train is on an incline or decline, use this calculation
         else:
-            # Calculating the effect of mass * gravity wen on an incline
-            tempAcceleration= (force - (self.data["mass"] * self.constants["gravity"] * (self.trackData["elevation"] / self.trackData["blockLength"]))) / self.data["mass"]
+            # Calculating the effect of mass * gravity when on an incline
+            tempAcceleration = (force - (self.data["mass"] * self.constants["gravity"] * (self.trackData["elevation"] / self.trackData["blockLength"]))) / self.data["mass"]
 
         # Limit the acceleration to something that is possible for the train according to F = ma
         self.data["acceleration"] = tempAcceleration if tempAcceleration <= (force / self.data["mass"]) else (force / self.data["mass"])
+
     # Finds the current velocity of a train given 7 inputs
     def findCurrentVelocity(self, time = 1):
         currVelocity = self.data["prevVelocity"] + ((time / 2) * (self.data["acceleration"] + self.data["prevAcceleration"]))
         currVelocity = currVelocity if currVelocity >= 0 else 0.0
-        self.data["velocity"] = currVelocity if currVelocity <= 19.4444 else 19.4444
+        self.data["velocity"] = currVelocity
 
     # Get distance since the last state update of the system
     def findCurrentDistance(self, time = 1):
@@ -592,7 +631,7 @@ class TrainModel():
             self.passThroughData["commandedSpeed"] = 0.0
             self.passThroughData["speedLimit"] = 0.0
             self.passThroughData["authority"] = 0
-            self.passThroughData["beacon"] = [False, "", 0]
+            self.passThroughData["beacon"] = ["", 0, "", False]
         if self.data["engineStatus"] == False:
             self.data["power"] = 0.0
         if self.data["brakeStatus"] == False:

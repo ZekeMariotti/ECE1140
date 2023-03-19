@@ -6,10 +6,11 @@
     "speedLimit": 0.0,
     "undergroundState": false,
     "beacon": [
-        true,
-        "The Yard",
-        0
+        "afsdf32rf~",
+        1,
+        "12849y1287",
+        true
     ],
-    "switch": true,
-    "switchState": 1
+    "switch": false,
+    "switchState": 0
 }

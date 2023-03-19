@@ -17,7 +17,7 @@ def kilogramsToTons(number):
 def metersPerSecondToMilesPerHour(number):
     return round(number * 2.23695, 2)
 
-# Takes an input in Meters Per Second ^2 and conerts it to Feet Per Second ^2
+# Takes an input in Meters Per Second ^2 and conerts it to Feet Per Second ^ 2
 def metersPerSecondSquaredToFeetPerSecondSquared(number):
     return round(number * 3.28084, 2)
 
@@ -25,6 +25,7 @@ def metersPerSecondSquaredToFeetPerSecondSquared(number):
 def wattsToHorsepower(number):
     return round(number * 0.00134102, 2)
 
+# Converts a string for ISO8601 format to a human readable string
 def ISO8601ToHumanTime(string):
     inputTime = string[:26] + string[27:]
     return datetime.strptime(inputTime, "%Y-%m-%dT%H:%M:%S.%f%z")
