@@ -1,7 +1,7 @@
 {
     "id": 0,
     "commandedSpeed": 0.0,
-    "currentSpeed": 13.132268710095302,
+    "currentSpeed": 0.25,
     "authority": 0,
     "inputTime": "2023-02-22T11:00:06.0000000-05:00",
     "undergroundState": false,

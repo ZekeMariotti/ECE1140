@@ -227,7 +227,7 @@ class TrainModel():
 
     # JSON function to read inputs from a JSON file from the Train Controller
     def readTrainControllerToTrainModel(self):
-        with open(os.path.join(sys.path[0], "TrainControllerSWToTrainModel.json"), "r") as filename:
+        with open(os.path.join(sys.path[0], "TrainControllerToTrainModel.json"), "r") as filename:
             self.trainControllerToTrainModel = json.loads(filename.read())
 
         # Loading internal inputs data variable
