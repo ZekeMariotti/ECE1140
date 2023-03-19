@@ -24,7 +24,11 @@ String stationName;
 
 void setup(){
   //decalre screen size
+<<<<<<< HEAD
   size(900, 800);
+=======
+  size(900, 600);
+>>>>>>> 817da9a (Proof of concept for test UI and Main UI)
 
   cp5 = new ControlP5(this);
   

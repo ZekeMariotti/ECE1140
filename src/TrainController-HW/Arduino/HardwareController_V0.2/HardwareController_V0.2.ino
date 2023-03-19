@@ -12,17 +12,16 @@
 
 #define NUMBEROFSWITCHES 10
 
-// we use includes below define so we can use definitions in library when needed
-// #include "drive.cpp"
-// #include "control.cpp"
 
 #include <ArduinoJson.h>
 #include <StreamUtils.h>
 
-unsigned long update_period = 1000.0f / 50.0f; // in ms
-unsigned long tsLastLoop = millis();
-long tsUsed; // in ms
+//output variables, 
+int power, serviceBrakeCommand, emergencyBrakeState, autoDriveCommand, currentSpeed, commandedSpeed; 
 
+int prevTime = 0; 
+int Kp = 1;
+int Ki = 0.1;
 
 //Global and system wide variables 
 int switchStateArray[NUMBEROFSWITCHES];
@@ -30,14 +29,21 @@ StaticJsonDocument<768> jsonDataIn;
 StaticJsonDocument<768> jsonDataOut;
 String serialJSONOut;
 
-int Kp = 1;
-int Ki = 0.1;
+
+// we use includes below define so we can use definitions in library when needed
+// #include "drive.cpp"
+#include "TControl.h"
+TControl tControl;
+
+#include "Drive.h"
+Drive driv(&tControl, &Kp, &Ki, &power, &serviceBrakeCommand, &emergencyBrakeState, switchStateArray);
 
 
-//output variables, 
-int power, serviceBrakeCommand, emergencyBrakeState, autoDriveCommand, currentSpeed, commandedSpeed; 
+unsigned long update_period = 1000.0f / 50.0f; // in ms
+unsigned long tsLastLoop = millis();
+long tsUsed; // in ms
 
-int prevTime = 0; 
+
 
 void setup() {
   // put your setup code here, to run once:
@@ -55,8 +61,8 @@ void loop() {
   // put your main code here, to run repeatedly:
   getJSONData();
   // delay(1000);
-  int currTime = millis();
-  // int currTime = jsonDataIn["Time"];
+  // int currTime = millis();
+  int currTime = jsonDataIn["Time"];
   int dt = currTime-prevTime;
   updateSwitchStates(switchStateArray);
   drive(dt);
@@ -237,28 +243,28 @@ void parseJSONData(int *switchStateArray){
 }
 
 ////////////////////////////////Drive Shit/////////////////////////////////////Move later TODO:move it
-int previousError = 0;
-int previousU = 0; 
+// int previousError = 0;
+// int previousU = 0; 
 
-int calculatePower(int currentSpeed, int commandedSpeed, float dt, int Kp, int Ki){
-  //power calculation here
-  int error = commandedSpeed - currentSpeed;
+// int calculatePower(int currentSpeed, int commandedSpeed, float dt, int Kp, int Ki){
+//   //power calculation here
+//   int error = commandedSpeed - currentSpeed;
 
-  int power = Kp*error + Ki*(previousU + (dt/2)*(error-previousError));
-  previousU = (dt/2000)*(error-previousError);
-  previousError = error;
+//   int power = Kp*error + Ki*(previousU + (dt/2)*(error-previousError));
+//   previousU = (dt/2000)*(error-previousError);
+//   previousError = error;
 
-  return power;
+//   return power;
 
-}
+// }
 
 void automaticSpeedControl(){
 
 }
 
-bool calculateBrake(bool state){
-  return state;
-}
+// bool calculateBrake(bool state){
+//   return state;
+// }
 
 
 
@@ -271,8 +277,8 @@ void drive(int dt){
   if(autoDriveCommand){
     autodrive(currentSpeed, commandedSpeed, dt);
   }else{
-    power = calculatePower(currentSpeed, commandedSpeed, dt, Kp, Ki);  
-    serviceBrakeCommand = calculateBrake((bool)switchStateArray[7]);
+    power = tControl.calculatePower(currentSpeed, commandedSpeed, dt, Kp, Ki);  
+    serviceBrakeCommand = tControl.calculateBrake((bool)switchStateArray[7]);
     if(serviceBrakeCommand || emergencyBrakeState){
       power=0; //set the power to 0 if service brake or emergency brake requested - redundancy for emergency brake
     }
@@ -285,11 +291,11 @@ void autodrive(int currentSpeed, int commandedSpeed, int dt){
   int error = commandedSpeed - currentSpeed;
   // int dt=0;
   if(error>0){
-    power = calculatePower(currentSpeed, commandedSpeed, dt, Kp, Ki);
-    serviceBrakeCommand = calculateBrake(false);    
+    power = tControl.calculatePower(currentSpeed, commandedSpeed, dt, Kp, Ki);
+    serviceBrakeCommand = tControl.calculateBrake(false);    
   }else if (error<0){
-    serviceBrakeCommand = calculateBrake(true);
-    power = calculatePower(0, 0, dt, Kp, Ki);
+    serviceBrakeCommand = tControl.calculateBrake(true);
+    power = tControl.calculatePower(0, 0, dt, Kp, Ki);
     power = 0;
   }else{
     power=0;
