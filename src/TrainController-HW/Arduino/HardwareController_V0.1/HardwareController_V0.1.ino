@@ -55,7 +55,6 @@ void loop() {
   // put your main code here, to run repeatedly:
   getJSONData();
   // delay(1000);
-<<<<<<< HEAD
   int currTime = millis();
   // int currTime = jsonDataIn["Time"];
   int dt = currTime-prevTime;
@@ -65,13 +64,6 @@ void loop() {
   // automaticSpeedControl();
   // delay(10);
   prevTime = currTime;
-=======
-  updateSwitchStates(switchStateArray);
-  drive(dt);
-  emergencyBrake();
-  // automaticSpeedControl();
-  // delay(10);
->>>>>>> 817da9a (Proof of concept for test UI and Main UI)
   sendJSONData(switchStateArray);
   
   // tsUsed = millis() - tsLastLoop;
@@ -204,7 +196,6 @@ void getJSONData(){
   int x = jsonDataIn["Authority"];
   Serial.println(x);
   Serial.println(dat);
-<<<<<<< HEAD
 }
 
 void sendJSONData(int *switchStateArray){
@@ -243,7 +234,6 @@ void parseJSONData(int *switchStateArray){
   jsonDataOut["Kp"] = Kp;
   jsonDataOut["Ki"] = Ki;
   
->>>>>>> 817da9a (Proof of concept for test UI and Main UI)
 }
 
 ////////////////////////////////Drive Shit/////////////////////////////////////Move later TODO:move it
@@ -309,43 +299,8 @@ void autodrive(int currentSpeed, int commandedSpeed, int dt){
 bool emergencyBrake(){
   emergencyBrakeState = switchStateArray[6];
   return emergencyBrakeState; 
-=======
 }
 
-void sendJSONData(int *switchStateArray){
-  serialJSONOut="";
-  // StaticJsonDocument<256> JSONdataOut;
 
-  parseJSONData(switchStateArray);
-  serializeJson(jsonDataOut, serialJSONOut);
-  Serial.println(serialJSONOut);
-}
 
-void parseJSONData(int *switchStateArray){
-  jsonDataOut["Power"] = power;
-  jsonDataOut["Left Door Command"] = switchStateArray[3];
-  jsonDataOut["Right Door Command"] = switchStateArray[2];
-  jsonDataOut["Service Brake Command"] = serviceBrakeCommand;
-  jsonDataOut["Emergency Brake Command"] = switchStateArray[6];
-  jsonDataOut["External Light Command"] = switchStateArray[5];
-  jsonDataOut["Internal Light Command"] = switchStateArray[4];
-  jsonDataOut["AC"] = 999;
-  jsonDataOut["Station Announcement"] = "text";
-  jsonDataOut["Engine State"] = switchStateArray[0];
-  jsonDataOut["Emergency Brake State"] = emergencyBrakeState;
-  jsonDataOut["Service Brake State"] = jsonDataIn["Service Brake State"];
-  jsonDataOut["Internal Lights State"] = switchStateArray[4];
-  jsonDataOut["External Lights State"] = switchStateArray[5];
-  jsonDataOut["Left Door State"] = jsonDataIn["Left Door State"];
-  jsonDataOut["Right Door State"] = jsonDataIn["Right Door State"];
-  jsonDataOut["Station"] = "text";
-  jsonDataOut["Current Speed"] = jsonDataIn["Current Speed"];
-  jsonDataOut["Commanded Speed"] = jsonDataIn["Commanded Speed"];
-  jsonDataOut["Authority"] = jsonDataIn["Authority"];
-  jsonDataOut["Speed Limit"] = jsonDataIn["Speed Limit"];
-  jsonDataOut["Temperature"] = 999;
-  jsonDataOut["Communications Status"] = 999;
-  
->>>>>>> 817da9a (Proof of concept for test UI and Main UI)
-}
 
