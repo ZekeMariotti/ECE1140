@@ -1,9 +1,12 @@
 import socket
+<<<<<<< HEAD
 import json
 import os
 import sys
 import time
 
+=======
+>>>>>>> 5aa17fe (Recv data from arduino through UDP (#19))
 ip = "127.0.0.1"
 port = 27000
 sock = socket.socket(socket.AF_INET,
@@ -29,6 +32,7 @@ trainControllerToTrainModel = {
 
 
 # JSON function to write outputs to a JSON file for the Train Controller
+<<<<<<< HEAD
 def writeToJson():
     with open(os.path.join(sys.path[0], "TrainControllerToTrainModel.json"), "w") as filename:
             (json.dump(trainControllerToTrainModel, filename, indent = 4))
@@ -38,10 +42,19 @@ def writeToJson():
 
 # def parseToJson():
 #     #TODO: parse the ArduinoJSON here to a python dictionary
+=======
+def getDataFromTrainController():
+    with open(os.path.join(sys.path[0], "TrainControllerToTrainModel.json"), "w") as filename:
+            (json.dump(trainControllerToTrainModel, filename, indent = 4))
+
+def parseToJson():
+    #TODO: parse the ArduinoJSON here to a python dictionary
+>>>>>>> 5aa17fe (Recv data from arduino through UDP (#19))
 
 
 while True:
     data, addr = sock.recvfrom(1024) # buffer
+<<<<<<< HEAD
     # print(f"received message: {data}")
     # print(type(data))
     trainControllerToTrainModel = json.loads(data)
@@ -50,3 +63,6 @@ while True:
     writeToJson()
     time.sleep(0.5)
     
+=======
+    print(f"received message: {data}")
+>>>>>>> 5aa17fe (Recv data from arduino through UDP (#19))
