@@ -5,7 +5,6 @@ sock = socket.socket(socket.AF_INET,
                      socket.SOCK_DGRAM)
 sock.bind((ip, port))
 print(f'Start listening to {ip}:{port}')
-<<<<<<< HEAD
 
 
 # # Dictionary for outputs to the Train Controller
@@ -68,8 +67,6 @@ def getDataFromTrainController():
             (json.dump(trainModelToTrainController, filename, indent = 4))
 
 
-=======
->>>>>>> a9254153690a47c47105116fb91d04150ef4d39e
 while True:
     data, addr = sock.recvfrom(1024) # buffer
     print(f"received message: {data}")
