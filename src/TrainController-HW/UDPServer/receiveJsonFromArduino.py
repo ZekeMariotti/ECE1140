@@ -29,28 +29,16 @@ trainControllerToTrainModel = {
 
 
 # JSON function to write outputs to a JSON file for the Train Controller
-def writeToJson():
-    with open(os.path.join(sys.path[0], "TrainControllerToTrainModel.json"), "w") as filename:
-            (json.dump(trainControllerToTrainModel, filename, indent = 4))
-
-# # def getDataFromTrainController():
-
-
-# def parseToJson():
-#     #TODO: parse the ArduinoJSON here to a python dictionary
 def getDataFromTrainController():
     with open(os.path.join(sys.path[0], "TrainControllerToTrainModel.json"), "w") as filename:
             (json.dump(trainControllerToTrainModel, filename, indent = 4))
 
 def parseToJson():
     #TODO: parse the ArduinoJSON here to a python dictionary
-    pass
-
 
 
 while True:
     data, addr = sock.recvfrom(1024) # buffer
-
     # print(f"received message: {data}")
     # print(type(data))
     trainControllerToTrainModel = json.loads(data)
@@ -58,10 +46,4 @@ while True:
     # parseToJson();
     writeToJson()
     time.sleep(0.5)
-
-    print(f"received message: {data}")
-
-
-while True:
-    data, addr = sock.recvfrom(1024) # buffer
-    print(f"received message: {data}")
+    

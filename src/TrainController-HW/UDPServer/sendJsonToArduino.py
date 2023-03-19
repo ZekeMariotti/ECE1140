@@ -35,17 +35,12 @@ trainModelToTrainController = {
     "communicationsStatus"  : True                                 # Status of the Communications with the Track, True if operational, False if offline
 }
 
-udpMessage=""
-
 def readJsonFromFile():
-    with open(os.path.join(sys.path[0], "TMtoHTC.json"), "r") as filename:
+    with open(os.path.join(sys.path[0], "TrainControllerSWToTrainModel.json"), "r") as filename:
             trainModelToTrainController = json.loads(filename.read())
 
 def parseJson():
     #TODO: Parse to ArduinoJsonFormat
-    udpMessage = json.dumps(trainModelToTrainController)
-
-
 
 while True:
     print(f'Sending {udpMessage} to {ip}:{port}    Counter:{counter}')
@@ -58,4 +53,4 @@ while True:
 
     sock.sendto(udpMessage.encode('utf-8'), (ip, port))
     counter+=1
-    time.sleep(1)
+    # time.sleep(1)
