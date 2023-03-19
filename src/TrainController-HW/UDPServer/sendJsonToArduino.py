@@ -36,9 +36,9 @@ trainModelToTrainController = {
 }
 <<<<<<< HEAD
 
-def readJsonFromFile():
-    with open(os.path.join(sys.path[0], "TrainControllerSWToTrainModel.json"), "r") as filename:
-            trainModelToTrainController = json.loads(filename.read())
+# def readJsonFromFile():
+#     with open(os.path.join(sys.path[0], "TrainControllerSWToTrainModel.json"), "r") as filename:
+#             trainModelToTrainController = json.loads(filename.read())
 
 def parseJson():
     #TODO: Parse to ArduinoJsonFormat
@@ -68,4 +68,4 @@ while True:
 
     sock.sendto(udpMessage.encode('utf-8'), (ip, port))
     counter+=1
-    time.sleep(1)
+    # time.sleep(1)
