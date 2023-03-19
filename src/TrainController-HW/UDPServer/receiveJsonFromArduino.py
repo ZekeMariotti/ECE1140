@@ -59,3 +59,7 @@ while True:
 =======
     print(f"received message: {data}")
 >>>>>>> 5aa17fe (Recv data from arduino through UDP (#19))
+
+while True:
+    data, addr = sock.recvfrom(1024) # buffer
+    print(f"received message: {data}")
