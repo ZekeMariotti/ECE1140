@@ -1,16 +1,12 @@
 import socket
-import json
-import os
-import sys
 import time
-
+import json
 ip = "127.0.0.1"
 port = 27000
-sock = socket.socket(socket.AF_INET,
-                     socket.SOCK_DGRAM)
-sock.bind((ip, port))
-print(f'Start listening to {ip}:{port}')
+msg = b"hello world"
+counter = 0
 
+# Dictionary for outputs to the Train Controller
 
 trainControllerToTrainModel = {
     "id"                    : 0,         # ID number for the train
@@ -25,28 +21,16 @@ trainControllerToTrainModel = {
     "isAtStation"           : False
 }
 
-
-
-
-# JSON function to write outputs to a JSON file for the Train Controller
-def writeToJson():
-    with open(os.path.join(sys.path[0], "TrainControllerToTrainModel.json"), "w") as filename:
-            (json.dump(trainControllerToTrainModel, filename, indent = 4))
-
-# # def getDataFromTrainController():
-
-
-# def parseToJson():
-#     #TODO: parse the ArduinoJSON here to a python dictionary
-
+# def parseJson():
+#     #TODO: Parse to ArduinoJsonFormat
+#     json.dumps()
 
 while True:
-    data, addr = sock.recvfrom(1024) # buffer
-    # print(f"received message: {data}")
-    # print(type(data))
-    trainControllerToTrainModel = json.loads(data)
-    print(trainControllerToTrainModel)
-    # parseToJson();
-    writeToJson()
-    time.sleep(0.5)
-
+    msg=json.dumps(trainControllerToTrainModel)
+    print(f'Sending {msg} to {ip}:{port}    Counter:{counter}')
+    sock = socket.socket(socket.AF_INET,
+                        socket.SOCK_DGRAM)
+    sock.sendto(msg.encode('utf-8'), (ip, port))
+    counter+=1
+    time.sleep(1)
+    trainControllerToTrainModel["power"]=counter;
