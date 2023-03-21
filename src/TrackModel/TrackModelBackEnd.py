@@ -28,6 +28,10 @@ class backEndCalculations():
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0],                   # commanded speed of each train
+        "trainLine" : [0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0],
         "trackHeater" : 0,                   # State of track heater (on/off)
         "blockTrainNoRed" : DynamicArray(),  # Train number on each block   
         "blockTrainNoGreen" : DynamicArray(),             
@@ -97,7 +101,7 @@ with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/RedLine.csv
         backEndCalculations.csvConstants["lengthRed"].append(row["BlockLength"])
         backEndCalculations.csvConstants["gradeRed"].append(row["Grade"])
         backEndCalculations.csvConstants["speedLimitRed"].append(row["SpeedLimit"])
-        backEndCalculations.csvConstants["elevationRed"].append(row["BlockLength"])
+        backEndCalculations.csvConstants["elevationRed"].append(row["Elevation"])
         backEndCalculations.csvConstants["undergroundRed"].append(row["Underground"])
         backEndCalculations.csvConstants["stationRed"].append(row["StationID"])
         backEndCalculations.csvConstants["switchRed"].append(row["Switch"])
@@ -121,7 +125,7 @@ with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/GreenLine.c
         backEndCalculations.csvConstants["lengthGreen"].append(row["BlockLength"])
         backEndCalculations.csvConstants["gradeGreen"].append(row["Grade"])
         backEndCalculations.csvConstants["speedLimitGreen"].append(row["SpeedLimit"])
-        backEndCalculations.csvConstants["elevationGreen"].append(row["BlockLength"])
+        backEndCalculations.csvConstants["elevationGreen"].append(row["Elevation"])
         backEndCalculations.csvConstants["undergroundGreen"].append(row["Underground"])
         backEndCalculations.csvConstants["stationGreen"].append(row["StationID"])
         backEndCalculations.csvConstants["switchGreen"].append(row["Switch"])
