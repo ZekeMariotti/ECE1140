@@ -1,0 +1,12 @@
+{
+    "id": 0,
+    "power": 0.0,
+    "leftDoorCommand": false,
+    "rightDoorCommand": false,
+    "serviceBrakeCommand": false,
+    "emergencyBrakeCommand": false,
+    "externalLightCommand": false,
+    "InternalLightCommand": false,
+    "stationAnnouncement": "The Yard",
+    "isAtStation": false
+}
