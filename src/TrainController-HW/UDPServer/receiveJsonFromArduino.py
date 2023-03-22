@@ -49,4 +49,4 @@ while True:
     # parseToJson();
     writeToJson()
     time.sleep(0.5)
-    
+
