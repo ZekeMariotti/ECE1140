@@ -38,19 +38,6 @@ def writeToJson():
 
 # def parseToJson():
 #     #TODO: parse the ArduinoJSON here to a python dictionary
-def getDataFromTrainController():
-    with open(os.path.join(sys.path[0], "TrainControllerToTrainModel.json"), "w") as filename:
-            (json.dump(trainControllerToTrainModel, filename, indent = 4))
-
-def parseToJson():
-    #TODO: parse the ArduinoJSON here to a python dictionary
-    pass
-
-# # def getDataFromTrainController():
-
-
-# def parseToJson():
-#     #TODO: parse the ArduinoJSON here to a python dictionary
 
 
 while True:
@@ -62,4 +49,3 @@ while True:
     # parseToJson();
     writeToJson()
     time.sleep(0.5)
-    print(f"received message: {data}")
