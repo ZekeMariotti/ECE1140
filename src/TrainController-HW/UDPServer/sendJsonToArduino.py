@@ -36,9 +36,6 @@ trainModelToTrainController = {
 }
 <<<<<<< HEAD
 
-# def readJsonFromFile():
-#     with open(os.path.join(sys.path[0], "TrainControllerSWToTrainModel.json"), "r") as filename:
-#             trainModelToTrainController = json.loads(filename.read())
 
 def parseJson():
     #TODO: Parse to ArduinoJsonFormat
