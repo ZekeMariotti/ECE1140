@@ -640,10 +640,10 @@ class TrainModelTestUI(QWidget):
 
         # Write Data To Output Module
         self.writeTrackModelToTrainModel()
-        self.writeTrainControllerToTrainModel()
+        #self.writeTrainControllerToTrainModel()
         trainSignals.updateOutputs.emit()
         self.readTrainModelToTrackModel()
-        self.readTrainModelToTrainController()
+        #self.readTrainModelToTrainController()
 
         self.currBlockOutput.setText("Block " + str(self.testDataOutputs["currBlock"]))
         self.prevBlockOutput.setText("Block " + str(self.testDataOutputs["prevBlock"]))
@@ -687,7 +687,7 @@ def main():
     app = QApplication(argv)
     testUI = TrainModelTestUI()
     testUI.show()
-    mainUI = TrainModelUI(1, "Green")
+    mainUI = TrainModelUI(2, "Green")
     mainUI.show()
     app.exec()
 

@@ -32,4 +32,4 @@ while True:
     sock.sendto(msg.encode('utf-8'), (ip, port))
     counter+=100
     time.sleep(0.1)
-    trainControllerToTrainModel["power"]=counter;
+    trainControllerToTrainModel["power"]=counter

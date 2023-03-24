@@ -396,7 +396,10 @@ class TrainModelUI(QWidget):
     
     # Handler for when the temperature from the user is set
     def tempInputChanged(self):
-        temperature = round(float(self.temperatureInput.text()) * 2) / 2
+        if (self.temperatureInput.text() == ""):
+            temperature = 68
+        else:
+            temperature = round(float(self.temperatureInput.text()) * 2) / 2
         trainSignals.tempChangedSignal.emit(temperature)
 
     # Function to convert boolean to string for the status messages of failure
@@ -522,7 +525,7 @@ class TrainModelUI(QWidget):
 
 def main():
     app = QApplication(argv)
-    UI = TrainModelUI(1, "Green")
+    UI = TrainModelUI(2, "Green")
     UI.show()
     app.exec()
 
