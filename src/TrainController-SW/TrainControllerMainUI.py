@@ -572,15 +572,16 @@ class MainWindow(QMainWindow):
             self.TrainControllerSW.currentTime = self.TrainControllerSW.realTime
 
             self.TrainControllerSW.readInputs()
-            self.TrainControllerSW.calculatePower()
-            self.TrainControllerSW.stayBelowSpeedLimitAndMaxSpeed()
+            self.TrainControllerSW.calculatePower()     
             self.TrainControllerSW.failureMode()
-            self.TrainControllerSW.autoUpdateDoorState()
-            self.TrainControllerSW.autoUpdateLights()
+            
 
             # Only run in automatic mode
             if(self.TrainControllerSW.manualMode == False):
                 self.TrainControllerSW.autoSetServiceBrake()
+                self.TrainControllerSW.stayBelowSpeedLimitAndMaxSpeed()
+                self.TrainControllerSW.autoUpdateDoorState()
+                self.TrainControllerSW.autoUpdateLights()
 
             self.updateVisualElements()
 
@@ -597,8 +598,28 @@ class MainWindow(QMainWindow):
 
             if (self.TrainControllerSW.manualMode == False):
                 self.commandedSpeedSlider.setEnabled(False)
+                self.internalLightsEnable.setEnabled(False)
+                self.internalLightsDisable.setEnabled(False)
+                self.externalLightsEnable.setEnabled(False)
+                self.externalLightsDisable.setEnabled(False)
+                self.leftDoorOpen.setEnabled(False)
+                self.leftDoorClose.setEnabled(False)
+                self.rightDoorOpen.setEnabled(False)
+                self.rightDoorClose.setEnabled(False)
+                self.serviceBrakeEnable.setEnabled(False)
+                self.serviceBrakeDisable.setEnabled(False)
             else:
                 self.commandedSpeedSlider.setEnabled(True)
+                self.internalLightsEnable.setEnabled(True)
+                self.internalLightsDisable.setEnabled(True)
+                self.externalLightsEnable.setEnabled(True)
+                self.externalLightsDisable.setEnabled(True)
+                self.leftDoorOpen.setEnabled(True)
+                self.leftDoorClose.setEnabled(True)
+                self.rightDoorOpen.setEnabled(True)
+                self.rightDoorClose.setEnabled(True)
+                self.serviceBrakeEnable.setEnabled(True)
+                self.serviceBrakeDisable.setEnabled(True)
 
             if (self.TrainControllerSW.inputs.communicationsStatus == True):
                 self.communicationsError.hide()
