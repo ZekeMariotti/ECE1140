@@ -34,12 +34,6 @@ trainModelToTrainController = {
     "engineStatus"          : True,                                # Status of the Engine, True if operational, False if offline
     "communicationsStatus"  : True                                 # Status of the Communications with the Track, True if operational, False if offline
 }
-<<<<<<< HEAD
-
-
-def parseJson():
-    #TODO: Parse to ArduinoJsonFormat
-=======
 
 udpMessage=""
 
@@ -52,7 +46,6 @@ def parseJson():
     udpMessage = json.dumps(trainModelToTrainController)
 
 
->>>>>>> 5be66f7 (update)
 
 while True:
     print(f'Sending {udpMessage} to {ip}:{port}    Counter:{counter}')
