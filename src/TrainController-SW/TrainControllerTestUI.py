@@ -14,6 +14,7 @@ from animated_toggle import AnimatedToggle
 import os
 import json
 
+# TODO: Change testing of speed limit
 # Class for the main window
 class TestWindow(QMainWindow):
 
@@ -22,8 +23,8 @@ class TestWindow(QMainWindow):
             super().__init__()    
 
             # TrainControllerSW Object for Test UI
-            self.TrainControllerSW = TrainControllerSW(0, 0, 0, 0, "2023-02-20T21:52:48.3940347-05:00", False, 0, 0, 0, 0, "setupStationName", 
-                                                       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "setupStationAnnouncement")    
+            self.TrainControllerSW = TrainControllerSW(0, 0, 0, 0, "2023-02-20T21:52:48.3940347-05:00", False, 0, "setupStationName",  
+                                                       0, "station2", False, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "setupStationAnnouncement")    
 
             # Update Inputs
             self.TrainControllerSW.readInputs()      
@@ -682,7 +683,7 @@ class TestWindow(QMainWindow):
             self.TrainControllerSW.writeInputs()
 
         def setSpeedLimitValueChanged(self):
-            self.TrainControllerSW.inputs.speedLimit = self.setSpeedLimit.value()
+            self.TrainControllerSW.speedLimit = self.setSpeedLimit.value()
             self.TrainControllerSW.writeInputs()
 
         def setTemperatureValueChanged(self):

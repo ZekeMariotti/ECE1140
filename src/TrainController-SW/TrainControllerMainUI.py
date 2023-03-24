@@ -16,6 +16,7 @@ from animated_toggle import AnimatedToggle
 class Worker(QObject):
     finished = pyqtSignal()
 
+# TODO: Fix Station name text
 # Class for the main window
 class MainWindow(QMainWindow):
 
@@ -27,8 +28,8 @@ class MainWindow(QMainWindow):
             self.testUI = True 
             
             # Initialize TrainControllerSW object
-            self.TrainControllerSW = TrainControllerSW(0, 0, 0, 0, "2023-02-20T21:52:48.3940347-05:00", False, 0, 0, 0, 0, "setupStationName", 
-                                                       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "setupStationAnnouncement")
+            self.TrainControllerSW = TrainControllerSW(0, 0, 0, 0, "2023-02-20T21:52:48.3940347-05:00", False, 0, "setupStationName",  
+                                                       0, "station2", False, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "setupStationAnnouncement")
             
             # Update Inputs and Outputs
             self.TrainControllerSW.writeOutputs()
@@ -162,7 +163,8 @@ class MainWindow(QMainWindow):
         def stationSetup(self):
             station = QLabel()         
             station.setFont(self.stationFont)
-            station.setText(f'{"Current" if self.TrainControllerSW.inputs.stationState else "Next"} Station:\n{self.TrainControllerSW.inputs.stationName}')
+            station.setText(f'Current Station:\n{self.TrainControllerSW.inputs.nextStationName}')
+            #station.setText({f'Current Station:\n{self.TrainControllerSW.inputs.stationName}' if self.TrainControllerSW.stationState else f'Next Station:\n{self.TrainControllerSW.inputs.nextStationName}'})
             station.setFixedSize(QSize(round(self.labelWidth*1.6), round(self.labelHeight*2)))
             station.setAlignment(Qt.AlignmentFlag.AlignCenter)
             station.setWordWrap(True)
@@ -371,7 +373,7 @@ class MainWindow(QMainWindow):
         def speedLimitSetup(self):
             speedLimit = QLabel()  
             speedLimit.setFont(self.labelFont)   
-            speedLimit.setText("Speed Limit:\n" + str(Conversions.kilometersToMiles(float(self.TrainControllerSW.inputs.speedLimit))) + " MPH")
+            speedLimit.setText("Speed Limit:\n" + str(Conversions.kilometersToMiles(float(self.TrainControllerSW.speedLimit))) + " MPH")
             speedLimit.setFixedSize(QSize(self.labelWidth, self.labelHeight))
             speedLimit.setAlignment(Qt.AlignmentFlag.AlignCenter)
             speedLimit.setWordWrap(True)
@@ -626,7 +628,7 @@ class MainWindow(QMainWindow):
             else:
                 self.communicationsError.show()
 
-            self.station.setText(f'{"Current" if self.TrainControllerSW.inputs.stationState else "Next"} Station:\n{self.TrainControllerSW.inputs.stationName}')
+            self.station.setText(f'Current Station:\n{self.TrainControllerSW.inputs.nextStationName}')
             self.manualSpeedOverride.setText(f'Manual Mode: {"Enabled" if self.TrainControllerSW.manualMode else "Disabled"}')
             self.currentSpeed.setText("Current Speed: " + str(Conversions.kilometersToMiles(float(self.TrainControllerSW.inputs.currentSpeed))) + " MPH")
             self.engineState.setText("Engine State:\n" + self.TrainControllerSW.getEngineState())
@@ -634,7 +636,7 @@ class MainWindow(QMainWindow):
             self.serviceBrakeState.setText("Service Brake:\n" + self.TrainControllerSW.getServiceBrakeState())
             self.commandedSpeed.setText("Commanded Speed:\n" + str(Conversions.kilometersToMiles(float(self.TrainControllerSW.inputs.commandedSpeed))) + " MPH")
             self.authority.setText("Authority:\n" + str(self.TrainControllerSW.inputs.authority) + " Blocks")
-            self.speedLimit.setText("Speed Limit:\n" + str(Conversions.kilometersToMiles(float(self.TrainControllerSW.inputs.speedLimit))) + " MPH")
+            self.speedLimit.setText("Speed Limit:\n" + str(Conversions.kilometersToMiles(float(self.TrainControllerSW.speedLimit))) + " MPH")
             self.temperature.setText("Temperature:\n" + str(Conversions.celsiusToFahrenheit(float(self.TrainControllerSW.inputs.temperature))) + " F")
             self.internalLightsState.setText("Internal Lights: " + self.TrainControllerSW.getInternalLightsState())
             self.externalLightsState.setText("External Lights: " + self.TrainControllerSW.getExternalLightsState())

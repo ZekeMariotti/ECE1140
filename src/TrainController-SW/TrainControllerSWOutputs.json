@@ -1,6 +1,5 @@
 {
-    "id": 0,
-    "power": 0.0,
+    "power": 4425.0,
     "leftDoorCommand": true,
     "rightDoorCommand": false,
     "serviceBrakeCommand": false,

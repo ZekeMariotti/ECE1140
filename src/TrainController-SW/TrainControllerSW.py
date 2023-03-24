@@ -11,13 +11,17 @@ from json import JSONEncoder
 
 # Class for the TrainControllerSW
 class TrainControllerSW:
-    def __init__(self, trainId, commandedSpeed, currentSpeed, authority, inputTime, undergroundState, speedLimit, temperature, engineState, 
-                 stationState, stationName, platformSide, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
+    def __init__(self, trainId, commandedSpeed, currentSpeed, authority, inputTime, undergroundState, temperature, 
+                 stationName, platformSide, nextStationName, isBeacon, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
                  serviceBrakeState, emergencyBrakeState, serviceBrakeStatus, engineStatus, communicationsStatus, power, leftDoorCommand, 
                  rightDoorCommand, serviceBrakeCommand, emergencyBrakeCommand, externalLightCommand, internalLightCommand, stationAnnouncement):
         
         # Train id
         self.trainId = trainId
+
+        # stationState and speed limit
+        self.stationState = False
+        self.speedLimit = 100
 
         # Constants
         # serviceBrake deceleration = 1.2 m/s^2, e-brake deceleration = 2.73 m/s^2
@@ -49,15 +53,13 @@ class TrainControllerSW:
         self.lightsEnabledPrevious = None
         self.undergroundStatePrevious = None
         
-        self.inputs = Inputs(trainId, commandedSpeed, currentSpeed, authority, inputTime, undergroundState, speedLimit, temperature, engineState, 
-                 stationState, stationName, platformSide, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
+        self.inputs = Inputs(commandedSpeed, currentSpeed, authority, inputTime, undergroundState, temperature, 
+                 stationName, platformSide, nextStationName, isBeacon, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
                  serviceBrakeState, emergencyBrakeState, serviceBrakeStatus, engineStatus, communicationsStatus)
-        self.outputs = Outputs(trainId, power, leftDoorCommand, 
+        self.outputs = Outputs(power, leftDoorCommand, 
                  rightDoorCommand, serviceBrakeCommand, emergencyBrakeCommand, externalLightCommand, internalLightCommand, stationAnnouncement)
         
         print(f'trainId: {self.trainId}')
-        print(f'input train id: {self.inputs.id}')
-        print(f'output train id: {self.outputs.id}\n')
            
 
     # methods   
@@ -116,9 +118,10 @@ class TrainControllerSW:
         self.ek1 = self.ek
         self.uk1 = self.uk
 
+    # TODO: Fix this function
     # Automatically opens/closes doors based on platformSide
     def autoUpdateDoorState(self):
-        if(self.inputs.stationState == True and self.inputs.currentSpeed == 0):
+        if(self.inputs.currentSpeed == 0):
             if(self.inputs.platformSide == 0):
                 self.outputs.leftDoorCommand = True
                 self.outputs.rightDoorCommand = False
@@ -162,8 +165,8 @@ class TrainControllerSW:
 
     # Lowers commanded speed if it's higher than speed limit
     def stayBelowSpeedLimitAndMaxSpeed(self):
-        if(float(self.inputs.commandedSpeed) > float(self.inputs.speedLimit)):
-            self.inputs.commandedSpeed = self.inputs.speedLimit
+        if(float(self.inputs.commandedSpeed) > float(self.speedLimit)):
+            self.inputs.commandedSpeed = self.speedLimit
         elif(float(self.inputs.commandedSpeed) > self.MAX_SPEED):
             self.inputs.commandedSpeed = self.MAX_SPEED
 
@@ -185,9 +188,7 @@ class TrainControllerSW:
     def getEngineState(self):
         if(self.inputs.engineStatus == False):
             return "FAILURE"
-        elif(self.inputs.engineState == False):
-            return "OFF"
-        elif(self.inputs.engineState == True):
+        elif(self.inputs.engineStatus == True):
             return "ON"
         else:
             return "ERROR: UNKNOWN STATE"
@@ -250,22 +251,20 @@ class TrainControllerSW:
         
 # class for TrainController inputs
 class Inputs:
-    def __init__(self, id, commandedSpeed, currentSpeed, authority, inputTime, undergroundState, speedLimit, temperature, engineState, 
-                 stationState, stationName, platformSide, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
+    def __init__(self, commandedSpeed, currentSpeed, authority, inputTime, undergroundState, temperature, 
+                 stationName, platformSide, nextStationName, isBeacon, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
                  serviceBrakeState, emergencyBrakeState, serviceBrakeStatus, engineStatus, communicationsStatus):
         # Inputs
-        self.id = id
         self.commandedSpeed = commandedSpeed
         self.currentSpeed = currentSpeed
         self.authority = authority
         self.inputTime = str(inputTime)
         self.undergroundState = undergroundState
-        self.speedLimit = speedLimit
         self.temperature = temperature
-        self.engineState = engineState
-        self.stationState = stationState
         self.stationName = stationName
         self.platformSide = platformSide
+        self.nextStationName = nextStationName
+        self.isBeacon = isBeacon
         self.externalLightsState = externalLightsState
         self.internalLightsState = internalLightsState
         self.leftDoorState = leftDoorState
@@ -278,10 +277,9 @@ class Inputs:
 
 # class for TrainController outputs
 class Outputs:
-    def __init__(self, id, power, leftDoorCommand, 
+    def __init__(self, power, leftDoorCommand, 
                  rightDoorCommand, serviceBrakeCommand, emergencyBrakeCommand, externalLightCommand, internalLightCommand, stationAnnouncement):
         # outputs
-        self.id = id
         self.power = power
         self.leftDoorCommand = leftDoorCommand
         self.rightDoorCommand = rightDoorCommand
