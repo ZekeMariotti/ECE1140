@@ -35,14 +35,17 @@ class TrainModelUI(QWidget):
     alignRight      = Qt.AlignmentFlag.AlignRight
 
     # Initialization of the UI
-    def __init__(self):
+    def __init__(self, id, line):
 
         # SIGNAL USED FOR TEST UI
         trainSignals.updateOutputs.connect(self.updateOutputs)
 
         # Initializing and setting the layout of the UI
         super().__init__()
-        self.setWindowTitle("Train Model")
+        self.TrainModel.data["id"] = id
+        self.TrainModel.trackData["trainLine"] = line
+        self.TrainModel.setFirstSection()
+        self.setWindowTitle("Train Model " + str(TrainModel.data["id"]))
         layout = QGridLayout()
         self.setLayout(layout)
         self.setFont(QFont("Times New Roman"))
@@ -519,7 +522,7 @@ class TrainModelUI(QWidget):
 
 def main():
     app = QApplication(argv)
-    UI = TrainModelUI()
+    UI = TrainModelUI(1, "Green")
     UI.show()
     app.exec()
 

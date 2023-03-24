@@ -9,7 +9,6 @@ counter = 0
 # Dictionary for outputs to the Train Controller
 
 trainControllerToTrainModel = {
-    "id"                    : 0,         # ID number for the train
     "power"                 : 0.0,       # Power input from the Train Controller
     "leftDoorCommand"       : False,     # Left Door Command from the Train Controller, False if closed, True if open
     "rightDoorCommand"      : False,     # Right Door Command from the Train Controller, False if closed, True if open
@@ -31,6 +30,6 @@ while True:
     sock = socket.socket(socket.AF_INET,
                         socket.SOCK_DGRAM)
     sock.sendto(msg.encode('utf-8'), (ip, port))
-    counter+=1
+    counter+=100
     time.sleep(0.1)
     trainControllerToTrainModel["power"]=counter;
