@@ -1,0 +1,2 @@
+<{"External Lights":0,"Emergency Brake":0,"Temperature":0,"Authority":87,"Kp":0,"Station State":0,"External Light State":0,"Commanded Speed":0,"Engine State":0,"Platform Side":0,"Engine Status":0,"Service Brake State":0,"Communications Status":0,"Current Speed":0,"Left Door State":0,"Left Door":0,"Speed Limit":0,"Service Brake":0,"Underground State":0,"Internal Lights":0,"Manual Speed Override":0,"Right Door":0,"Internal Light State":0,"Right Door State":0,"Ki":0
+}>

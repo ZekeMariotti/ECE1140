@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "ng",
+			"path": "src/CTC/ctc-testui",
+			"problemMatcher": [],
+			"label": "npm: ng - src/CTC/ctc-testui",
+			"detail": "ng"
+		}
+	]
+}

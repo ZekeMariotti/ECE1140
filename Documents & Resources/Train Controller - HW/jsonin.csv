@@ -1,0 +1,2 @@
+Commanded speed,Current Speed,Authority,Time ,Underground State,Speed Limit,Temperature,Engine State,Beacon,Station State,Next Station Name,Platform Side,External Light State,Internal Light State,Left Door State,Right Door State,Service Brake State,Emergency Brake State,Service Brake Status,Engine Status,Communications Status,Emergency Brake ,Service Brake,Internal Lights,External Lights,Left Doors,Right Doors,Manual Speed Override,Kp,Ki
+10,10,4,text,1,10,10,1,text,1,text,10,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,10,10,10

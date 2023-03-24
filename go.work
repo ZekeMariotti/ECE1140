@@ -1,0 +1,4 @@
+go 1.19
+
+use ./src/CTC/ctc-backend
+use ./src/CTC/ctc-testbg
