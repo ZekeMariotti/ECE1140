@@ -22,7 +22,7 @@ class TestWindow(QMainWindow):
             super().__init__()    
 
             # TrainControllerSW Object for Test UI
-            self.TrainControllerSW = TrainControllerSW(0, 0, 0, "2023-02-20T21:52:48.3940347-05:00", False, 0, 0, 0, 0, "setupStationName", 
+            self.TrainControllerSW = TrainControllerSW(0, 0, 0, 0, "2023-02-20T21:52:48.3940347-05:00", False, 0, 0, 0, 0, "setupStationName", 
                                                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "setupStationAnnouncement")    
 
             # Update Inputs

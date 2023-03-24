@@ -11,11 +11,14 @@ from json import JSONEncoder
 
 # Class for the TrainControllerSW
 class TrainControllerSW:
-    def __init__(self, commandedSpeed, currentSpeed, authority, inputTime, undergroundState, speedLimit, temperature, engineState, 
+    def __init__(self, trainId, commandedSpeed, currentSpeed, authority, inputTime, undergroundState, speedLimit, temperature, engineState, 
                  stationState, stationName, platformSide, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
                  serviceBrakeState, emergencyBrakeState, serviceBrakeStatus, engineStatus, communicationsStatus, power, leftDoorCommand, 
                  rightDoorCommand, serviceBrakeCommand, emergencyBrakeCommand, externalLightCommand, internalLightCommand, stationAnnouncement):
         
+        # Train id
+        self.trainId = trainId
+
         # Constants
         # serviceBrake deceleration = 1.2 m/s^2, e-brake deceleration = 2.73 m/s^2
         # Max Speed in km/hr
@@ -46,11 +49,15 @@ class TrainControllerSW:
         self.lightsEnabledPrevious = None
         self.undergroundStatePrevious = None
         
-        self.inputs = Inputs(commandedSpeed, currentSpeed, authority, inputTime, undergroundState, speedLimit, temperature, engineState, 
+        self.inputs = Inputs(trainId, commandedSpeed, currentSpeed, authority, inputTime, undergroundState, speedLimit, temperature, engineState, 
                  stationState, stationName, platformSide, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
                  serviceBrakeState, emergencyBrakeState, serviceBrakeStatus, engineStatus, communicationsStatus)
-        self.outputs = Outputs(power, leftDoorCommand, 
+        self.outputs = Outputs(trainId, power, leftDoorCommand, 
                  rightDoorCommand, serviceBrakeCommand, emergencyBrakeCommand, externalLightCommand, internalLightCommand, stationAnnouncement)
+        
+        print(f'trainId: {self.trainId}')
+        print(f'input train id: {self.inputs.id}')
+        print(f'output train id: {self.outputs.id}\n')
            
 
     # methods   
@@ -241,12 +248,13 @@ class TrainControllerSW:
         else:
             return "ERROR: UNKNOWN STATE"
         
-# class for TrainController ouputs
+# class for TrainController inputs
 class Inputs:
-    def __init__(self, commandedSpeed, currentSpeed, authority, inputTime, undergroundState, speedLimit, temperature, engineState, 
+    def __init__(self, id, commandedSpeed, currentSpeed, authority, inputTime, undergroundState, speedLimit, temperature, engineState, 
                  stationState, stationName, platformSide, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
                  serviceBrakeState, emergencyBrakeState, serviceBrakeStatus, engineStatus, communicationsStatus):
         # Inputs
+        self.id = id
         self.commandedSpeed = commandedSpeed
         self.currentSpeed = currentSpeed
         self.authority = authority
@@ -268,11 +276,12 @@ class Inputs:
         self.engineStatus = engineStatus
         self.communicationsStatus = communicationsStatus
 
-# class for TrainController inputs
+# class for TrainController outputs
 class Outputs:
-    def __init__(self, power, leftDoorCommand, 
+    def __init__(self, id, power, leftDoorCommand, 
                  rightDoorCommand, serviceBrakeCommand, emergencyBrakeCommand, externalLightCommand, internalLightCommand, stationAnnouncement):
         # outputs
+        self.id = id
         self.power = power
         self.leftDoorCommand = leftDoorCommand
         self.rightDoorCommand = rightDoorCommand
