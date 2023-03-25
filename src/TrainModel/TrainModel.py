@@ -225,7 +225,10 @@ class TrainModel():
     # JSON function to read inputs from a JSON file from the Train Controller
     def readTrainControllerToTrainModel(self):
         with open(os.path.join(sys.path[0].replace("TrainModel", "Integration"), f'TCtoTM{self.data["id"]}.json'), "r") as filename:
-            self.trainControllerToTrainModel = json.loads(filename.read())
+            try:
+                self.trainControllerToTrainModel = json.loads(filename.read())
+            except json.decoder.JSONDecodeError:
+                self.trainControllerToTrainModel = self.trainControllerToTrainModel
 
         # Loading internal inputs data variable
         self.data["power"]              = self.trainControllerToTrainModel["power"]
@@ -264,15 +267,16 @@ class TrainModel():
 
     # Function to run all internal methods when the method is called by the updater in the UI
     def runFunctions(self):
+        
         self.readTrainControllerToTrainModel()
         self.readTrackModelToTrainModel()
         tempTimeDiff = self.findTimeDifference()
         self.failureStates()
         self.brakeCaclulator()
         self.findCurrentBlockInfo()
-        self.findCurrentAcceleration(tempTimeDiff)
-        self.findCurrentVelocity(tempTimeDiff)
-        self.findCurrentDistance(tempTimeDiff)
+        self.findCurrentAcceleration()
+        self.findCurrentVelocity()
+        self.findCurrentDistance()
         self.findBlockExiting()
         self.airConditioningControl()
         if self.data["atStation"]:
@@ -388,7 +392,7 @@ class TrainModel():
             return
         
         # Case otherwise
-        os.chdir("src/TrainModel")
+        #os.chdir("src/TrainModel")
         with open("greenLineBlocks.txt", newline = '') as csvFile:
             csvReader = csv.reader(csvFile, delimiter = ',')
             for row in csvReader:
@@ -398,7 +402,7 @@ class TrainModel():
                     self.trackData["blockLength"] = float(row[3])
                     self.trackData["elevation"] = float(row[12])
                     break
-        os.chdir("../../")
+        #os.chdir("../../")
 
     # Finds the Block the train is on and the Block the train is exiting
     def findBlockExiting(self):

@@ -2,6 +2,7 @@
 
 # Importing all required modules
 import sys
+from datetime import *
 from sys import argv
 import os
 import json
@@ -115,11 +116,25 @@ class TrainModelTestUI(QWidget):
         "passengersOff" : 0  # Passengers getting off of the train
     }
 
+
+    def mainThreadSetup(self):
+        self.timerThread = QThread()
+        self.timerThread.started.connect(self.mainTimerSetup)
+
+    def mainTimerSetup(self):     
+        mainTimer = QTimer()
+        mainTimer.setInterval(200)
+        mainTimer.timeout.connect(self.updateOutputsBoth)
+        mainTimer.setParent(self)
+        mainTimer.start()
+        return mainTimer
+
     # Initialize the GUI
     def __init__(self):
 
         # Initializing the layout of the UI
         super().__init__()
+        self.mainTimer = self.mainTimerSetup()
         self.setWindowTitle("Train Model Test UI")
         layout = QGridLayout()
         self.setLayout(layout)
@@ -137,7 +152,7 @@ class TrainModelTestUI(QWidget):
         realTimeClockLabel = QLabel("Real Time Clock")
         layout.addWidget(realTimeClockLabel, 1, 0)
         self.realTimeClockInput = QLineEdit()
-        self.realTimeClockInput.editingFinished.connect(self.getRealTimeClockInput)
+        #self.realTimeClockInput.editingFinished.connect(self.getRealTimeClockInput)
         layout.addWidget(self.realTimeClockInput, 1, 1)
 
         # Add the Authority Input
@@ -633,10 +648,15 @@ class TrainModelTestUI(QWidget):
     # Updates all functions when the button is pressed
     def updateOutputsBoth(self):
         # Wipe Output files so they are clean
-        with open(os.path.join(sys.path[0], "TrainControllerSWToTrainModel.json"), "w") as filename:
-            (json.dump({}, filename, indent=4))
+        #with open(os.path.join(sys.path[0], "TrainControllerSWToTrainModel.json"), "w") as filename:
+        #    (json.dump({}, filename, indent=4))
         with open(os.path.join(sys.path[0], "TrackModelToTrainModel.json"), "w") as filename:
             (json.dump({}, filename, indent=4))
+
+        #time = datetime.now()
+        #iso_time = time.isoformat()
+        #self.testDataInputs["rtc"] = str(iso_time) + "-5:00"
+        #print(self.testDataInputs["rtc"])
 
         # Write Data To Output Module
         self.writeTrackModelToTrainModel()

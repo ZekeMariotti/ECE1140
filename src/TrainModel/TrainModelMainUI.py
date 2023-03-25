@@ -36,12 +36,14 @@ class TrainModelUI(QWidget):
 
     # Initialization of the UI
     def __init__(self, id, line):
+        
 
         # SIGNAL USED FOR TEST UI
         trainSignals.updateOutputs.connect(self.updateOutputs)
 
         # Initializing and setting the layout of the UI
         super().__init__()
+        #self.mainTimer = self.mainTimerSetup()
         self.TrainModel.data["id"] = id
         self.TrainModel.trackData["trainLine"] = line
         self.TrainModel.setFirstSection()
@@ -429,7 +431,19 @@ class TrainModelUI(QWidget):
             return "ON"
         else:
             return "Off"
-        
+
+    def mainThreadSetup(self):
+        self.timerThread = QThread()
+        self.timerThread.started.connect(self.mainTimerSetup)
+
+    def mainTimerSetup(self):     
+        mainTimer = QTimer()
+        mainTimer.setInterval(100)
+        mainTimer.timeout.connect(self.updateOutputs)
+        mainTimer.setParent(self)
+        mainTimer.start()
+        return mainTimer
+
     # Updates outputs every time period
     def updateOutputs(self):
 
@@ -437,7 +451,7 @@ class TrainModelUI(QWidget):
         self.TrainModel.runFunctions()
 
         # Update Left Column of data outputs
-        self.realTimeClockOutput.setText(str(ISO8601ToHumanTime(self.TrainModel.data["rtc"]))[:-6])
+        self.realTimeClockOutput.setText(str(ISO8601ToHumanTime("2023-02-23T00:00:06.0000000-05:00"))[:-6])
         self.passengersOutput.setText(str(self.TrainModel.data["passengers"]))
         self.crewOutput.setText(str(self.TrainModel.data["crew"]))
         self.undergroundOutput.setText(str(self.TrainModel.data["underground"]))

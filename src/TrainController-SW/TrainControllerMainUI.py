@@ -16,7 +16,7 @@ from animated_toggle import AnimatedToggle
 class Worker(QObject):
     finished = pyqtSignal()
 
-# TODO: Fix Station name text
+# TODO: Fix Station name text, commanded speed text update
 # Class for the main window
 class MainWindow(QMainWindow):
 
@@ -108,7 +108,7 @@ class MainWindow(QMainWindow):
 
         def mainTimerSetup(self):     
             mainTimer = QTimer()
-            mainTimer.setInterval(100)
+            mainTimer.setInterval(200)
             mainTimer.timeout.connect(self.mainEventLoop)
             mainTimer.setParent(self)
             mainTimer.start()

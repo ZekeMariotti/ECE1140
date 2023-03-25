@@ -75,7 +75,6 @@ class TrainControllerSW:
                 self.inputs = Inputs(**json.loads(filename.read()))
             except json.decoder.JSONDecodeError:
                 self.inputs = self.inputs 
-                
             self.convertTime()
 
     # Only used in Test UI and commandedSpeed manual input - writes to input file
