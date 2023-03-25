@@ -26,6 +26,9 @@ byte mac[] = {
 };
 // An EthernetUDP instance to let us send and receive packets over UDP
 EthernetUDP Udp;
+
+// buffers for receiving and sending data
+char packetBuffer[1000];
 //======================================================================================
 
 //output variables, 
@@ -73,10 +76,11 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  readUDP();
   getJSONData();
   // delay(1000);
-  // int currTime = millis();
-  int currTime = jsonDataIn["Time"];
+  int currTime = millis();
+  // int currTime = jsonDataIn["Time"];
   int dt = currTime-prevTime;
   updateSwitchStates(switchStateArray);
   drive(dt);
@@ -210,10 +214,12 @@ void getJSONData(){
   //   }
   // }
   // recvSerialWithStartEnd();  
-  String dat = Serial1.readStringUntil('&');
+  
+  // String dat = Serial1.readStringUntil('&'); //this is for the old test UI
+  
   // String dat1 = dat.replace(">","");
   // dat = dat.replace("<","");
-  DeserializationError error = deserializeJson(jsonDataIn, dat);
+  DeserializationError error = deserializeJson(jsonDataIn, packetBuffer);
   // int x = jsonDataIn["Authority"];
   // Serial.println(x);
   // Serial.println(dat);
@@ -287,7 +293,7 @@ void setupUDP(){
   Serial.println("Before UDP Begin");
   // start UDP to listen 
   //TODO:Implement this
-  Udp.begin(8888);
+  Udp.begin(27000);
   Serial.println("After UDP Begin");
   //Udp.endPacket();
 }
@@ -301,6 +307,31 @@ void sendUDP(){
   // Serial.println("After write");
   Serial.println(Udp.endPacket());
   // Serial.println("End of UDP Send");
+}
+
+void readUDP(){
+
+  // if there's data available, read a packet
+  int packetSize = Udp.parsePacket();
+  if (packetSize) {
+    Serial.print("Received packet of size ");
+    Serial.println(packetSize);
+    Serial.print("From ");
+    IPAddress remote = Udp.remoteIP();
+    for (int i=0; i < 4; i++) {
+      Serial.print(remote[i], DEC);
+      if (i < 3) {
+        Serial.print(".");
+      }
+    }
+    Serial.print(", port ");
+    Serial.println(Udp.remotePort());
+
+    // read the packet into packetBufffer
+    Udp.read(packetBuffer, 1000);
+    Serial.println("Contents:");
+    Serial.println(packetBuffer);
+  }
 }
 
 ////////////////////////////////Drive Shit////////////////////////////////////
@@ -334,7 +365,7 @@ void drive(int dt){
     //This also calls the power and brake functions
   autoDriveCommand = switchStateArray[1];//jsonDataIn["Manual Speed Override"];
   currentSpeed = jsonDataIn["Current Speed"];
-  commandedSpeed = jsonDataIn["Commanded Speed"];
+  commandedSpeed = jsonDataIn["commandedSpeed"];
   if(autoDriveCommand){
     autodrive(currentSpeed, commandedSpeed, dt);
   }else{
