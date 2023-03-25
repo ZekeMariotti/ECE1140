@@ -177,7 +177,7 @@ class MainWindow(QMainWindow):
         def currentSpeedSetup(self):
             currentSpeed = QLabel()
             currentSpeed.setFont(self.stationFont)
-            currentSpeed.setText("Current Speed: " + str(Conversions.kilometersToMiles(float(self.TrainControllerSW.inputs.currentSpeed))) + " MPH")
+            currentSpeed.setText("Current Speed: " + str(Conversions.metersPerSecondToMilesPerHour(float(self.TrainControllerSW.inputs.currentSpeed))) + " MPH")
             currentSpeed.setFixedSize(QSize(round(self.labelWidth*1.6), round(self.labelHeight*0.5)))
             currentSpeed.setAlignment(Qt.AlignmentFlag.AlignCenter)
             currentSpeed.setWordWrap(True)
@@ -347,7 +347,7 @@ class MainWindow(QMainWindow):
         def commandedSpeedSetup(self):
             commandedSpeed = QLabel()
             commandedSpeed.setFont(self.labelFont)
-            commandedSpeed.setText("Commanded Speed:\n" + str(Conversions.kilometersToMiles(float(self.TrainControllerSW.inputs.commandedSpeed))) + " MPH")
+            commandedSpeed.setText("Commanded Speed:\n" + str(Conversions.metersPerSecondToMilesPerHour(float(self.TrainControllerSW.inputs.commandedSpeed))) + " MPH")
             commandedSpeed.setFixedSize(QSize(self.labelWidth, self.labelHeight))
             commandedSpeed.setAlignment(Qt.AlignmentFlag.AlignCenter)
             commandedSpeed.setWordWrap(True)
@@ -373,7 +373,7 @@ class MainWindow(QMainWindow):
         def speedLimitSetup(self):
             speedLimit = QLabel()  
             speedLimit.setFont(self.labelFont)   
-            speedLimit.setText("Speed Limit:\n" + str(Conversions.kilometersToMiles(float(self.TrainControllerSW.speedLimit))) + " MPH")
+            speedLimit.setText("Speed Limit:\n" + str(Conversions.metersPerSecondToMilesPerHour(float(self.TrainControllerSW.speedLimit))) + " MPH")
             speedLimit.setFixedSize(QSize(self.labelWidth, self.labelHeight))
             speedLimit.setAlignment(Qt.AlignmentFlag.AlignCenter)
             speedLimit.setWordWrap(True)
@@ -584,6 +584,8 @@ class MainWindow(QMainWindow):
                 self.TrainControllerSW.stayBelowSpeedLimitAndMaxSpeed()
                 self.TrainControllerSW.autoUpdateDoorState()
                 self.TrainControllerSW.autoUpdateLights()
+            else:
+                self.commandedSpeedSliderValueChanged()
 
             self.updateVisualElements()
 
@@ -630,13 +632,13 @@ class MainWindow(QMainWindow):
 
             self.station.setText(f'Current Station:\n{self.TrainControllerSW.inputs.nextStationName}')
             self.manualSpeedOverride.setText(f'Manual Mode: {"Enabled" if self.TrainControllerSW.manualMode else "Disabled"}')
-            self.currentSpeed.setText("Current Speed: " + str(Conversions.kilometersToMiles(float(self.TrainControllerSW.inputs.currentSpeed))) + " MPH")
+            self.currentSpeed.setText("Current Speed: " + str(Conversions.metersPerSecondToMilesPerHour(float(self.TrainControllerSW.inputs.currentSpeed))) + " MPH")
             self.engineState.setText("Engine State:\n" + self.TrainControllerSW.getEngineState())
             self.emergencyBrakeState.setText("Emergency Brake:\n" + self.TrainControllerSW.getEmergencyBrakeState())
             self.serviceBrakeState.setText("Service Brake:\n" + self.TrainControllerSW.getServiceBrakeState())
-            self.commandedSpeed.setText("Commanded Speed:\n" + str(Conversions.kilometersToMiles(float(self.TrainControllerSW.inputs.commandedSpeed))) + " MPH")
+            self.commandedSpeed.setText("Commanded Speed:\n" + str(Conversions.metersPerSecondToMilesPerHour(float(self.TrainControllerSW.inputs.commandedSpeed))) + " MPH")
             self.authority.setText("Authority:\n" + str(self.TrainControllerSW.inputs.authority) + " Blocks")
-            self.speedLimit.setText("Speed Limit:\n" + str(Conversions.kilometersToMiles(float(self.TrainControllerSW.speedLimit))) + " MPH")
+            self.speedLimit.setText("Speed Limit:\n" + str(Conversions.metersPerSecondToMilesPerHour(float(self.TrainControllerSW.speedLimit))) + " MPH")
             self.temperature.setText("Temperature:\n" + str(float(self.TrainControllerSW.inputs.temperature)) + " F")
             self.internalLightsState.setText("Internal Lights: " + self.TrainControllerSW.getInternalLightsState())
             self.externalLightsState.setText("External Lights: " + self.TrainControllerSW.getExternalLightsState())
@@ -668,7 +670,7 @@ class MainWindow(QMainWindow):
             self.TrainControllerSW.outputs.serviceBrakeCommand = False
 
         def commandedSpeedSliderValueChanged(self):
-            self.TrainControllerSW.inputs.commandedSpeed = self.commandedSpeedSlider.value()
+            self.TrainControllerSW.inputs.commandedSpeed = Conversions.kmPerHourToMetersPerSecond(self.commandedSpeedSlider.value())
 
             # Need to write inputs because commandedSpeed is an internal input in manual mode
             self.TrainControllerSW.writeInputs()

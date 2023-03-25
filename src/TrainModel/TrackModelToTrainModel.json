@@ -1,15 +1,15 @@
 {
     "rtc": "2023-02-22T11:00:00.0000000-05:00",
-    "authority": 10,
-    "commandedSpeed": 10.0,
+    "authority": 1,
+    "commandedSpeed": 19.4444,
     "passengersEntering": 0,
     "undergroundState": false,
     "beacon": [
         "",
         0,
-        "PNC Park",
+        "",
         false
     ],
     "switch": false,
-    "switchState": 1
+    "switchState": 0
 }
