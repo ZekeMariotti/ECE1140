@@ -4,7 +4,7 @@ import os
 import sys
 import json
 
-ip = "127.0.0.1"
+ip = "192.168.1.3"
 port = 27000
 msg = b"hello world"
 counter = 0
@@ -38,24 +38,31 @@ trainModelToTrainController = {
 udpMessage=""
 
 def readJsonFromFile():
-    with open(os.path.join(sys.path[0], "TMtoHTC.json"), "r") as filename:
+    with open(os.path.join(sys.path[0], "TM1toTC.json"), "r") as filename:
+            global trainModelToTrainController
             trainModelToTrainController = json.loads(filename.read())
 
 def parseJson():
     #TODO: Parse to ArduinoJsonFormat
+    global udpMessage
     udpMessage = json.dumps(trainModelToTrainController)
+    # print(udpMessage)
 
 
 
 while True:
+    readJsonFromFile()
+    # print(trainModelToTrainController)
+    parseJson()
+    print(udpMessage)
+
     print(f'Sending {udpMessage} to {ip}:{port}    Counter:{counter}')
     # print(trainModelToTrainController)
     sock = socket.socket(socket.AF_INET,
                         socket.SOCK_DGRAM)
     
-    readJsonFromFile()
-    parseJson()
+    
 
     sock.sendto(udpMessage.encode('utf-8'), (ip, port))
     counter+=1
-    # time.sleep(1)
+    time.sleep(0.1)
