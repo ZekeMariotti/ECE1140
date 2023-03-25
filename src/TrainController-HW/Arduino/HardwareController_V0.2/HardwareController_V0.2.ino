@@ -15,6 +15,18 @@
 
 #include <ArduinoJson.h>
 #include <StreamUtils.h>
+#include <Ethernet.h>
+#include <EthernetUdp.h>
+
+//setup ethernet========================================================================
+// Enter a MAC address and IP address for your controller below.
+// The IP address will be dependent on your local network:
+byte mac[] = {
+  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
+};
+// An EthernetUDP instance to let us send and receive packets over UDP
+EthernetUDP Udp;
+//======================================================================================
 
 //output variables, 
 int power, serviceBrakeCommand, emergencyBrakeState, autoDriveCommand, currentSpeed, commandedSpeed; 
@@ -54,6 +66,8 @@ void setup() {
   setSwitches();
   updateSwitchStates(switchStateArray);
   // engineState = 
+  setupUDP();
+  // Serial.println("End of setup");
   
 }
 
@@ -81,6 +95,7 @@ void loop() {
   //       Serial.println((long)update_period - tsUsed);
   //   }
   //   tsLastLoop = millis();
+  // Serial.println("in loop");
 
 }
 
@@ -199,18 +214,19 @@ void getJSONData(){
   // String dat1 = dat.replace(">","");
   // dat = dat.replace("<","");
   DeserializationError error = deserializeJson(jsonDataIn, dat);
-  int x = jsonDataIn["Authority"];
-  Serial.println(x);
-  Serial.println(dat);
+  // int x = jsonDataIn["Authority"];
+  // Serial.println(x);
+  // Serial.println(dat);
 }
 
 void sendJSONData(int *switchStateArray){
   serialJSONOut="";
   // StaticJsonDocument<256> JSONdataOut;
 
-  parseJSONData(switchStateArray);
+  parseJSONData2(switchStateArray);
   serializeJson(jsonDataOut, serialJSONOut);
-  Serial.println(serialJSONOut);
+  // Serial.println(serialJSONOut);
+  sendUDP();
 }
 
 void parseJSONData(int *switchStateArray){
@@ -242,6 +258,54 @@ void parseJSONData(int *switchStateArray){
   
 }
 
+void parseJSONData2(int *switchStateArray){
+  jsonDataOut["power"] = power;
+  jsonDataOut["leftDoorCommand"] = switchStateArray[3];
+  jsonDataOut["righttDoorCommand"] = switchStateArray[2];
+  jsonDataOut["serviceBrakeCommand"] = serviceBrakeCommand;
+  jsonDataOut["emergencyBrakeCommand"] = emergencyBrakeState;
+  jsonDataOut["externalLightCommand"] = switchStateArray[5];
+  jsonDataOut["internalLightCommand"] = switchStateArray[4];
+  jsonDataOut["stationAnnouncement"] = "text";
+  jsonDataOut["isAtStation"] = 1;
+  
+}
+////////////////////////////////UDP Shit////////////////////////////////////
+void setupUDP(){
+  Ethernet.init(10);  // Most Arduino shields
+
+  // start the Ethernet
+  Ethernet.begin(mac);
+
+  // Open serial communications and wait for port to open:
+  Serial.begin(9600);
+  if (Ethernet.linkStatus() == LinkOFF) {
+    Serial.println("Ethernet cable is not connected.");
+  }
+
+  //startup sequence 
+  Serial.println("Before UDP Begin");
+  // start UDP to listen 
+  //TODO:Implement this
+  Udp.begin(8888);
+  Serial.println("After UDP Begin");
+  //Udp.endPacket();
+}
+void sendUDP(){
+  Udp.beginPacket("192.168.1.2", 27001);
+  char Buf[200];
+  // Serial.println("Before conversion");
+  serialJSONOut.toCharArray(Buf, 200);
+  // Serial.println("After conversion");
+  Udp.write(Buf);
+  // Serial.println("After write");
+  Serial.println(Udp.endPacket());
+  // Serial.println("End of UDP Send");
+}
+
+////////////////////////////////Drive Shit////////////////////////////////////
+
+
 ////////////////////////////////Drive Shit/////////////////////////////////////Move later TODO:move it
 // int previousError = 0;
 // int previousU = 0; 
@@ -258,9 +322,6 @@ void parseJSONData(int *switchStateArray){
 
 // }
 
-void automaticSpeedControl(){
-
-}
 
 // bool calculateBrake(bool state){
 //   return state;
