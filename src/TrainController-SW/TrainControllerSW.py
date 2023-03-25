@@ -46,8 +46,8 @@ class TrainControllerSW:
         self.uk1 = 0
         
         self.T = 0.1
-        self.Kp = 50
-        self.Ki = 50
+        self.Kp = 50000
+        self.Ki = 50000
 
         # Variables to check states between mainEventLoops
         self.lightsEnabledPrevious = None
