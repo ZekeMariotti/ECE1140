@@ -35,8 +35,8 @@ char packetBuffer[1000];
 int power, serviceBrakeCommand, emergencyBrakeState, autoDriveCommand, currentSpeed, commandedSpeed; 
 
 int prevTime = 0; 
-int Kp = 1;
-int Ki = 0.1;
+int Kp = 50000;
+int Ki = 5000;
 
 //Global and system wide variables 
 int switchStateArray[NUMBEROFSWITCHES];
@@ -100,6 +100,7 @@ void loop() {
   //   }
   //   tsLastLoop = millis();
   // Serial.println("in loop");
+  delay(100);
 
 }
 
@@ -267,7 +268,7 @@ void parseJSONData(int *switchStateArray){
 void parseJSONData2(int *switchStateArray){
   jsonDataOut["power"] = power;
   jsonDataOut["leftDoorCommand"] = switchStateArray[3];
-  jsonDataOut["righttDoorCommand"] = switchStateArray[2];
+  jsonDataOut["rightDoorCommand"] = switchStateArray[2];
   jsonDataOut["serviceBrakeCommand"] = serviceBrakeCommand;
   jsonDataOut["emergencyBrakeCommand"] = emergencyBrakeState;
   jsonDataOut["externalLightCommand"] = switchStateArray[5];

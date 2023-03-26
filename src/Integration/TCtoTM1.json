@@ -1,0 +1,11 @@
+{
+    "power": 0,
+    "leftDoorCommand": 1,
+    "rightDoorCommand": 1,
+    "serviceBrakeCommand": 0,
+    "emergencyBrakeCommand": 0,
+    "externalLightCommand": 1,
+    "internalLightCommand": 1,
+    "stationAnnouncement": "",
+    "isAtStation": 1
+}
