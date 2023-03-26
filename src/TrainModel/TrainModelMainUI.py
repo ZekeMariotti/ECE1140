@@ -35,14 +35,19 @@ class TrainModelUI(QWidget):
     alignRight      = Qt.AlignmentFlag.AlignRight
 
     # Initialization of the UI
-    def __init__(self):
+    def __init__(self, id, line):
+        
 
         # SIGNAL USED FOR TEST UI
         trainSignals.updateOutputs.connect(self.updateOutputs)
 
         # Initializing and setting the layout of the UI
         super().__init__()
-        self.setWindowTitle("Train Model")
+        #self.mainTimer = self.mainTimerSetup()
+        self.TrainModel.data["id"] = id
+        self.TrainModel.trackData["trainLine"] = line
+        self.TrainModel.setFirstSection()
+        self.setWindowTitle("Train Model " + str(TrainModel.data["id"]))
         layout = QGridLayout()
         self.setLayout(layout)
         self.setFont(QFont("Times New Roman"))
@@ -393,7 +398,10 @@ class TrainModelUI(QWidget):
     
     # Handler for when the temperature from the user is set
     def tempInputChanged(self):
-        temperature = round(float(self.temperatureInput.text()) * 2) / 2
+        if (self.temperatureInput.text() == ""):
+            temperature = 68
+        else:
+            temperature = round(float(self.temperatureInput.text()) * 2) / 2
         trainSignals.tempChangedSignal.emit(temperature)
 
     # Function to convert boolean to string for the status messages of failure
@@ -423,7 +431,19 @@ class TrainModelUI(QWidget):
             return "ON"
         else:
             return "Off"
-        
+
+    def mainThreadSetup(self):
+        self.timerThread = QThread()
+        self.timerThread.started.connect(self.mainTimerSetup)
+
+    def mainTimerSetup(self):     
+        mainTimer = QTimer()
+        mainTimer.setInterval(100)
+        mainTimer.timeout.connect(self.updateOutputs)
+        mainTimer.setParent(self)
+        mainTimer.start()
+        return mainTimer
+
     # Updates outputs every time period
     def updateOutputs(self):
 
@@ -431,7 +451,7 @@ class TrainModelUI(QWidget):
         self.TrainModel.runFunctions()
 
         # Update Left Column of data outputs
-        self.realTimeClockOutput.setText(str(ISO8601ToHumanTime(self.TrainModel.data["rtc"]))[:-6])
+        self.realTimeClockOutput.setText(str(ISO8601ToHumanTime("2023-02-23T00:00:06.0000000-05:00"))[:-6])
         self.passengersOutput.setText(str(self.TrainModel.data["passengers"]))
         self.crewOutput.setText(str(self.TrainModel.data["crew"]))
         self.undergroundOutput.setText(str(self.TrainModel.data["underground"]))
@@ -441,7 +461,7 @@ class TrainModelUI(QWidget):
         # Update Middle Column of data outputs
         self.velocityOutput.setText(str(metersPerSecondToMilesPerHour(self.TrainModel.data["velocity"])) + " mph")
         self.accelerationOutput.setText(str(metersPerSecondSquaredToFeetPerSecondSquared(self.TrainModel.data["acceleration"])) + " ft/s^2")
-        self.powerOutput.setText(str(wattsToHorsepower(self.TrainModel.data["power"])) + " hp")
+        self.powerOutput.setText(str(round(self.TrainModel.data["power"], 2)) + " W")
         self.stationOutput.setText(self.TrainModel.data["station"])
 
         # Setting communication status output and color
@@ -519,7 +539,7 @@ class TrainModelUI(QWidget):
 
 def main():
     app = QApplication(argv)
-    UI = TrainModelUI()
+    UI = TrainModelUI(2, "Green")
     UI.show()
     app.exec()
 

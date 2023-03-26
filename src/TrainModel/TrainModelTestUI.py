@@ -2,6 +2,7 @@
 
 # Importing all required modules
 import sys
+from datetime import *
 from sys import argv
 import os
 import json
@@ -20,7 +21,6 @@ class TrainModelTestUI(QWidget):
         "authority"             : 0,
         "commandedSpeed"        : 0.0,
         "passengersEntering"    : 0,
-        "speedLimit"            : 0.0,
         "undergroundState"      : False,
         "beacon"                : ["", 0, "", False],
         "id"                    : 0,
@@ -33,19 +33,19 @@ class TrainModelTestUI(QWidget):
         "internalLightCommand"  : False,
         "stationAnnouncement"   : "The Yard",
         "switch"                : False,
-        "switchState"           : 0
+        "switchState"           : 0,
+        "blockLength"           : 100.0,
+        "elevation"             : 0
     }
 
     testDataOutputs = {
-        "id"                   : 0,
+        #"id"                   : 0,
         "commandedSpeed"       : 0.0,
         "currentSpeed"         : 0.0,
         "authority"            : 0,
         "inputTime"            : "",
         "undergroundState"     : False,
-        "speedLimit"           : 0.0,
         "temperature"          : 0.0,
-        "engineState"          : True,
         "stationName"          : "",
         "platformSide"         : 0,
         "nextStationName"      : "",
@@ -66,7 +66,6 @@ class TrainModelTestUI(QWidget):
 
     # Dictionary for inputs from the Train Controller JSON File
     trainControllerToTrainModel = {
-        "id"                    : 0,         # ID number for the train
         "power"                 : 0.0,       # Power input from the Train Controller
         "leftDoorCommand"       : False,     # Left Door Command from the Train Controller, False if closed, True if open
         "rightDoorCommand"      : False,     # Right Door Command from the Train Controller, False if closed, True if open
@@ -79,15 +78,12 @@ class TrainModelTestUI(QWidget):
 
     # Dictionary for outputs to the Train Controller
     trainModelToTrainController = {
-        "id"                    : 0,                                   # ID number for the train
         "commandedSpeed"        : 0.0,                                 # Commanded Speed in m/s
         "currentSpeed"          : 0.0,                                 # Current Speed in m/s
         "authority"             : 0,                                   # Authority in Blocks
         "inputTime"             : "2023-02-22T11:00:00.0000000-05:00", # RTC Clock in ISO 8601
         "undergroundState"      : False,                               # Underground State
-        "speedLimit"            : 0.0,                                 # Speed Limit in m/s
         "temperature"           : 0.0,                                 # Temperature inside the Train in degrees Fahrenheit
-        "engineState"           : True,                                # State of the Engine, True if on, False if off
         "stationName"           : "The Yard",                          # Station Name, from the beacon
         "platformSide"          : 0,                                   # Platform Side, 0 if left, 1 if right, 2 if both, from the beacon
         "nextStationName"       : "",                                  # Name of the next station, from the beacon
@@ -109,11 +105,12 @@ class TrainModelTestUI(QWidget):
         "authority"          : 0,                                      # Authority of the train to be passed to the train controller in blocks
         "commandedSpeed"     : 0.0,                                    # Commanded speed of the train in m/s
         "passengersEntering" : 0,                                      # Number of passengers entering the train
-        "speedLimit"         : 0.0,                                    # Speed limit of the current block that the train is on in m/s
         "undergroundState"   : False,                                  # State of whether the train is underground or not
         "beacon"             : ["", 0, "", False],                     # Array to store the beacon inputs [stationName, platformSide, nextStationName, isBeacon]
         "switch"             : False,                                  # True if the block the train is currently on is a switch, false otherwise                      
-        "switchState"        : 0                                       # 0 if the switch is in a default position, 1 otherwise
+        "switchState"        : 0,                                      # 0 if the switch is in a default position, 1 otherwise
+        "blockLength"        : 100.0,                                  # Length of the current block that the train is on
+        "elevation"          : 0.0                                     # elevation different of the current block that the train is on
     }
 
     # Dictionary for outputs to the Track Model
@@ -123,11 +120,25 @@ class TrainModelTestUI(QWidget):
         "passengersOff" : 0  # Passengers getting off of the train
     }
 
+
+    def mainThreadSetup(self):
+        self.timerThread = QThread()
+        self.timerThread.started.connect(self.mainTimerSetup)
+
+    def mainTimerSetup(self):     
+        mainTimer = QTimer()
+        mainTimer.setInterval(100)
+        mainTimer.timeout.connect(self.updateOutputsBoth)
+        mainTimer.setParent(self)
+        mainTimer.start()
+        return mainTimer
+
     # Initialize the GUI
     def __init__(self):
 
         # Initializing the layout of the UI
         super().__init__()
+        self.mainTimer = self.mainTimerSetup()
         self.setWindowTitle("Train Model Test UI")
         layout = QGridLayout()
         self.setLayout(layout)
@@ -145,7 +156,7 @@ class TrainModelTestUI(QWidget):
         realTimeClockLabel = QLabel("Real Time Clock")
         layout.addWidget(realTimeClockLabel, 1, 0)
         self.realTimeClockInput = QLineEdit()
-        self.realTimeClockInput.editingFinished.connect(self.getRealTimeClockInput)
+        #self.realTimeClockInput.editingFinished.connect(self.getRealTimeClockInput)
         layout.addWidget(self.realTimeClockInput, 1, 1)
 
         # Add the Authority Input
@@ -169,84 +180,92 @@ class TrainModelTestUI(QWidget):
         self.passengersEnteringInput.editingFinished.connect(self.getPassengersEnteringInput)
         layout.addWidget(self.passengersEnteringInput, 4, 1)
 
-        # Add the Speed Limit Input
-        speedLimitLabel = QLabel("Speed Limit")
-        layout.addWidget(speedLimitLabel, 5, 0)
-        self.speedLimitInput = QLineEdit()
-        self.speedLimitInput.editingFinished.connect(self.getSpeedLimitInput)
-        layout.addWidget(self.speedLimitInput, 5, 1)
-
         # Add the Underground State Input
         undergroundStateLabel = QLabel("Underground State")
-        layout.addWidget(undergroundStateLabel, 6, 0)
+        layout.addWidget(undergroundStateLabel, 5, 0)
         self.undergroundStateInput = QComboBox()
         self.undergroundStateInput.addItems(["False", "True"])
         self.undergroundStateInput.currentIndexChanged.connect(self.getUndergroundStateInput)
-        layout.addWidget(self.undergroundStateInput, 6, 1)
+        layout.addWidget(self.undergroundStateInput, 5, 1)
 
         # Add the Beacon Inputs [stationName, platformSide, nextStationName, isBeacon]
         beaconLabel = QLabel("Beacon Inputs")
-        layout.addWidget(beaconLabel, 7, 0)
+        layout.addWidget(beaconLabel, 6, 0)
         beaconLabel2 = QLabel("[stationName, platformSide, nextStationName, isBeacon]")
         beaconLabel2.setWordWrap(True)
-        layout.addWidget(beaconLabel2, 7, 1)
+        layout.addWidget(beaconLabel2, 6, 1)
 
         # Add the Station Name Beacon Input
         stationNameLabel = QLabel("Station Name")
-        layout.addWidget(stationNameLabel, 8, 0)
+        layout.addWidget(stationNameLabel, 7, 0)
         self.stationNameInput = QLineEdit()
         self.stationNameInput.editingFinished.connect(self.getStationNameInput)
-        layout.addWidget(self.stationNameInput, 8, 1)
+        layout.addWidget(self.stationNameInput, 7, 1)
 
         # Platform Side Beacon Selector
         platformSideLabel = QLabel("Platform Side")
-        layout.addWidget(platformSideLabel, 9, 0)
+        layout.addWidget(platformSideLabel, 8, 0)
         self.platformSideInput = QComboBox()
         self.platformSideInput.addItems(["Left", "Right", "Both"])
         self.platformSideInput.currentIndexChanged.connect(self.getPlatformSideInput)
-        layout.addWidget(self.platformSideInput, 9, 1)
+        layout.addWidget(self.platformSideInput, 8, 1)
 
         # Next Station Name Beacon Input
         nextStationLabel = QLabel("Next Station Name")
-        layout.addWidget(nextStationLabel, 10, 0)
+        layout.addWidget(nextStationLabel, 9, 0)
         self.nextStationInput = QLineEdit()
         self.nextStationInput.editingFinished.connect(self.getNextStationInput)
-        layout.addWidget(self.nextStationInput, 10, 1)
+        layout.addWidget(self.nextStationInput, 9, 1)
 
         # is Beacon Input
         isBeaconLabel = QLabel("isBeacon")
-        layout.addWidget(isBeaconLabel, 11, 0)
+        layout.addWidget(isBeaconLabel, 10, 0)
         self.isBeaconInput = QComboBox()
         self.isBeaconInput.addItems(["False", "True"])
         self.isBeaconInput.currentIndexChanged.connect(self.getIsBeaconInput)
-        layout.addWidget(self.isBeaconInput, 11, 1)
+        layout.addWidget(self.isBeaconInput, 10, 1)
 
         # Add the Switch Input
         switchLabel = QLabel("Switch")
-        layout.addWidget(switchLabel, 12, 0)
+        layout.addWidget(switchLabel, 11, 0)
         self.switchInput = QComboBox()
         self.switchInput.addItems(["False", "True"])
         self.switchInput.currentIndexChanged.connect(self.getSwitchInput)
-        layout.addWidget(self.switchInput, 12, 1)
+        layout.addWidget(self.switchInput, 11, 1)
 
         # Add the Switch State Input
         switchStateLabel = QLabel("Switch State")
-        layout.addWidget(switchStateLabel, 13, 0)
+        layout.addWidget(switchStateLabel, 12, 0)
         self.switchStateInput = QComboBox()
         self.switchStateInput.addItems(["0", "1"])
         self.switchStateInput.currentIndexChanged.connect(self.getSwitchStateInput)
-        layout.addWidget(self.switchStateInput, 13, 1)
+        layout.addWidget(self.switchStateInput, 12, 1)
+
+        # Add the Block Length Input
+        blockLengthLabel = QLabel("Block Length")
+        layout.addWidget(blockLengthLabel, 13, 0)
+        self.blockLengthInput = QLineEdit()
+        self.blockLengthInput.editingFinished.connect(self.getBlockLengthInput)
+        layout.addWidget(self.blockLengthInput, 13, 1)
+
+        # Add the Elevation Length Input
+        elevationLabel = QLabel("Elevation")
+        layout.addWidget(elevationLabel, 14, 0)
+        self.elevationInput = QLineEdit()
+        self.elevationInput.editingFinished.connect(self.getElevationInput)
+        layout.addWidget(self.elevationInput, 14, 1)
+
 
         # Adding the Train Controller Label
         trainControllerLabel = QLabel("Train Controller Inputs")
-        layout.addWidget(trainControllerLabel, 14, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(trainControllerLabel, 15, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
 
         # Train ID Input
-        idLabel = QLabel("Train ID")
-        layout.addWidget(idLabel, 15, 0)
-        self.idLabelInput = QLineEdit()
-        self.idLabelInput.editingFinished.connect(self.getIDLabelInput)
-        layout.addWidget(self.idLabelInput, 15, 1)
+        #idLabel = QLabel("Train ID")
+        #layout.addWidget(idLabel, 15, 0)
+        #self.idLabelInput = QLineEdit()
+        #self.idLabelInput.editingFinished.connect(self.getIDLabelInput)
+        #layout.addWidget(self.idLabelInput, 15, 1)
 
         # Add the Power Input
         powerLabel = QLabel("Commanded Power Input")
@@ -393,14 +412,6 @@ class TrainModelTestUI(QWidget):
         self.undergroundStateOutput.setText("0")
         layout.addWidget(self.undergroundStateOutput, 10, 3)
 
-        # Adding the Speed Limit
-        speedLimitLabel = QLabel("Speed Limit")
-        layout.addWidget(speedLimitLabel, 11, 2)
-        self.speedLimitOutput = QLineEdit()
-        self.speedLimitOutput.setReadOnly(True)
-        self.speedLimitOutput.setText("0 km/hr")
-        layout.addWidget(self.speedLimitOutput, 11, 3)
-
         # ADD THE TEMPERATURE OUTPUT
         temperatureLabel = QLabel("Temperature")
         layout.addWidget(temperatureLabel, 12, 2)
@@ -408,14 +419,6 @@ class TrainModelTestUI(QWidget):
         self.temperatureOutput.setReadOnly(True)
         self.temperatureOutput.setText("68 F")
         layout.addWidget(self.temperatureOutput, 12, 3)
-
-        # ADD THE ENGINE STATE OUTPUT
-        engineStateLabel = QLabel("Engine State")
-        layout.addWidget(engineStateLabel, 13, 2)
-        self.engineStateOutput = QLineEdit()
-        self.engineStateOutput.setReadOnly(True)
-        self.engineStateOutput.setText("Operational")
-        layout.addWidget(self.engineStateOutput, 13, 3)
 
         # Adding the Station Name Output
         beaconStationLabel = QLabel("Station Name")
@@ -538,15 +541,12 @@ class TrainModelTestUI(QWidget):
     def readTrainModelToTrainController(self):
         with open(os.path.join(sys.path[0], "TrainModelToTrainControllerSW.json"), "r") as filename:
             self.trainModelToTrainController = json.loads(filename.read())
-        self.testDataOutputs["id"]                   = self.trainModelToTrainController["id"]
         self.testDataOutputs["commandedSpeed"]       = self.trainModelToTrainController["commandedSpeed"]
         self.testDataOutputs["currentSpeed"]         = self.trainModelToTrainController["currentSpeed"]
         self.testDataOutputs["authority"]            = self.trainModelToTrainController["authority"]
         self.testDataOutputs["inputTime"]            = self.trainModelToTrainController["inputTime"]
         self.testDataOutputs["undergroundState"]     = self.trainModelToTrainController["undergroundState"]
-        self.testDataOutputs["speedLimit"]           = self.trainModelToTrainController["speedLimit"]
         self.testDataOutputs["temperature"]          = self.trainModelToTrainController["temperature"]
-        self.testDataOutputs["engineState"]          = self.trainModelToTrainController["engineState"]
         self.testDataOutputs["stationName"]          = self.trainModelToTrainController["stationName"]
         self.testDataOutputs["platformSide"]         = self.trainModelToTrainController["platformSide"]
         self.testDataOutputs["nextStationName"]      = self.trainModelToTrainController["nextStationName"]
@@ -567,17 +567,17 @@ class TrainModelTestUI(QWidget):
         self.trackModelToTrainModel["authority"]          = self.testDataInputs["authority"]
         self.trackModelToTrainModel["commandedSpeed"]     = self.testDataInputs["commandedSpeed"]
         self.trackModelToTrainModel["passengersEntering"] = self.testDataInputs["passengersEntering"]
-        self.trackModelToTrainModel["speedLimit"]         = self.testDataInputs["speedLimit"]
         self.trackModelToTrainModel["undergroundState"]   = self.testDataInputs["undergroundState"]
         self.trackModelToTrainModel["beacon"]             = self.testDataInputs["beacon"]
         self.trackModelToTrainModel["switch"]             = self.testDataInputs["switch"]
         self.trackModelToTrainModel["switchState"]        = self.testDataInputs["switchState"]
+        self.trackModelToTrainModel["blockLength"]        = self.testDataInputs["blockLength"]
+        self.trackModelToTrainModel["elevation"]          = self.testDataInputs["elevation"]
         with open(os.path.join(sys.path[0], "TrackModelToTrainModel.json"), "w") as filename:
             (json.dump(self.trackModelToTrainModel, filename, indent=4))
 
     # Function to write inputs from the Train Controller to the Train Model
     def writeTrainControllerToTrainModel(self):
-        self.trainControllerToTrainModel["id"]                    = self.testDataInputs["id"]
         self.trainControllerToTrainModel["power"]                 = self.testDataInputs["power"]
         self.trainControllerToTrainModel["leftDoorCommand"]       = self.testDataInputs["leftDoorCommand"]
         self.trainControllerToTrainModel["rightDoorCommand"]      = self.testDataInputs["rightDoorCommand"]
@@ -586,7 +586,7 @@ class TrainModelTestUI(QWidget):
         self.trainControllerToTrainModel["externalLightCommand"]  = self.testDataInputs["externalLightCommand"]
         self.trainControllerToTrainModel["internalLightCommand"]  = self.testDataInputs["internalLightCommand"]
         self.trainControllerToTrainModel["stationAnnouncement"]   = self.testDataInputs["stationAnnouncement"]
-        with open(os.path.join(sys.path[0], "TrainControllerSWToTrainModel.json"), "w") as filename:
+        with open(os.path.join(sys.path[0], "TCtoTM1.json"), "w") as filename:
             (json.dump(self.trainControllerToTrainModel, filename, indent=4))
 
     def getSwitchInput(self, index):
@@ -595,8 +595,14 @@ class TrainModelTestUI(QWidget):
     def getSwitchStateInput(self, index):
         self.testDataInputs["switchState"] = index
 
-    def getIDLabelInput(self):
-        self.testDataInputs["id"] = int(self.idLabelInput.text())
+    def getBlockLengthInput(self):
+        self.testDataInputs["blockLength"] = float(self.blockLengthInput.text())
+
+    def getElevationInput(self):
+        self.testDataInputs["elevation"] = float(self.elevationInput.text())
+
+    #def getIDLabelInput(self):
+    #    self.testDataInputs["id"] = int(self.idLabelInput.text())
 
     # Gets the Power input from the UI
     def getPowerInput(self):
@@ -645,10 +651,6 @@ class TrainModelTestUI(QWidget):
     # Gets the number of passengers entering the train from the UI
     def getPassengersEnteringInput(self):
         self.testDataInputs["passengersEntering"] = int(self.passengersEnteringInput.text())
-        
-    # Gets the Speed Limit from the UI    
-    def getSpeedLimitInput(self):
-        self.testDataInputs["speedLimit"] = int(self.speedLimitInput.text())
 
     # Gets the Underground state from the UI
     def getUndergroundStateInput(self, index):
@@ -673,30 +675,33 @@ class TrainModelTestUI(QWidget):
     # Updates all functions when the button is pressed
     def updateOutputsBoth(self):
         # Wipe Output files so they are clean
-        with open(os.path.join(sys.path[0], "TrainControllerSWToTrainModel.json"), "w") as filename:
-            (json.dump({}, filename, indent=4))
+        #with open(os.path.join(sys.path[0], "TrainControllerSWToTrainModel.json"), "w") as filename:
+        #    (json.dump({}, filename, indent=4))
         with open(os.path.join(sys.path[0], "TrackModelToTrainModel.json"), "w") as filename:
             (json.dump({}, filename, indent=4))
 
+        #time = datetime.now()
+        #iso_time = time.isoformat()
+        #self.testDataInputs["rtc"] = str(iso_time) + "-5:00"
+        #print(self.testDataInputs["rtc"])
+
         # Write Data To Output Module
         self.writeTrackModelToTrainModel()
-        self.writeTrainControllerToTrainModel()
+        #self.writeTrainControllerToTrainModel()
         trainSignals.updateOutputs.emit()
         self.readTrainModelToTrackModel()
-        self.readTrainModelToTrainController()
+        #self.readTrainModelToTrainController()
 
         self.currBlockOutput.setText("Block " + str(self.testDataOutputs["currBlock"]))
         self.prevBlockOutput.setText("Block " + str(self.testDataOutputs["prevBlock"]))
         self.passengersExitingOutput.setText(str(self.testDataOutputs["passengersOff"]))
-        self.idOutput.setText(str(self.testDataOutputs["id"]))
+        #self.idOutput.setText(str(self.testDataOutputs["id"]))
         self.commandedSpeedOutput.setText(str(self.testDataOutputs["commandedSpeed"]) + " m/s")
         self.velocityOutput.setText(str(round(self.testDataOutputs["currentSpeed"], 2)) + " m/s")
         self.authorityOutput.setText(str(self.testDataOutputs["authority"]) + " Blocks")
         self.realTimeClockOutput.setText(self.testDataOutputs["inputTime"])
         self.undergroundStateOutput.setText(str(bool(self.testDataOutputs["undergroundState"])))
-        self.speedLimitOutput.setText(str(self.testDataOutputs["speedLimit"]) + " km/h")
         self.temperatureOutput.setText(str(self.testDataOutputs["temperature"]) + " F")
-        self.engineStateOutput.setText(str(self.testDataOutputs["engineState"]))
         self.beaconStationOutput.setText(self.testDataOutputs["stationName"])
         self.platformSideOutput.setText(str(self.testDataOutputs["platformSide"]))
         self.nextStationOutput.setText(self.testDataOutputs["nextStationName"])
@@ -729,7 +734,7 @@ def main():
     app = QApplication(argv)
     testUI = TrainModelTestUI()
     testUI.show()
-    mainUI = TrainModelUI()
+    mainUI = TrainModelUI(2, "Green")
     mainUI.show()
     app.exec()
 

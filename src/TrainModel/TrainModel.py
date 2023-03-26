@@ -109,7 +109,7 @@ class TrainModel():
         "massOfTrain"        : 40900.0,      # Mass of an unloaded train car in kilograms
         "massOfHuman"        : 68.0389,      # Mass of a human for this simulation in kilograms
         "maxPassengers"      : 222,          # Maximum number of passengers that can be on the train at one time
-        "friction"           : 0.6           # Coefficient of friction used for both static and dynamic friction
+        "friction"           : 0.006         # Coefficient of friction used for both static and dynamic friction
     }
 
     # Dictionary used for different eBrake States from train controller and user input
@@ -121,14 +121,12 @@ class TrainModel():
     # Dictionary for pass through data (Only data to be passed through the module and not used within)
     passThroughData = {
         "commandedSpeed"  : 0.0,                   # Commanded speed for the train in m/s
-        "speedLimit"      : 0.0,                   # Speed limit of the train in m/s
         "authority"       : 0,                     # Authority of the train in blocks
         "beacon"          : ["", 0, "", False]     # Beacon Inputs from the most recent Beacon
     }
 
     # Dictionary for inputs from the Train Controller JSON File
     trainControllerToTrainModel = {
-        "id"                    : 0,         # ID number for the train
         "power"                 : 0.0,       # Power input from the Train Controller
         "leftDoorCommand"       : False,     # Left Door Command from the Train Controller, False if closed, True if open
         "rightDoorCommand"      : False,     # Right Door Command from the Train Controller, False if closed, True if open
@@ -141,15 +139,12 @@ class TrainModel():
 
     # Dictionary for outputs to the Train Controller
     trainModelToTrainController = {
-        "id"                    : 0,                                   # ID number for the train
         "commandedSpeed"        : 0.0,                                 # Commanded Speed in m/s
         "currentSpeed"          : 0.0,                                 # Current Speed in m/s
         "authority"             : 0,                                   # Authority in Blocks
         "inputTime"             : "2023-02-22T11:00:00.0000000-05:00", # RTC Clock in ISO 8601
         "undergroundState"      : False,                               # Underground State
-        "speedLimit"            : 0.0,                                 # Speed Limit in m/s
         "temperature"           : 0.0,                                 # Temperature inside the Train in degrees Fahrenheit
-        "engineState"           : True,                                # State of the Engine, True if on, False if off
         "stationName"           : "The Yard",                          # Station Name, from the beacon
         "platformSide"          : 0,                                   # Platform Side, 0 if left, 1 if right, 2 if both, from the beacon
         "nextStationName"       : "",                                  # Name of the next station, from the beacon
@@ -171,11 +166,12 @@ class TrainModel():
         "authority"          : 0,                                      # Authority of the train to be passed to the train controller in blocks
         "commandedSpeed"     : 0.0,                                    # Commanded speed of the train in m/s
         "passengersEntering" : 0,                                      # Number of passengers entering the train
-        "speedLimit"         : 0.0,                                    # Speed limit of the current block that the train is on in m/s
         "undergroundState"   : False,                                  # State of whether the train is underground or not
         "beacon"             : ["", 0, "", False],                     # Array to store the beacon inputs [stationName, platformSide, nextStationName, isBeacon]
-        "switch"             : True,                                   # True if the block the train is currently on is a switch, false otherwise                      
-        "switchState"        : 1                                       # 0 if the switch is in a default position, 1 otherwise
+        "switch"             : False,                                  # True if the block the train is currently on is a switch, false otherwise                      
+        "switchState"        : 0,                                      # 0 if the switch is in a default position, 1 otherwise
+        "blockLength"        : 10.0,                                   # Length of the current block that the train is on
+        "elevation"          : 0.0                                     # elevation different of the current block that the train is on
     }
 
     # Dictionary for outputs to the Track Model
@@ -195,19 +191,22 @@ class TrainModel():
 
         self.data["length"] = self.constants["length"] * self.data["numCars"]
 
+    def setFirstSection(self):
+        if self.trackData["trainLine"] == "Green":
+            self.trackData["trackSection"] = self.greenSection0
+        elif self.trackData["trainLine"] == "Red":
+            self.trackData["trackSection"] = self.redSection0
+
     # JSON function to write outputs to a JSON file for the Train Controller
     def writeTrainModelToTrainController(self):
 
         # Loading the output data dictionary
-        self.trainModelToTrainController["id"]                   = self.data["id"]
         self.trainModelToTrainController["commandedSpeed"]       = self.passThroughData["commandedSpeed"]
         self.trainModelToTrainController["currentSpeed"]         = self.data["velocity"]
         self.trainModelToTrainController["authority"]            = self.passThroughData["authority"]
         self.trainModelToTrainController["inputTime"]            = self.data["rtc"]
         self.trainModelToTrainController["undergroundState"]     = self.data["underground"]
-        self.trainModelToTrainController["speedLimit"]           = self.passThroughData["speedLimit"]
         self.trainModelToTrainController["temperature"]          = self.data["currTemp"]
-        self.trainModelToTrainController["engineState"]          = True if self.data["power"] > 0 else False
         self.trainModelToTrainController["stationName"]          = self.passThroughData["beacon"][0]
         self.trainModelToTrainController["platformSide"]         = self.passThroughData["beacon"][1]
         self.trainModelToTrainController["nextStationName"]      = self.passThroughData["beacon"][2]
@@ -222,16 +221,18 @@ class TrainModel():
         self.trainModelToTrainController["engineStatus"]         = self.data["engineStatus"]
         self.trainModelToTrainController["communicationsStatus"] = self.data["commStatus"]
 
-        with open(os.path.join(sys.path[0], "TrainModelToTrainControllerSW.json"), "w") as filename:
+        with open(os.path.join(sys.path[0].replace("TrainModel", "Integration"), f'TMtoTC{self.data["id"]}.json'), "w") as filename:
             (json.dump(self.trainModelToTrainController, filename, indent = 4))
 
     # JSON function to read inputs from a JSON file from the Train Controller
     def readTrainControllerToTrainModel(self):
-        with open(os.path.join(sys.path[0], "TrainControllerToTrainModel.json"), "r") as filename:
-            self.trainControllerToTrainModel = json.loads(filename.read())
+        with open(os.path.join(sys.path[0].replace("TrainModel", "Integration"), f'TCtoTM{self.data["id"]}.json'), "r") as filename:
+            try:
+                self.trainControllerToTrainModel = json.loads(filename.read())
+            except json.decoder.JSONDecodeError:
+                self.trainControllerToTrainModel = self.trainControllerToTrainModel
 
         # Loading internal inputs data variable
-        self.data["id"]                 = self.trainControllerToTrainModel["id"]
         self.data["power"]              = self.trainControllerToTrainModel["power"]
         self.data["lDoors"]             = self.trainControllerToTrainModel["leftDoorCommand"]
         self.data["rDoors"]             = self.trainControllerToTrainModel["rightDoorCommand"]
@@ -260,24 +261,26 @@ class TrainModel():
         self.passThroughData["authority"]      = self.trackModelToTrainModel["authority"]
         self.passThroughData["commandedSpeed"] = self.trackModelToTrainModel["commandedSpeed"]
         self.data["passengersOn"]              = self.trackModelToTrainModel["passengersEntering"]
-        self.passThroughData["speedLimit"]     = self.trackModelToTrainModel["speedLimit"]
         self.data["underground"]               = self.trackModelToTrainModel["undergroundState"]
         self.passThroughData["beacon"]         = self.trackModelToTrainModel["beacon"]
         self.data["atStation"]                 = self.trackModelToTrainModel["beacon"][3]
         self.trackData["switch"]               = self.trackModelToTrainModel["switch"]
         self.trackData["switchState"]          = self.trackModelToTrainModel["switchState"]
+        self.trackData["blockLength"]          = self.trackModelToTrainModel["blockLength"]
+        self.trackData["elevation"]            = self.trackModelToTrainModel["elevation"]
 
     # Function to run all internal methods when the method is called by the updater in the UI
     def runFunctions(self):
+        
         self.readTrainControllerToTrainModel()
         self.readTrackModelToTrainModel()
         tempTimeDiff = self.findTimeDifference()
         self.failureStates()
         self.brakeCaclulator()
-        self.findCurrentBlockInfo()
+        #self.findCurrentBlockInfo()
         self.findCurrentAcceleration()
-        self.findCurrentVelocity(tempTimeDiff)
-        self.findCurrentDistance(tempTimeDiff)
+        self.findCurrentVelocity()
+        self.findCurrentDistance()
         self.findBlockExiting()
         self.airConditioningControl()
         if self.data["atStation"]:
@@ -296,73 +299,74 @@ class TrainModel():
         self.data["prevRTC"] = self.data["rtc"]
 
     # Finds the current acceleration of a train
-    def findCurrentAcceleration(self) :
-        # Limits the power of the engine
-        #if self.data["power"] > 120000:
-        #    self.data["power"] = 120000
-
-        # Find the force of friction and the force of mass on the train
-        #frictionalForce = -(self.data["mass"] * self.constants["gravity"] * self.constants["friction"] * cos(asin(self.trackData["elevation"] / self.trackData["blockLength"])))
-        #gravitationalForce = -(self.data["mass"] * self.constants["gravity"] * (self.trackData["elevation"] / self.trackData["blockLength"]))
-        #powerForce = 0
-        #brakeForce = 0
-
-        # Deal with finding the force from the power input
-
-        # If the train is not moving, but has power input, set the medium acceleration to 0.5 m/s^2 regardless of
-        #if (self.data["prevVelocity"] == 0.0) & (self.data["power"] > 0.0):
-        #    self.data["acceleration"] = self.constants["mediumAcceleration"]
-        #    return
-        
-        # If the train is moving and has power input
-        #elif (self.data["power"] > 0.0):
-        #    powerForce = self.data["power"] / self.data["prevVelocity"]
-        #    frictionalForce = 0.0
-
-        # Deal with the force from brakes, if any
-        #if (self.data["eBrakeState"] | self.data["sBrakeState"]):
-        #    brakeForce = self.data["acceleration"] * self.data["mass"]
-
-        # Calculate the sum of the forces and current Acceleration
-        #print("powerForce: ", powerForce, " brakeForce: ", brakeForce, " frictionalForce: ", frictionalForce, " gravitationalForce: ", gravitationalForce)
-        #forces = powerForce + brakeForce + frictionalForce + gravitationalForce
-        #tempAcceleration = forces / self.data["mass"]
-
-        # Limit the acceleration to follow F = ma
-        #self.data["acceleration"] = tempAcceleration if tempAcceleration <= (forces / self.data["mass"]) else (forces / self.data["mass"])
-        #print(self.data["acceleration"])
-
+    def findCurrentAcceleration(self, time = 1) :
         # Limits the power of the engine
         if self.data["power"] > 120000:
             self.data["power"] = 120000
 
-        # If Emergency or service brakes are enabled, do not change acceleration
-        if (self.data["eBrakeState"] | self.data["sBrakeState"]):
+        # Find the force of friction and the force of mass on the train
+        frictionalForce = -(self.data["mass"] * self.constants["gravity"] * self.constants["friction"] * cos(asin(self.trackData["elevation"] / self.trackData["blockLength"])))
+        gravitationalForce = -(self.data["mass"] * self.constants["gravity"] * (self.trackData["elevation"] / self.trackData["blockLength"]))
+        powerForce = 0
+        brakeForce = 0
+
+        # Deal with finding the force from the power input
+
+        # If the train is not moving, but has power input, set the medium acceleration to 0.5 m/s^2 regardless of
+        if (self.data["prevVelocity"] == 0.0) & (self.data["power"] > 0.0):
+            self.data["acceleration"] = self.constants["mediumAcceleration"]
             return
         
+        # If the train is moving and has power input
+        elif (self.data["power"] > 0.0):
+            powerForce = self.data["power"] / self.data["prevVelocity"]
+
+        # Deal with the force from brakes, if any
+        if (self.data["eBrakeState"] | self.data["sBrakeState"]):
+            brakeForce = self.data["acceleration"] * self.data["mass"]
+
+        # Calculate the sum of the forces and current Acceleration
+        #print("powerForce: ", powerForce, " brakeForce: ", brakeForce, " frictionalForce: ", frictionalForce, " gravitationalForce: ", gravitationalForce)
+        forces = powerForce + brakeForce + frictionalForce + gravitationalForce
+        tempAcceleration = forces / self.data["mass"]
+
+        # Limit the acceleration to follow F = ma
+        if (time > 0):
+            self.data["acceleration"] = tempAcceleration if tempAcceleration <= (forces / self.data["mass"]) else (forces / self.data["mass"])
+        #print(self.data["acceleration"])
+
+        # Limits the power of the engine
+        #if self.data["power"] > 120000:
+        #    self.data["power"] = 120000
+
+        # If Emergency or service brakes are enabled, do not change acceleration
+        #if (self.data["eBrakeState"] | self.data["sBrakeState"]):
+        #    return
+        
         # If the train is not moving and has no power input
-        if ((self.data["prevVelocity"] == 0.0) & (self.data["power"] == 0.0)):
-            force = 0.0
+        #if ((self.data["prevVelocity"] == 0.0) & (self.data["power"] == 0.0)):
+        #    force = 0.0
 
         # If the train is not moving but has a power input
-        elif (self.data["prevVelocity"] == 0.0):
-            force = self.data["mass"] * self.constants["mediumAcceleration"]
+        #elif (self.data["prevVelocity"] == 0.0):
+        #    force = self.data["mass"] * self.constants["mediumAcceleration"]
 
         # All other cases
-        else:
-            force = self.data["power"] / self.data["prevVelocity"]
+        #else:
+        #    force = self.data["power"] / self.data["prevVelocity"]
 
         # If the train is not on an incline or decline, use this calculation
-        if (self.trackData["elevation"] == 0.0):
-            tempAcceleration = force / self.data["mass"]
+        #if (self.trackData["elevation"] == 0.0):
+        #    tempAcceleration = force / self.data["mass"]
 
         # If the train is on an incline or decline, use this calculation
-        else:
+        #else:
             # Calculating the effect of mass * gravity when on an incline
-            tempAcceleration = (force - (self.data["mass"] * self.constants["gravity"] * (self.trackData["elevation"] / self.trackData["blockLength"]))) / self.data["mass"]
+        #    tempAcceleration = (force - (self.data["mass"] * self.constants["gravity"] * (self.trackData["elevation"] / self.trackData["blockLength"]))) / self.data["mass"]
 
         # Limit the acceleration to something that is possible for the train according to F = ma
-        self.data["acceleration"] = tempAcceleration if tempAcceleration <= (force / self.data["mass"]) else (force / self.data["mass"])
+        #if (time > 0):
+        #    self.data["acceleration"] = tempAcceleration if tempAcceleration <= (force / self.data["mass"]) else (force / self.data["mass"])
 
     # Finds the current velocity of a train given 7 inputs
     def findCurrentVelocity(self, time = 1):
@@ -380,7 +384,8 @@ class TrainModel():
             return 1
         currTime = datetime.fromisoformat(self.data["rtc"])
         prevTime = datetime.fromisoformat(self.data["prevRTC"])
-        return int((currTime - prevTime).seconds)
+        newTime = currTime - prevTime
+        return int(newTime.seconds)
 
 
     # NEEDS TO BE REMOVED. MUST GET BLOCK LENGTH AND ELEVATION FROM THE TRAIN MODEL
@@ -391,7 +396,7 @@ class TrainModel():
             return
         
         # Case otherwise
-        os.chdir("src/TrainModel")
+        #os.chdir("src/TrainModel")
         with open("greenLineBlocks.txt", newline = '') as csvFile:
             csvReader = csv.reader(csvFile, delimiter = ',')
             for row in csvReader:
@@ -401,7 +406,7 @@ class TrainModel():
                     self.trackData["blockLength"] = float(row[3])
                     self.trackData["elevation"] = float(row[12])
                     break
-        os.chdir("../../")
+        #os.chdir("../../")
 
     # Finds the Block the train is on and the Block the train is exiting
     def findBlockExiting(self):
@@ -417,7 +422,7 @@ class TrainModel():
             # Find total overflow distance into the next block
             tempDistance = self.trackData["distance"] - self.trackData["remDistance"]
             self.trackData["currBlock"] = self.findNextBlock()
-            self.findCurrentBlockInfo()
+            #self.findCurrentBlockInfo()
             self.trackData["remDistance"] = self.trackData["blockLength"] - tempDistance
             
     # Finds the next block in sequence based on a switch state saved internally
@@ -618,6 +623,8 @@ class TrainModel():
             self.data["acceleration"] = self.constants["emergencyBrake"]
         elif (self.data["sBrakeState"] == True):
             self.data["acceleration"] = self.constants["serviceBrake"]
+        else:
+            self.data["acceleration"] = 0
 
     # Handle change in input from the user about temperature
     def tempChangeHandler(self, temp):
@@ -644,7 +651,6 @@ class TrainModel():
     def failureStates(self):
         if self.data["commStatus"] == False:
             self.passThroughData["commandedSpeed"] = 0.0
-            self.passThroughData["speedLimit"] = 0.0
             self.passThroughData["authority"] = 0
             self.passThroughData["beacon"] = ["", 0, "", False]
         if self.data["engineStatus"] == False:

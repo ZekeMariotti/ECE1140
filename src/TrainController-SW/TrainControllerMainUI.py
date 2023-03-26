@@ -16,7 +16,7 @@ from animated_toggle import AnimatedToggle
 class Worker(QObject):
     finished = pyqtSignal()
 
-# TODO: Fix Station name text
+# TODO: Fix Station name text, commanded speed text update
 # Class for the main window
 class MainWindow(QMainWindow):
 
@@ -25,10 +25,10 @@ class MainWindow(QMainWindow):
             super().__init__()
 
             # Enable Test UI
-            self.testUI = True 
+            self.testUI = False 
             
             # Initialize TrainControllerSW object
-            self.TrainControllerSW = TrainControllerSW(0, 0, 0, 0, "2023-02-20T21:52:48.3940347-05:00", False, 0, "setupStationName",  
+            self.TrainControllerSW = TrainControllerSW(2, 0, 0, 0, "2023-02-20T21:52:48.3940347-05:00", False, 0, "setupStationName",  
                                                        0, "station2", False, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "setupStationAnnouncement")
             
             # Update Inputs and Outputs
@@ -386,7 +386,7 @@ class MainWindow(QMainWindow):
         def temperatureSetup(self):
             temperature = QLabel()  
             temperature.setFont(self.labelFont)      
-            temperature.setText("Temperature:\n" + str(Conversions.celsiusToFahrenheit(float(self.TrainControllerSW.inputs.temperature))) + " F")
+            temperature.setText("Temperature:\n" + str(float(self.TrainControllerSW.inputs.temperature)) + " F")
             temperature.setFixedSize(QSize(self.labelWidth, self.labelHeight))
             temperature.setAlignment(Qt.AlignmentFlag.AlignCenter)
             temperature.setWordWrap(True)
@@ -637,7 +637,7 @@ class MainWindow(QMainWindow):
             self.commandedSpeed.setText("Commanded Speed:\n" + str(Conversions.kilometersToMiles(float(self.TrainControllerSW.inputs.commandedSpeed))) + " MPH")
             self.authority.setText("Authority:\n" + str(self.TrainControllerSW.inputs.authority) + " Blocks")
             self.speedLimit.setText("Speed Limit:\n" + str(Conversions.kilometersToMiles(float(self.TrainControllerSW.speedLimit))) + " MPH")
-            self.temperature.setText("Temperature:\n" + str(Conversions.celsiusToFahrenheit(float(self.TrainControllerSW.inputs.temperature))) + " F")
+            self.temperature.setText("Temperature:\n" + str(float(self.TrainControllerSW.inputs.temperature)) + " F")
             self.internalLightsState.setText("Internal Lights: " + self.TrainControllerSW.getInternalLightsState())
             self.externalLightsState.setText("External Lights: " + self.TrainControllerSW.getExternalLightsState())
             self.leftDoorState.setText("Left Door\n" + self.TrainControllerSW.getLeftDoorState())
