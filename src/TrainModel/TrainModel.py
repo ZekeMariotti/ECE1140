@@ -300,9 +300,13 @@ class TrainModel():
 
     # Finds the current acceleration of a train
     def findCurrentAcceleration(self, time = 1) :
-        # Limits the power of the engine
+        # Limits the power of the engine if it is > 120000
         if self.data["power"] > 120000:
             self.data["power"] = 120000
+        
+        # Limits the power of the engine if it is < 0
+        if self.data["power"] < 0:
+            self.data["power"] = 0
 
         # Find the force of friction and the force of mass on the train
         frictionalForce = -(self.data["mass"] * self.constants["gravity"] * self.constants["friction"] * cos(asin(self.trackData["elevation"] / self.trackData["blockLength"])))
@@ -314,8 +318,8 @@ class TrainModel():
 
         # If the train is not moving, but has power input, set the medium acceleration to 0.5 m/s^2 regardless of
         if (self.data["prevVelocity"] == 0.0) & (self.data["power"] > 0.0):
-            self.data["acceleration"] = self.constants["mediumAcceleration"]
-            return
+            #self.data["acceleration"] = self.constants["mediumAcceleration"]
+            powerForce = self.constants["mediumAcceleration"] * self.data["mass"]
         
         # If the train is moving and has power input
         elif (self.data["power"] > 0.0):
