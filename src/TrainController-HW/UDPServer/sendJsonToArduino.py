@@ -3,6 +3,8 @@ import time
 import os
 import sys
 import json
+# from datetime import *
+# import datetime
 
 ip = "192.168.1.3"
 port = 27000
@@ -15,7 +17,7 @@ trainModelToTrainController = {
     "commandedSpeed"        : 0.0,                                 # Commanded Speed in m/s
     "currentSpeed"          : 0.0,                                 # Current Speed in m/s
     "authority"             : 0,                                   # Authority in Blocks
-    "inputTime"             : "2023-02-22T11:00:00.0000000-05:00", # RTC Clock in ISO 8601
+    "inputTime"             : "2023-03-26T19:45:19+0000", # RTC Clock in ISO 8601
     "undergroundState"      : False,                               # Underground State
     "speedLimit"            : 0.0,                                 # Speed Limit in m/s
     "temperature"           : 0.0,                                 # Temperature inside the Train in degrees Fahrenheit
@@ -48,11 +50,17 @@ def parseJson():
     udpMessage = json.dumps(trainModelToTrainController)
     # print(udpMessage)
 
+def findTimeInSeconds():
+        if (trainModelToTrainController["inputTime"] != ""):
+            clock = datetime.fromisoformat(trainModelToTrainController["inputTime"])
+            print (float(clock.seconds))
+
 
 
 while True:
     readJsonFromFile()
     # print(trainModelToTrainController)
+    # findTimeInSeconds();
     parseJson()
     print(udpMessage)
 
