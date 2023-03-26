@@ -109,7 +109,7 @@ class TrainModel():
         "massOfTrain"        : 40900.0,      # Mass of an unloaded train car in kilograms
         "massOfHuman"        : 68.0389,      # Mass of a human for this simulation in kilograms
         "maxPassengers"      : 222,          # Maximum number of passengers that can be on the train at one time
-        "friction"           : 0.6           # Coefficient of friction used for both static and dynamic friction
+        "friction"           : 0.006         # Coefficient of friction used for both static and dynamic friction
     }
 
     # Dictionary used for different eBrake States from train controller and user input
@@ -297,72 +297,72 @@ class TrainModel():
     # Finds the current acceleration of a train
     def findCurrentAcceleration(self, time = 1) :
         # Limits the power of the engine
-        #if self.data["power"] > 120000:
-        #    self.data["power"] = 120000
+        if self.data["power"] > 120000:
+            self.data["power"] = 120000
 
         # Find the force of friction and the force of mass on the train
-        #frictionalForce = -(self.data["mass"] * self.constants["gravity"] * self.constants["friction"] * cos(asin(self.trackData["elevation"] / self.trackData["blockLength"])))
-        #gravitationalForce = -(self.data["mass"] * self.constants["gravity"] * (self.trackData["elevation"] / self.trackData["blockLength"]))
-        #powerForce = 0
-        #brakeForce = 0
+        frictionalForce = -(self.data["mass"] * self.constants["gravity"] * self.constants["friction"] * cos(asin(self.trackData["elevation"] / self.trackData["blockLength"])))
+        gravitationalForce = -(self.data["mass"] * self.constants["gravity"] * (self.trackData["elevation"] / self.trackData["blockLength"]))
+        powerForce = 0
+        brakeForce = 0
 
         # Deal with finding the force from the power input
 
         # If the train is not moving, but has power input, set the medium acceleration to 0.5 m/s^2 regardless of
-        #if (self.data["prevVelocity"] == 0.0) & (self.data["power"] > 0.0):
-        #    self.data["acceleration"] = self.constants["mediumAcceleration"]
-        #    return
+        if (self.data["prevVelocity"] == 0.0) & (self.data["power"] > 0.0):
+            self.data["acceleration"] = self.constants["mediumAcceleration"]
+            return
         
         # If the train is moving and has power input
-        #elif (self.data["power"] > 0.0):
-        #    powerForce = self.data["power"] / self.data["prevVelocity"]
-        #    frictionalForce = 0.0
+        elif (self.data["power"] > 0.0):
+            powerForce = self.data["power"] / self.data["prevVelocity"]
 
         # Deal with the force from brakes, if any
-        #if (self.data["eBrakeState"] | self.data["sBrakeState"]):
-        #    brakeForce = self.data["acceleration"] * self.data["mass"]
+        if (self.data["eBrakeState"] | self.data["sBrakeState"]):
+            brakeForce = self.data["acceleration"] * self.data["mass"]
 
         # Calculate the sum of the forces and current Acceleration
         #print("powerForce: ", powerForce, " brakeForce: ", brakeForce, " frictionalForce: ", frictionalForce, " gravitationalForce: ", gravitationalForce)
-        #forces = powerForce + brakeForce + frictionalForce + gravitationalForce
-        #tempAcceleration = forces / self.data["mass"]
+        forces = powerForce + brakeForce + frictionalForce + gravitationalForce
+        tempAcceleration = forces / self.data["mass"]
 
         # Limit the acceleration to follow F = ma
-        #self.data["acceleration"] = tempAcceleration if tempAcceleration <= (forces / self.data["mass"]) else (forces / self.data["mass"])
+        if (time > 0):
+            self.data["acceleration"] = tempAcceleration if tempAcceleration <= (forces / self.data["mass"]) else (forces / self.data["mass"])
         #print(self.data["acceleration"])
 
         # Limits the power of the engine
-        if self.data["power"] > 120000:
-            self.data["power"] = 120000
+        #if self.data["power"] > 120000:
+        #    self.data["power"] = 120000
 
         # If Emergency or service brakes are enabled, do not change acceleration
-        if (self.data["eBrakeState"] | self.data["sBrakeState"]):
-            return
+        #if (self.data["eBrakeState"] | self.data["sBrakeState"]):
+        #    return
         
         # If the train is not moving and has no power input
-        if ((self.data["prevVelocity"] == 0.0) & (self.data["power"] == 0.0)):
-            force = 0.0
+        #if ((self.data["prevVelocity"] == 0.0) & (self.data["power"] == 0.0)):
+        #    force = 0.0
 
         # If the train is not moving but has a power input
-        elif (self.data["prevVelocity"] == 0.0):
-            force = self.data["mass"] * self.constants["mediumAcceleration"]
+        #elif (self.data["prevVelocity"] == 0.0):
+        #    force = self.data["mass"] * self.constants["mediumAcceleration"]
 
         # All other cases
-        else:
-            force = self.data["power"] / self.data["prevVelocity"]
+        #else:
+        #    force = self.data["power"] / self.data["prevVelocity"]
 
         # If the train is not on an incline or decline, use this calculation
-        if (self.trackData["elevation"] == 0.0):
-            tempAcceleration = force / self.data["mass"]
+        #if (self.trackData["elevation"] == 0.0):
+        #    tempAcceleration = force / self.data["mass"]
 
         # If the train is on an incline or decline, use this calculation
-        else:
+        #else:
             # Calculating the effect of mass * gravity when on an incline
-            tempAcceleration = (force - (self.data["mass"] * self.constants["gravity"] * (self.trackData["elevation"] / self.trackData["blockLength"]))) / self.data["mass"]
+        #    tempAcceleration = (force - (self.data["mass"] * self.constants["gravity"] * (self.trackData["elevation"] / self.trackData["blockLength"]))) / self.data["mass"]
 
         # Limit the acceleration to something that is possible for the train according to F = ma
-        if (time > 0):
-            self.data["acceleration"] = tempAcceleration if tempAcceleration <= (force / self.data["mass"]) else (force / self.data["mass"])
+        #if (time > 0):
+        #    self.data["acceleration"] = tempAcceleration if tempAcceleration <= (force / self.data["mass"]) else (force / self.data["mass"])
 
     # Finds the current velocity of a train given 7 inputs
     def findCurrentVelocity(self, time = 1):

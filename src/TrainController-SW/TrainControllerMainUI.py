@@ -108,7 +108,7 @@ class MainWindow(QMainWindow):
 
         def mainTimerSetup(self):     
             mainTimer = QTimer()
-            mainTimer.setInterval(200)
+            mainTimer.setInterval(100)
             mainTimer.timeout.connect(self.mainEventLoop)
             mainTimer.setParent(self)
             mainTimer.start()
