@@ -8,7 +8,6 @@ from PyQt6.QtCore import *
 import sys
 import os
 import json
-import csv
 
 class TrainModel():
 
@@ -390,27 +389,6 @@ class TrainModel():
         prevTime = datetime.fromisoformat(self.data["prevRTC"])
         newTime = currTime - prevTime
         return int(newTime.seconds)
-
-
-    # NEEDS TO BE REMOVED. MUST GET BLOCK LENGTH AND ELEVATION FROM THE TRAIN MODEL
-    # Finds the elevation and block length of the block the train is currently on
-    def findCurrentBlockInfo(self):
-        # Case if the train is in the yard
-        if (self.trackData["currBlock"] == 0):
-            return
-        
-        # Case otherwise
-        #os.chdir("src/TrainModel")
-        with open("greenLineBlocks.txt", newline = '') as csvFile:
-            csvReader = csv.reader(csvFile, delimiter = ',')
-            for row in csvReader:
-                if (row[0] == "Number"):
-                    continue
-                if (int(row[0])) == self.trackData["currBlock"]:
-                    self.trackData["blockLength"] = float(row[3])
-                    self.trackData["elevation"] = float(row[12])
-                    break
-        #os.chdir("../../")
 
     # Finds the Block the train is on and the Block the train is exiting
     def findBlockExiting(self):
