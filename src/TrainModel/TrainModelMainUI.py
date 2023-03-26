@@ -461,7 +461,7 @@ class TrainModelUI(QWidget):
         # Update Middle Column of data outputs
         self.velocityOutput.setText(str(metersPerSecondToMilesPerHour(self.TrainModel.data["velocity"])) + " mph")
         self.accelerationOutput.setText(str(metersPerSecondSquaredToFeetPerSecondSquared(self.TrainModel.data["acceleration"])) + " ft/s^2")
-        self.powerOutput.setText(str(wattsToHorsepower(self.TrainModel.data["power"])) + " hp")
+        self.powerOutput.setText(str(round(self.TrainModel.data["power"], 2)) + " W")
         self.stationOutput.setText(self.TrainModel.data["station"])
 
         # Setting communication status output and color

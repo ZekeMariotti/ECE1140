@@ -168,8 +168,10 @@ class TrainModel():
         "passengersEntering" : 0,                                      # Number of passengers entering the train
         "undergroundState"   : False,                                  # State of whether the train is underground or not
         "beacon"             : ["", 0, "", False],                     # Array to store the beacon inputs [stationName, platformSide, nextStationName, isBeacon]
-        "switch"             : True,                                   # True if the block the train is currently on is a switch, false otherwise                      
-        "switchState"        : 1                                       # 0 if the switch is in a default position, 1 otherwise
+        "switch"             : False,                                  # True if the block the train is currently on is a switch, false otherwise                      
+        "switchState"        : 0,                                      # 0 if the switch is in a default position, 1 otherwise
+        "blockLength"        : 10.0,                                   # Length of the current block that the train is on
+        "elevation"          : 0.0                                     # elevation different of the current block that the train is on
     }
 
     # Dictionary for outputs to the Track Model
@@ -264,6 +266,8 @@ class TrainModel():
         self.data["atStation"]                 = self.trackModelToTrainModel["beacon"][3]
         self.trackData["switch"]               = self.trackModelToTrainModel["switch"]
         self.trackData["switchState"]          = self.trackModelToTrainModel["switchState"]
+        self.trackData["blockLength"]          = self.trackModelToTrainModel["blockLength"]
+        self.trackData["elevation"]            = self.trackModelToTrainModel["elevation"]
 
     # Function to run all internal methods when the method is called by the updater in the UI
     def runFunctions(self):
@@ -273,7 +277,7 @@ class TrainModel():
         tempTimeDiff = self.findTimeDifference()
         self.failureStates()
         self.brakeCaclulator()
-        self.findCurrentBlockInfo()
+        #self.findCurrentBlockInfo()
         self.findCurrentAcceleration()
         self.findCurrentVelocity()
         self.findCurrentDistance()
@@ -418,7 +422,7 @@ class TrainModel():
             # Find total overflow distance into the next block
             tempDistance = self.trackData["distance"] - self.trackData["remDistance"]
             self.trackData["currBlock"] = self.findNextBlock()
-            self.findCurrentBlockInfo()
+            #self.findCurrentBlockInfo()
             self.trackData["remDistance"] = self.trackData["blockLength"] - tempDistance
             
     # Finds the next block in sequence based on a switch state saved internally

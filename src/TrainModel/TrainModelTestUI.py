@@ -33,7 +33,9 @@ class TrainModelTestUI(QWidget):
         "internalLightCommand"  : False,
         "stationAnnouncement"   : "The Yard",
         "switch"                : False,
-        "switchState"           : 0
+        "switchState"           : 0,
+        "blockLength"           : 100.0,
+        "elevation"             : 0
     }
 
     testDataOutputs = {
@@ -106,7 +108,9 @@ class TrainModelTestUI(QWidget):
         "undergroundState"   : False,                                  # State of whether the train is underground or not
         "beacon"             : ["", 0, "", False],                     # Array to store the beacon inputs [stationName, platformSide, nextStationName, isBeacon]
         "switch"             : False,                                  # True if the block the train is currently on is a switch, false otherwise                      
-        "switchState"        : 0                                       # 0 if the switch is in a default position, 1 otherwise
+        "switchState"        : 0,                                      # 0 if the switch is in a default position, 1 otherwise
+        "blockLength"        : 100.0,                                  # Length of the current block that the train is on
+        "elevation"          : 0.0                                     # elevation different of the current block that the train is on
     }
 
     # Dictionary for outputs to the Track Model
@@ -178,68 +182,83 @@ class TrainModelTestUI(QWidget):
 
         # Add the Underground State Input
         undergroundStateLabel = QLabel("Underground State")
-        layout.addWidget(undergroundStateLabel, 6, 0)
+        layout.addWidget(undergroundStateLabel, 5, 0)
         self.undergroundStateInput = QComboBox()
         self.undergroundStateInput.addItems(["False", "True"])
         self.undergroundStateInput.currentIndexChanged.connect(self.getUndergroundStateInput)
-        layout.addWidget(self.undergroundStateInput, 6, 1)
+        layout.addWidget(self.undergroundStateInput, 5, 1)
 
         # Add the Beacon Inputs [stationName, platformSide, nextStationName, isBeacon]
         beaconLabel = QLabel("Beacon Inputs")
-        layout.addWidget(beaconLabel, 7, 0)
+        layout.addWidget(beaconLabel, 6, 0)
         beaconLabel2 = QLabel("[stationName, platformSide, nextStationName, isBeacon]")
         beaconLabel2.setWordWrap(True)
-        layout.addWidget(beaconLabel2, 7, 1)
+        layout.addWidget(beaconLabel2, 6, 1)
 
         # Add the Station Name Beacon Input
         stationNameLabel = QLabel("Station Name")
-        layout.addWidget(stationNameLabel, 8, 0)
+        layout.addWidget(stationNameLabel, 7, 0)
         self.stationNameInput = QLineEdit()
         self.stationNameInput.editingFinished.connect(self.getStationNameInput)
-        layout.addWidget(self.stationNameInput, 8, 1)
+        layout.addWidget(self.stationNameInput, 7, 1)
 
         # Platform Side Beacon Selector
         platformSideLabel = QLabel("Platform Side")
-        layout.addWidget(platformSideLabel, 9, 0)
+        layout.addWidget(platformSideLabel, 8, 0)
         self.platformSideInput = QComboBox()
         self.platformSideInput.addItems(["Left", "Right", "Both"])
         self.platformSideInput.currentIndexChanged.connect(self.getPlatformSideInput)
-        layout.addWidget(self.platformSideInput, 9, 1)
+        layout.addWidget(self.platformSideInput, 8, 1)
 
         # Next Station Name Beacon Input
         nextStationLabel = QLabel("Next Station Name")
-        layout.addWidget(nextStationLabel, 10, 0)
+        layout.addWidget(nextStationLabel, 9, 0)
         self.nextStationInput = QLineEdit()
         self.nextStationInput.editingFinished.connect(self.getNextStationInput)
-        layout.addWidget(self.nextStationInput, 10, 1)
+        layout.addWidget(self.nextStationInput, 9, 1)
 
         # is Beacon Input
         isBeaconLabel = QLabel("isBeacon")
-        layout.addWidget(isBeaconLabel, 11, 0)
+        layout.addWidget(isBeaconLabel, 10, 0)
         self.isBeaconInput = QComboBox()
         self.isBeaconInput.addItems(["False", "True"])
         self.isBeaconInput.currentIndexChanged.connect(self.getIsBeaconInput)
-        layout.addWidget(self.isBeaconInput, 11, 1)
+        layout.addWidget(self.isBeaconInput, 10, 1)
 
         # Add the Switch Input
         switchLabel = QLabel("Switch")
-        layout.addWidget(switchLabel, 12, 0)
+        layout.addWidget(switchLabel, 11, 0)
         self.switchInput = QComboBox()
         self.switchInput.addItems(["False", "True"])
         self.switchInput.currentIndexChanged.connect(self.getSwitchInput)
-        layout.addWidget(self.switchInput, 12, 1)
+        layout.addWidget(self.switchInput, 11, 1)
 
         # Add the Switch State Input
         switchStateLabel = QLabel("Switch State")
-        layout.addWidget(switchStateLabel, 13, 0)
+        layout.addWidget(switchStateLabel, 12, 0)
         self.switchStateInput = QComboBox()
         self.switchStateInput.addItems(["0", "1"])
         self.switchStateInput.currentIndexChanged.connect(self.getSwitchStateInput)
-        layout.addWidget(self.switchStateInput, 13, 1)
+        layout.addWidget(self.switchStateInput, 12, 1)
+
+        # Add the Block Length Input
+        blockLengthLabel = QLabel("Block Length")
+        layout.addWidget(blockLengthLabel, 13, 0)
+        self.blockLengthInput = QLineEdit()
+        self.blockLengthInput.editingFinished.connect(self.getBlockLengthInput)
+        layout.addWidget(self.blockLengthInput, 13, 1)
+
+        # Add the Elevation Length Input
+        elevationLabel = QLabel("Elevation")
+        layout.addWidget(elevationLabel, 14, 0)
+        self.elevationInput = QLineEdit()
+        self.elevationInput.editingFinished.connect(self.getElevationInput)
+        layout.addWidget(self.elevationInput, 14, 1)
+
 
         # Adding the Train Controller Label
         trainControllerLabel = QLabel("Train Controller Inputs")
-        layout.addWidget(trainControllerLabel, 14, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(trainControllerLabel, 15, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
 
         # Train ID Input
         #idLabel = QLabel("Train ID")
@@ -552,6 +571,8 @@ class TrainModelTestUI(QWidget):
         self.trackModelToTrainModel["beacon"]             = self.testDataInputs["beacon"]
         self.trackModelToTrainModel["switch"]             = self.testDataInputs["switch"]
         self.trackModelToTrainModel["switchState"]        = self.testDataInputs["switchState"]
+        self.trackModelToTrainModel["blockLength"]        = self.testDataInputs["blockLength"]
+        self.trackModelToTrainModel["elevation"]          = self.testDataInputs["elevation"]
         with open(os.path.join(sys.path[0], "TrackModelToTrainModel.json"), "w") as filename:
             (json.dump(self.trackModelToTrainModel, filename, indent=4))
 
@@ -573,6 +594,12 @@ class TrainModelTestUI(QWidget):
     
     def getSwitchStateInput(self, index):
         self.testDataInputs["switchState"] = index
+
+    def getBlockLengthInput(self):
+        self.testDataInputs["blockLength"] = float(self.blockLengthInput.text())
+
+    def getElevationInput(self):
+        self.testDataInputs["elevation"] = float(self.elevationInput.text())
 
     #def getIDLabelInput(self):
     #    self.testDataInputs["id"] = int(self.idLabelInput.text())
