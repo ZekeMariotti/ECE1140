@@ -80,7 +80,7 @@ void loop() {
   getJSONData();
   // delay(1000);
   int currTime = millis();
-  // int currTime = jsonDataIn["Time"];
+  // int currTime = jsonDataIn["inputTime"];
   int dt = currTime-prevTime;
   updateSwitchStates(switchStateArray);
   drive(dt);
@@ -272,7 +272,7 @@ void parseJSONData2(int *switchStateArray){
   jsonDataOut["emergencyBrakeCommand"] = emergencyBrakeState;
   jsonDataOut["externalLightCommand"] = switchStateArray[5];
   jsonDataOut["internalLightCommand"] = switchStateArray[4];
-  jsonDataOut["stationAnnouncement"] = "text";
+  jsonDataOut["stationAnnouncement"] = jsonDataIn["stationName"];
   jsonDataOut["isAtStation"] = 1;
   
 }
@@ -364,7 +364,7 @@ void drive(int dt){
     //this is the main drive function to make the train move. 
     //This also calls the power and brake functions
   autoDriveCommand = switchStateArray[1];//jsonDataIn["Manual Speed Override"];
-  currentSpeed = jsonDataIn["Current Speed"];
+  currentSpeed = jsonDataIn["currentSpeed"];
   commandedSpeed = jsonDataIn["commandedSpeed"];
   if(autoDriveCommand){
     autodrive(currentSpeed, commandedSpeed, dt);
