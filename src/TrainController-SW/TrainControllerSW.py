@@ -19,25 +19,24 @@ class TrainControllerSW:
         # Train id
         self.trainId = trainId
 
-        # stationState and speed limit
+        # Internal Variables
         self.stationState = False
         self.speedLimit = 100
+        self.commandedSpeedManual = 0
+        self.manualMode = False
+        self.simulationSpeed = 1
 
         # Constants
-        # serviceBrake deceleration = 1.2 m/s^2, e-brake deceleration = 2.73 m/s^2
         # Max Speed in km/hr
         self.MAX_SPEED = 70
 
         # Max Power in Watts
         self.MAX_POWER = 120000
-        
-        self.realTime = None
-        self.manualMode = False
-        
-        self.previousTime = None
-        self.currentTime = None
-        self.commandedSpeedInternal = None
-        
+
+        # Time variables
+        self.realTime = datetime
+        self.previousTime = datetime
+        self.currentTime = datetime     
 
         # Power variables (ek1/uk1 = previous ek/uk, or e(k-1)/u(k-1) )
         self.ek = None
@@ -45,9 +44,9 @@ class TrainControllerSW:
         self.uk = None
         self.uk1 = 0
         
-        self.T = 0.1
+        self.T = timedelta
         self.Kp = 50000
-        self.Ki = 50000
+        self.Ki = 5000
 
         # Variables to check states between mainEventLoops
         self.lightsEnabledPrevious = None
@@ -89,8 +88,21 @@ class TrainControllerSW:
 
     # Calculates the power to output to the train model 
     def calculatePower(self):
+        # T (Not Implemented)
+        #T = self.currentTime - self.previousTime
+        #self.T = T.total_seconds()
+        #print(self.T)
+        #print(self.currentTime.time())
+        #print(self.previousTime.time())
+
+        # Temporary set T to fixed value
+        self.T = timedelta(0, 0, 0, 100).total_seconds()
+
         # ek = velocity error
-        self.ek = float(self.inputs.commandedSpeed) - float(self.inputs.currentSpeed)
+        if(self.manualMode == True):
+            self.ek = float(self.commandedSpeedManual) - float(self.inputs.currentSpeed)
+        else:
+            self.ek = float(self.inputs.commandedSpeed) - float(self.inputs.currentSpeed)
         
         # Don't update uk if at max power
         if (self.outputs.power < self.MAX_POWER):
@@ -160,7 +172,7 @@ class TrainControllerSW:
     def autoSetServiceBrake(self):
         if (self.inputs.authority == 0):
             self.outputs.serviceBrakeCommand = True
-        elif(self.inputs.currentSpeed > self.inputs.commandedSpeed + 1):
+        elif(self.inputs.currentSpeed > self.inputs.commandedSpeed + 0.5):
             self.outputs.serviceBrakeCommand = True
         else:
             self.outputs.serviceBrakeCommand = False

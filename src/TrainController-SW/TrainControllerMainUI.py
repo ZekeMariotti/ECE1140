@@ -31,9 +31,11 @@ class MainWindow(QMainWindow):
             self.TrainControllerSW = TrainControllerSW(2, 0, 0, 0, "2023-02-20T21:52:48.3940347-05:00", False, 0, "setupStationName",  
                                                        0, "station2", False, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "setupStationAnnouncement")
             
-            # Update Inputs and Outputs
+            # Update Inputs, Outputs, and time
             self.TrainControllerSW.writeOutputs()
             self.TrainControllerSW.readInputs()          
+            self.TrainControllerSW.previousTime = self.TrainControllerSW.realTime
+            self.TrainControllerSW.currentTime = self.TrainControllerSW.realTime
 
             # Set window defaults
             self.setWindowTitle("Train Controller")
@@ -347,7 +349,12 @@ class MainWindow(QMainWindow):
         def commandedSpeedSetup(self):
             commandedSpeed = QLabel()
             commandedSpeed.setFont(self.labelFont)
-            commandedSpeed.setText("Commanded Speed:\n" + str(Conversions.metersPerSecondToMilesPerHour(float(self.TrainControllerSW.inputs.commandedSpeed))) + " MPH")
+
+            if (self.TrainControllerSW.manualMode == True):
+                commandedSpeed.setText(f'Commanded Speed:\n{str(Conversions.metersPerSecondToMilesPerHour(float(self.TrainControllerSW.commandedSpeedManual)))} MPH')
+            else:
+                commandedSpeed.setText(f'Commanded Speed:\n{str(Conversions.metersPerSecondToMilesPerHour(float(self.TrainControllerSW.inputs.commandedSpeed)))} MPH')
+            
             commandedSpeed.setFixedSize(QSize(self.labelWidth, self.labelHeight))
             commandedSpeed.setAlignment(Qt.AlignmentFlag.AlignCenter)
             commandedSpeed.setWordWrap(True)
@@ -636,7 +643,12 @@ class MainWindow(QMainWindow):
             self.engineState.setText("Engine State:\n" + self.TrainControllerSW.getEngineState())
             self.emergencyBrakeState.setText("Emergency Brake:\n" + self.TrainControllerSW.getEmergencyBrakeState())
             self.serviceBrakeState.setText("Service Brake:\n" + self.TrainControllerSW.getServiceBrakeState())
-            self.commandedSpeed.setText("Commanded Speed:\n" + str(Conversions.metersPerSecondToMilesPerHour(float(self.TrainControllerSW.inputs.commandedSpeed))) + " MPH")
+            
+            if (self.TrainControllerSW.manualMode == True):
+                self.commandedSpeed.setText(f'Commanded Speed:\n{str(Conversions.metersPerSecondToMilesPerHour(float(self.TrainControllerSW.commandedSpeedManual)))} MPH')
+            else:
+                self.commandedSpeed.setText(f'Commanded Speed:\n{str(Conversions.metersPerSecondToMilesPerHour(float(self.TrainControllerSW.inputs.commandedSpeed)))} MPH')
+            
             self.authority.setText("Authority:\n" + str(self.TrainControllerSW.inputs.authority) + " Blocks")
             self.speedLimit.setText("Speed Limit:\n" + str(Conversions.metersPerSecondToMilesPerHour(float(self.TrainControllerSW.speedLimit))) + " MPH")
             self.temperature.setText("Temperature:\n" + str(float(self.TrainControllerSW.inputs.temperature)) + " F")
@@ -670,10 +682,7 @@ class MainWindow(QMainWindow):
             self.TrainControllerSW.outputs.serviceBrakeCommand = False
 
         def commandedSpeedSliderValueChanged(self):
-            self.TrainControllerSW.inputs.commandedSpeed = Conversions.kmPerHourToMetersPerSecond(self.commandedSpeedSlider.value())
-
-            # Need to write inputs because commandedSpeed is an internal input in manual mode
-            self.TrainControllerSW.writeInputs()
+            self.TrainControllerSW.commandedSpeedManual = Conversions.kmPerHourToMetersPerSecond(self.commandedSpeedSlider.value())
 
         def internalLightsEnableClick(self):
             self.TrainControllerSW.outputs.internalLightCommand = True
