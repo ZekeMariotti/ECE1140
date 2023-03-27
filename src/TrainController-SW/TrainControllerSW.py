@@ -149,6 +149,14 @@ class TrainControllerSW:
         else:
             self.outputs.power = round(self.outputs.power, 1)
 
+        # If currentSpeed > commandedSpeed, power = 0
+        if(self.manualMode == True):
+            if(self.inputs.currentSpeed > self.commandedSpeedManual):
+                self.outputs.power = 0
+        else:
+            if(self.inputs.currentSpeed > self.inputs.commandedSpeed):
+                self.outputs.power = 0
+
         # Set ek1/uk1 to current ek/uk
         self.ek1 = self.ek
         self.uk1 = self.uk
