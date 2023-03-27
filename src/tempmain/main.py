@@ -1,19 +1,28 @@
 # Main UI for all modules
 
 import sys
+import os
+from pathlib import Path
+import sys
+
+#import TrainControllerMainUI, TrainControllerSW, TrainControllerTestUI, Conversions
+#import TrainModel, TrainModelMainUI, TrainModelTestUI, TrainModelSignals
+import TrainModelMainUI, TrainControllerMainUI
 
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from datetime import *
 
+
+
 # Class for the main window
 class MainWindow(QMainWindow):
-
+        
         # Constructor 
         def __init__(self):
             super().__init__()
-
+            
             # Main clock and simulation speed
             self.RTC = datetime.now() # Temporarily set time manually
             self.simulationSpeed = 1
@@ -21,6 +30,8 @@ class MainWindow(QMainWindow):
 
             # Test TM and TC
             self.TM_TC_TestSetup()
+            self.TrainModelList = []
+            self.TrainControllerList = []
 
             # Set window defaults
             self.setWindowTitle(" ")
@@ -204,7 +215,8 @@ class MainWindow(QMainWindow):
 
         # Test setups for testing TM and TC
         def TM_TC_TestSetup(self):
-            print("test")
+            self.firstTC = TrainControllerMainUI.MainWindow()
+
 
 
 # Start application
@@ -212,5 +224,6 @@ app = QApplication(sys.argv)
 
 mainWindow = MainWindow()
 mainWindow.show()
+mainWindow.firstTC.show()
 
 app.exec() 
