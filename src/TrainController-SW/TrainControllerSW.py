@@ -22,7 +22,8 @@ class TrainControllerSW:
 
         # Internal Variables
         self.stationState = False
-        self.beaconPassed = False
+        self.firstBeaconPassed = False
+        self.secondBeaconPassed = False
         self.exitBeacon = False
         self.speedLimit = 100
         self.commandedSpeedManual = 0
@@ -92,20 +93,21 @@ class TrainControllerSW:
 
     # Determines whether the train is at a station or not
     def setStationState(self):
-        # if isBeacon and !beaconPassed, entering station
-        # if isBeacon and stationState, exiting station
-        if(self.inputs.isBeacon == True and self.beaconPassed == False):
-            self.beaconPassed = True
-        elif(self.inputs.isBeacon == True and self.stationState == True):
-            self.exitBeacon = True
-
-        if(self.beaconPassed == True and self.inputs.currentSpeed == 0):
+        # if isBeacon and !firstBeaconPassed, entering station
+        if(self.inputs.isBeacon == True and self.firstBeaconPassed == False):
+            self.firstBeaconPassed = True
+        elif(self.inputs.isBeacon == False and self.firstBeaconPassed == True):
             self.stationState = True
 
-        # if !isBeacon, exitBeacon, and stationState, reset stationState and beaconPassed (left the station)
-        if(self.inputs.isBeacon == False and self.exitBeacon == True and self.stationState == True):
+        # if isBeacon and stationState and !secondBeaconPassed, exiting station
+        if(self.inputs.isBeacon == True and self.stationState == True and self.secondBeaconPassed == False):
+            self.secondBeaconPassed = True
+
+        # if !isBeacon and secondBeaconPassed, reset stationState and beaconPassed variables (left the station)
+        if(self.inputs.isBeacon == False and self.secondBeaconPassed == True):
             self.stationState = False
-            self.beaconPassed = False
+            self.firstBeaconPassed = False
+            self.secondBeaconPassed = False
 
     # Calculates the power to output to the train model 
     def calculatePower(self):

@@ -14,7 +14,7 @@
     "leftDoorState": false,
     "rightDoorState": false,
     "serviceBrakeState": false,
-    "emergencyBrakeState": false,
+    "emergencyBrakeState": 0,
     "serviceBrakeStatus": true,
     "engineStatus": true,
     "communicationsStatus": true

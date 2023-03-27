@@ -3,7 +3,7 @@
     "leftDoorCommand": false,
     "rightDoorCommand": false,
     "serviceBrakeCommand": false,
-    "emergencyBrakeCommand": false,
+    "emergencyBrakeCommand": 0,
     "externalLightCommand": 0,
     "internalLightCommand": 0,
     "stationAnnouncement": "setupStationAnnouncement"
