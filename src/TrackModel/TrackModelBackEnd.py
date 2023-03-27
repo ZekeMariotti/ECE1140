@@ -75,7 +75,6 @@ class backEndCalculations():
         "switchBlockB" : DynamicArray(),
         "switchBlockC" : DynamicArray()
     }
-
     # Determines how many passengers get off at each station
     def passengersGettingOnB(self, index):
         if self.data["blockTrainNo"][9] > 0:

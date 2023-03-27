@@ -1,0 +1,21 @@
+{
+    "commandedSpeed": 15.0,
+    "currentSpeed": 2.7314242424276047,
+    "authority": 10,
+    "inputTime": "2023-02-22T11:00:00.0000000-05:00",
+    "undergroundState": false,
+    "temperature": 68.0,
+    "stationName": "",
+    "platformSide": 0,
+    "nextStationName": "",
+    "isBeacon": false,
+    "externalLightsState": 0,
+    "internalLightsState": 0,
+    "leftDoorState": true,
+    "rightDoorState": false,
+    "serviceBrakeState": false,
+    "emergencyBrakeState": 0,
+    "serviceBrakeStatus": true,
+    "engineStatus": true,
+    "communicationsStatus": true
+}

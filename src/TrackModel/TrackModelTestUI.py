@@ -14,6 +14,7 @@ class TrackModelTestUI(QWidget):
 
     backEnd = backEndCalculations()
 
+
     # Define an array to store block and station data
     data = {
         "line" : 0,
@@ -25,6 +26,7 @@ class TrackModelTestUI(QWidget):
     # Define an array to store train data
     train = {
         "trainNo" : 0,
+
         "trainBlock" : [0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -33,6 +35,7 @@ class TrackModelTestUI(QWidget):
 
     # Temp boolean
     toggle = 0
+
     toggleSwitch = 0
     toggleGate = 0
     toggleSignal = 0
@@ -46,6 +49,7 @@ class TrackModelTestUI(QWidget):
         self.setLayout(layout)
 
         # Setting up all the inputs
+
         # Add the Line
         lineLabel = QLabel("Line")
         layout.addWidget(lineLabel, 0, 0)
@@ -77,6 +81,7 @@ class TrackModelTestUI(QWidget):
 
         # Add the Gate Position
         gatePositionLabel = QLabel("Gate Position")
+
         layout.addWidget(gatePositionLabel, 3, 0)
         self.gatePositionInput = QComboBox()
         self.gatePositionInput.currentIndexChanged.connect(self.getGatePositionInput)
@@ -85,6 +90,7 @@ class TrackModelTestUI(QWidget):
 
         # Add the Signal State
         signalStateLabel = QLabel("Signal State")
+
         layout.addWidget(signalStateLabel, 4, 0)
         self.signalStateInput = QComboBox()
         self.signalStateInput.addItems(["Green", "Yellow", "Red"])
@@ -114,6 +120,7 @@ class TrackModelTestUI(QWidget):
         stationNameLabel = QLabel("Station Name")
         layout.addWidget(stationNameLabel, 7, 0)
         self.stationNameInput = QComboBox()
+
         i = 0
         while i < int(self.backEnd.csvConstants["stationName"].__len__()):
             self.stationNameInput.addItem(self.backEnd.csvConstants["stationName"].__getitem__(i))
@@ -138,6 +145,7 @@ class TrackModelTestUI(QWidget):
         # Add border
         layout.addWidget(QLabel(" "), 10, 0)
 
+
         # Add the Train Line
         trainLnLabel = QLabel("Train Line")
         layout.addWidget(trainLnLabel, 12, 0)
@@ -150,6 +158,7 @@ class TrackModelTestUI(QWidget):
         trainLabel = QLabel("Train Number")
         layout.addWidget(trainLabel, 11, 0)
         self.trainInput = QComboBox()
+
         self.trainInput.addItems(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18",
         "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36"])
         self.trainInput.currentIndexChanged.connect(self.getTrainInput)
@@ -158,6 +167,7 @@ class TrackModelTestUI(QWidget):
 
         # Add the train block
         trainBlockLabel = QLabel("Train Block")
+
         layout.addWidget(trainBlockLabel, 13, 0)
         self.trainBlockInput = QComboBox()
         self.trainBlockInput.addItem("Yard")
@@ -244,6 +254,7 @@ class TrackModelTestUI(QWidget):
 
         # Adding the Temperature
         tempLabel = QLabel("Current Temperature")
+
         layout.addWidget(tempLabel, 18, 2)
         self.tempOutput = QLineEdit()
         self.tempOutput.setReadOnly(True)
@@ -263,6 +274,7 @@ class TrackModelTestUI(QWidget):
         layout.addWidget(stationNameLabel, 7, 2)
         self.stationNameOutput = QLineEdit()
         self.stationNameOutput.setReadOnly(True)
+
         self.stationNameOutput.setText(self.backEnd.csvConstants["stationName"].__getitem__(0))
         layout.addWidget(self.stationNameOutput, 7, 3)
 
@@ -273,7 +285,7 @@ class TrackModelTestUI(QWidget):
         self.occOutput.setReadOnly(True)
         self.occOutput.setText("0 people")
         layout.addWidget(self.occOutput, 8, 3)
-
+        
         # Adding the train line
         trainLnLabel = QLabel("Train Line")
         layout.addWidget(trainLnLabel, 12, 2)
@@ -281,7 +293,7 @@ class TrackModelTestUI(QWidget):
         self.trainLnOutput.setReadOnly(True)
         self.trainLnOutput.setText("Red")
         layout.addWidget(self.trainLnOutput, 12, 3)
-
+        
         # Adding the train number
         trainLabel = QLabel("Train Number")
         layout.addWidget(trainLabel, 11, 2)
