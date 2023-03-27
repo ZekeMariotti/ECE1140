@@ -1,11 +1,11 @@
 {
-    "id": 0,
-    "power": 116,
+    "power": 120000.0,
     "leftDoorCommand": false,
     "rightDoorCommand": false,
     "serviceBrakeCommand": false,
     "emergencyBrakeCommand": false,
     "externalLightCommand": false,
-    "internalLightCommand": false,
-    "stationAnnouncement": "The Yard"
+    "InternalLightCommand": false,
+    "stationAnnouncement": "The Yard",
+    "internalLightCommand": false
 }
