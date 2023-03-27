@@ -2,7 +2,7 @@
     "power": 0,
     "leftDoorCommand": false,
     "rightDoorCommand": false,
-    "serviceBrakeCommand": false,
+    "serviceBrakeCommand": true,
     "emergencyBrakeCommand": false,
     "externalLightCommand": false,
     "internalLightCommand": false,
