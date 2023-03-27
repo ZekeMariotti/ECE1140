@@ -54,7 +54,7 @@ class TrainModel():
         "remDistance"      : 10.0,           # Distance remaining in the current block, if any, in meters (Initialized as 10 meters for coming out of the yard)
         "switch"           : True,           # If the current block is attached to a switch, True if on a switch, false if otherwise
         "switchState"      : 0,              # State of the switch if the current block is attached to one (default is 0)
-        "blockLength"      : 10.0,           # Length of the current block, provided by the Track Model
+        "blockLength"      : 0.0,            # Length of the current block, provided by the Track Model
         "elevation"        : 0.0,            # Relative elevation increase of the block, provided by the Track Model
         "trainLine"        : "Green",        # Line the train is on
         "trackSection"     : [0, 63],        # Section of the track that the train is on
@@ -171,7 +171,7 @@ class TrainModel():
         "beacon"             : ["", 0, "", False],                     # Array to store the beacon inputs [stationName, platformSide, nextStationName, isBeacon]
         "switch"             : False,                                  # True if the block the train is currently on is a switch, false otherwise                      
         "switchState"        : 0,                                      # 0 if the switch is in a default position, 1 otherwise
-        "blockLength"        : 10.0,                                   # Length of the current block that the train is on
+        "blockLength"        : 0.0,                                    # Length of the current block that the train is on
         "elevation"          : 0.0                                     # elevation different of the current block that the train is on
     }
 
