@@ -16,7 +16,6 @@ from animated_toggle import AnimatedToggle
 class Worker(QObject):
     finished = pyqtSignal()
 
-# TODO: Fix Station name text, commanded speed text update
 # Class for the main window
 class MainWindow(QMainWindow):
 
@@ -28,8 +27,12 @@ class MainWindow(QMainWindow):
             self.testUI = False 
             
             # Initialize TrainControllerSW object
-            self.TrainControllerSW = TrainControllerSW(2, 0, 0, 0, "2023-02-20T21:52:48.3940347-05:00", False, 0, "setupStationName",  
-                                                       0, "station2", False, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "setupStationAnnouncement")
+            self.TrainControllerSW = TrainControllerSW(trainId=2, commandedSpeed=0, currentSpeed=0, authority=0, inputTime="2023-02-20T21:52:48.3940347-05:00", 
+                                                       undergroundState=False, temperature=0, stationName="setupStationName", platformSide=0, 
+                                                       nextStationName="station2", isBeacon=False, externalLightsState=False, internalLightsState=False, leftDoorState=False, 
+                                                       rightDoorState=False, serviceBrakeState=False, emergencyBrakeState=False, serviceBrakeStatus=False, engineStatus=False, 
+                                                       communicationsStatus=False, power=0, leftDoorCommand=False, rightDoorCommand=False, serviceBrakeCommand=False, 
+                                                       emergencyBrakeCommand=False, externalLightCommand=False, internalLightCommand=False, stationAnnouncement="setupStationAnnouncement")
             
             # Update Inputs, Outputs, and time
             self.TrainControllerSW.writeOutputs()
@@ -171,7 +174,10 @@ class MainWindow(QMainWindow):
             else:
                 station.setText(f'Next Station:\n{self.TrainControllerSW.inputs.nextStationName}')
             
-            station.setFixedSize(QSize(round(self.labelWidth*1.6), round(self.labelHeight*2)))
+            # basic styling, unfinished
+            #station.setStyleSheet("background-color: rgb(180, 180, 180); border: 1px solid; border-color: rgb(0, 0, 0)")
+            
+            station.setFixedSize(QSize(round(self.labelWidth*1.3), round(self.labelHeight*1.25)))
             station.setAlignment(Qt.AlignmentFlag.AlignCenter)
             station.setWordWrap(True)
             x = round(self.frameGeometry().width()*0.5-station.frameGeometry().width()*.5)
@@ -587,7 +593,7 @@ class MainWindow(QMainWindow):
             self.TrainControllerSW.readInputs()
             self.TrainControllerSW.calculatePower()     
             self.TrainControllerSW.failureMode()
-            
+            self.TrainControllerSW.setStationState()
 
             # Only run in automatic mode
             if(self.TrainControllerSW.manualMode == False):
@@ -595,7 +601,6 @@ class MainWindow(QMainWindow):
                 self.TrainControllerSW.stayBelowSpeedLimitAndMaxSpeed()
                 self.TrainControllerSW.autoUpdateDoorState()
                 self.TrainControllerSW.autoUpdateLights()
-                self.TrainControllerSW.setStationState()
             else:
                 self.commandedSpeedSliderValueChanged()
 

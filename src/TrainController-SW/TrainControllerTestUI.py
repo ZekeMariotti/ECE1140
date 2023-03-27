@@ -23,8 +23,12 @@ class TestWindow(QMainWindow):
             super().__init__()    
 
             # TrainControllerSW Object for Test UI
-            self.TrainControllerSW = TrainControllerSW(2, 0, 0, 0, "2023-02-20T21:52:48.3940347-05:00", False, 0, "setupStationName",  
-                                                       0, "station2", False, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "setupStationAnnouncement")    
+            self.TrainControllerSW = TrainControllerSW(trainId=2, commandedSpeed=0, currentSpeed=0, authority=0, inputTime="2023-02-20T21:52:48.3940347-05:00", 
+                                                       undergroundState=False, temperature=0, stationName="setupStationName", platformSide=0, 
+                                                       nextStationName="station2", isBeacon=False, externalLightsState=False, internalLightsState=False, leftDoorState=False, 
+                                                       rightDoorState=False, serviceBrakeState=False, emergencyBrakeState=False, serviceBrakeStatus=False, engineStatus=False, 
+                                                       communicationsStatus=False, power=0, leftDoorCommand=False, rightDoorCommand=False, serviceBrakeCommand=False, 
+                                                       emergencyBrakeCommand=False, externalLightCommand=False, internalLightCommand=False, stationAnnouncement="setupStationAnnouncement")    
 
             # Update Inputs
             self.TrainControllerSW.readInputs()      

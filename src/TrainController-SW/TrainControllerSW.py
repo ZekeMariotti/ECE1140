@@ -8,8 +8,6 @@ import json
 import Conversions
 from json import JSONEncoder
 
-# TODO: doors must close after leaving station 
-
 # Class for the TrainControllerSW
 class TrainControllerSW:
     def __init__(self, trainId, commandedSpeed, currentSpeed, authority, inputTime, undergroundState, temperature, 
