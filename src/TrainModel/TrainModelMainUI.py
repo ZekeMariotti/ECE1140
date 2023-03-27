@@ -399,7 +399,7 @@ class TrainModelUI(QWidget):
     # Handler for when the temperature from the user is set
     def tempInputChanged(self):
         if (self.temperatureInput.text() == ""):
-            temperature = 68
+            tempNum = 68
         else:
             try:
                 tempNum = round(float(self.temperatureInput.text()) * 2) / 2

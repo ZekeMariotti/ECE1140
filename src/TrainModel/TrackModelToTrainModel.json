@@ -12,6 +12,6 @@
     ],
     "switch": false,
     "switchState": 1,
-    "blockLength": 300.0,
+    "blockLength": 500.0,
     "elevation": 0.0
 }
