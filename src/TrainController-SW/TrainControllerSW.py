@@ -5,6 +5,7 @@ from distutils.cmd import Command
 import sys
 import os
 import json
+import Conversions
 from json import JSONEncoder
 
 # TODO: doors must close after leaving station 
@@ -21,6 +22,8 @@ class TrainControllerSW:
 
         # Internal Variables
         self.stationState = False
+        self.beaconPassed = False
+        self.exitBeacon = False
         self.speedLimit = 100
         self.commandedSpeedManual = 0
         self.manualMode = False
@@ -74,6 +77,7 @@ class TrainControllerSW:
                 self.inputs = Inputs(**json.loads(filename.read()))
             except json.decoder.JSONDecodeError:
                 self.inputs = self.inputs 
+
             self.convertTime()
 
     # Only used in Test UI and commandedSpeed manual input - writes to input file
@@ -85,6 +89,23 @@ class TrainControllerSW:
     def readOutputs(self):
         with open(os.path.join(sys.path[0].replace("TrainController-SW", "Integration"), f'TCtoTM{self.trainId}.json'), "r") as filename:
             self.outputs = Outputs(**json.loads(filename.read()))
+
+    # Determines whether the train is at a station or not
+    def setStationState(self):
+        # if isBeacon and !beaconPassed, entering station
+        # if isBeacon and stationState, exiting station
+        if(self.inputs.isBeacon == True and self.beaconPassed == False):
+            self.beaconPassed = True
+        elif(self.inputs.isBeacon == True and self.stationState == True):
+            self.exitBeacon = True
+
+        if(self.beaconPassed == True and self.inputs.currentSpeed == 0):
+            self.stationState = True
+
+        # if !isBeacon, exitBeacon, and stationState, reset stationState and beaconPassed (left the station)
+        if(self.inputs.isBeacon == False and self.exitBeacon == True and self.stationState == True):
+            self.stationState = False
+            self.beaconPassed = False
 
     # Calculates the power to output to the train model 
     def calculatePower(self):
@@ -132,10 +153,9 @@ class TrainControllerSW:
         self.ek1 = self.ek
         self.uk1 = self.uk
 
-    # TODO: Fix this function
-    # Automatically opens/closes doors based on platformSide
+    # Automatically opens/closes doors based on platformSide and stationState
     def autoUpdateDoorState(self):
-        if(self.inputs.currentSpeed == 0):
+        if(self.stationState == True and self.inputs.currentSpeed == 0 and self.inputs.commandedSpeed == 0):
             if(self.inputs.platformSide == 0):
                 self.outputs.leftDoorCommand = True
                 self.outputs.rightDoorCommand = False
@@ -148,6 +168,9 @@ class TrainControllerSW:
             else:
                 self.outputs.leftDoorCommand = False
                 self.outputs.rightDoorCommand = False
+        else:
+            self.outputs.leftDoorCommand = False
+            self.outputs.rightDoorCommand = False
     
     # Automatically turns on/off lights based on underground state
     # NOTE: update based on time of day? (currently always on between 8pm - 5am)
@@ -181,8 +204,8 @@ class TrainControllerSW:
     def stayBelowSpeedLimitAndMaxSpeed(self):
         if(float(self.inputs.commandedSpeed) > float(self.speedLimit)):
             self.inputs.commandedSpeed = self.speedLimit
-        elif(float(self.inputs.commandedSpeed) > self.MAX_SPEED):
-            self.inputs.commandedSpeed = self.MAX_SPEED
+        elif(float(self.inputs.commandedSpeed) > Conversions.kmPerHourToMetersPerSecond(self.MAX_SPEED)):
+            self.inputs.commandedSpeed = Conversions.kmPerHourToMetersPerSecond(self.MAX_SPEED)
 
     # Runs when there is a communications failure
     def failureMode(self):

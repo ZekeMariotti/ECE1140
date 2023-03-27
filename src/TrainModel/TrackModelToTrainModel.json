@@ -1,13 +1,13 @@
 {
     "rtc": "2023-02-22T11:00:00.0000000-05:00",
-    "authority": 1,
-    "commandedSpeed": 0.1,
+    "authority": 5,
+    "commandedSpeed": 10.0,
     "passengersEntering": 0,
     "undergroundState": false,
     "beacon": [
-        "",
+        "station1",
         0,
-        "",
+        "station2",
         false
     ],
     "switch": false,

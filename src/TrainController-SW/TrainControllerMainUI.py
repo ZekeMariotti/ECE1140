@@ -165,8 +165,12 @@ class MainWindow(QMainWindow):
         def stationSetup(self):
             station = QLabel()         
             station.setFont(self.stationFont)
-            station.setText(f'Current Station:\n{self.TrainControllerSW.inputs.nextStationName}')
-            #station.setText({f'Current Station:\n{self.TrainControllerSW.inputs.stationName}' if self.TrainControllerSW.stationState else f'Next Station:\n{self.TrainControllerSW.inputs.nextStationName}'})
+
+            if(self.TrainControllerSW.stationState == True):
+                station.setText(f'Current Station:\n{self.TrainControllerSW.inputs.stationName}')
+            else:
+                station.setText(f'Next Station:\n{self.TrainControllerSW.inputs.nextStationName}')
+            
             station.setFixedSize(QSize(round(self.labelWidth*1.6), round(self.labelHeight*2)))
             station.setAlignment(Qt.AlignmentFlag.AlignCenter)
             station.setWordWrap(True)
@@ -591,6 +595,7 @@ class MainWindow(QMainWindow):
                 self.TrainControllerSW.stayBelowSpeedLimitAndMaxSpeed()
                 self.TrainControllerSW.autoUpdateDoorState()
                 self.TrainControllerSW.autoUpdateLights()
+                self.TrainControllerSW.setStationState()
             else:
                 self.commandedSpeedSliderValueChanged()
 
@@ -637,7 +642,11 @@ class MainWindow(QMainWindow):
             else:
                 self.communicationsError.show()
 
-            self.station.setText(f'Current Station:\n{self.TrainControllerSW.inputs.nextStationName}')
+            if(self.TrainControllerSW.stationState == True):
+                self.station.setText(f'Current Station:\n{self.TrainControllerSW.inputs.stationName}')
+            else:
+                self.station.setText(f'Next Station:\n{self.TrainControllerSW.inputs.nextStationName}')
+
             self.manualSpeedOverride.setText(f'Manual Mode: {"Enabled" if self.TrainControllerSW.manualMode else "Disabled"}')
             self.currentSpeed.setText("Current Speed: " + str(Conversions.metersPerSecondToMilesPerHour(float(self.TrainControllerSW.inputs.currentSpeed))) + " MPH")
             self.engineState.setText("Engine State:\n" + self.TrainControllerSW.getEngineState())

@@ -1,6 +1,6 @@
 {
     "power": 0,
-    "leftDoorCommand": true,
+    "leftDoorCommand": false,
     "rightDoorCommand": false,
     "serviceBrakeCommand": false,
     "emergencyBrakeCommand": false,
