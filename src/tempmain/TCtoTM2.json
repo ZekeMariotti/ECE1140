@@ -1,5 +1,5 @@
 {
-    "power": 0,
+    "power": 120000,
     "leftDoorCommand": false,
     "rightDoorCommand": false,
     "serviceBrakeCommand": false,

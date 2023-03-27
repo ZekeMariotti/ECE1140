@@ -66,12 +66,12 @@ class TrainControllerSW:
     
     # Writes all output variables to output JSON file
     def writeOutputs(self):
-        with open(os.path.join(sys.path[0].replace("tempmain", "Integration"), f'TCtoTM{self.trainId}.json'), "w") as filename:
+        with open(os.path.join(sys.path[0], f'TCtoTM{self.trainId}.json'), "w") as filename:
             (json.dump(self.outputs.__dict__, filename, indent=4))
 
     # Reads in all input fields from input JSON file and updates Input variables
     def readInputs(self):
-        with open(os.path.join(sys.path[0].replace("tempmain", "Integration"), f'TMtoTC{self.trainId}.json'), "r") as filename:
+        with open(os.path.join(sys.path[0], f'TMtoTC{self.trainId}.json'), "r") as filename:
             try:
                 self.inputs = Inputs(**json.loads(filename.read()))
             except json.decoder.JSONDecodeError:

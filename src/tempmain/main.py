@@ -7,7 +7,7 @@ import sys
 
 #import TrainControllerMainUI, TrainControllerSW, TrainControllerTestUI, Conversions
 #import TrainModel, TrainModelMainUI, TrainModelTestUI, TrainModelSignals
-import TrainModelMainUI, TrainControllerMainUI
+import TrainModelMainUI, TrainControllerMainUI, TrainModelTestUI
 
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
@@ -18,7 +18,9 @@ from datetime import *
 
 # Class for the main window
 class MainWindow(QMainWindow):
-        
+        TrainControllerList = []
+        TrainModelList = []
+
         # Constructor 
         def __init__(self):
             super().__init__()
@@ -30,8 +32,8 @@ class MainWindow(QMainWindow):
 
             # Test TM and TC
             self.TM_TC_TestSetup()
-            self.TrainModelList = []
-            self.TrainControllerList = []
+
+            
 
             # Set window defaults
             self.setWindowTitle(" ")
@@ -196,6 +198,15 @@ class MainWindow(QMainWindow):
             self.launchTrainController.setParent(self)
 
         # Events
+
+        # Close all windows when closing main UI
+        def closeEvent(self, event):
+            for TC in self.TrainControllerList:
+                TC.close()
+
+            for TM in self.TrainModelList:
+                TM.close()
+
         def mainEventLoop(self):
             self.getRTC()
             print(self.RTC.time())
@@ -207,7 +218,7 @@ class MainWindow(QMainWindow):
              print("Train Model")
 
         def launchTrainControllerClick(self):
-             print("Train Controller")
+             self.TrainControllerList[0].setVisible(True)
 
         # Get time from CTC module
         def getRTC(self):
@@ -215,7 +226,9 @@ class MainWindow(QMainWindow):
 
         # Test setups for testing TM and TC
         def TM_TC_TestSetup(self):
-            self.firstTC = TrainControllerMainUI.MainWindow()
+            self.TrainControllerList.append(TrainControllerMainUI.MainWindow())
+            self.TrainModelList.append(TrainModelMainUI.TrainModelUI(2, "Green"))
+            
 
 
 
@@ -224,6 +237,9 @@ app = QApplication(sys.argv)
 
 mainWindow = MainWindow()
 mainWindow.show()
-mainWindow.firstTC.show()
+mainWindow.TrainModelList[0].show()
+mainWindow.TrainControllerList[0].show()
+#TMTestUI = TrainModelTestUI.TrainModelTestUI()
+#TMTestUI.show()
 
 app.exec() 

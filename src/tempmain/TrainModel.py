@@ -219,12 +219,12 @@ class TrainModel():
         self.trainModelToTrainController["engineStatus"]         = self.data["engineStatus"]
         self.trainModelToTrainController["communicationsStatus"] = self.data["commStatus"]
 
-        with open(os.path.join(sys.path[0].replace("TrainModel", "Integration"), f'TMtoTC{self.data["id"]}.json'), "w") as filename:
+        with open(os.path.join(sys.path[0], f'TMtoTC{self.data["id"]}.json'), "w") as filename:
             (json.dump(self.trainModelToTrainController, filename, indent = 4))
 
     # JSON function to read inputs from a JSON file from the Train Controller
     def readTrainControllerToTrainModel(self):
-        with open(os.path.join(sys.path[0].replace("TrainModel", "Integration"), f'TCtoTM{self.data["id"]}.json'), "r") as filename:
+        with open(os.path.join(sys.path[0], f'TCtoTM{self.data["id"]}.json'), "r") as filename:
             try:
                 self.trainControllerToTrainModel = json.loads(filename.read())
             except json.decoder.JSONDecodeError:

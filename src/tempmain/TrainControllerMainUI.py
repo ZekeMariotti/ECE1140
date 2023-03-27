@@ -583,6 +583,10 @@ class MainWindow(QMainWindow):
             if(self.testUI):
                 if (self.TrainControllerTestUI):
                     self.TrainControllerTestUI.close()
+            if(__name__ == "__main__"):
+                self.close()
+            else:
+                self.setVisible(False)
 
         # Updates everything during every each loop of the timer 
         def mainEventLoop(self):

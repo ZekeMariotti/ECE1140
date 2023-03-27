@@ -1,4 +1,5 @@
 # File for converting units to imperial before outputting them
+from datetime import *
 
 # Takes an input in Meters and converts it to Feet
 def metersToFeet(number):
@@ -16,13 +17,21 @@ def kilogramsToTons(number):
 def metersPerSecondToMilesPerHour(number):
     return round(number * 2.23695, 2)
 
-# Takes an input in Meters Per Second ^2 and conerts it to Feet Per Second ^2
+# Takes an input in Meters Per Second ^2 and conerts it to Feet Per Second ^ 2
 def metersPerSecondSquaredToFeetPerSecondSquared(number):
     return round(number * 3.28084, 2)
 
 # Takes an input in Watts and converts it to Horsepower
 def wattsToHorsepower(number):
     return round(number * 0.00134102, 2)
+
+# Converts a string for ISO8601 format to a human readable string
+def ISO8601ToHumanTime(string):
+    #print(string)
+    inputTime = string[:26] + string[27:]
+    #print(inputTime)
+    temp = datetime.strptime(inputTime, "%Y-%m-%dT%H:%M:%S.%f%z")
+    return temp
 
 # Takes an input in Celsius and converts it to Fahrenheit
 def celsiusToFahrenheit(number):

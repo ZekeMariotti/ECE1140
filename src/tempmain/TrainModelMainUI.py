@@ -43,7 +43,7 @@ class TrainModelUI(QWidget):
 
         # Initializing and setting the layout of the UI
         super().__init__()
-        #self.mainTimer = self.mainTimerSetup()
+        self.mainTimer = self.mainTimerSetup()
         self.TrainModel.data["id"] = id
         self.TrainModel.trackData["trainLine"] = line
         self.TrainModel.setFirstSection()
