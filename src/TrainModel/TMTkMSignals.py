@@ -14,4 +14,6 @@ class trainModelTrackModelSignals(QObject):
     switchSignal = pyqtSignal(int, bool)
     switchStateSignal = pyqtSignal(int, bool)
     blockLengthSignal = pyqtSignal(int, float)
-    elevtaionSignal = pyqtSignal(int, float)
+    elevationSignal = pyqtSignal(int, float)
+
+TMTkMSignals = trainModelTrackModelSignals()

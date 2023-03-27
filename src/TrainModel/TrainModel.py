@@ -4,6 +4,7 @@ from random import randint
 from math import cos, asin
 from datetime import *
 from TrainModelSignals import *
+from TMTkMSignals import *
 from PyQt6.QtCore import *
 import sys
 import os
@@ -56,7 +57,8 @@ class TrainModel():
         "blockLength"      : 10.0,           # Length of the current block, provided by the Track Model
         "elevation"        : 0.0,            # Relative elevation increase of the block, provided by the Track Model
         "trainLine"        : "Green",        # Line the train is on
-        "trackSection"     : [0, 63]         # Section of the track that the train is on
+        "trackSection"     : [0, 63],        # Section of the track that the train is on
+        "overflow"         : False           # Overflow boolean used for current Block Calculations
     }
 
     # Green Line Track Sections
@@ -268,6 +270,48 @@ class TrainModel():
         self.trackData["blockLength"]          = self.trackModelToTrainModel["blockLength"]
         self.trackData["elevation"]            = self.trackModelToTrainModel["elevation"]
 
+    # Data Handlers for Outputs to the Track Model
+    def writeTMtoTkM(self):
+        TMTkMSignals.passengersExitingSignal.emit(self.data["id"], self.data["passengersOff"])
+        TMTkMSignals.currBlockSignal.emit(self.data["id"], self.trackData["currBlock"])
+        TMTkMSignals.prevBlockSignal.emit(self.data["id"], self.trackData["prevBlock"])        
+
+    # Data Handlers for Inputs from the Track Model
+    def authoritySignalHandler(self, id, numBlocks):
+        if (id == self.data["id"]):
+            self.passThroughData["authority"] = numBlocks
+    
+    def commandedSpeedSignalHandler(self, id, cmdSpeed):
+        if (id == self.data["id"]):
+            self.passThroughData["commandedSpeed"] = cmdSpeed
+
+    def passengersEnteringSignalHandler(self, id, passengers):
+        if (id == self.data["id"]):
+            self.data["passengersOn"] = passengers
+
+    def beaconSignalHandler(self, id, stationName, platformSide, nextStationName, isBeacon):
+        if (id == self.data["id"]):
+            self.passThroughData["beacon"][0] = stationName
+            self.passThroughData["beacon"][1] = platformSide
+            self.passThroughData["beacon"][2] = nextStationName
+            self.passThroughData["beacon"][3] = isBeacon
+
+    def switchSignalHandler(self, state):
+        if (id == self.data["id"]):
+            self.trackData["switch"] = state
+
+    def switchStateSignalHandler(self, state):
+        if (id == self.data["id"]):
+            self.trackData["swichState"] = state
+
+    def blockLengthSignalHandler(self, length):
+        if (id == self.data["id"]):
+            self.trackData["blockLength"] = length
+
+    def elevationSignalHandler(self, height):
+        if (id == self.data["id"]):
+            self.trackData["elevation"] = height
+
     # Function to run all internal methods when the method is called by the updater in the UI
     def runFunctions(self):
         
@@ -392,6 +436,12 @@ class TrainModel():
 
     # Finds the Block the train is on and the Block the train is exiting
     def findBlockExiting(self):
+        # If the train overflowed, and we had to get a new blockLength
+        if (self.trackData["overflow"]):
+            tempOverflow = 100 - self.trackData["remDistance"]
+            self.trackData["remDistance"] = self.trackData["blockLength"] - tempOverflow
+            self.trackData["overflow"] = False
+
         # If the train is derailed (Block 333)
         if (self.trackData["currBlock"] == 333):
             return
@@ -404,8 +454,8 @@ class TrainModel():
             # Find total overflow distance into the next block
             tempDistance = self.trackData["distance"] - self.trackData["remDistance"]
             self.trackData["currBlock"] = self.findNextBlock()
-            #self.findCurrentBlockInfo()
-            self.trackData["remDistance"] = self.trackData["blockLength"] - tempDistance
+            self.trackData["remDistance"] = 100 - tempDistance
+            self.trackData["overflow"] = True
             
     # Finds the next block in sequence based on a switch state saved internally
     def findNextBlock(self):
