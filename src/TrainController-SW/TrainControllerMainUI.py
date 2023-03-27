@@ -60,7 +60,8 @@ class MainWindow(QMainWindow):
             self.buttonFont = QFont(self.globalFont, 9)
             self.stationFont = QFont(self.globalFont, 16)  
 
-
+            # Styling elements
+            #self.setStyleSheet("QLabel { background-color: rgb(180, 180, 180); border: 1px solid; border-color: rgb(0, 0, 0) }")
                 
             # Create visual elements
             self.mainTimer = self.mainTimerSetup()
@@ -172,10 +173,7 @@ class MainWindow(QMainWindow):
             if(self.TrainControllerSW.stationState == True):
                 station.setText(f'Current Station:\n{self.TrainControllerSW.inputs.stationName}')
             else:
-                station.setText(f'Next Station:\n{self.TrainControllerSW.inputs.nextStationName}')
-            
-            # basic styling, unfinished
-            #station.setStyleSheet("background-color: rgb(180, 180, 180); border: 1px solid; border-color: rgb(0, 0, 0)")
+                station.setText(f'Next Station:\n{self.TrainControllerSW.inputs.nextStationName}')       
             
             station.setFixedSize(QSize(round(self.labelWidth*1.3), round(self.labelHeight*1.25)))
             station.setAlignment(Qt.AlignmentFlag.AlignCenter)
