@@ -190,6 +190,16 @@ class TrainModel():
         trainSignals.eBrakePressedSignal.connect(self.emergencyBrakeDeceleration)
         trainSignals.tempChangedSignal.connect(self.tempChangeHandler)
 
+        # Track Model Train Model Signals
+        TMTkMSignals.authoritySignal.connect(self.authoritySignalHandler)
+        TMTkMSignals.commandedSpeedSignal.connect(self.commandedSpeedSignalHandler)
+        TMTkMSignals.passengersEnteringSignal.connect(self.passengersEnteringSignalHandler)
+        TMTkMSignals.beaconSignal.connect(self.beaconSignalHandler)
+        TMTkMSignals.switchSignal.connect(self.switchSignalHandler)
+        TMTkMSignals.switchStateSignal.connect(self.switchStateSignalHandler)
+        TMTkMSignals.blockLengthSignal.connect(self.blockLengthSignalHandler)
+        TMTkMSignals.elevationSignal.connect(self.elevationSignalHandler)
+
         self.data["length"] = self.constants["length"] * self.data["numCars"]
 
     def setFirstSection(self):
@@ -270,44 +280,59 @@ class TrainModel():
         self.trackData["blockLength"]          = self.trackModelToTrainModel["blockLength"]
         self.trackData["elevation"]            = self.trackModelToTrainModel["elevation"]
 
-    # Data Handlers for Outputs to the Track Model
+    # Data Handler for Outputs to the Train Controller
+
+    # Data Handlers from Input from the Train Controller SW
+
+    # Data Handler for Outputs to the Track Model
     def writeTMtoTkM(self):
         TMTkMSignals.passengersExitingSignal.emit(self.data["id"], self.data["passengersOff"])
         TMTkMSignals.currBlockSignal.emit(self.data["id"], self.trackData["currBlock"])
         TMTkMSignals.prevBlockSignal.emit(self.data["id"], self.trackData["prevBlock"])        
 
     # Data Handlers for Inputs from the Track Model
+
+    # Authority Input Handler
     def authoritySignalHandler(self, id, numBlocks):
         if (id == self.data["id"]):
             self.passThroughData["authority"] = numBlocks
+            TMTCSignals.authoritySignal.emit(self.data["id"], numBlocks)
     
+    # Commanded Speed Input Handler
     def commandedSpeedSignalHandler(self, id, cmdSpeed):
         if (id == self.data["id"]):
             self.passThroughData["commandedSpeed"] = cmdSpeed
 
+    # Passengers Entering Input Handler
     def passengersEnteringSignalHandler(self, id, passengers):
         if (id == self.data["id"]):
             self.data["passengersOn"] = passengers
 
-    def beaconSignalHandler(self, id, stationName, platformSide, nextStationName, isBeacon):
+    # Beacons Input Handler
+    def beaconSignalHandler(self, id, stationName, platformSide, nextStationName, isBeacon, blockCount, fromSwitch):
         if (id == self.data["id"]):
             self.passThroughData["beacon"][0] = stationName
             self.passThroughData["beacon"][1] = platformSide
             self.passThroughData["beacon"][2] = nextStationName
             self.passThroughData["beacon"][3] = isBeacon
+            
 
+    # Switch Input Handler
     def switchSignalHandler(self, state):
         if (id == self.data["id"]):
             self.trackData["switch"] = state
 
+    # Switch State Input Handler
     def switchStateSignalHandler(self, state):
         if (id == self.data["id"]):
             self.trackData["swichState"] = state
 
+    # Block Length Input Handler
     def blockLengthSignalHandler(self, length):
         if (id == self.data["id"]):
             self.trackData["blockLength"] = length
 
+    # Elevation Input Handler
     def elevationSignalHandler(self, height):
         if (id == self.data["id"]):
             self.trackData["elevation"] = height
@@ -320,7 +345,6 @@ class TrainModel():
         tempTimeDiff = self.findTimeDifference()
         self.failureStates()
         self.brakeCaclulator()
-        #self.findCurrentBlockInfo()
         self.findCurrentAcceleration()
         self.findCurrentVelocity()
         self.findCurrentDistance()
@@ -343,6 +367,7 @@ class TrainModel():
 
     # Finds the current acceleration of a train
     def findCurrentAcceleration(self, time = 1) :
+
         # Limits the power of the engine if it is > 120000
         if self.data["power"] > 120000:
             self.data["power"] = 120000
