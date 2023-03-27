@@ -51,13 +51,13 @@ class TrainModel():
         "currBlock"        : 0,              # Current block that the train is on, ONLY USED BY TRAIN MODEL AND TRACK MODEL
         "prevBlock"        : 0,              # Previous block that the train was on, ONLY USED BY TRAIN MODEL AND TRACK MODEL
         "distance"         : 0.0,            # Distance the train has traveled since the last time period in meters
-        "remDistance"      : 10.0,           # Distance remaining in the current block, if any, in meters (Initialized as 10 meters for coming out of the yard)
+        "remDistance"      : 0.1,            # Distance remaining in the current block, if any, in meters (Initialized as 10 meters for coming out of the yard)
         "switch"           : True,           # If the current block is attached to a switch, True if on a switch, false if otherwise
         "switchState"      : 0,              # State of the switch if the current block is attached to one (default is 0)
-        "blockLength"      : 0.0,            # Length of the current block, provided by the Track Model
+        "blockLength"      : 10.0,           # Length of the current block, provided by the Track Model
         "elevation"        : 0.0,            # Relative elevation increase of the block, provided by the Track Model
-        "trainLine"        : "Green",        # Line the train is on
-        "trackSection"     : [0, 63],        # Section of the track that the train is on
+        "trainLine"        : "",             # Line the train is on
+        "trackSection"     : [0, 0],         # Section of the track that the train is on
         "overflow"         : False           # Overflow boolean used for current Block Calculations
     }
 
