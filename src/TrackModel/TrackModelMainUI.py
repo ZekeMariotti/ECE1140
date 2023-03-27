@@ -34,22 +34,32 @@ class TrackModelMainUI(QWidget):
 
         # Create track block data
         self.lineLabel = QLabel(self.spaceString + "Line: Red")
+        self.lineLabel.setFont(self.timesNewRoman8)
         layout.addWidget(self.lineLabel, 0, 8)
 
         self.blockNumLabel = QLabel(self.spaceString + "Block # Selected: 1")
+        self.blockNumLabel.setFont(self.timesNewRoman8)
         layout.addWidget(self.blockNumLabel, 1, 8)
 
         self.elevationLabel = QLabel(self.spaceString + "Elevation: 0.82 ft")
+        self.elevationLabel.setFont(self.timesNewRoman8)
         layout.addWidget(self.elevationLabel, 2, 8)
 
         self.gradeLabel = QLabel(self.spaceString + "Grade: 0.5%")
+        self.gradeLabel.setFont(self.timesNewRoman8)
         layout.addWidget(self.gradeLabel, 3, 8)
 
         self.lengthLabel = QLabel(self.spaceString + "Length : 164.04 ft")
+        self.lengthLabel.setFont(self.timesNewRoman8)
         layout.addWidget(self.lengthLabel, 4, 8)
 
         self.limitLabel = QLabel(self.spaceString + "Speed Limit: 24.85 MPH")
+        self.limitLabel.setFont(self.timesNewRoman8)
         layout.addWidget(self.limitLabel, 5, 8)
+
+        self.undergroundLabel = QLabel(self.spaceString + "Underground: No")
+        self.undergroundLabel.setFont(self.timesNewRoman8)
+        layout.addWidget(self.undergroundLabel, 6, 8)
 
         self.signal = QLineEdit()
         self.signal.setReadOnly(True)
@@ -59,22 +69,28 @@ class TrackModelMainUI(QWidget):
 
         # Create Station data
         self.sNameLabel = QLabel(self.spaceString + self.spaceString + self.spaceString + self.spaceString + self.spaceString + "   ")
+        self.sNameLabel.setFont(self.timesNewRoman8)
         layout.addWidget(self.sNameLabel, 0, 0)
 
         self.sOccLbl = QLabel("")
+        self.sOccLbl.setFont(self.timesNewRoman8)
         layout.addWidget(self.sOccLbl, 1, 0)
 
         self.stationSideLabel = QLabel("")
+        self.stationSideLabel.setFont(self.timesNewRoman8)
         layout.addWidget(self.stationSideLabel, 2, 0)
 
         # Create train data
         self.numPassengersLbl = QLabel("")
+        self.numPassengersLbl.setFont(self.timesNewRoman8)
         layout.addWidget(self.numPassengersLbl, 4, 0)
 
         self.cSpeedLbl = QLabel("")
+        self.cSpeedLbl.setFont(self.timesNewRoman8)
         layout.addWidget(self.cSpeedLbl, 5, 0)
 
         self.authLbl = QLabel("")
+        self.authLbl.setFont(self.timesNewRoman8)
         layout.addWidget(self.authLbl, 6, 0)
 
         # Create combo boxes
@@ -152,6 +168,11 @@ class TrackModelMainUI(QWidget):
         self.heatersLabel.setFont(self.timesNewRoman8)
         layout.addWidget(self.heatersLabel, 7, 7)
 
+        # Gate Label
+        self.gateLabel = QLabel(self.spaceString + self.spaceString + self.spaceString + self.spaceString)
+        self.gateLabel.setFont(self.timesNewRoman8)
+        layout.addWidget(self.gateLabel, 7, 8)
+
         # Bottom insurance labels
         layout.addWidget(QLabel("                                                                        "), 8, 0)
         layout.addWidget(QLabel("                          "), 8, 1)
@@ -160,6 +181,8 @@ class TrackModelMainUI(QWidget):
         layout.addWidget(QLabel("                          "), 8, 4)
         layout.addWidget(QLabel("                                         "), 8, 5)
         layout.addWidget(QLabel("                          "), 8, 6)
+        layout.addWidget(QLabel("                          "), 8, 7)
+        layout.addWidget(QLabel("                                                        "), 8, 8)
 
         # Call function if signal is pressed
         trackSignals.updateSignal.connect(self.updateInterface)
@@ -173,6 +196,8 @@ class TrackModelMainUI(QWidget):
             self.gradeLabel.setText(self.spaceString + "Grade: " + str(self.backEnd.csvConstants["gradeRed"].__getitem__(self.backEnd.data["blockNo"])) + "%")
             self.lengthLabel.setText(self.spaceString + "Length: " + str(round(float(self.backEnd.csvConstants["lengthRed"].__getitem__(self.backEnd.data["blockNo"])) * 3.28084, 2)) + " ft")
             self.limitLabel.setText(self.spaceString + "Speed Limit: " + str(round(float(self.backEnd.csvConstants["speedLimitRed"].__getitem__(self.backEnd.data["blockNo"])) * 0.621371, 2)) + " MPH")
+            outUnderground = "Yes" if int(self.backEnd.csvConstants["undergroundRed"].__getitem__(self.backEnd.data["blockNo"])) == 1 else "No"
+            self.undergroundLabel.setText(self.spaceString + "Underground: " + outUnderground)
             self.signal.setVisible(True)
             if int(self.backEnd.csvConstants["signalRed"].__getitem__(self.backEnd.data["blockNo"])) > 0 and self.backEnd.data["sigState"].__getitem__(int(self.backEnd.csvConstants["signalRed"].__getitem__(self.backEnd.data["blockNo"])) - 1) == 0:
                 self.signal.setStyleSheet("background-color : green")
@@ -190,6 +215,8 @@ class TrackModelMainUI(QWidget):
             self.gradeLabel.setText(self.spaceString + "Grade: " + str(self.backEnd.csvConstants["gradeGreen"].__getitem__(self.backEnd.data["blockNo"])) + "%")
             self.lengthLabel.setText(self.spaceString + "Length: " + str(round(float(self.backEnd.csvConstants["lengthGreen"].__getitem__(self.backEnd.data["blockNo"])) * 3.28084, 2)) + " ft")
             self.limitLabel.setText(self.spaceString + "Speed Limit: " + str(round(float(self.backEnd.csvConstants["speedLimitGreen"].__getitem__(self.backEnd.data["blockNo"])) * 0.621371, 2)) + " MPH")
+            outUnderground = "Yes" if int(self.backEnd.csvConstants["undergroundGreen"].__getitem__(self.backEnd.data["blockNo"])) == 1 else "No"
+            self.undergroundLabel.setText(self.spaceString + "Underground: " + outUnderground)
             self.signal.setVisible(True)
             if int(self.backEnd.csvConstants["signalGreen"].__getitem__(self.backEnd.data["blockNo"])) > 0 and self.backEnd.data["sigState"].__getitem__(int(self.backEnd.csvConstants["signalGreen"].__getitem__(self.backEnd.data["blockNo"])) - 1) == 0:
                 self.signal.setStyleSheet("background-color : green")
@@ -282,7 +309,7 @@ class TrackModelMainUI(QWidget):
                 outputText1 = str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(self.backEnd.data["blockNo"])) - 1)) + "-Yard"
             else:
                 outputText1 = str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(self.backEnd.data["blockNo"])) - 1)) + "-" + str(self.backEnd.csvConstants["switchBlockC"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(self.backEnd.data["blockNo"])) - 1))
-            self.switchLabel.setText("Switch Pos: " + outputText1)
+            self.switchLabel.setText("   Switch Pos: " + outputText1)
 
         elif self.backEnd.data["line"] == 1 and self.backEnd.data["blockNo"] != -1 and int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.backEnd.data["blockNo"])) > 0 and self.backEnd.data["blockNo"] + 1 == int(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.backEnd.data["blockNo"])) - 1)):
             if self.backEnd.data["switchPos"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.backEnd.data["blockNo"])) - 1) == 1 and int(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.backEnd.data["blockNo"])) - 1)) != 0:
@@ -291,9 +318,20 @@ class TrackModelMainUI(QWidget):
                 outputText1 = str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.backEnd.data["blockNo"])) - 1)) + "-Yard"
             else:
                 outputText1 = str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.backEnd.data["blockNo"])) - 1)) + "-" + str(self.backEnd.csvConstants["switchBlockC"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.backEnd.data["blockNo"])) - 1))
-            self.switchLabel.setText("Switch Pos: " + outputText1)
+            self.switchLabel.setText("   Switch Pos: " + outputText1)
         else:
             self.switchLabel.setText("")
+
+        # Get gate state
+        if self.backEnd.data["line"] == 0 and self.backEnd.data["blockNo"] < self.backEnd.csvConstants["redBlocks"].__len__() and self.backEnd.data["blockNo"] != -1 and int(self.backEnd.csvConstants["crossingRed"].__getitem__(self.backEnd.data["blockNo"])) > 0:
+            outputText2 = "Down" if self.backEnd.data["gatePos"].__getitem__(int(self.backEnd.csvConstants["crossingRed"].__getitem__(self.backEnd.data["blockNo"])) - 1) == 1 else "Up"
+            self.gateLabel.setText(self.spaceString + "Gate Pos: " + outputText2)
+
+        elif self.backEnd.data["line"] == 1 and self.backEnd.data["blockNo"] != -1 and int(self.backEnd.csvConstants["crossingGreen"].__getitem__(self.backEnd.data["blockNo"])) > 0:
+            outputText2 = "Down" if self.backEnd.data["gatePos"].__getitem__(int(self.backEnd.csvConstants["crossingGreen"].__getitem__(self.backEnd.data["blockNo"])) - 1) == 1 else "Up"
+            self.gateLabel.setText(self.spaceString + "Gate Pos: " + outputText2)
+        else:
+            self.gateLabel.setText("")
         
 
     def showTrackData1(self):
@@ -345,6 +383,15 @@ class TrackModelMainUI(QWidget):
         self.heatersLabel.setText("Heaters: " + outputTxt)
 
         # Update Gate
+        if self.backEnd.data["line"] == 0 and int(self.backEnd.csvConstants["crossingRed"].__getitem__(self.backEnd.data["blockNo"])) > 0:
+            outputText2 = "Down" if self.backEnd.data["gatePos"].__getitem__(int(self.backEnd.csvConstants["crossingRed"].__getitem__(self.backEnd.data["blockNo"])) - 1) == 1 else "Up"
+            self.gateLabel.setVisible(True)
+            self.gateLabel.setText(self.spaceString + "Gate Pos: " + outputText2)
+
+        elif self.backEnd.data["line"] == 1 and int(self.backEnd.csvConstants["crossingGreen"].__getitem__(self.backEnd.data["blockNo"])) > 0:
+            outputText2 = "Down" if self.backEnd.data["gatePos"].__getitem__(int(self.backEnd.csvConstants["crossingGreen"].__getitem__(self.backEnd.data["blockNo"])) - 1) == 1 else "Up"
+            self.gateLabel.setVisible(True)
+            self.gateLabel.setText(self.spaceString + "Gate Pos: " + outputText2)
 
         # Update Switch
         if self.backEnd.data["line"] == 0 and int(self.backEnd.csvConstants["switchRed"].__getitem__(self.backEnd.data["blockNo"])) > 0 and self.backEnd.data["blockNo"] + 1 == int(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(self.backEnd.data["blockNo"])) - 1)):
@@ -355,7 +402,7 @@ class TrackModelMainUI(QWidget):
             else:
                 outputText1 = str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(self.backEnd.data["blockNo"])) - 1)) + "-" + str(self.backEnd.csvConstants["switchBlockC"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(self.backEnd.data["blockNo"])) - 1))
             self.switchLabel.setVisible(True)
-            self.switchLabel.setText("Switch Pos: " + outputText1)
+            self.switchLabel.setText("   Switch Pos: " + outputText1)
 
         elif self.backEnd.data["line"] == 1 and int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.backEnd.data["blockNo"])) > 0 and self.backEnd.data["blockNo"] + 1 == int(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.backEnd.data["blockNo"])) - 1)):
             if self.backEnd.data["switchPos"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.backEnd.data["blockNo"])) - 1) == 1 and int(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.backEnd.data["blockNo"])) - 1)) != 0:
@@ -365,7 +412,7 @@ class TrackModelMainUI(QWidget):
             else:
                 outputText1 = str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.backEnd.data["blockNo"])) - 1)) + "-" + str(self.backEnd.csvConstants["switchBlockC"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.backEnd.data["blockNo"])) - 1))
             self.switchLabel.setVisible(True)
-            self.switchLabel.setText("Switch Pos: " + outputText1)
+            self.switchLabel.setText("   Switch Pos: " + outputText1)
 
         # Update Signal
         if self.backEnd.data["line"] == 0 and int(self.backEnd.csvConstants["signalRed"].__getitem__(self.backEnd.data["blockNo"])) > 0:
