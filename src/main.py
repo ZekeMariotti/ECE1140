@@ -5,6 +5,7 @@ import sys
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
+from datetime import *
 
 # Class for the main window
 class MainWindow(QMainWindow):
@@ -12,6 +13,14 @@ class MainWindow(QMainWindow):
         # Constructor 
         def __init__(self):
             super().__init__()
+
+            # Main clock and simulation speed
+            self.RTC = datetime.now() # Temporarily set time manually
+            self.simulationSpeed = 1
+            self.timerInterval = 100
+
+            # Test TM and TC
+            self.TM_TC_TestSetup()
 
             # Set window defaults
             self.setWindowTitle(" ")
@@ -31,8 +40,8 @@ class MainWindow(QMainWindow):
             self.labelStyle = "background-color: rgb(180, 180, 180); border: 1px solid; border-color: rgb(0, 0, 0)"
 
             self.buttonStyle = ("QPushButton{background-color : rgb(180, 180, 180);}"
-                                "QPushButton::pressed{background-color : rgb(220, 220, 220);}"
-                                "QPushButton::hover{background-color : rgb(190, 190, 190);}"
+                                "QPushButton::pressed{background-color : rgb(200, 200, 200); color : rgb(70, 70, 70);}"
+                                "QPushButton:hover!pressed{background-color : rgb(190, 190, 190);}"
                                 )
             
             self.setStyleSheet("background-color: rgb(230, 230, 230);")    
@@ -42,6 +51,8 @@ class MainWindow(QMainWindow):
             self.gridLayout = QGridLayout()
 
             # Create elements
+            self.mainThreadSetup()
+            self.mainTimerSetup()
             self.HeaderLabelSetup()
 
             self.CTCLabelSetup()
@@ -77,6 +88,18 @@ class MainWindow(QMainWindow):
             self.setCentralWidget(self.mainWidget)
         
         # Widget Setups
+        def mainThreadSetup(self):
+            self.timerThread = QThread()
+            self.timerThread.started.connect(self.mainTimerSetup)
+
+        def mainTimerSetup(self):     
+            mainTimer = QTimer()
+            mainTimer.setInterval(self.timerInterval)
+            mainTimer.timeout.connect(self.mainEventLoop)
+            mainTimer.setParent(self)
+            mainTimer.start()
+            return mainTimer
+
         def HeaderLabelSetup(self):
             self.HeaderLabel = QLabel()
             self.HeaderLabel.setStyleSheet(self.labelStyle)     
@@ -162,6 +185,10 @@ class MainWindow(QMainWindow):
             self.launchTrainController.setParent(self)
 
         # Events
+        def mainEventLoop(self):
+            self.getRTC()
+            print(self.RTC.time())
+
         def launchCTCClick(self):
              print("CTC")
 
@@ -170,6 +197,14 @@ class MainWindow(QMainWindow):
 
         def launchTrainControllerClick(self):
              print("Train Controller")
+
+        # Get time from CTC module
+        def getRTC(self):
+            self.RTC = self.RTC + timedelta(0, 0, 0, self.timerInterval*self.simulationSpeed) # Temporary increment time
+
+        # Test setups for testing TM and TC
+        def TM_TC_TestSetup(self):
+            print("test")
 
 
 # Start application
