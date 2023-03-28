@@ -11,6 +11,8 @@ from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 from TrainModelMainUI import TrainModelUI
 from TrainModelSignals import *
+from TMTCSignals import *
+from TMTkMSignals import *
 
 
 # Class for the Train Model Test UI
@@ -135,6 +137,29 @@ class TrainModelTestUI(QWidget):
 
     # Initialize the GUI
     def __init__(self):
+
+        # Connecting Signals from the Train Model
+        TMTkMSignals.passengersExitingSignal.connect(self.catchPassengersOff)
+        TMTkMSignals.currBlockSignal.connect(self.catchCurrBlock)
+
+        TMTCSignals.commandedSpeedSignal.connect(self.catchCommandedSpeed)
+        TMTCSignals.currentSpeedSignal.connect(self.catchCurrentSpeed)
+        TMTCSignals.authoritySignal.connect(self.catchAuthority)
+        TMTCSignals.undergroundSignal.connect(self.catchUndergroundState)
+        TMTCSignals.temperatureSignal.connect(self.catchTemperature)
+        TMTCSignals.stationNameSignal.connect(self.catchStationName)
+        TMTCSignals.platformSideSignal.connect(self.catchPlatformSide)
+        TMTCSignals.nextStationNameSignal.connect(self.catchNextStationName)
+        TMTCSignals.isBeaconSignal.connect(self.catchIsBeacon)
+        TMTCSignals.externalLightsStateSignal.connect(self.catchExternalLights)
+        TMTCSignals.internalLightsStateSignal.connect(self.catchInternalLights)
+        TMTCSignals.leftDoorStateSignal.connect(self.catchLeftDoors)
+        TMTCSignals.rightDoorStateSignal.connect(self.catchRightDoors)
+        TMTCSignals.serviceBrakeStateSignal.connect(self.catchServiceBrakeState)
+        TMTCSignals.emergencyBrakeStateSignal.connect(self.catchEmergencyBrakeState)
+        TMTCSignals.serviceBrakeStatusSignal.connect(self.catchServiceBrakeStatus)
+        TMTCSignals.engineStatusSignal.connect(self.catchEngineStatus)
+        TMTCSignals.communicationsStatusSignal.connect(self.catchCommStatus)
 
         # Initializing the layout of the UI
         super().__init__()
@@ -261,73 +286,73 @@ class TrainModelTestUI(QWidget):
         layout.addWidget(trainControllerLabel, 15, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
 
         # Train ID Input
-        #idLabel = QLabel("Train ID")
-        #layout.addWidget(idLabel, 15, 0)
-        #self.idLabelInput = QLineEdit()
-        #self.idLabelInput.editingFinished.connect(self.getIDLabelInput)
-        #layout.addWidget(self.idLabelInput, 15, 1)
+        idLabel = QLabel("Train ID")
+        layout.addWidget(idLabel, 16, 0)
+        self.idLabelInput = QLineEdit()
+        self.idLabelInput.editingFinished.connect(self.getIDLabelInput)
+        layout.addWidget(self.idLabelInput, 16, 1)
 
         # Add the Power Input
         powerLabel = QLabel("Commanded Power Input")
-        layout.addWidget(powerLabel, 16, 0)
+        layout.addWidget(powerLabel, 17, 0)
         self.powerInput = QLineEdit()
         self.powerInput.editingFinished.connect(self.getPowerInput)
-        layout.addWidget(self.powerInput, 16, 1)
+        layout.addWidget(self.powerInput, 17, 1)
 
         # Add the Left Door Switch
         leftDoorLabel = QLabel("Left Doors")
-        layout.addWidget(leftDoorLabel, 17, 0)
+        layout.addWidget(leftDoorLabel, 18, 0)
         self.leftDoorInput = QComboBox()
         self.leftDoorInput.addItems(["Closed", "Open"])
         self.leftDoorInput.currentIndexChanged.connect(self.getLeftDoorInput)
-        layout.addWidget(self.leftDoorInput, 17, 1)
+        layout.addWidget(self.leftDoorInput, 18, 1)
 
         # Add the Right Door Switch
         rightDoorLabel = QLabel("Right Doors")
-        layout.addWidget(rightDoorLabel, 18, 0)
+        layout.addWidget(rightDoorLabel, 19, 0)
         self.rightDoorInput = QComboBox()
         self.rightDoorInput.addItems(["Closed", "Open"])
         self.rightDoorInput.currentIndexChanged.connect(self.getRightDoorInput)
-        layout.addWidget(self.rightDoorInput, 18, 1)
+        layout.addWidget(self.rightDoorInput, 19, 1)
 
         # Add the Service Brake Switch
         serviceBrakeLabel = QLabel("Service Brake")
-        layout.addWidget(serviceBrakeLabel, 19, 0)
+        layout.addWidget(serviceBrakeLabel, 20, 0)
         self.serviceBrakeInput = QComboBox()
         self.serviceBrakeInput.addItems(["Disengaged", "Engaged"])
         self.serviceBrakeInput.currentIndexChanged.connect(self.getServiceBrakeInput)
-        layout.addWidget(self.serviceBrakeInput, 19, 1)
+        layout.addWidget(self.serviceBrakeInput, 20, 1)
 
         # Add the Emergency Brake Switch
         emergencyBrakeLabel = QLabel("Emergency Brake")
-        layout.addWidget(emergencyBrakeLabel, 20, 0)
+        layout.addWidget(emergencyBrakeLabel, 21, 0)
         self.emergencyBrakeInput = QComboBox()
         self.emergencyBrakeInput.addItems(["Disengaged", "Engaged"])
         self.emergencyBrakeInput.currentIndexChanged.connect(self.getEmergencyBrakeInput)
-        layout.addWidget(self.emergencyBrakeInput, 20, 1)
+        layout.addWidget(self.emergencyBrakeInput, 21, 1)
 
         # Add the External Lights Switch
         externalLightLabel = QLabel("External Lights")
-        layout.addWidget(externalLightLabel, 21, 0)
+        layout.addWidget(externalLightLabel, 22, 0)
         self.externalLightInput = QComboBox()
         self.externalLightInput.addItems(["Off", "On"])
         self.externalLightInput.currentIndexChanged.connect(self.getExternalLightInput)
-        layout.addWidget(self.externalLightInput, 21, 1)
+        layout.addWidget(self.externalLightInput, 22, 1)
 
         # Add the Internal Lights Switch
         internalLightLabel = QLabel("Internal Lights")
-        layout.addWidget(internalLightLabel, 22, 0)
+        layout.addWidget(internalLightLabel, 23, 0)
         self.internalLightInput = QComboBox()
         self.internalLightInput.addItems(["Off", "On"])
         self.internalLightInput.currentIndexChanged.connect(self.getInternalLightInput)
-        layout.addWidget(self.internalLightInput, 22, 1)
+        layout.addWidget(self.internalLightInput, 23, 1)
 
         # Add the Station Announcement Input
         stationLabel = QLabel("Station Announcement")
-        layout.addWidget(stationLabel, 23, 0)
+        layout.addWidget(stationLabel, 24, 0)
         self.stationInput = QLineEdit()
         self.stationInput.editingFinished.connect(self.getStationInput)
-        layout.addWidget(self.stationInput, 23, 1)
+        layout.addWidget(self.stationInput, 24, 1)
 
         # Setting up all the outputs
 
@@ -588,6 +613,90 @@ class TrainModelTestUI(QWidget):
         self.trainControllerToTrainModel["stationAnnouncement"]   = self.testDataInputs["stationAnnouncement"]
         with open(os.path.join(sys.path[0], "TCtoTM1.json"), "w") as filename:
             (json.dump(self.trainControllerToTrainModel, filename, indent=4))
+    
+    # Emit Train Controller to Train Model Singals
+    def emitTrainControllerSignals(self):
+        TMTCSignals.commandedPowerSignal.emit(self.testDataInputs["id"], self.testDataInputs["power"])
+        TMTCSignals.leftDoorCommandSignal.emit(self.testDataInputs["id"], self.testDataInputs["leftDoorCommand"])
+        TMTCSignals.rightDoorCommandSignal.emit(self.testDataInputs["id"], self.testDataInputs["rightDoorCommand"])
+        TMTCSignals.serviceBrakeCommandSignal.emit(self.testDataInputs["id"], self.testDataInputs["serviceBrakeCommand"])
+        TMTCSignals.emergencyBrakeCommandSignal.emit(self.testDataInputs["id"], self.testDataInputs["emergencyBrakeCommand"])
+        TMTCSignals.externalLightCommandSignal.emit(self.testDataInputs["id"], self.testDataInputs["externalLightCommand"])
+        TMTCSignals.internalLightCommandSignal.emit(self.testDataInputs["id"], self.testDataInputs["internalLightCommand"])
+        TMTCSignals.stationAnnouncementSignal.emit(self.testDataInputs["id"], self.testDataInputs["stationAnnouncement"])
+
+    # Handle Train Model to Train Controller Signals
+    def catchCommandedSpeed(self, id, cmdSpeed):
+        self.testDataOutputs["commandedSpeed"] = cmdSpeed 
+
+    def catchCurrentSpeed(self, id, speed):
+        self.testDataOutputs["currentSpeed"] = speed
+
+    def catchAuthority(self, id, authority):
+        self.testDataOutputs["authority"] = authority
+
+    def catchUndergroundState(self, id, underground):
+        self.testDataOutputs["undergroundState"] = underground
+
+    def catchTemperature(self, id, temp):
+        self.testDataOutputs["temperature"] = temp
+
+    def catchStationName(self, id, station):
+        self.testDataOutputs["stationName"] = station
+
+    def catchPlatformSide(self, id, platformSide):
+        self.testDataOutputs["platformSide"] = platformSide
+
+    def catchNextStationName(self, id, nextStation):
+        self.testDataOutputs["nextStationName"] = nextStation
+    
+    def catchIsBeacon(self, id, isBeacon):
+        self.testDataOutputs["isBeacon"] = isBeacon
+
+    def catchExternalLights(self, id, offOn):
+        self.testDataOutputs["externalLightsState"] = offOn
+    
+    def catchInternalLights(self, id, offOn):
+        self.testDataOutputs["internalLightsState"] = offOn
+    
+    def catchLeftDoors(self, id, openClosed):
+        self.testDataOutputs["leftDoorState"] = openClosed
+
+    def catchRightDoors(self, id, openClosed):
+        self.testDataOutputs["rightDoorState"] = openClosed
+
+    def catchServiceBrakeState(self, id, serviceBrake):
+        self.testDataOutputs["serviceBrakeState"] = serviceBrake
+    
+    def catchEmergencyBrakeState(self, id, emergencyBrake):
+        self.testDataOutputs["emergencyBrakeState"] = emergencyBrake
+
+    def catchServiceBrakeStatus(self, id, status):
+        self.testDataOutputs["serviceBrakeStatus"] = status
+    
+    def catchEngineStatus(self, id, status):
+        self.testDataOutputs["engineStatus"] = status
+    
+    def catchCommStatus(self, id, status):
+        self.testDataOutputs["communicationsStatus"] = status
+
+    # Emit Track Model to Train Model Signals
+    def emitTrackModelSignals(self):
+        TMTkMSignals.authoritySignal.emit(self.testDataInputs["id"], self.testDataInputs["authority"])
+        TMTkMSignals.commandedSpeedSignal.emit(self.testDataInputs["id"], self.testDataInputs["commandedSpeed"])
+        TMTkMSignals.passengersEnteringSignal.emit(self.testDataInputs["id"], self.testDataInputs["passengersEntering"])
+        TMTkMSignals.beaconSignal.emit(self.testDataInputs["id"], self.testDataInputs["beacon"][0], self.testDataInputs["beacon"][1], self.testDataInputs["beacon"][2], self.testDataInputs["beacon"][3], -1, False)
+        TMTkMSignals.switchSignal.emit(self.testDataInputs["id"], self.testDataInputs["switch"])
+        TMTkMSignals.switchStateSignal.emit(self.testDataInputs["id"], self.testDataInputs["switchState"])
+        TMTkMSignals.blockLengthSignal.emit(self.testDataInputs["id"], self.testDataInputs["blockLength"])
+        TMTkMSignals.elevationSignal.emit(self.testDataInputs["id"], self.testDataInputs["elevation"])
+
+    # Handle Train Model to Track Model Signals
+    def catchPassengersOff(self, id, passOff):
+        self.testDataOutputs["passengersOff"] = passOff
+    
+    def catchCurrBlock(self, id, block):
+        self.testDataOutputs["currBlock"] = block
 
     def getSwitchInput(self, index):
         self.testDataInputs["switch"] = bool(index)
@@ -601,8 +710,8 @@ class TrainModelTestUI(QWidget):
     def getElevationInput(self):
         self.testDataInputs["elevation"] = float(self.elevationInput.text())
 
-    #def getIDLabelInput(self):
-    #    self.testDataInputs["id"] = int(self.idLabelInput.text())
+    def getIDLabelInput(self):
+        self.testDataInputs["id"] = int(self.idLabelInput.text())
 
     # Gets the Power input from the UI
     def getPowerInput(self):
@@ -686,10 +795,12 @@ class TrainModelTestUI(QWidget):
         #print(self.testDataInputs["rtc"])
 
         # Write Data To Output Module
-        self.writeTrackModelToTrainModel()
+        #self.writeTrackModelToTrainModel()
         #self.writeTrainControllerToTrainModel()
+        self.emitTrainControllerSignals()
+        self.emitTrackModelSignals()
         trainSignals.updateOutputs.emit()
-        self.readTrainModelToTrackModel()
+        #self.readTrainModelToTrackModel()
         #self.readTrainModelToTrainController()
 
         self.currBlockOutput.setText("Block " + str(self.testDataOutputs["currBlock"]))

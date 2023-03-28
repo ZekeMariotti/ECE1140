@@ -17,7 +17,7 @@ class trainModelTrainControllerSignals(QObject):
     rightDoorStateSignal = pyqtSignal(int, bool)
     serviceBrakeStateSignal = pyqtSignal(int, bool)
     emergencyBrakeStateSignal = pyqtSignal(int, bool)
-    serviceBrkaeStatusSignal = pyqtSignal(int, bool)
+    serviceBrakeStatusSignal = pyqtSignal(int, bool)
     engineStatusSignal = pyqtSignal(int, bool)
     communicationsStatusSignal = pyqtSignal(int, bool)
 
@@ -30,4 +30,5 @@ class trainModelTrainControllerSignals(QObject):
     externalLightCommandSignal = pyqtSignal(int, bool)
     internalLightCommandSignal = pyqtSignal(int, bool)
     stationAnnouncementSignal = pyqtSignal(int, str)
-    allSignals = pyqtSignal(int, float, bool, bool, bool, bool, bool, bool, str)
+
+TMTCSignals = trainModelTrainControllerSignals()
