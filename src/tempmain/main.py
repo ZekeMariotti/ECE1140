@@ -3,10 +3,7 @@
 import sys
 import os
 from pathlib import Path
-import sys
 
-#import TrainControllerMainUI, TrainControllerSW, TrainControllerTestUI, Conversions
-#import TrainModel, TrainModelMainUI, TrainModelTestUI, TrainModelSignals
 import TrainModelMainUI, TrainControllerMainUI, TrainModelTestUI
 
 from PyQt6.QtWidgets import *
@@ -28,17 +25,12 @@ class MainWindow(QMainWindow):
             # Main clock and simulation speed
             self.RTC = datetime.now() # Temporarily set time manually
             self.simulationSpeed = 1
-            self.timerInterval = 100
-
-            # Test TM and TC
-            self.TM_TC_TestSetup()
-
-            
+            self.timerInterval = 500       
 
             # Set window defaults
             self.setWindowTitle(" ")
             self.setFixedSize(QSize(600, 600))
-            self.move(100, 200)
+            self.move(600, 200)
 
             # Element sizing
             self.windowWidth = self.frameGeometry().width()
@@ -77,9 +69,11 @@ class MainWindow(QMainWindow):
 
             self.TrainModelLabelSetup()
             self.launchTrainModelSetup()
+            self.selectTrainModelSetup()
 
             self.TrainControllerLabelSetup()
             self.launchTrainControllerSetup()
+            self.selectTrainControllerSetup()
 
             # Add elements to grid layout
             self.gridLayout.addWidget(self.HeaderLabel, 0, 0, 1, 2, Qt.AlignmentFlag.AlignAbsolute)
@@ -92,13 +86,22 @@ class MainWindow(QMainWindow):
             self.gridLayout.addWidget(self.TrackModelLabel, 3, 0, 1, 1)
 
             self.gridLayout.addWidget(self.TrainModelLabel, 4, 0, 1, 1)
-            self.gridLayout.addWidget(self.launchTrainModel, 4, 1, 1, 1)
+            self.gridLayout.addWidget(self.launchTrainModel, 4, 1, 1, 1, Qt.AlignmentFlag.AlignTop)
+            self.gridLayout.addWidget(self.selectTrainModel, 4, 1, 1, 1, Qt.AlignmentFlag.AlignBottom)
 
             self.gridLayout.addWidget(self.TrainControllerLabel, 5, 0, 1, 1)
-            self.gridLayout.addWidget(self.launchTrainController, 5, 1, 1, 1)
+            self.gridLayout.addWidget(self.launchTrainController, 5, 1, 1, 1, Qt.AlignmentFlag.AlignTop)
+            self.gridLayout.addWidget(self.selectTrainController, 5, 1, 1, 1, Qt.AlignmentFlag.AlignBottom)
 
             self.mainWidget.setLayout(self.gridLayout)
             self.setCentralWidget(self.mainWidget)
+
+            # Test TM and TC
+            self.trainDispatch(2)
+            self.trainDispatch(3)    
+            self.TMTestUI = TrainModelTestUI.TrainModelTestUI() # temporary TM test UI 
+
+
         
         # Widget Setups
         def mainThreadSetup(self):
@@ -111,7 +114,6 @@ class MainWindow(QMainWindow):
             mainTimer.timeout.connect(self.mainEventLoop)
             mainTimer.setParent(self)
             mainTimer.start()
-            return mainTimer
 
         def HeaderLabelSetup(self):
             self.HeaderLabel = QLabel()
@@ -175,9 +177,15 @@ class MainWindow(QMainWindow):
             self.launchTrainModel = QPushButton("Launch")   
             self.launchTrainModel.setStyleSheet(self.buttonStyle)  
             self.launchTrainModel.setFont(QFont(self.globalFont, 20))
-            self.launchTrainModel.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
+            self.launchTrainModel.setFixedSize(QSize(self.buttonWidth, round(self.buttonHeight*0.5)))
             self.launchTrainModel.clicked.connect(self.launchTrainModelClick)
             self.launchTrainModel.setParent(self)
+
+        def selectTrainModelSetup(self):
+            self.selectTrainModel = QComboBox()
+            self.selectTrainModel.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight*0.5)))
+            
+            
 
         def TrainControllerLabelSetup(self):
             self.TrainControllerLabel = QLabel()   
@@ -193,9 +201,15 @@ class MainWindow(QMainWindow):
             self.launchTrainController = QPushButton("Launch")   
             self.launchTrainController.setStyleSheet(self.buttonStyle)  
             self.launchTrainController.setFont(QFont(self.globalFont, 20))
-            self.launchTrainController.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
+            self.launchTrainController.setFixedSize(QSize(self.buttonWidth, round(self.buttonHeight*0.5)))
             self.launchTrainController.clicked.connect(self.launchTrainControllerClick)
             self.launchTrainController.setParent(self)
+
+        def selectTrainControllerSetup(self):
+            self.selectTrainController = QComboBox()
+            self.selectTrainController.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight*0.5)))
+            
+            
 
         # Events
 
@@ -207,27 +221,34 @@ class MainWindow(QMainWindow):
             for TM in self.TrainModelList:
                 TM.close()
 
+            self.TMTestUI.close()
+
+        # Runs all functions during each time interval
         def mainEventLoop(self):
             self.getRTC()
-            print(self.RTC.time())
+            #print(self.RTC.time())
 
         def launchCTCClick(self):
              print("CTC")
 
         def launchTrainModelClick(self):
-             print("Train Model")
+             self.TrainModelList[int(self.selectTrainModel.currentIndex())].setVisible(True)
 
         def launchTrainControllerClick(self):
-             self.TrainControllerList[0].setVisible(True)
+             self.TrainControllerList[int(self.selectTrainController.currentIndex())].setVisible(True)
 
         # Get time from CTC module
         def getRTC(self):
             self.RTC = self.RTC + timedelta(0, 0, 0, self.timerInterval*self.simulationSpeed) # Temporary increment time
 
         # Test setups for testing TM and TC
-        def TM_TC_TestSetup(self):
-            self.TrainControllerList.append(TrainControllerMainUI.MainWindow())
-            self.TrainModelList.append(TrainModelMainUI.TrainModelUI(2, "Green"))
+        def trainDispatch(self, trainId):
+            self.TrainControllerList.append(TrainControllerMainUI.MainWindow(trainId))
+            self.TrainModelList.append(TrainModelMainUI.TrainModelUI(trainId, "Green"))
+
+            # Update TM and TC selectors
+            self.selectTrainModel.addItems([str(trainId)])
+            self.selectTrainController.addItems([str(trainId)])
             
 
 
@@ -237,9 +258,8 @@ app = QApplication(sys.argv)
 
 mainWindow = MainWindow()
 mainWindow.show()
-mainWindow.TrainModelList[0].show()
-mainWindow.TrainControllerList[0].show()
-TMTestUI = TrainModelTestUI.TrainModelTestUI()
-TMTestUI.show()
+
+# Temporary
+mainWindow.TMTestUI.showMinimized()
 
 app.exec() 

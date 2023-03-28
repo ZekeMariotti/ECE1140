@@ -13,7 +13,7 @@
     "internalLightsState": false,
     "leftDoorState": false,
     "rightDoorState": false,
-    "serviceBrakeState": false,
+    "serviceBrakeState": true,
     "emergencyBrakeState": false,
     "serviceBrakeStatus": true,
     "engineStatus": true,
