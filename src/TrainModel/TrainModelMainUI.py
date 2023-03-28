@@ -379,6 +379,12 @@ class TrainModelUI(QWidget):
             updateButton.pressed.connect(self.updateOutputs)
             layout.addWidget(updateButton, 9, 2, 1, 2, self.alignCenter)
 
+    def closeEvent(self, event):
+        if __name__ == "__main__":
+            self.close()
+        else:
+            self.setVisible(False)
+
 
     # Handler for when Communcations Failure State button is pressed
     def communicationsButtonPressed(self):
@@ -399,10 +405,13 @@ class TrainModelUI(QWidget):
     # Handler for when the temperature from the user is set
     def tempInputChanged(self):
         if (self.temperatureInput.text() == ""):
-            temperature = 68
+            tempNum = 68
         else:
-            temperature = round(float(self.temperatureInput.text()) * 2) / 2
-        trainSignals.tempChangedSignal.emit(temperature)
+            try:
+                tempNum = round(float(self.temperatureInput.text()) * 2) / 2
+            except ValueError:
+                tempNum = 68.0
+        trainSignals.tempChangedSignal.emit(tempNum)
 
     # Function to convert boolean to string for the status messages of failure
     def failureBoolean(self, value):
@@ -461,7 +470,7 @@ class TrainModelUI(QWidget):
         # Update Middle Column of data outputs
         self.velocityOutput.setText(str(metersPerSecondToMilesPerHour(self.TrainModel.data["velocity"])) + " mph")
         self.accelerationOutput.setText(str(metersPerSecondSquaredToFeetPerSecondSquared(self.TrainModel.data["acceleration"])) + " ft/s^2")
-        self.powerOutput.setText(str(wattsToHorsepower(self.TrainModel.data["power"])) + " hp")
+        self.powerOutput.setText(str(round(self.TrainModel.data["power"], 2)) + " W")
         self.stationOutput.setText(self.TrainModel.data["station"])
 
         # Setting communication status output and color

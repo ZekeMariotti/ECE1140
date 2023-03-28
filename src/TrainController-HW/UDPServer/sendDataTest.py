@@ -1,7 +1,7 @@
 import socket
 import time
 import json
-ip = "127.0.0.1"
+ip = "192.168.1.3"
 port = 27000
 msg = b"hello world"
 counter = 0

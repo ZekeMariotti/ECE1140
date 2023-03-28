@@ -4,8 +4,11 @@ import os
 import sys
 import time
 
-ip = "127.0.0.1"
-port = 27000
+# ip = "127.0.0.1"
+# port = 27000
+
+ip = "192.168.1.2"
+port = 27001
 sock = socket.socket(socket.AF_INET,
                      socket.SOCK_DGRAM)
 sock.bind((ip, port))
@@ -13,7 +16,6 @@ print(f'Start listening to {ip}:{port}')
 
 
 trainControllerToTrainModel = {
-    "id"                    : 0,         # ID number for the train
     "power"                 : 0.0,       # Power input from the Train Controller
     "leftDoorCommand"       : False,     # Left Door Command from the Train Controller, False if closed, True if open
     "rightDoorCommand"      : False,     # Right Door Command from the Train Controller, False if closed, True if open
@@ -30,7 +32,7 @@ trainControllerToTrainModel = {
 
 # JSON function to write outputs to a JSON file for the Train Controller
 def writeToJson():
-    with open(os.path.join(sys.path[0], "TrainControllerToTrainModel.json"), "w") as filename:
+    with open(os.path.join(sys.path[0], "TCtoTM1.json"), "w") as filename:
             (json.dump(trainControllerToTrainModel, filename, indent = 4))
 
 # # def getDataFromTrainController():
@@ -46,6 +48,7 @@ while True:
     # print(type(data))
     trainControllerToTrainModel = json.loads(data)
     print(trainControllerToTrainModel)
-    # parseToJson();
+    parseToJson();
     writeToJson()
-    time.sleep(0.5)
+    time.sleep(0.05)
+    print(f"received message: {data}")
