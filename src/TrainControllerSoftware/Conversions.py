@@ -27,3 +27,7 @@ def wattsToHorsepower(number):
 # Takes an input in Celsius and converts it to Fahrenheit
 def celsiusToFahrenheit(number):
     return round(number*1.8 + 32)
+
+# Takes an input in km/h and converts it to m/s
+def kmPerHourToMetersPerSecond(number):
+    return round(number*0.2777782, 2)

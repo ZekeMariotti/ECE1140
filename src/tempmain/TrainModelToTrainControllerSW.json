@@ -1,8 +1,8 @@
 {
-    "commandedSpeed": 15.0,
-    "currentSpeed": 10.200003836427069,
-    "authority": 10,
-    "inputTime": "2023-02-22T11:00:00.0000000-05:00",
+    "commandedSpeed": 0.0,
+    "currentSpeed": 12.953571923882976,
+    "authority": 0,
+    "inputTime": "2023-02-23T00:00:06.0000000-05:00",
     "undergroundState": false,
     "temperature": 68.0,
     "stationName": "",
@@ -14,7 +14,7 @@
     "leftDoorState": false,
     "rightDoorState": false,
     "serviceBrakeState": false,
-    "emergencyBrakeState": 0,
+    "emergencyBrakeState": false,
     "serviceBrakeStatus": true,
     "engineStatus": true,
     "communicationsStatus": true
