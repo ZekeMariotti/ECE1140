@@ -4,7 +4,7 @@ import sys
 import os
 from pathlib import Path
 
-import TrainModelMainUI, TrainControllerMainUI, TrainModelTestUI
+import TrainModelMainUI, TrainModelTestUI, TrainControllerMainUI
 
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *

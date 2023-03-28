@@ -5,7 +5,14 @@ from distutils.cmd import Command
 import sys
 import os
 import json
-import Conversions
+
+
+try:
+    import Conversions
+    print("Success")
+except:
+    print(f'\n{sys.path}\n')
+
 from json import JSONEncoder
 
 # Class for the TrainControllerSW
@@ -66,12 +73,12 @@ class TrainControllerSW:
     
     # Writes all output variables to output JSON file
     def writeOutputs(self):
-        with open(os.path.join(sys.path[0].replace("TrainController-SW", "Integration"), f'TCtoTM{self.trainId}.json'), "w") as filename:
+        with open(os.path.join(sys.path[0].replace("TrainControllerSW", "Integration"), f'TCtoTM{self.trainId}.json'), "w") as filename:
             (json.dump(self.outputs.__dict__, filename, indent=4))
 
     # Reads in all input fields from input JSON file and updates Input variables
     def readInputs(self):
-        with open(os.path.join(sys.path[0].replace("TrainController-SW", "Integration"), f'TMtoTC{self.trainId}.json'), "r") as filename:
+        with open(os.path.join(sys.path[0].replace("TrainControllerSW", "Integration"), f'TMtoTC{self.trainId}.json'), "r") as filename:
             try:
                 self.inputs = Inputs(**json.loads(filename.read()))
             except json.decoder.JSONDecodeError:
@@ -81,12 +88,12 @@ class TrainControllerSW:
 
     # Only used in Test UI and commandedSpeed manual input - writes to input file
     def writeInputs(self):
-        with open(os.path.join(sys.path[0].replace("TrainController-SW", "Integration"), f'TMtoTC{self.trainId}.json'), "w") as filename:
+        with open(os.path.join(sys.path[0].replace("TrainControllerSW", "Integration"), f'TMtoTC{self.trainId}.json'), "w") as filename:
             (json.dump(self.inputs.__dict__, filename, indent=4))
 
     # Only used in Test UI - reads from output file
     def readOutputs(self):
-        with open(os.path.join(sys.path[0].replace("TrainController-SW", "Integration"), f'TCtoTM{self.trainId}.json'), "r") as filename:
+        with open(os.path.join(sys.path[0].replace("TrainControllerSW", "Integration"), f'TCtoTM{self.trainId}.json'), "r") as filename:
             self.outputs = Outputs(**json.loads(filename.read()))
 
     # Determines whether the train is at a station or not

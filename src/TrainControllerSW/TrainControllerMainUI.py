@@ -2,7 +2,13 @@
 
 from distutils.cmd import Command
 import sys
-import Conversions
+
+
+try:
+    import Conversions
+    print("Success")
+except:
+    print(f'\n{sys.path}\n')
 
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
