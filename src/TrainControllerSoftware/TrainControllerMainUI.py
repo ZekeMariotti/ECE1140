@@ -2,13 +2,11 @@
 
 from distutils.cmd import Command
 import sys
+import os
 
+#sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-try:
-    import Conversions
-    print("Success")
-except:
-    print(f'\n{sys.path}\n')
+import Conversions
 
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *

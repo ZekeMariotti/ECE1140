@@ -4,14 +4,13 @@ from datetime import *
 from distutils.cmd import Command
 import sys
 import os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 import json
-
-
-try:
-    import Conversions
-    print("Success")
-except:
-    print(f'\n{sys.path}\n')
+from Inputs import Inputs
+from Outputs import Outputs
+import Conversions
 
 from json import JSONEncoder
 
@@ -73,12 +72,14 @@ class TrainControllerSW:
     
     # Writes all output variables to output JSON file
     def writeOutputs(self):
-        with open(os.path.join(sys.path[0].replace("TrainControllerSW", "Integration"), f'TCtoTM{self.trainId}.json'), "w") as filename:
+        path = __file__.replace("TrainControllerSoftware\TrainControllerSW.py", "Integration")
+        with open(os.path.join(path, f'TCtoTM{self.trainId}.json'), "w") as filename:
             (json.dump(self.outputs.__dict__, filename, indent=4))
 
     # Reads in all input fields from input JSON file and updates Input variables
     def readInputs(self):
-        with open(os.path.join(sys.path[0].replace("TrainControllerSW", "Integration"), f'TMtoTC{self.trainId}.json'), "r") as filename:
+        path = __file__.replace("TrainControllerSoftware\TrainControllerSW.py", "Integration")
+        with open(os.path.join(path, f'TMtoTC{self.trainId}.json'), "r") as filename:
             try:
                 self.inputs = Inputs(**json.loads(filename.read()))
             except json.decoder.JSONDecodeError:
@@ -88,12 +89,12 @@ class TrainControllerSW:
 
     # Only used in Test UI and commandedSpeed manual input - writes to input file
     def writeInputs(self):
-        with open(os.path.join(sys.path[0].replace("TrainControllerSW", "Integration"), f'TMtoTC{self.trainId}.json'), "w") as filename:
+        with open(os.path.join(sys.path[0].replace("TrainControllerSoftware", "Integration"), f'TMtoTC{self.trainId}.json'), "w") as filename:
             (json.dump(self.inputs.__dict__, filename, indent=4))
 
     # Only used in Test UI - reads from output file
     def readOutputs(self):
-        with open(os.path.join(sys.path[0].replace("TrainControllerSW", "Integration"), f'TCtoTM{self.trainId}.json'), "r") as filename:
+        with open(os.path.join(sys.path[0].replace("TrainControllerSoftware", "Integration"), f'TCtoTM{self.trainId}.json'), "r") as filename:
             self.outputs = Outputs(**json.loads(filename.read()))
 
     # Determines whether the train is at a station or not
@@ -300,46 +301,6 @@ class TrainControllerSW:
             return "OFF"
         else:
             return "ERROR: UNKNOWN STATE"
-        
-# class for TrainController inputs
-class Inputs:
-    def __init__(self, commandedSpeed, currentSpeed, authority, inputTime, undergroundState, temperature, 
-                 stationName, platformSide, nextStationName, isBeacon, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
-                 serviceBrakeState, emergencyBrakeState, serviceBrakeStatus, engineStatus, communicationsStatus):
-        # Inputs
-        self.commandedSpeed = commandedSpeed
-        self.currentSpeed = currentSpeed
-        self.authority = authority
-        self.inputTime = str(inputTime)
-        self.undergroundState = undergroundState
-        self.temperature = temperature
-        self.stationName = stationName
-        self.platformSide = platformSide
-        self.nextStationName = nextStationName
-        self.isBeacon = isBeacon
-        self.externalLightsState = externalLightsState
-        self.internalLightsState = internalLightsState
-        self.leftDoorState = leftDoorState
-        self.rightDoorState = rightDoorState
-        self.serviceBrakeState = serviceBrakeState
-        self.emergencyBrakeState = emergencyBrakeState
-        self.serviceBrakeStatus = serviceBrakeStatus
-        self.engineStatus = engineStatus
-        self.communicationsStatus = communicationsStatus
-
-# class for TrainController outputs
-class Outputs:
-    def __init__(self, power, leftDoorCommand, 
-                 rightDoorCommand, serviceBrakeCommand, emergencyBrakeCommand, externalLightCommand, internalLightCommand, stationAnnouncement):
-        # outputs
-        self.power = power
-        self.leftDoorCommand = leftDoorCommand
-        self.rightDoorCommand = rightDoorCommand
-        self.serviceBrakeCommand = serviceBrakeCommand
-        self.emergencyBrakeCommand = emergencyBrakeCommand
-        self.externalLightCommand = externalLightCommand
-        self.internalLightCommand = internalLightCommand
-        self.stationAnnouncement = stationAnnouncement
         
 # Function to remove character from a string at nth position
 def stringRemove(string, n):  

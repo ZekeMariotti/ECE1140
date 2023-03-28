@@ -8,7 +8,9 @@ from PyQt6 import QtCore
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
-from TrainControllerSW import TrainControllerSW, Outputs, Inputs
+from TrainControllerSW import TrainControllerSW
+from Inputs import Inputs
+from Outputs import Outputs
 from datetime import *
 from animated_toggle import AnimatedToggle
 import os

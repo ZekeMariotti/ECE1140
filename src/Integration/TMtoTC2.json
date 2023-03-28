@@ -1,10 +1,10 @@
 {
-    "commandedSpeed": 0.0,
-    "currentSpeed": 0.0,
+    "commandedSpeed": 52,
+    "currentSpeed": 35,
     "authority": 0,
     "inputTime": "2023-02-22T11:00:00.0000000-05:00",
     "undergroundState": false,
-    "temperature": 68.0,
+    "temperature": -19,
     "stationName": "",
     "platformSide": 0,
     "nextStationName": "",

@@ -1,8 +1,10 @@
 import sys
 import os
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "TrainControllerSW"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "TrainControllerSoftware"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "TrainModel"))
 
 #print(f'Init:{sys.path}')
 
-from TrainControllerSW import TrainControllerMainUI
+from TrainControllerSoftware import TrainControllerMainUI
+from TrainModel import TrainModelMainUI
