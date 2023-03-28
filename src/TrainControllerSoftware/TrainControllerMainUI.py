@@ -24,14 +24,14 @@ class Worker(QObject):
 class MainWindow(QMainWindow):
 
         # Constructor 
-        def __init__(self):
+        def __init__(self, id=2):
             super().__init__()
 
             # Enable Test UI
             self.testUI = False 
             
             # Initialize TrainControllerSW object
-            self.TrainControllerSW = TrainControllerSW(trainId=2, commandedSpeed=0, currentSpeed=0, authority=0, inputTime="2023-02-20T21:52:48.3940347-05:00", 
+            self.TrainControllerSW = TrainControllerSW(trainId=id, commandedSpeed=0, currentSpeed=0, authority=0, inputTime="2023-02-20T21:52:48.3940347-05:00", 
                                                        undergroundState=False, temperature=0, stationName="setupStationName", platformSide=0, 
                                                        nextStationName="station2", isBeacon=False, externalLightsState=False, internalLightsState=False, leftDoorState=False, 
                                                        rightDoorState=False, serviceBrakeState=False, emergencyBrakeState=False, serviceBrakeStatus=False, engineStatus=False, 
@@ -582,11 +582,15 @@ class MainWindow(QMainWindow):
         #     emergencyBrakeDisable.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
         #     QMainWindow.resizeEvent(self, event)
         
-        # Closes test UI if main window closes
+        # Closes test UI if main window closes, minimizes if in main UI
         def closeEvent(self, event):
             if(self.testUI):
                 if (self.TrainControllerTestUI):
                     self.TrainControllerTestUI.close()
+            if(__name__ == "__main__"):
+                self.close()
+            else:
+                self.setVisible(False)
 
         # Updates everything during every each loop of the timer 
         def mainEventLoop(self):
@@ -737,12 +741,12 @@ class Color(QWidget):
 
 
 
-app = QApplication(sys.argv)
+if(__name__ == "__main__"):
+    app = QApplication(sys.argv)
+    mainWindow = MainWindow()
+    mainWindow.show()
 
-mainWindow = MainWindow()
-mainWindow.show()
+    if (mainWindow.testUI):
+        mainWindow.TrainControllerTestUI.show()
 
-if (mainWindow.testUI):
-    mainWindow.TrainControllerTestUI.show()
-
-app.exec()
+    app.exec()

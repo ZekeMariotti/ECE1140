@@ -2,6 +2,10 @@
 
 from distutils.cmd import Command
 import sys
+import os
+
+#sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 import Conversions
 
 from PyQt6.QtWidgets import *
@@ -734,8 +738,6 @@ class Color(QWidget):
         palette = self.palette()
         palette.setColor(QPalette.ColorRole.Window, QColor(color))
         self.setPalette(palette)
-
-
 
 
 

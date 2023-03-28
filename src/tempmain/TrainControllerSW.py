@@ -4,6 +4,9 @@ from datetime import *
 from distutils.cmd import Command
 import sys
 import os
+
+#sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 import json
 import Conversions
 from json import JSONEncoder
