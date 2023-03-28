@@ -379,6 +379,12 @@ class TrainModelUI(QWidget):
             updateButton.pressed.connect(self.updateOutputs)
             layout.addWidget(updateButton, 9, 2, 1, 2, self.alignCenter)
 
+    def closeEvent(self, event):
+        if __name__ == "__main__":
+            self.close()
+        else:
+            self.setVisible(False)
+
 
     # Handler for when Communcations Failure State button is pressed
     def communicationsButtonPressed(self):
