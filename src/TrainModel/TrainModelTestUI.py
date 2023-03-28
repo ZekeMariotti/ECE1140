@@ -66,61 +66,61 @@ class TrainModelTestUI(QWidget):
         "passengersOff"        : 0
     }
 
-    # Dictionary for inputs from the Train Controller JSON File
-    trainControllerToTrainModel = {
-        "power"                 : 0.0,       # Power input from the Train Controller
-        "leftDoorCommand"       : False,     # Left Door Command from the Train Controller, False if closed, True if open
-        "rightDoorCommand"      : False,     # Right Door Command from the Train Controller, False if closed, True if open
-        "serviceBrakeCommand"   : False,     # Service Brake Command from the Train Controller, True if engaged, False is disengaged
-        "emergencyBrakeCommand" : False,     # Emergency Brake Command from the Train Controller, True if engaged, False is isengaged
-        "externalLightCommand"  : False,     # External Light Command from the Train Controller, True if on, False if off
-        "InternalLightCommand"  : False,     # External Light Command from the Train Controller, True if on, False if off
-        "stationAnnouncement"   : "The Yard" # Station Announcement from the Train Controller
-    }
+    # Dictionary for inputs from the Train Controller JSON File (WAS USING JSON, SCRAPPED)
+    #trainControllerToTrainModel = {
+    #    "power"                 : 0.0,       # Power input from the Train Controller
+    #    "leftDoorCommand"       : False,     # Left Door Command from the Train Controller, False if closed, True if open
+    #    "rightDoorCommand"      : False,     # Right Door Command from the Train Controller, False if closed, True if open
+    #    "serviceBrakeCommand"   : False,     # Service Brake Command from the Train Controller, True if engaged, False is disengaged
+    #    "emergencyBrakeCommand" : False,     # Emergency Brake Command from the Train Controller, True if engaged, False is isengaged
+    #    "externalLightCommand"  : False,     # External Light Command from the Train Controller, True if on, False if off
+    #    "InternalLightCommand"  : False,     # External Light Command from the Train Controller, True if on, False if off
+    #    "stationAnnouncement"   : "The Yard" # Station Announcement from the Train Controller
+    #}
 
-    # Dictionary for outputs to the Train Controller
-    trainModelToTrainController = {
-        "commandedSpeed"        : 0.0,                                 # Commanded Speed in m/s
-        "currentSpeed"          : 0.0,                                 # Current Speed in m/s
-        "authority"             : 0,                                   # Authority in Blocks
-        "inputTime"             : "2023-02-22T11:00:00.0000000-05:00", # RTC Clock in ISO 8601
-        "undergroundState"      : False,                               # Underground State
-        "temperature"           : 0.0,                                 # Temperature inside the Train in degrees Fahrenheit
-        "stationName"           : "The Yard",                          # Station Name, from the beacon
-        "platformSide"          : 0,                                   # Platform Side, 0 if left, 1 if right, 2 if both, from the beacon
-        "nextStationName"       : "",                                  # Name of the next station, from the beacon
-        "isBeacon"              : False,                               # Whether or not a beacon is active
-        "externalLightsState"   : False,                               # State of the External Lights, True if on, False if off
-        "internalLightsState"   : False,                               # State of the Internal Lights, True if on, False if off
-        "leftDoorState"         : False,                               # State of the Left Doors, True if open, False if closed
-        "rightDoorState"        : False,                               # State of the Right Doors, True if open, False if closed
-        "serviceBrakeState"     : False,                               # State of the Service Brake, True if engaged, False if disengaged
-        "emergencyBrakeState"   : False,                               # State of the Emergency Brake, True if engaged, Flase if disengaged
-        "serviceBrakeStatus"    : True,                                # Status of the Service Brake, True if operational, False if offline
-        "engineStatus"          : True,                                # Status of the Engine, True if operational, False if offline
-        "communicationsStatus"  : True                                 # Status of the Communications with the Track, True if operational, False if offline
-    }
+    # Dictionary for outputs to the Train Controller (WAS USING JSON, SCRAPPED)
+    #trainModelToTrainController = {
+    #    "commandedSpeed"        : 0.0,                                 # Commanded Speed in m/s
+    #    "currentSpeed"          : 0.0,                                 # Current Speed in m/s
+    #    "authority"             : 0,                                   # Authority in Blocks
+    #    "inputTime"             : "2023-02-22T11:00:00.0000000-05:00", # RTC Clock in ISO 8601
+    #    "undergroundState"      : False,                               # Underground State
+    #    "temperature"           : 0.0,                                 # Temperature inside the Train in degrees Fahrenheit
+    #    "stationName"           : "The Yard",                          # Station Name, from the beacon
+    #    "platformSide"          : 0,                                   # Platform Side, 0 if left, 1 if right, 2 if both, from the beacon
+    #    "nextStationName"       : "",                                  # Name of the next station, from the beacon
+    #    "isBeacon"              : False,                               # Whether or not a beacon is active
+    #    "externalLightsState"   : False,                               # State of the External Lights, True if on, False if off
+    #    "internalLightsState"   : False,                               # State of the Internal Lights, True if on, False if off
+    #    "leftDoorState"         : False,                               # State of the Left Doors, True if open, False if closed
+    #    "rightDoorState"        : False,                               # State of the Right Doors, True if open, False if closed
+    #    "serviceBrakeState"     : False,                               # State of the Service Brake, True if engaged, False if disengaged
+    #    "emergencyBrakeState"   : False,                               # State of the Emergency Brake, True if engaged, Flase if disengaged
+    #    "serviceBrakeStatus"    : True,                                # Status of the Service Brake, True if operational, False if offline
+    #    "engineStatus"          : True,                                # Status of the Engine, True if operational, False if offline
+    #    "communicationsStatus"  : True                                 # Status of the Communications with the Track, True if operational, False if offline
+    #}
 
-    # Dictionary for inputs from the Track Model
-    trackModelToTrainModel = {
-        "rtc"                : "2023-02-22T11:00:00.0000000-05:00",    # Real Time Clock in ISO 8601 Format
-        "authority"          : 0,                                      # Authority of the train to be passed to the train controller in blocks
-        "commandedSpeed"     : 0.0,                                    # Commanded speed of the train in m/s
-        "passengersEntering" : 0,                                      # Number of passengers entering the train
-        "undergroundState"   : False,                                  # State of whether the train is underground or not
-        "beacon"             : ["", 0, "", False],                     # Array to store the beacon inputs [stationName, platformSide, nextStationName, isBeacon]
-        "switch"             : False,                                  # True if the block the train is currently on is a switch, false otherwise                      
-        "switchState"        : 0,                                      # 0 if the switch is in a default position, 1 otherwise
-        "blockLength"        : 100.0,                                  # Length of the current block that the train is on
-        "elevation"          : 0.0                                     # elevation different of the current block that the train is on
-    }
+    # Dictionary for inputs from the Track Model (WAS USING JSON, SCRAPPED)
+    #trackModelToTrainModel = {
+    #    "rtc"                : "2023-02-22T11:00:00.0000000-05:00",    # Real Time Clock in ISO 8601 Format
+    #    "authority"          : 0,                                      # Authority of the train to be passed to the train controller in blocks
+    #    "commandedSpeed"     : 0.0,                                    # Commanded speed of the train in m/s
+    #    "passengersEntering" : 0,                                      # Number of passengers entering the train
+    #    "undergroundState"   : False,                                  # State of whether the train is underground or not
+    #    "beacon"             : ["", 0, "", False],                     # Array to store the beacon inputs [stationName, platformSide, nextStationName, isBeacon]
+    #    "switch"             : False,                                  # True if the block the train is currently on is a switch, false otherwise                      
+    #    "switchState"        : 0,                                      # 0 if the switch is in a default position, 1 otherwise
+    #    "blockLength"        : 100.0,                                  # Length of the current block that the train is on
+    #    "elevation"          : 0.0                                     # elevation different of the current block that the train is on
+    #}
 
-    # Dictionary for outputs to the Track Model
-    trainModelToTrackModel = {
-        "currBlock"     : 0, # Current Block of the train
-        "prevBlock"     : 0, # Block the train is exiting
-        "passengersOff" : 0  # Passengers getting off of the train
-    }
+    # Dictionary for outputs to the Track Model (WAS USING JSON, SCRAPPED)
+    #trainModelToTrackModel = {
+    #    "currBlock"     : 0, # Current Block of the train
+    #    "prevBlock"     : 0, # Block the train is exiting
+    #    "passengersOff" : 0  # Passengers getting off of the train
+    #}
 
 
     def mainThreadSetup(self):
@@ -163,7 +163,7 @@ class TrainModelTestUI(QWidget):
 
         # Initializing the layout of the UI
         super().__init__()
-        self.mainTimer = self.mainTimerSetup()
+        #self.mainTimer = self.mainTimerSetup()
         self.setWindowTitle("Train Model Test UI")
         layout = QGridLayout()
         self.setLayout(layout)
@@ -178,11 +178,11 @@ class TrainModelTestUI(QWidget):
         layout.addWidget(trackModelLabel, 0, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
 
         # Add the Real Time Clock Input
-        realTimeClockLabel = QLabel("Real Time Clock")
-        layout.addWidget(realTimeClockLabel, 1, 0)
-        self.realTimeClockInput = QLineEdit()
+        #realTimeClockLabel = QLabel("Real Time Clock")
+        #layout.addWidget(realTimeClockLabel, 1, 0)
+        #self.realTimeClockInput = QLineEdit()
         #self.realTimeClockInput.editingFinished.connect(self.getRealTimeClockInput)
-        layout.addWidget(self.realTimeClockInput, 1, 1)
+        #layout.addWidget(self.realTimeClockInput, 1, 1)
 
         # Add the Authority Input
         authorityLabel = QLabel("Authority")
@@ -369,12 +369,12 @@ class TrainModelTestUI(QWidget):
         layout.addWidget(self.currBlockOutput, 1, 3)
 
         # Adding the Previous Block Output
-        prevBlockLabel = QLabel("Previous Block")
-        layout.addWidget(prevBlockLabel, 2, 2)
-        self.prevBlockOutput = QLineEdit()
-        self.prevBlockOutput.setReadOnly(True)
-        self.prevBlockOutput.setText("0")
-        layout.addWidget(self.prevBlockOutput, 2, 3)
+        #prevBlockLabel = QLabel("Previous Block")
+        #layout.addWidget(prevBlockLabel, 2, 2)
+        #self.prevBlockOutput = QLineEdit()
+        #self.prevBlockOutput.setReadOnly(True)
+        #self.prevBlockOutput.setText("0")
+        #layout.addWidget(self.prevBlockOutput, 2, 3)
 
         # Adding the Passengers Exiting
         passengersExitingLabel = QLabel("Passengers Exiting")
@@ -421,13 +421,13 @@ class TrainModelTestUI(QWidget):
         layout.addWidget(self.authorityOutput, 8, 3)
 
         # Adding the Real Time Clock
-        realTimeClockLabel = QLabel("Real Time Clock")
-        layout.addWidget(realTimeClockLabel, 9, 2)
-        self.realTimeClockOutput = QLineEdit()
-        self.realTimeClockOutput.setReadOnly(True)
-        self.realTimeClockOutput.setText("12:00:00 am")
-        self.realTimeClockOutput.setFixedWidth(200)
-        layout.addWidget(self.realTimeClockOutput, 9, 3)
+        #realTimeClockLabel = QLabel("Real Time Clock")
+        #layout.addWidget(realTimeClockLabel, 9, 2)
+        #self.realTimeClockOutput = QLineEdit()
+        #self.realTimeClockOutput.setReadOnly(True)
+        #self.realTimeClockOutput.setText("12:00:00 am")
+        #self.realTimeClockOutput.setFixedWidth(200)
+        #layout.addWidget(self.realTimeClockOutput, 9, 3)
 
         # Adding the Underground State
         undergroundStateLabel = QLabel("Underground State")
@@ -554,65 +554,65 @@ class TrainModelTestUI(QWidget):
         # Update Outputs to
         self.updateOutputsBoth()
 
-    # Function to read the outputs from the Train Model to Train Controller
-    def readTrainModelToTrackModel(self):
-        with open(os.path.join(sys.path[0], "TrainModelToTrackModel.json"), "r") as filename:
-            self.trainModelToTrackModel = json.loads(filename.read())
-        self.testDataOutputs["currBlock"]     = self.trainModelToTrackModel["currBlock"]
-        self.testDataOutputs["prevBlock"]     = self.trainModelToTrackModel["prevBlock"]
-        self.testDataOutputs["passengersOff"] = self.trainModelToTrackModel["passengersOff"]
+    # Function to read the outputs from the Train Model to Train Controller (WAS USING JSON, SCRAPPED)
+    #def readTrainModelToTrackModel(self):
+    #    with open(os.path.join(sys.path[0], "TrainModelToTrackModel.json"), "r") as filename:
+    #        self.trainModelToTrackModel = json.loads(filename.read())
+    #    self.testDataOutputs["currBlock"]     = self.trainModelToTrackModel["currBlock"]
+    #    self.testDataOutputs["prevBlock"]     = self.trainModelToTrackModel["prevBlock"]
+    #    self.testDataOutputs["passengersOff"] = self.trainModelToTrackModel["passengersOff"]
 
-    # Function to read the outputs from the Train Model to the Train Controller
-    def readTrainModelToTrainController(self):
-        with open(os.path.join(sys.path[0], "TrainModelToTrainControllerSW.json"), "r") as filename:
-            self.trainModelToTrainController = json.loads(filename.read())
-        self.testDataOutputs["commandedSpeed"]       = self.trainModelToTrainController["commandedSpeed"]
-        self.testDataOutputs["currentSpeed"]         = self.trainModelToTrainController["currentSpeed"]
-        self.testDataOutputs["authority"]            = self.trainModelToTrainController["authority"]
-        self.testDataOutputs["inputTime"]            = self.trainModelToTrainController["inputTime"]
-        self.testDataOutputs["undergroundState"]     = self.trainModelToTrainController["undergroundState"]
-        self.testDataOutputs["temperature"]          = self.trainModelToTrainController["temperature"]
-        self.testDataOutputs["stationName"]          = self.trainModelToTrainController["stationName"]
-        self.testDataOutputs["platformSide"]         = self.trainModelToTrainController["platformSide"]
-        self.testDataOutputs["nextStationName"]      = self.trainModelToTrainController["nextStationName"]
-        self.testDataOutputs["isBeacon"]             = self.trainModelToTrainController["isBeacon"]
-        self.testDataOutputs["externalLightsState"]  = self.trainModelToTrainController["externalLightsState"]
-        self.testDataOutputs["internalLightsState"]  = self.trainModelToTrainController["internalLightsState"]
-        self.testDataOutputs["leftDoorState"]        = self.trainModelToTrainController["leftDoorState"]
-        self.testDataOutputs["rightDoorState"]       = self.trainModelToTrainController["rightDoorState"]
-        self.testDataOutputs["serviceBrakeState"]    = self.trainModelToTrainController["serviceBrakeState"]
-        self.testDataOutputs["emergencyBrakeState"]  = self.trainModelToTrainController["emergencyBrakeState"]
-        self.testDataOutputs["serviceBrakeStatus"]   = self.trainModelToTrainController["serviceBrakeStatus"]
-        self.testDataOutputs["engineStatus"]         = self.trainModelToTrainController["engineStatus"]
-        self.testDataOutputs["communicationsStatus"] = self.trainModelToTrainController["communicationsStatus"]
+    # Function to read the outputs from the Train Model to the Train Controller (WAS USING JSON, SCRAPPED)
+    #def readTrainModelToTrainController(self):
+    #    with open(os.path.join(sys.path[0], "TrainModelToTrainControllerSW.json"), "r") as filename:
+    #        self.trainModelToTrainController = json.loads(filename.read())
+    #    self.testDataOutputs["commandedSpeed"]       = self.trainModelToTrainController["commandedSpeed"]
+    #    self.testDataOutputs["currentSpeed"]         = self.trainModelToTrainController["currentSpeed"]
+    #    self.testDataOutputs["authority"]            = self.trainModelToTrainController["authority"]
+    #    self.testDataOutputs["inputTime"]            = self.trainModelToTrainController["inputTime"]
+    #    self.testDataOutputs["undergroundState"]     = self.trainModelToTrainController["undergroundState"]
+    #    self.testDataOutputs["temperature"]          = self.trainModelToTrainController["temperature"]
+    #    self.testDataOutputs["stationName"]          = self.trainModelToTrainController["stationName"]
+    #    self.testDataOutputs["platformSide"]         = self.trainModelToTrainController["platformSide"]
+    #    self.testDataOutputs["nextStationName"]      = self.trainModelToTrainController["nextStationName"]
+    #    self.testDataOutputs["isBeacon"]             = self.trainModelToTrainController["isBeacon"]
+    #    self.testDataOutputs["externalLightsState"]  = self.trainModelToTrainController["externalLightsState"]
+    #    self.testDataOutputs["internalLightsState"]  = self.trainModelToTrainController["internalLightsState"]
+    #    self.testDataOutputs["leftDoorState"]        = self.trainModelToTrainController["leftDoorState"]
+    #    self.testDataOutputs["rightDoorState"]       = self.trainModelToTrainController["rightDoorState"]
+    #    self.testDataOutputs["serviceBrakeState"]    = self.trainModelToTrainController["serviceBrakeState"]
+    #    self.testDataOutputs["emergencyBrakeState"]  = self.trainModelToTrainController["emergencyBrakeState"]
+    #    self.testDataOutputs["serviceBrakeStatus"]   = self.trainModelToTrainController["serviceBrakeStatus"]
+    #    self.testDataOutputs["engineStatus"]         = self.trainModelToTrainController["engineStatus"]
+    #    self.testDataOutputs["communicationsStatus"] = self.trainModelToTrainController["communicationsStatus"]
 
-    # Function to write inputs from the Track Model to the Train Model
-    def writeTrackModelToTrainModel(self):
-        self.trackModelToTrainModel["rtc"]                = self.testDataInputs["rtc"]
-        self.trackModelToTrainModel["authority"]          = self.testDataInputs["authority"]
-        self.trackModelToTrainModel["commandedSpeed"]     = self.testDataInputs["commandedSpeed"]
-        self.trackModelToTrainModel["passengersEntering"] = self.testDataInputs["passengersEntering"]
-        self.trackModelToTrainModel["undergroundState"]   = self.testDataInputs["undergroundState"]
-        self.trackModelToTrainModel["beacon"]             = self.testDataInputs["beacon"]
-        self.trackModelToTrainModel["switch"]             = self.testDataInputs["switch"]
-        self.trackModelToTrainModel["switchState"]        = self.testDataInputs["switchState"]
-        self.trackModelToTrainModel["blockLength"]        = self.testDataInputs["blockLength"]
-        self.trackModelToTrainModel["elevation"]          = self.testDataInputs["elevation"]
-        with open(os.path.join(sys.path[0], "TrackModelToTrainModel.json"), "w") as filename:
-            (json.dump(self.trackModelToTrainModel, filename, indent=4))
+    # Function to write inputs from the Track Model to the Train Model (WAS USING JSON, SCRAPPED)
+    #def writeTrackModelToTrainModel(self):
+    #    self.trackModelToTrainModel["rtc"]                = self.testDataInputs["rtc"]
+    #    self.trackModelToTrainModel["authority"]          = self.testDataInputs["authority"]
+    #    self.trackModelToTrainModel["commandedSpeed"]     = self.testDataInputs["commandedSpeed"]
+    #    self.trackModelToTrainModel["passengersEntering"] = self.testDataInputs["passengersEntering"]
+    #    self.trackModelToTrainModel["undergroundState"]   = self.testDataInputs["undergroundState"]
+    #    self.trackModelToTrainModel["beacon"]             = self.testDataInputs["beacon"]
+    #    self.trackModelToTrainModel["switch"]             = self.testDataInputs["switch"]
+    #    self.trackModelToTrainModel["switchState"]        = self.testDataInputs["switchState"]
+    #    self.trackModelToTrainModel["blockLength"]        = self.testDataInputs["blockLength"]
+    #    self.trackModelToTrainModel["elevation"]          = self.testDataInputs["elevation"]
+    #    with open(os.path.join(sys.path[0], "TrackModelToTrainModel.json"), "w") as filename:
+    #        (json.dump(self.trackModelToTrainModel, filename, indent=4))
 
-    # Function to write inputs from the Train Controller to the Train Model
-    def writeTrainControllerToTrainModel(self):
-        self.trainControllerToTrainModel["power"]                 = self.testDataInputs["power"]
-        self.trainControllerToTrainModel["leftDoorCommand"]       = self.testDataInputs["leftDoorCommand"]
-        self.trainControllerToTrainModel["rightDoorCommand"]      = self.testDataInputs["rightDoorCommand"]
-        self.trainControllerToTrainModel["serviceBrakeCommand"]   = self.testDataInputs["serviceBrakeCommand"]
-        self.trainControllerToTrainModel["emergencyBrakeCommand"] = self.testDataInputs["emergencyBrakeCommand"]
-        self.trainControllerToTrainModel["externalLightCommand"]  = self.testDataInputs["externalLightCommand"]
-        self.trainControllerToTrainModel["internalLightCommand"]  = self.testDataInputs["internalLightCommand"]
-        self.trainControllerToTrainModel["stationAnnouncement"]   = self.testDataInputs["stationAnnouncement"]
-        with open(os.path.join(sys.path[0], "TCtoTM1.json"), "w") as filename:
-            (json.dump(self.trainControllerToTrainModel, filename, indent=4))
+    # Function to write inputs from the Train Controller to the Train Model (WAS USING JSON, SCRAPPED)
+    #def writeTrainControllerToTrainModel(self):
+    #    self.trainControllerToTrainModel["power"]                 = self.testDataInputs["power"]
+    #    self.trainControllerToTrainModel["leftDoorCommand"]       = self.testDataInputs["leftDoorCommand"]
+    #    self.trainControllerToTrainModel["rightDoorCommand"]      = self.testDataInputs["rightDoorCommand"]
+    #    self.trainControllerToTrainModel["serviceBrakeCommand"]   = self.testDataInputs["serviceBrakeCommand"]
+    #    self.trainControllerToTrainModel["emergencyBrakeCommand"] = self.testDataInputs["emergencyBrakeCommand"]
+    #    self.trainControllerToTrainModel["externalLightCommand"]  = self.testDataInputs["externalLightCommand"]
+    #    self.trainControllerToTrainModel["internalLightCommand"]  = self.testDataInputs["internalLightCommand"]
+    #    self.trainControllerToTrainModel["stationAnnouncement"]   = self.testDataInputs["stationAnnouncement"]
+    #    with open(os.path.join(sys.path[0], "TCtoTM1.json"), "w") as filename:
+    #        (json.dump(self.trainControllerToTrainModel, filename, indent=4))
     
     # Emit Train Controller to Train Model Singals
     def emitTrainControllerSignals(self):
@@ -685,6 +685,7 @@ class TrainModelTestUI(QWidget):
         TMTkMSignals.authoritySignal.emit(self.testDataInputs["id"], self.testDataInputs["authority"])
         TMTkMSignals.commandedSpeedSignal.emit(self.testDataInputs["id"], self.testDataInputs["commandedSpeed"])
         TMTkMSignals.passengersEnteringSignal.emit(self.testDataInputs["id"], self.testDataInputs["passengersEntering"])
+        TMTkMSignals.undergroundStateSignal.emit(self.testDataInputs["id"], self.testDataInputs["undergroundState"])
         TMTkMSignals.beaconSignal.emit(self.testDataInputs["id"], self.testDataInputs["beacon"][0], self.testDataInputs["beacon"][1], self.testDataInputs["beacon"][2], self.testDataInputs["beacon"][3], -1, False)
         TMTkMSignals.switchSignal.emit(self.testDataInputs["id"], self.testDataInputs["switch"])
         TMTkMSignals.switchStateSignal.emit(self.testDataInputs["id"], self.testDataInputs["switchState"])
@@ -746,8 +747,8 @@ class TrainModelTestUI(QWidget):
         self.testDataInputs["stationAnnouncement"] = self.stationInput.text()
 
     # Gets the Real Time Clock state from the UI
-    def getRealTimeClockInput(self):
-        self.testDataInputs["rtc"] = self.realTimeClockInput.text()
+    #def getRealTimeClockInput(self):
+    #    self.testDataInputs["rtc"] = self.realTimeClockInput.text()
 
     # Gets the Authority input from the UI
     def getAuthorityInput(self):
@@ -783,11 +784,11 @@ class TrainModelTestUI(QWidget):
 
     # Updates all functions when the button is pressed
     def updateOutputsBoth(self):
-        # Wipe Output files so they are clean
+        # Wipe Output files so they are clean (WAS USING JSON, SCRAPPED)
         #with open(os.path.join(sys.path[0], "TrainControllerSWToTrainModel.json"), "w") as filename:
         #    (json.dump({}, filename, indent=4))
-        with open(os.path.join(sys.path[0], "TrackModelToTrainModel.json"), "w") as filename:
-            (json.dump({}, filename, indent=4))
+        #with open(os.path.join(sys.path[0], "TrackModelToTrainModel.json"), "w") as filename:
+        #    (json.dump({}, filename, indent=4))
 
         #time = datetime.now()
         #iso_time = time.isoformat()
@@ -795,22 +796,22 @@ class TrainModelTestUI(QWidget):
         #print(self.testDataInputs["rtc"])
 
         # Write Data To Output Module
-        #self.writeTrackModelToTrainModel()
-        #self.writeTrainControllerToTrainModel()
+        #self.writeTrackModelToTrainModel() (WAS USING JSON, SCRAPPED)
+        #self.writeTrainControllerToTrainModel() (WAS USING JSON, SCRAPPED)
         self.emitTrainControllerSignals()
         self.emitTrackModelSignals()
         trainSignals.updateOutputs.emit()
-        #self.readTrainModelToTrackModel()
-        #self.readTrainModelToTrainController()
+        #self.readTrainModelToTrackModel() (WAS USING JSON, SCRAPPED)
+        #self.readTrainModelToTrainController() (WAS USING JSON, SCRAPPED)
 
         self.currBlockOutput.setText("Block " + str(self.testDataOutputs["currBlock"]))
-        self.prevBlockOutput.setText("Block " + str(self.testDataOutputs["prevBlock"]))
+        #self.prevBlockOutput.setText("Block " + str(self.testDataOutputs["prevBlock"]))
         self.passengersExitingOutput.setText(str(self.testDataOutputs["passengersOff"]))
         #self.idOutput.setText(str(self.testDataOutputs["id"]))
         self.commandedSpeedOutput.setText(str(self.testDataOutputs["commandedSpeed"]) + " m/s")
         self.velocityOutput.setText(str(round(self.testDataOutputs["currentSpeed"], 2)) + " m/s")
         self.authorityOutput.setText(str(self.testDataOutputs["authority"]) + " Blocks")
-        self.realTimeClockOutput.setText(self.testDataOutputs["inputTime"])
+        #self.realTimeClockOutput.setText(self.testDataOutputs["inputTime"])
         self.undergroundStateOutput.setText(str(bool(self.testDataOutputs["undergroundState"])))
         self.temperatureOutput.setText(str(self.testDataOutputs["temperature"]) + " F")
         self.beaconStationOutput.setText(self.testDataOutputs["stationName"])
