@@ -10,54 +10,8 @@ from PyQt6.QtCore import *
 
 class TrainModel():
 
-    # data variable to store all the data needed for the back end
-    data = {
-        "id"               : 0,              # Train ID for if there are multiple trains instantiated
-        "rtc"              : "",             # Real Time Clock in ISO 8601 Format
-        "prevRTC"          : "",             # Previous State RTC in ISO 8601 Format
-        "simSpeed"         : 1,              # Simulation Speed of the system
-        "passengers"       : 0,              # Number of passengers on the train
-        "passengersOn"     : 0,              # Number of passengers getting on the train
-        "passengersOff"    : 0,              # Number of passengers getting off the train
-        "crew"             : 1,              # Number of crew members on the train (Default of driver and conductor)
-        "underground"      : False,          # State of whether the train is underground or not
-        "length"           : 0.0,            # Length of the Train in meters
-        "mass"             : 40900.0,        # Mass of the Train, changes based on number of passengers, defaults to mass of an unloaded train, in kilograms
-        "velocity"         : 0.0,            # Current Velocity of the Train in meters per second
-        "acceleration"     : 0.0,            # Current Acceleration of the Train in meters per second ^ 2
-        "prevVelocity"     : 0.0,            # Previous Velocity of the Train in meters per second
-        "prevAcceleration" : 0.0,            # Previous Acceleration of the Train in meters per second ^ 2
-        "power"            : 0.0,            # Power input from the Train Controller in watts
-        "station"          : "The Yard",     # Name of the next Station 
-        "atStation"        : False,          # State of whether the train is at a station or not
-        "commStatus"       : True,           # True if all communications are good, false is communications are disabled
-        "engineStatus"     : True,           # True if engine is operational, false if it is disabled
-        "brakeStatus"      : True,           # True is the service brake is operational, false if it is disabled
-        "eBrakeState"      : False,          # State of the emergency brake, True if engaged, False if disengaged
-        "sBrakeState"      : False,          # State of the service brake, True if engaged, False if disengaged
-        "lDoors"           : False,          # State of the left doors, True if doors are open, False if they are closed
-        "rDoors"           : False,          # State of the right doors, True if doors are open, False if they are closed
-        "iLights"          : False,          # State of the internal lights, True if they are on, False if they are off
-        "eLights"          : False,          # State of the external lights, True if they are on, False if they are off
-        "currTemp"         : 68.0,           # Current temperature inside the train in degrees fahrenheit
-        "goalTemp"         : 68.0,           # Temperature goal given by the user in degrees fahrenehit
-        "numCars"          : 1,              # Length of the train based on number of cars attached to the train
-    }
-
-    # Dictionary used for intercommunication between the track model and train model only
-    trackData = {
-        "currBlock"        : 0,              # Current block that the train is on, ONLY USED BY TRAIN MODEL AND TRACK MODEL
-        "prevBlock"        : 0,              # Previous block that the train was on, ONLY USED BY TRAIN MODEL AND TRACK MODEL
-        "distance"         : 0.0,            # Distance the train has traveled since the last time period in meters
-        "remDistance"      : 0.1,            # Distance remaining in the current block, if any, in meters (Initialized as 10 meters for coming out of the yard)
-        "switch"           : True,           # If the current block is attached to a switch, True if on a switch, false if otherwise
-        "switchState"      : 0,              # State of the switch if the current block is attached to one (default is 0)
-        "blockLength"      : 10.0,           # Length of the current block, provided by the Track Model
-        "elevation"        : 0.0,            # Relative elevation increase of the block, provided by the Track Model
-        "trainLine"        : "",             # Line the train is on
-        "trackSection"     : [0, 0],         # Section of the track that the train is on
-        "overflow"         : False           # Overflow boolean used for current Block Calculations
-    }
+    TrainID = 0
+    goalTemp = 68
 
     # Green Line Track Sections
     greenSection0  = [0, 63]    # Yard to Block 63
@@ -109,19 +63,6 @@ class TrainModel():
         "massOfHuman"        : 68.0389,      # Mass of a human for this simulation in kilograms
         "maxPassengers"      : 222,          # Maximum number of passengers that can be on the train at one time
         "friction"           : 0.006         # Coefficient of friction used for both static and dynamic friction
-    }
-
-    # Dictionary used for different eBrake States from train controller and user input
-    eBrakes = {
-        "user"               : False,        # State of the emergency brake from the passenger
-        "trainController"    : False         # State of the emergency brake from the driver
-    }
-
-    # Dictionary for pass through data (Only data to be passed through the module and not used within)
-    passThroughData = {
-        "commandedSpeed"  : 0.0,                   # Commanded speed for the train in m/s
-        "authority"       : 0,                     # Authority of the train in blocks
-        "beacon"          : ["", 0, "", False]     # Beacon Inputs from the most recent Beacon
     }
 
     # Dictionary for inputs from the Train Controller JSON File (WAS USING JSON, SCRAPPED)
@@ -180,7 +121,73 @@ class TrainModel():
     #    "passengersOff" : 0  # Passengers getting off of the train
     #}
 
-    def __init__(self):
+    def __init__(self, trainId, Line):
+
+        # data variable to store all the data needed for the back end
+        self.data = {
+            "id"               : 0,              # Train ID for if there are multiple trains instantiated
+            "rtc"              : "",             # Real Time Clock in ISO 8601 Format
+            "prevRTC"          : "",             # Previous State RTC in ISO 8601 Format
+            "simSpeed"         : 1,              # Simulation Speed of the system
+            "passengers"       : 0,              # Number of passengers on the train
+            "passengersOn"     : 0,              # Number of passengers getting on the train
+            "passengersOff"    : 0,              # Number of passengers getting off the train
+            "crew"             : 1,              # Number of crew members on the train (Default of driver and conductor)
+            "underground"      : False,          # State of whether the train is underground or not
+            "length"           : 0.0,            # Length of the Train in meters
+            "mass"             : 40900.0,        # Mass of the Train, changes based on number of passengers, defaults to mass of an unloaded train, in kilograms
+            "velocity"         : 0.0,            # Current Velocity of the Train in meters per second
+            "acceleration"     : 0.0,            # Current Acceleration of the Train in meters per second ^ 2
+            "prevVelocity"     : 0.0,            # Previous Velocity of the Train in meters per second
+            "prevAcceleration" : 0.0,            # Previous Acceleration of the Train in meters per second ^ 2
+            "power"            : 0.0,            # Power input from the Train Controller in watts
+            "station"          : "The Yard",     # Name of the next Station 
+            "atStation"        : False,          # State of whether the train is at a station or not
+            "commStatus"       : True,           # True if all communications are good, false is communications are disabled
+            "engineStatus"     : True,           # True if engine is operational, false if it is disabled
+            "brakeStatus"      : True,           # True is the service brake is operational, false if it is disabled
+            "eBrakeState"      : False,          # State of the emergency brake, True if engaged, False if disengaged
+            "sBrakeState"      : False,          # State of the service brake, True if engaged, False if disengaged
+            "lDoors"           : False,          # State of the left doors, True if doors are open, False if they are closed
+            "rDoors"           : False,          # State of the right doors, True if doors are open, False if they are closed
+            "iLights"          : False,          # State of the internal lights, True if they are on, False if they are off
+            "eLights"          : False,          # State of the external lights, True if they are on, False if they are off
+            "currTemp"         : 68.0,           # Current temperature inside the train in degrees fahrenheit
+            "goalTemp"         : 68.0,           # Temperature goal given by the user in degrees fahrenehit
+            "numCars"          : 1,              # Length of the train based on number of cars attached to the train
+        }
+
+        # Dictionary used for intercommunication between the track model and train model only
+        self.trackData = {
+            "currBlock"        : 0,              # Current block that the train is on, ONLY USED BY TRAIN MODEL AND TRACK MODEL
+            "prevBlock"        : 0,              # Previous block that the train was on, ONLY USED BY TRAIN MODEL AND TRACK MODEL
+            "distance"         : 0.0,            # Distance the train has traveled since the last time period in meters
+            "remDistance"      : 0.1,            # Distance remaining in the current block, if any, in meters (Initialized as 10 meters for coming out of the yard)
+            "switch"           : True,           # If the current block is attached to a switch, True if on a switch, false if otherwise
+            "switchState"      : 0,              # State of the switch if the current block is attached to one (default is 0)
+            "blockLength"      : 10.0,           # Length of the current block, provided by the Track Model
+            "elevation"        : 0.0,            # Relative elevation increase of the block, provided by the Track Model
+            "trainLine"        : "",             # Line the train is on
+            "trackSection"     : [0, 0],         # Section of the track that the train is on
+            "overflow"         : False           # Overflow boolean used for current Block Calculations
+        }
+
+        # Dictionary used for different eBrake States from train controller and user input
+        self.eBrakes = {
+            "user"               : False,        # State of the emergency brake from the passenger
+            "trainController"    : False         # State of the emergency brake from the driver
+        }
+
+        # Dictionary for pass through data (Only data to be passed through the module and not used within)
+        self.passThroughData = {
+            "commandedSpeed"  : 0.0,                   # Commanded speed for the train in m/s
+            "authority"       : 0,                     # Authority of the train in blocks
+            "beacon"          : ["", 0, "", False]     # Beacon Inputs from the most recent Beacon
+        }
+
+        self.TrainID = trainId
+        self.trackData["trainLine"] = Line
+
         # Signals from the Main UI
         trainSignals.commButtonPressedSignal.connect(self.communicationsFailure)
         trainSignals.engineButtonPressedSignal.connect(self.engineFailure)
@@ -241,12 +248,12 @@ class TrainModel():
     #    self.trainModelToTrainController["engineStatus"]         = self.data["engineStatus"]
     #    self.trainModelToTrainController["communicationsStatus"] = self.data["commStatus"]
     #
-    #    with open(os.path.join(sys.path[0].replace("TrainModel", "Integration"), f'TMtoTC{self.data["id"]}.json'), "w") as filename:
+    #    with open(os.path.join(sys.path[0].replace("TrainModel", "Integration"), f'TMtoTC{self.TrainID}.json'), "w") as filename:
     #        (json.dump(self.trainModelToTrainController, filename, indent = 4))
 
     # JSON function to read inputs from a JSON file from the Train Controller (WAS USING JSON, SCRAPPED)
     #def readTrainControllerToTrainModel(self):
-    #    with open(os.path.join(sys.path[0].replace("TrainModel", "Integration"), f'TCtoTM{self.data["id"]}.json'), "r") as filename:
+    #    with open(os.path.join(sys.path[0].replace("TrainModel", "Integration"), f'TCtoTM{self.TrainID}.json'), "r") as filename:
     #        try:
     #            self.trainControllerToTrainModel = json.loads(filename.read())
     #        except json.decoder.JSONDecodeError:
@@ -291,99 +298,99 @@ class TrainModel():
 
     # Data Handler for Outputs to the Train Controller
     def writeTMtoTC(self):
-        #print(f'{self.data["id"]}, {self.data["currTemp"]}')
-        TMTCSignals.commandedSpeedSignal.emit(self.data["id"], self.passThroughData["commandedSpeed"])
-        TMTCSignals.currentSpeedSignal.emit(self.data["id"], self.data["velocity"])
-        TMTCSignals.authoritySignal.emit(self.data["id"], self.passThroughData["authority"])
-        TMTCSignals.undergroundSignal.emit(self.data["id"], self.data["underground"])
-        TMTCSignals.temperatureSignal.emit(self.data["id"], self.data["currTemp"])
-        TMTCSignals.stationNameSignal.emit(self.data["id"], self.passThroughData["beacon"][0])
-        TMTCSignals.platformSideSignal.emit(self.data["id"], self.passThroughData["beacon"][1])
-        TMTCSignals.nextStationNameSignal.emit(self.data["id"], self.passThroughData["beacon"][2])
-        TMTCSignals.isBeaconSignal.emit(self.data["id"], self.passThroughData["beacon"][3])
-        TMTCSignals.externalLightsStateSignal.emit(self.data["id"], self.data["eLights"])
-        TMTCSignals.internalLightsStateSignal.emit(self.data["id"], self.data["iLights"])
-        TMTCSignals.leftDoorStateSignal.emit(self.data["id"], self.data["rDoors"])
-        TMTCSignals.rightDoorStateSignal.emit(self.data["id"], self.data["lDoors"])
-        TMTCSignals.serviceBrakeStateSignal.emit(self.data["id"], self.data["sBrakeState"])
-        TMTCSignals.emergencyBrakeStateSignal.emit(self.data["id"], self.data["eBrakeState"])
-        TMTCSignals.serviceBrakeStatusSignal.emit(self.data["id"], self.data["brakeStatus"])
-        TMTCSignals.engineStatusSignal.emit(self.data["id"], self.data["engineStatus"])
-        TMTCSignals.communicationsStatusSignal.emit(self.data["id"], self.data["commStatus"])
+        #print(f'{self.TrainID}, {self.data["currTemp"]}')
+        TMTCSignals.commandedSpeedSignal.emit(self.TrainID, self.passThroughData["commandedSpeed"])
+        TMTCSignals.currentSpeedSignal.emit(self.TrainID, self.data["velocity"])
+        TMTCSignals.authoritySignal.emit(self.TrainID, self.passThroughData["authority"])
+        TMTCSignals.undergroundSignal.emit(self.TrainID, self.data["underground"])
+        TMTCSignals.temperatureSignal.emit(self.TrainID, self.data["currTemp"])
+        TMTCSignals.stationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][0])
+        TMTCSignals.platformSideSignal.emit(self.TrainID, self.passThroughData["beacon"][1])
+        TMTCSignals.nextStationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][2])
+        TMTCSignals.isBeaconSignal.emit(self.TrainID, self.passThroughData["beacon"][3])
+        TMTCSignals.externalLightsStateSignal.emit(self.TrainID, self.data["eLights"])
+        TMTCSignals.internalLightsStateSignal.emit(self.TrainID, self.data["iLights"])
+        TMTCSignals.leftDoorStateSignal.emit(self.TrainID, self.data["rDoors"])
+        TMTCSignals.rightDoorStateSignal.emit(self.TrainID, self.data["lDoors"])
+        TMTCSignals.serviceBrakeStateSignal.emit(self.TrainID, self.data["sBrakeState"])
+        TMTCSignals.emergencyBrakeStateSignal.emit(self.TrainID, self.data["eBrakeState"])
+        TMTCSignals.serviceBrakeStatusSignal.emit(self.TrainID, self.data["brakeStatus"])
+        TMTCSignals.engineStatusSignal.emit(self.TrainID, self.data["engineStatus"])
+        TMTCSignals.communicationsStatusSignal.emit(self.TrainID, self.data["commStatus"])
 
     # Data Handlers from Input from the Train Controller SW
     # Commanded Power input handler
     def commandedPowerSignalHandler(self, id, power):
-        if (id == self.data["id"]):
+        if (id == self.TrainID):
             self.data["power"] = power
 
     # Left Door Command input handler
     def leftDoorCommandSignalHandler(self, id, state):
-        if (id == self.data["id"]):
+        if (id == self.TrainID):
             self.data["lDoors"] = state
 
     # Right Door Command input handler
     def rightDoorCommandSignalHandler(self, id, state):
-        if (id == self.data["id"]):
+        if (id == self.TrainID):
             self.data["rDoors"] = state
 
     # Service Brake Command input handler
     def serviceBrakeCommandSignalHandler(self, id, state):
-        if (id == self.data["id"]):
+        if (id == self.TrainID):
             self.data["sBrakeState"] = state
 
     # Emergency Brake Command (Train Controller) input handler
     def emergencyBrakeCommandSignalHandler(self, id, state):
-        if (id == self.data["id"]):
+        if (id == self.TrainID):
             self.eBrakes["trainController"] = state
 
     # External Light Command input handler
     def externalLightCommandSignalHandler(self, id, state):
         #print(f'ID: {id}, State: {state}')
-        if (id == self.data["id"]):
+        if (id == self.TrainID):
             self.data["eLights"] = state
 
     # Internal Light Command input handler
     def internalLightCommandSignalHandler(self, id, state):
-        if (id == self.data["id"]):
+        if (id == self.TrainID):
             self.data["iLights"] = state
 
     # Station Announcement input handler
     def stationAnnouncementSignalHandler(self, id, station):
-        if (id == self.data["id"]):
+        if (id == self.TrainID):
             self.data["station"] = station
 
     # Data Handler for Outputs to the Track Model
     def writeTMtoTkM(self):
-        TMTkMSignals.passengersExitingSignal.emit(self.data["id"], self.data["passengersOff"])
-        TMTkMSignals.currBlockSignal.emit(self.data["id"], self.trackData["currBlock"])
-        #TMTkMSignals.prevBlockSignal.emit(self.data["id"], self.trackData["prevBlock"])        
+        TMTkMSignals.passengersExitingSignal.emit(self.TrainID, self.data["passengersOff"])
+        TMTkMSignals.currBlockSignal.emit(self.TrainID, self.trackData["currBlock"])
+        #TMTkMSignals.prevBlockSignal.emit(self.TrainID, self.trackData["prevBlock"])        
 
     # Data Handlers for Inputs from the Track Model
     # Authority Input Handler
     def authoritySignalHandler(self, id, numBlocks):
-        if (id == self.data["id"]):
+        if (id == self.TrainID):
             self.passThroughData["authority"] = numBlocks
-            #TMTCSignals.authoritySignal.emit(self.data["id"], numBlocks)
+            #TMTCSignals.authoritySignal.emit(self.TrainID, numBlocks)
     
     # Commanded Speed Input Handler
     def commandedSpeedSignalHandler(self, id, cmdSpeed):
-        if (id == self.data["id"]):
+        if (id == self.TrainID):
             self.passThroughData["commandedSpeed"] = cmdSpeed
 
     # Passengers Entering Input Handler
     def passengersEnteringSignalHandler(self, id, passengers):
-        if (id == self.data["id"]):
+        if (id == self.TrainID):
             self.data["passengersOn"] = passengers
 
     # Underground State Input Handler
     def undergroundStateSignalHandler(self, id, state):
-        if (id == self.data["id"]):
+        if (id == self.TrainID):
             self.data["underground"] = state
 
     # Beacons Input Handler
     def beaconSignalHandler(self, id, stationName, platformSide, nextStationName, isBeacon, blockCount, fromSwitch):
-        if (id == self.data["id"]):
+        if (id == self.TrainID):
             self.passThroughData["beacon"][0] = stationName
             self.passThroughData["beacon"][1] = platformSide
             self.passThroughData["beacon"][2] = nextStationName
@@ -391,22 +398,22 @@ class TrainModel():
 
     # Switch Input Handler
     def switchSignalHandler(self, id, state):
-        if (id == self.data["id"]):
+        if (id == self.TrainID):
             self.trackData["switch"] = state
 
     # Switch State Input Handler
     def switchStateSignalHandler(self, id, state):
-        if (id == self.data["id"]):
+        if (id == self.TrainID):
             self.trackData["switchState"] = state
 
     # Block Length Input Handler
     def blockLengthSignalHandler(self, id, length):
-        if (id == self.data["id"]):
+        if (id == self.TrainID):
             self.trackData["blockLength"] = length
 
     # Elevation Input Handler
     def elevationSignalHandler(self, id, height):
-        if (id == self.data["id"]):
+        if (id == self.TrainID):
             self.trackData["elevation"] = height
 
     # Function to run all internal methods when the method is called by the updater in the UI
@@ -743,11 +750,12 @@ class TrainModel():
         self.data["mass"] = (self.constants["massOfTrain"] * self.data["numCars"]) + (self.constants["massOfHuman"] * (self.data["passengers"] + self.data["crew"]))
 
     # Handle Emergency Brake being pulled by the Passenger
-    def emergencyBrakeDeceleration(self):
-        if (self.eBrakes["user"] == False):
-            self.eBrakes["user"] = True
-        else:
-            self.eBrakes["user"] = False
+    def emergencyBrakeDeceleration(self, id):
+        if (id == self.TrainID):
+            if (self.eBrakes["user"] == False):
+                self.eBrakes["user"] = True
+            else:
+                self.eBrakes["user"] = False
 
     # Function to be called when updating the values to set the emergency brake state
     def brakeCaclulator(self):
@@ -760,8 +768,12 @@ class TrainModel():
             self.data["acceleration"] = 0
 
     # Handle change in input from the user about temperature
-    def tempChangeHandler(self, temp):
-        self.data["goalTemp"] = temp
+    def tempChangeHandler(self, id, temp):
+        if (id == self.TrainID):
+            self.data["goalTemp"] = temp
+            self.goalTemp = temp
+        print(f'ID: {id}, TrainID: {self.TrainID}, GoalTemp(Dict): {self.data["goalTemp"]}, GoalTemp(Var): {self.goalTemp}')
+
 
     # Determines how many passengers get off at each station
     def passengersGettingOff(self):
@@ -792,24 +804,27 @@ class TrainModel():
             self.data["sBrakeState"] = False
 
     # Handle loss of communications
-    def communicationsFailure(self):
-        if self.data["commStatus"] == False:
-            self.data["commStatus"] = True
-        else:
-            self.data["commStatus"] = False
+    def communicationsFailure(self, id):
+        if (id == self.TrainID):
+            if self.data["commStatus"] == False:
+                self.data["commStatus"] = True
+            else:
+                self.data["commStatus"] = False
 
     # Handle engine failure
-    def engineFailure(self):
-        if self.data["engineStatus"] == False:
-            self.data["engineStatus"] = True
-        else:
-            self.data["engineStatus"] = False
-        self.data["power"] = 0.0
+    def engineFailure(self, id):
+        if (id == self.TrainID):
+            if self.data["engineStatus"] == False:
+                self.data["engineStatus"] = True
+            else:
+                self.data["engineStatus"] = False
+            self.data["power"] = 0.0
 
     # Handle service brake failure
-    def serviceBrakeFailure(self):
-        if self.data["brakeStatus"] == False:
-            self.data["brakeStatus"] = True
-        else:
-            self.data["brakeStatus"] = False
-        self.data["sBrakeState"] = False
+    def serviceBrakeFailure(self, id):
+        if (id == self.TrainID):
+            if self.data["brakeStatus"] == False:
+                self.data["brakeStatus"] = True
+            else:
+                self.data["brakeStatus"] = False
+            self.data["sBrakeState"] = False

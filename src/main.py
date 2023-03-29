@@ -100,8 +100,8 @@ class MainWindow(QMainWindow):
             self.setCentralWidget(self.mainWidget)
 
             # Test TM and TC
-            self.trainDispatch(2)
-            self.trainDispatch(3)    
+            for i in range(5):
+                self.trainDispatch(i + 1)
             #self.TMTestUI = TrainModelTestUI.TrainModelTestUI() # temporary TM test UI 
 
 

@@ -21,7 +21,7 @@ from Conversions import *
 class TrainModelUI(QWidget):
 
     # Instantiating the Back End
-    TrainModel = TrainModel()
+    UIId = 0
 
     # Fonts and Alignments to make coding easier
     timesNewRoman12 = QFont("Times New Roman", 12)
@@ -39,14 +39,14 @@ class TrainModelUI(QWidget):
         
         # SIGNAL USED FOR TEST UI
         trainSignals.updateOutputs.connect(self.updateOutputs)
+        self.TrainModel = TrainModel(id, line)
 
         # Initializing and setting the layout of the UI
         super().__init__()
         self.mainTimer = self.mainTimerSetup()
-        self.TrainModel.data["id"] = id
-        self.TrainModel.trackData["trainLine"] = line
+        self.UIId = id
         self.TrainModel.setFirstSection()
-        self.setWindowTitle("Train Model " + str(TrainModel.data["id"]))
+        self.setWindowTitle("Train Model " + str(self.UIId))
         layout = QGridLayout()
         self.setLayout(layout)
         self.setFont(QFont("Times New Roman"))
@@ -384,22 +384,21 @@ class TrainModelUI(QWidget):
         else:
             self.setVisible(False)
 
-
     # Handler for when Communcations Failure State button is pressed
     def communicationsButtonPressed(self):
-        trainSignals.commButtonPressedSignal.emit()
+        trainSignals.commButtonPressedSignal.emit(self.UIId)
         
     # Handler for when Engine Failure State button is pressed
     def engineButtonPressed(self):
-        trainSignals.engineButtonPressedSignal.emit()
+        trainSignals.engineButtonPressedSignal.emit(self.UIId)
 
     # Handler for when Brake Failure State button is pressed
     def brakeButtonPressed(self):
-        trainSignals.brakeButtonPressedSignal.emit()
+        trainSignals.brakeButtonPressedSignal.emit(self.UIId)
 
     # Handler for when the Emergency Brake is pulled
     def emergencyBrakeButtonPressed(self):
-        trainSignals.eBrakePressedSignal.emit()
+        trainSignals.eBrakePressedSignal.emit(self.UIId)
     
     # Handler for when the temperature from the user is set
     def tempInputChanged(self):
@@ -410,7 +409,7 @@ class TrainModelUI(QWidget):
                 tempNum = round(float(self.temperatureInput.text()) * 2) / 2
             except ValueError:
                 tempNum = 68.0
-        trainSignals.tempChangedSignal.emit(tempNum)
+        trainSignals.tempChangedSignal.emit(self.UIId, tempNum)
 
     # Function to convert boolean to string for the status messages of failure
     def failureBoolean(self, value):
@@ -456,7 +455,24 @@ class TrainModelUI(QWidget):
     def updateOutputs(self):
 
         # Run back end function updating
-        self.TrainModel.runFunctions()
+        tempTimeDiff = self.TrainModel.findTimeDifference()
+        self.TrainModel.failureStates()
+        self.TrainModel.brakeCaclulator()
+        self.TrainModel.findCurrentAcceleration()
+        self.TrainModel.findCurrentVelocity()
+        self.TrainModel.findCurrentDistance()
+        self.TrainModel.findBlockExiting()
+        self.TrainModel.airConditioningControl()
+        if self.TrainModel.data["atStation"]:
+            self.TrainModel.passengersGettingOff()
+            self.TrainModel.passengersGettingOn()
+        self.TrainModel.findCurrentMass()
+        if tempTimeDiff != 0:
+            self.TrainModel.moveToPrevious()
+        #self.TrainModel.writeTrainModelToTrackModel()
+        #self.TrainModel.writeTrainModelToTrainController()
+        self.TrainModel.writeTMtoTkM()
+        self.TrainModel.writeTMtoTC()
 
         # Update Left Column of data outputs
         self.realTimeClockOutput.setText(str(ISO8601ToHumanTime("2023-02-23T00:00:06.0000000-05:00"))[:-6])
@@ -550,6 +566,8 @@ def main():
     app = QApplication(argv)
     UI = TrainModelUI(2, "Green")
     UI.show()
+    UI2 = TrainModelUI(3, "Green")
+    UI2.show()
     app.exec()
 
 if (__name__ == "__main__"):
