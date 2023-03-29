@@ -120,7 +120,7 @@ func (m *SafeLineMap) GetBlocksUI(line string) []BlockFrontend {
 	blocks := l.GetBlocks()
 	mftconv, _ := decimal.NewFromString(METERS_TO_FEET_STR)
 	kmphmphconv, _ := decimal.NewFromString(KMPH_TO_MPH_STR)
-	for i, _ := range blocks {
+	for i := range blocks {
 		blocks[i].Length = blocks[i].Length.Mul(mftconv)
 		blocks[i].SuggestedSpeed = blocks[i].SuggestedSpeed.Mul(kmphmphconv)
 	}

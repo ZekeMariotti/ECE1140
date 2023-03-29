@@ -87,3 +87,18 @@ func (m *SafeBlockMap) SetBlockOpen(key int, open bool) {
 	block.Open = open
 	m.data[key] = block
 }
+
+func (m *SafeBlockMap) GetMaxID() int {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	keys := maps.Keys(m.data)
+	max := keys[0]
+	for i := range keys {
+		if i > max {
+			max = i
+		}
+	}
+
+	return max
+}

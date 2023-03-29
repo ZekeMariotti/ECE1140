@@ -18,6 +18,20 @@ const (
 	BLOCKDIRECTION_BIDIRECTIONAL BlockDirection = 2
 )
 
+type TrainDirection uint8
+
+const (
+	TRAINDIRECTION_ASCENDING  TrainDirection = 0
+	TRAINDIRECTION_DESCENDING TrainDirection = 1
+)
+
+type BlockSide uint8
+
+const (
+	BLOCKSIDE_ASCEND  BlockSide = 0
+	BLOCKSIDE_DESCEND BlockSide = 1
+)
+
 type BlockSignal string
 
 const (

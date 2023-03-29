@@ -115,10 +115,17 @@ func ParseLine(pathBlocks string, pathSwitches string) *Line {
 		dest1, _ := strconv.Atoi(v[1])
 		dest2, _ := strconv.Atoi(v[2])
 
+		// Get block orientation
+		orientation := BLOCKSIDE_ASCEND
+		if source > dest1 {
+			orientation = BLOCKSIDE_DESCEND
+		}
+
 		s := Switch{
 			Source:       source,
 			Destination1: dest1,
 			Destination2: dest2,
+			Side:         orientation,
 		}
 		switches = append(switches, s)
 

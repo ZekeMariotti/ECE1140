@@ -22,12 +22,8 @@ func NewLineFromSlice(name string, blocks []Block, switches []Switch, stations [
 	for _, v := range blocks {
 		l.Blocks.Set(v.Number, v)
 	}
-	for i := range switches {
-		l.Switches[i] = switches[i]
-	}
-	for i := range stations {
-		l.Stations[i] = stations[i]
-	}
+	copy(l.Switches, switches)
+	copy(l.Stations, stations)
 
 	return &l
 }
