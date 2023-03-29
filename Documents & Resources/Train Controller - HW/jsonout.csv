@@ -1,0 +1,2 @@
+Power,Left Door Command,Right Door Command,Service Brake Command,Emergency Brake Command,External Light Command,Internal Light Command,AC,Station Announcement,Engine State,Emergency Brake State,Service Brake State,Internal Lights State,External Lights State,Left Door State,Right Door State,Station,Current Speed,Commanded Speed,Authority,Speed Limit,Temperature,Communications Status
+10,1,1,1,1,1,1,1,text,1,1,1,1,1,1,1,text,10,10,10,10,10,1

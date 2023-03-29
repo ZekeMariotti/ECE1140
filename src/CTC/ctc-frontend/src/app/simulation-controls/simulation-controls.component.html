@@ -1,0 +1,29 @@
+<!-- Nav Bar-->
+<hr/>
+<ul class="nav nav-pills nav-fill">
+  <li class="nav-item">
+    <a class="nav-link" href="/dashboard">Dashboard</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="/blocks">Blocks</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="/trains">Trains</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link active" aria-current="page" href="/simulation">Simulation Controls</a>
+  </li>
+</ul>
+<hr/>
+
+<!-- Content-->
+<div>
+  <div class="container text-center">
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label">Simulation Speed</label>
+      <div class="col-sm-10">
+        <input type="number" class="form-control" [(ngModel)]="speed" (ngModelChange)="speedChanged($event)">
+      </div>
+    </div>
+  </div>
+</div>

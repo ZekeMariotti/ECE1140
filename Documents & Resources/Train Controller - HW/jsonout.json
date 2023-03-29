@@ -1,0 +1,29 @@
+[
+ {
+   "Power": 10,
+   "Left Door Command": 1,
+   "Right Door Command": 1,
+   "Service Brake Command": 1,
+   "Emergency Brake Command": 1,
+   "External Light Command": 1,
+   "Internal Light Command": 1,
+   "AC": 1,
+   "Station Announcement": "text",
+   "Engine State": 1,
+   "Emergency Brake State": 1,
+   "Service Brake State": 1,
+   "Internal Lights State": 1,
+   "External Lights State": 1,
+   "Left Door State": 1,
+   "Right Door State": 1,
+   "Station": "text",
+   "Current Speed": 10,
+   "Commanded Speed": 10,
+   "Authority": 10,
+   "Speed Limit": 10,
+   "Temperature": 10,
+   "Communications Status": 1
+   "Kp": 1
+   "Ki": 1
+ }
+]
