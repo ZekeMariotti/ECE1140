@@ -798,7 +798,7 @@ class TrainModelTestUI(QWidget):
         # Write Data To Output Module
         #self.writeTrackModelToTrainModel() (WAS USING JSON, SCRAPPED)
         #self.writeTrainControllerToTrainModel() (WAS USING JSON, SCRAPPED)
-        self.emitTrainControllerSignals()
+        #self.emitTrainControllerSignals()
         self.emitTrackModelSignals()
         trainSignals.updateOutputs.emit()
         #self.readTrainModelToTrackModel() (WAS USING JSON, SCRAPPED)

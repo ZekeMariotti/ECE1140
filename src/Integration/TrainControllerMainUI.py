@@ -31,20 +31,21 @@ class MainWindow(QMainWindow):
             self.testUI = False 
             
             # Initialize TrainControllerSW object
-            self.TrainControllerSW = TrainControllerSW(trainId=id, commandedSpeed=0, currentSpeed=0, authority=0, inputTime="2023-02-20T21:52:48.3940347-05:00", 
+            self.TrainControllerSW = TrainControllerSW(trainId=id, commandedSpeed=0, currentSpeed=0, authority=10, inputTime="2023-02-20T21:52:48.3940347-05:00", 
                                                        undergroundState=False, temperature=0, stationName="setupStationName", platformSide=0, 
                                                        nextStationName="station2", isBeacon=False, externalLightsState=False, internalLightsState=False, leftDoorState=False, 
                                                        rightDoorState=False, serviceBrakeState=False, emergencyBrakeState=False, serviceBrakeStatus=False, engineStatus=False, 
                                                        communicationsStatus=False, power=0, leftDoorCommand=False, rightDoorCommand=False, serviceBrakeCommand=False, 
                                                        emergencyBrakeCommand=False, externalLightCommand=False, internalLightCommand=False, stationAnnouncement="setupStationAnnouncement")
             
+            print(self.TrainControllerSW.trainId)
             # Update Inputs, Outputs, and time
             self.TrainControllerSW.writeOutputs()          
             self.TrainControllerSW.previousTime = self.TrainControllerSW.realTime
             self.TrainControllerSW.currentTime = self.TrainControllerSW.realTime
 
             # Set window defaults
-            self.setWindowTitle("Train Controller")
+            self.setWindowTitle(f'Train Controller {self.TrainControllerSW.trainId}')
             #self.resize(QSize(1366, 768-31))
             self.setFixedSize(QSize(960, 540))
             self.setMinimumSize(1050, 550)
@@ -594,7 +595,7 @@ class MainWindow(QMainWindow):
         # Updates everything during every each loop of the timer 
         def mainEventLoop(self):
             self.TrainControllerSW.currentTime = self.TrainControllerSW.realTime
-            print(self.TrainControllerSW.outputs.emergencyBrakeCommand)
+            #print(self.TrainControllerSW.outputs.emergencyBrakeCommand)
             self.TrainControllerSW.calculatePower()     
             self.TrainControllerSW.failureMode()
             self.TrainControllerSW.setStationState()

@@ -37,13 +37,12 @@ class TrainModelUI(QWidget):
     # Initialization of the UI
     def __init__(self, id, line):
         
-
         # SIGNAL USED FOR TEST UI
         trainSignals.updateOutputs.connect(self.updateOutputs)
 
         # Initializing and setting the layout of the UI
         super().__init__()
-        #self.mainTimer = self.mainTimerSetup()
+        self.mainTimer = self.mainTimerSetup()
         self.TrainModel.data["id"] = id
         self.TrainModel.trackData["trainLine"] = line
         self.TrainModel.setFirstSection()
@@ -529,6 +528,7 @@ class TrainModelUI(QWidget):
         else:
             self.iLightsOutput.setStyleSheet("background-color: white")
 
+        #print(f'Updater: ID: {self.TrainModel.data["id"]}, State: {self.TrainModel.data["eLights"]}')
         # Setting external lights output as well as color
         self.eLightsOutput.setText(self.lightState(self.TrainModel.data["eLights"]))
         if (self.TrainModel.data["eLights"] == 1):

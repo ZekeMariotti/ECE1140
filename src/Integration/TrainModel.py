@@ -291,6 +291,7 @@ class TrainModel():
 
     # Data Handler for Outputs to the Train Controller
     def writeTMtoTC(self):
+        #print(f'{self.data["id"]}, {self.data["currTemp"]}')
         TMTCSignals.commandedSpeedSignal.emit(self.data["id"], self.passThroughData["commandedSpeed"])
         TMTCSignals.currentSpeedSignal.emit(self.data["id"], self.data["velocity"])
         TMTCSignals.authoritySignal.emit(self.data["id"], self.passThroughData["authority"])
@@ -338,6 +339,7 @@ class TrainModel():
 
     # External Light Command input handler
     def externalLightCommandSignalHandler(self, id, state):
+        #print(f'ID: {id}, State: {state}')
         if (id == self.data["id"]):
             self.data["eLights"] = state
 
@@ -557,7 +559,7 @@ class TrainModel():
             
     # Finds the next block in sequence based on a switch state saved internally
     def findNextBlock(self):
-        print(self.trackData["trackSection"][0], self.trackData["trackSection"][1], self.trackData["switch"], self.trackData["switchState"])
+        #print(self.trackData["trackSection"][0], self.trackData["trackSection"][1], self.trackData["switch"], self.trackData["switchState"])
         # If the train is on the green line
         if self.trackData["trainLine"] == "Green":
 
