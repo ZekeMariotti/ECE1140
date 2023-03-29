@@ -614,7 +614,6 @@ class TrackModelTestUI(QWidget):
 
     # Gets the Train Block from the UI
     def getTrainBlockInput(self, index):
-        print("Beginning", index)
         # Update block train number
         if self.toggle != 1:
             trackSignals.getTrainBlockInputSignal.emit(index, self.train["trainNo"])
@@ -640,8 +639,7 @@ class TrackModelTestUI(QWidget):
             else:
                 outputText = str(self.backEnd.data["trainBlock"][self.train["trainNo"]])
             self.trainBlockOutput.setText(outputText)
-            
-            #print(self.backEnd.data["moves"][self.train["trainNo"]])
+
             # Update train block combo box
             self.updateCombo()
 
@@ -656,8 +654,6 @@ class TrackModelTestUI(QWidget):
                 self.blockTrainOutput.setText(str(self.backEnd.data["blockTrainNoRed"].__getitem__(self.data["blockNo"])))
             elif self.data["line"] == 1:
                 self.blockTrainOutput.setText(str(self.backEnd.data["blockTrainNoGreen"].__getitem__(self.data["blockNo"])))
-
-            print("End", index)
 
     # Gets new data if train line changes
     def getTrainLnInput(self, index):

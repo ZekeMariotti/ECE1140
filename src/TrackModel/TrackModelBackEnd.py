@@ -183,7 +183,6 @@ class backEndCalculations():
 
     # Gets the Train Block from the UI
     def getTrainBlockInputFunction(self, index, trainNo):
-        print("Beginning Back End", index, trainNo)
         # Update block train number
         # Sets last block train was at to 0
         if self.data["trainLine"][trainNo] == 0 and self.data["moves"][trainNo][0] != 0:
@@ -211,13 +210,8 @@ class backEndCalculations():
         # Update train block output
         self.data["trainBlock"][trainNo] = self.data["moves"][trainNo][0]
 
-        #print(index, trainNo, self.data["moves"][trainNo])
-        print("Middle Back End", index, trainNo)
-
         # Refresh Main UI
         trackSignals.updateSignal.emit()
-        print("End Back End", index, trainNo)
-
 
     # Gets new data if train line changes
     def getTrainLnInput(self, index, trainNo):
@@ -369,8 +363,6 @@ class backEndCalculations():
         else:
             self.data["moves"][trainNo][1] = self.data["moves"][trainNo][0] + 1
             self.data["moves"][trainNo][2] = self.data["moves"][trainNo][0] - 1
-        
-        #print("Inside the UpdateVector: ", trainNo, self.data["moves"][trainNo])
 
     # Determines how many passengers get off at each station
     def passengersGettingOnB(self, index):
