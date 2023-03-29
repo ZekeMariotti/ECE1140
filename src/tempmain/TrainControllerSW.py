@@ -8,7 +8,11 @@ import os
 #sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 import json
+from Inputs import Inputs
+from Outputs import Outputs
 import Conversions
+from TMTCSignals import *
+
 from json import JSONEncoder
 
 # Class for the TrainControllerSW
@@ -18,6 +22,26 @@ class TrainControllerSW:
                  serviceBrakeState, emergencyBrakeState, serviceBrakeStatus, engineStatus, communicationsStatus, power, leftDoorCommand, 
                  rightDoorCommand, serviceBrakeCommand, emergencyBrakeCommand, externalLightCommand, internalLightCommand, stationAnnouncement):
         
+        # Signals
+        TMTCSignals.commandedSpeedSignal.connect(self.commandedSpeedSignalHandler)
+        TMTCSignals.currentSpeedSignal.connect(self.currentSpeedSignalHandler)
+        TMTCSignals.authoritySignal.connect(self.authoritySignalHandler)
+        TMTCSignals.undergroundSignal.connect(self.undergroundSignalHandler)
+        TMTCSignals.temperatureSignal.connect(self.temperatureSignalHandler)
+        TMTCSignals.stationNameSignal.connect(self.stationNameSignalHandler)
+        TMTCSignals.platformSideSignal.connect(self.platformSideSignalHandler)
+        TMTCSignals.nextStationNameSignal.connect(self.nextStationNameSignalHandler)
+        TMTCSignals.isBeaconSignal.connect(self.isBeaconSignalHandler)
+        TMTCSignals.externalLightsStateSignal.connect(self.externalLightsStateSignalHandler)
+        TMTCSignals.internalLightsStateSignal.connect(self.internalLightsStateSignalHandler)
+        TMTCSignals.leftDoorStateSignal.connect(self.leftDoorStateSignalHandler)
+        TMTCSignals.rightDoorStateSignal.connect(self.rightDoorStateSignalHandler)
+        TMTCSignals.serviceBrakeStateSignal.connect(self.serviceBrakeStateSignalHandler)
+        TMTCSignals.emergencyBrakeStateSignal.connect(self.emergencyBrakeStateSignalHandler)
+        TMTCSignals.serviceBrakeStatusSignal.connect(self.serviceBrakeStatusSignalHandler)
+        TMTCSignals.engineStatusSignal.connect(self.engineStatusSignalHandler)
+        TMTCSignals.communicationsStatusSignal.connect(self.communicationsStatusSignalHandler)      
+
         # Train id
         self.trainId = trainId
 
@@ -30,6 +54,8 @@ class TrainControllerSW:
         self.commandedSpeedManual = 0
         self.manualMode = False
         self.simulationSpeed = 1
+
+        
 
         # Constants
         # Max Speed in km/hr
@@ -63,33 +89,122 @@ class TrainControllerSW:
         self.outputs = Outputs(power, leftDoorCommand, 
                  rightDoorCommand, serviceBrakeCommand, emergencyBrakeCommand, externalLightCommand, internalLightCommand, stationAnnouncement)
         
+        # TEMPORARY
+        self.inputs.inputTime = "2023-02-22T11:00:00.0000000-05:00"
+        self.convertTime()
+        
            
 
     # methods   
     
     # Writes all output variables to output JSON file
-    def writeOutputs(self):
-        with open(os.path.join(sys.path[0], f'TCtoTM{self.trainId}.json'), "w") as filename:
-            (json.dump(self.outputs.__dict__, filename, indent=4))
+    # def writeOutputs(self):
+    #     path = __file__.replace("TrainControllerSoftware\TrainControllerSW.py", "Integration")
+    #     with open(os.path.join(path, f'TCtoTM{self.trainId}.json'), "w") as filename:
+    #         (json.dump(self.outputs.__dict__, filename, indent=4))
 
     # Reads in all input fields from input JSON file and updates Input variables
-    def readInputs(self):
-        with open(os.path.join(sys.path[0], f'TMtoTC{self.trainId}.json'), "r") as filename:
-            try:
-                self.inputs = Inputs(**json.loads(filename.read()))
-            except json.decoder.JSONDecodeError:
-                self.inputs = self.inputs 
+    # def readInputs(self):
+    #     path = __file__.replace("TrainControllerSoftware\TrainControllerSW.py", "Integration")
+    #     with open(os.path.join(path, f'TMtoTC{self.trainId}.json'), "r") as filename:
+    #         try:
+    #             self.inputs = Inputs(**json.loads(filename.read()))
+    #         except json.decoder.JSONDecodeError:
+    #             self.inputs = self.inputs 
 
-            self.convertTime()
+    #         self.convertTime()
+
+    def writeOutputs(self):
+        TMTCSignals.commandedPowerSignal.emit(self.trainId, self.outputs.power)
+        TMTCSignals.leftDoorCommandSignal.emit(self.trainId, self.outputs.leftDoorCommand)
+        TMTCSignals.rightDoorCommandSignal.emit(self.trainId, self.outputs.rightDoorCommand)
+        TMTCSignals.serviceBrakeCommandSignal.emit(self.trainId, self.outputs.serviceBrakeCommand)
+        TMTCSignals.emergencyBrakeCommandSignal.emit(self.trainId, self.outputs.emergencyBrakeCommand)
+        #print(f'{self.trainId}, {self.outputs.emergencyBrakeCommand}')
+        TMTCSignals.externalLightCommandSignal.emit(self.trainId, self.outputs.externalLightCommand)
+        TMTCSignals.internalLightCommandSignal.emit(self.trainId, self.outputs.internalLightCommand)
+        TMTCSignals.stationAnnouncementSignal.emit(self.trainId, self.outputs.stationAnnouncement)
+
+    def commandedSpeedSignalHandler(self, id, cmdSpeed):
+        if(self.trainId == id):
+            self.inputs.commandedSpeed = cmdSpeed
+    
+    def currentSpeedSignalHandler(self, id, currSpeed):
+        if(self.trainId == id):
+            self.inputs.currentSpeed = currSpeed
+
+    def authoritySignalHandler(self, id, auth):
+        if(self.trainId == id):
+            self.inputs.authority = auth
+
+    def undergroundSignalHandler(self, id, undgnd):
+        if(self.trainId == id):
+            self.inputs.undergroundState = undgnd
+
+    def temperatureSignalHandler(self, id, temp):
+        if(self.trainId == id):
+            self.inputs.temperature = temp
+
+    def stationNameSignalHandler(self, id, statName):
+        if(self.trainId == id):
+            self.inputs.stationName = statName
+
+    def platformSideSignalHandler(self, id, platSide):
+        if(self.trainId == id):
+            self.inputs.platformSide = platSide
+
+    def nextStationNameSignalHandler(self, id, nxtStatName):
+        if(self.trainId == id):
+            self.inputs.nextStationName = nxtStatName
+
+    def isBeaconSignalHandler(self, id, isBeac):
+        if(self.trainId == id):
+            self.inputs.isBeacon = isBeac
+
+    def externalLightsStateSignalHandler(self, id, extLight):
+        if(self.trainId == id):
+            self.inputs.externalLightsState = extLight
+
+    def internalLightsStateSignalHandler(self, id, intLight):
+        if(self.trainId == id):
+            self.inputs.internalLightsState = intLight
+
+    def leftDoorStateSignalHandler(self, id, lftDoor):
+        if(self.trainId == id):
+            self.inputs.leftDoorState = lftDoor
+
+    def rightDoorStateSignalHandler(self, id, rghtDoor):
+        if(self.trainId == id):
+            self.inputs.rightDoorState = rghtDoor
+
+    def serviceBrakeStateSignalHandler(self, id, srvcBrk):
+        if(self.trainId == id):
+            self.inputs.serviceBrakeState = srvcBrk
+
+    def emergencyBrakeStateSignalHandler(self, id, emgBrk):
+        if(self.trainId == id):
+            self.inputs.emergencyBrakeState = emgBrk
+
+    def serviceBrakeStatusSignalHandler(self, id, srvcBrkStatus):
+        if(self.trainId == id):
+            self.inputs.serviceBrakeStatus = srvcBrkStatus
+
+    def engineStatusSignalHandler(self, id, engStatus):
+        if(self.trainId == id):
+            self.inputs.engineStatus = engStatus
+
+    def communicationsStatusSignalHandler(self, id, comStatus):
+        if(self.trainId == id):
+            self.inputs.communicationsStatus = comStatus
 
     # Only used in Test UI and commandedSpeed manual input - writes to input file
     def writeInputs(self):
-        with open(os.path.join(sys.path[0].replace("TrainController-SW", "Integration"), f'TMtoTC{self.trainId}.json'), "w") as filename:
+        with open(os.path.join(sys.path[0].replace("TrainControllerSoftware", "Integration"), f'TMtoTC{self.trainId}.json'), "w") as filename:
             (json.dump(self.inputs.__dict__, filename, indent=4))
 
     # Only used in Test UI - reads from output file
     def readOutputs(self):
-        with open(os.path.join(sys.path[0].replace("TrainController-SW", "Integration"), f'TCtoTM{self.trainId}.json'), "r") as filename:
+        with open(os.path.join(sys.path[0].replace("TrainControllerSoftware", "Integration"), f'TCtoTM{self.trainId}.json'), "r") as filename:
             self.outputs = Outputs(**json.loads(filename.read()))
 
     # Determines whether the train is at a station or not
@@ -296,46 +411,6 @@ class TrainControllerSW:
             return "OFF"
         else:
             return "ERROR: UNKNOWN STATE"
-        
-# class for TrainController inputs
-class Inputs:
-    def __init__(self, commandedSpeed, currentSpeed, authority, inputTime, undergroundState, temperature, 
-                 stationName, platformSide, nextStationName, isBeacon, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
-                 serviceBrakeState, emergencyBrakeState, serviceBrakeStatus, engineStatus, communicationsStatus):
-        # Inputs
-        self.commandedSpeed = commandedSpeed
-        self.currentSpeed = currentSpeed
-        self.authority = authority
-        self.inputTime = str(inputTime)
-        self.undergroundState = undergroundState
-        self.temperature = temperature
-        self.stationName = stationName
-        self.platformSide = platformSide
-        self.nextStationName = nextStationName
-        self.isBeacon = isBeacon
-        self.externalLightsState = externalLightsState
-        self.internalLightsState = internalLightsState
-        self.leftDoorState = leftDoorState
-        self.rightDoorState = rightDoorState
-        self.serviceBrakeState = serviceBrakeState
-        self.emergencyBrakeState = emergencyBrakeState
-        self.serviceBrakeStatus = serviceBrakeStatus
-        self.engineStatus = engineStatus
-        self.communicationsStatus = communicationsStatus
-
-# class for TrainController outputs
-class Outputs:
-    def __init__(self, power, leftDoorCommand, 
-                 rightDoorCommand, serviceBrakeCommand, emergencyBrakeCommand, externalLightCommand, internalLightCommand, stationAnnouncement):
-        # outputs
-        self.power = power
-        self.leftDoorCommand = leftDoorCommand
-        self.rightDoorCommand = rightDoorCommand
-        self.serviceBrakeCommand = serviceBrakeCommand
-        self.emergencyBrakeCommand = emergencyBrakeCommand
-        self.externalLightCommand = externalLightCommand
-        self.internalLightCommand = internalLightCommand
-        self.stationAnnouncement = stationAnnouncement
         
 # Function to remove character from a string at nth position
 def stringRemove(string, n):  

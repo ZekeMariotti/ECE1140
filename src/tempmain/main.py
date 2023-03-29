@@ -98,7 +98,7 @@ class MainWindow(QMainWindow):
 
             # Test TM and TC
             self.trainDispatch(2)
-            self.trainDispatch(3)    
+            #self.trainDispatch(3)    
             self.TMTestUI = TrainModelTestUI.TrainModelTestUI() # temporary TM test UI 
 
 
