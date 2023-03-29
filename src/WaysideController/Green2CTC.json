@@ -1,7 +1,11 @@
 {
     "Switches": {
         "3": true,
-        "4": true
+        "4": true,
+        "1": false,
+        "2": false,
+        "5": false,
+        "6": false
     },
     "Lights": {
         "101": true,

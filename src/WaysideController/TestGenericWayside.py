@@ -28,7 +28,8 @@ class Wayside:
                   "Switches":self.switches,
                   "Lights":self.signalLights,
                   "Occupancy":self.occupancy,
-                  "BrokenRail":self.brokenRail
+                  "BrokenRail":self.brokenRail,
+                  "Gates":self.gates
             }
         
     def setdictionarysizes(self,start,blocks,switches):

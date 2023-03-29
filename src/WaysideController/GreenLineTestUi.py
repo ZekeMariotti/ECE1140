@@ -1,19 +1,20 @@
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
-from waysideclass import WaysideControllerGreen
+from TestGenericWayside import Wayside
 import sys 
 
 class Worker(QObject):
       finished = pyqtSignal()
 
 class TestWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self,Wayside1,Wayside2):
 
         super().__init__()
 
         #Intialize Wayside class
-        self.WaysideControllerGreen = WaysideControllerGreen(1,True)
+        self.WaysideControllerGreen = Wayside1
+        self.WaysideControllerGreen2 = Wayside2
         #self.WaysideController.writeOutputs()
         #self.WaysideController.readInputs()
 

@@ -2,7 +2,7 @@ from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 from TestGenericWayside import Wayside
-from GreenLineTestUi import TestWindow
+#from GreenLineTestUi import TestWindow
 from PLC import PLC
 import sys
 
@@ -807,14 +807,14 @@ class MainWindow(QMainWindow):
                 if j>9:
                  j=0
                  i=i+1  
-                               
-          if self.WaysideControllerGreen.gates[1]==True:
+          if(self.maintenanceMode==False):                    
+            if self.WaysideControllerGreen.gates[1]==True:
                 self.Gate.setText("Block 19 Gate:  UP")
-          else:
-                self.Gate.setText("Block 19 Gate:  DOWN")
-          self.PLCMain.GloadValues1()
-          self.PLCMain.GloadValues2()
-          self.PLCMain.setswitches()
+            else:
+                  self.Gate.setText("Block 19 Gate:  DOWN")
+                  self.PLCMain.GloadValues1()
+                  self.PLCMain.GloadValues2()
+                  self.PLCMain.setswitches()
 
     def mainEventLoop(self):
           self.updateVisualElements()
