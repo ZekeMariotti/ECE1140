@@ -36,9 +36,9 @@ func (l *Line) SetBlockInfos(occupancies []BlockInfo) {
 
 func (l *Line) SetSwitchPositions(positions []SwitchInfo) {
 	for _, v := range positions {
-		for _, w := range l.Switches {
-			if w.Source == v.Source {
-				w.SetPosition(v.Position)
+		for i := range l.Switches {
+			if l.Switches[i].Source == v.Source {
+				l.Switches[i].SetPosition(v.Position)
 			}
 		}
 	}
