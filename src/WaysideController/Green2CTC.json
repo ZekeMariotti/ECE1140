@@ -1,12 +1,5 @@
 {
-    "Switches": {
-        "3": true,
-        "4": true,
-        "1": false,
-        "2": false,
-        "5": false,
-        "6": false
-    },
+    "Switches": {},
     "Lights": {
         "101": true,
         "102": true,
@@ -162,5 +155,8 @@
         "148": false,
         "149": false,
         "150": false
+    },
+    "Gates": {
+        "1": true
     }
 }

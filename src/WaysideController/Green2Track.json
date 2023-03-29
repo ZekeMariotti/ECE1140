@@ -106,14 +106,7 @@
         "149": 0,
         "150": 0
     },
-    "Switches": {
-        "3": true,
-        "4": true,
-        "1": false,
-        "2": false,
-        "5": false,
-        "6": false
-    },
+    "Switches": {},
     "SimTime": 1,
     "Lights": {
         "101": true,

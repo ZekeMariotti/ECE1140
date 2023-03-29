@@ -163,5 +163,8 @@
         "48": false,
         "49": false,
         "50": false
+    },
+    "Gates": {
+        "1": true
     }
 }
