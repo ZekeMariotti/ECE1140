@@ -1,7 +1,8 @@
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
-from waysideclassred import WaysideControllerRed
+from TestGenericWayside import Wayside
+from PLC import PLC
 import sys
 
 #global variables
@@ -17,11 +18,13 @@ class MainWindow(QMainWindow):
 
         super().__init__()
 
-        #Intialize Wayside class
-        self.WaysideControllerRed = WaysideControllerRed(1,True)
-        #self.WaysideController.writeOutputs()
-        #self.WaysideController.readInputs()
-
+        #Intialize Wayside class change sim time int later
+        self.WaysideControllerRed = Wayside(1)
+        self.WaysideControllerRed2 = Wayside(1)
+        self.WaysideControllerRed.setdictionarysizes(1,51,8)
+        self.WaysideControllerRed2.setdictionarysizes(51,77,8)
+        self.WaysideControllerRed.setCommandedSpeed()
+        self.WaysideControllerRed2.setCommandedSpeed()
         #Window
 
         self.setWindowTitle("Red Line")
@@ -85,9 +88,15 @@ class MainWindow(QMainWindow):
         #Gate
         self.GateLabel = self.GateLabelSetup()
         self.Gate = self.GateSetup()
+        self.Up = self.GateUp()
+        self.Down = self.GateDown()
         #PLC
-        self.PLC = self.PLCButton()        
-        #widget setups
+        self.PLCLabel = self.PLCLabelSetup()
+        self.PLC = self.PLCButton()     
+
+        self.maintenanceMode = False
+        self.maintenanceButton = self.maintenanceButtonSetup()   
+        self.PLCMain = PLC(self.WaysideControllerRed,self.WaysideControllerRed2,"Red")
     def mainThreadSetup(self):
           self.timerThread = QThread()
           self.timerThread.started.connect(self.mainTimerSetup)
@@ -121,14 +130,20 @@ class MainWindow(QMainWindow):
             CommandedSpeed.setItem(0,0,QTableWidgetItem("-"))
             i=0
             j=1
-            for k in range(1,77):
-                value=self.WaysideControllerRed.getCommandedSpeed(k)
+            for k in range(1,51):
+                value=self.WaysideControllerRed.commandedSpeed[k]
                 CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
                  j=0
                  i=i+1
-            j=7
+            for k in range(51,77):
+                  value=self.WaysideControllerRed2.commandedSpeed[k]
+                  CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
+                  j=j+1
+                  if j>9:
+                        j=0
+                        i=i+1
             for k in range(77,81):
                 CommandedSpeed.setItem(7,j,QTableWidgetItem("-"))
                 j=j+1
@@ -157,14 +172,20 @@ class MainWindow(QMainWindow):
             Authority.setItem(0,0,QTableWidgetItem("-"))
             i=0
             j=1
-            for k in range(1,77):
-                value=self.WaysideControllerRed.getAuthority(k)
+            for k in range(1,51):
+                value=self.WaysideControllerRed.authority[k]
                 Authority.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
                  j=0
                  i=i+1
-            j=7
+            for k in range(51,77):
+                value=self.WaysideControllerRed2.authority[k]
+                Authority.setItem(i,j,QTableWidgetItem(str(value)))
+                j=j+1
+                if j>9:
+                 j=0
+                 i=i+1                  
             for k in range(78,81):
                 Authority.setItem(7,j,QTableWidgetItem("-"))
                 j=j+1            
@@ -193,14 +214,20 @@ class MainWindow(QMainWindow):
             BrokenRail.setItem(0,0,QTableWidgetItem("-"))
             i=0
             j=1
-            for k in range(1,77):
-                if self.WaysideControllerRed.getBrokenRail(k) == True:
+            for k in range(1,51):
+                if self.WaysideControllerRed.brokenRail[k] == True:
                     BrokenRail.setItem(i,j,QTableWidgetItem("X"))
                 j=j+1
                 if j>9:
                  j=0
                  i=i+1
-            j=7
+            for k in range(51,77):
+                if self.WaysideControllerRed2.brokenRail[k] == True:
+                    BrokenRail.setItem(i,j,QTableWidgetItem("X"))
+                j=j+1
+                if j>9:
+                 j=0
+                 i=i+1
             for k in range(78,81):
                 BrokenRail.setItem(7,j,QTableWidgetItem("-"))
                 j=j+1
@@ -229,14 +256,20 @@ class MainWindow(QMainWindow):
             SignalLight.setItem(0,0,QTableWidgetItem("-"))
             i=0
             j=1
-            for k in range(1,77):
-                value=self.WaysideControllerRed.getSignalLights(k)
+            for k in range(1,51):
+                value=self.WaysideControllerRed.signalLights[k]
                 SignalLight.setItem(i,j,QTableWidgetItem((value)))
                 j=j+1
                 if j>9:
                  j=0
                  i=i+1
-            j=7
+            for k in range(51,77):
+                value=self.WaysideControllerRed2.signalLights[k]
+                SignalLight.setItem(i,j,QTableWidgetItem((value)))
+                j=j+1
+                if j>9:
+                 j=0
+                 i=i+1     
             for k in range(78,81):
                 SignalLight.setItem(7,j,QTableWidgetItem("-"))
                 j=j+1            
@@ -265,14 +298,20 @@ class MainWindow(QMainWindow):
             Occupancy.setItem(0,0,QTableWidgetItem("-"))
             i=0
             j=1
-            for k in range(1,77):
-                if self.WaysideControllerRed.getBrokenRail(k) == True:
+            for k in range(1,51):
+                if self.WaysideControllerRed.brokenRail[k] == True:
                     Occupancy.setItem(i,j,QTableWidgetItem("X"))
                 j=j+1
                 if j>9:
                  j=0
                  i=i+1
-            j=7
+            for k in range(51,77):
+                if self.WaysideControllerRed2.brokenRail[k] == True:
+                    Occupancy.setItem(i,j,QTableWidgetItem("X"))
+                j=j+1
+                if j>9:
+                 j=0
+                 i=i+1
             for k in range(152,161):
                 Occupancy.setItem(7,j,QTableWidgetItem("-"))
                 j=j+1
@@ -294,7 +333,7 @@ class MainWindow(QMainWindow):
             gate = QLabel()
             gate.setFont(self.labelFont)
 
-            if self.WaysideControllerRed.getGatePositions() == True:
+            if self.WaysideControllerRed.gates[1] == True:
                 gate.setText("Block 47 Gate:  UP")
 
             else:
@@ -305,6 +344,33 @@ class MainWindow(QMainWindow):
             return(gate)
 
                     #Switch Functions
+
+    def GateUp(self):
+          Up = QPushButton("Up")
+          Up.setFont(self.labelFont) 
+          Up.setFixedSize(QSize(70,40))  
+          Up.clicked.connect(self.UpClicked)
+          Up.setParent(self)
+          Up.move(1050,550)
+          return(Up)
+
+    def GateDown(self):
+          Down = QPushButton("Down")
+          Down.setFont(self.labelFont) 
+          Down.setFixedSize(QSize(70,40))  
+          Down.clicked.connect(self.DownClicked)
+          Down.setParent(self)
+          Down.move(1050,600)
+          return(Down)
+
+    def maintenanceButtonSetup(self):
+          Man = QPushButton("Maintenance")
+          Man.setFont(self.labelFont)
+          Man.setFixedSize(QSize(90,40))
+          #Man.clicked.connect(self.maintenance)
+          Man.setParent(self)
+          Man.move(1000,0)
+          return(Man)
 
     def MainSwitchLabel(self):
           MainSwitchLabel = QLabel()
@@ -452,7 +518,7 @@ class MainWindow(QMainWindow):
           Output1 = QLabel()
           Output1.setFont(self.labelFont)
 
-          if self.WaysideControllerRed.getSwitchPositions(1)==True:
+          if self.WaysideControllerRed.switches[1]==True:
                 Output1.setText("75 to Yard")
           else:
                 Output1.setText("Yard to 75")
@@ -465,7 +531,7 @@ class MainWindow(QMainWindow):
           Output2 = QLabel()
           Output2.setFont(self.labelFont)
 
-          if self.WaysideControllerRed.getSwitchPositions(2)==True:
+          if self.WaysideControllerRed.switches[2]==True:
                 Output2.setText("15 to 16")
           else:
                 Output2.setText("1 to 15")
@@ -478,7 +544,7 @@ class MainWindow(QMainWindow):
           Output3 = QLabel()
           Output3.setFont(self.labelFont)
 
-          if self.WaysideControllerRed.getSwitchPositions(3)==True:
+          if self.WaysideControllerRed.switches[3]==True:
                 Output3.setText("27 to 28")
           else:
                 Output3.setText("27 to 76")
@@ -491,7 +557,7 @@ class MainWindow(QMainWindow):
           Output4 = QLabel()
           Output4.setFont(self.labelFont)
 
-          if self.WaysideControllerRed.getSwitchPositions(4)==True:
+          if self.WaysideControllerRed.switches[4]==True:
                 Output4.setText("32 to 33")
           else:
                 Output4.setText("33 to 72")
@@ -504,7 +570,7 @@ class MainWindow(QMainWindow):
           Output5 = QLabel()
           Output5.setFont(self.labelFont)
 
-          if self.WaysideControllerRed.getSwitchPositions(5)==True:
+          if self.WaysideControllerRed.switches[5]==True:
                 Output5.setText("38 to 39")
           else:
                 Output5.setText("38 to 71")
@@ -517,7 +583,7 @@ class MainWindow(QMainWindow):
           Output6 = QLabel()
           Output6.setFont(self.labelFont)
 
-          if self.WaysideControllerRed.getSwitchPositions(5)==True:
+          if self.WaysideControllerRed.switches[6]==True:
                 Output6.setText("43 to 44")
           else:
                 Output6.setText("44 to 67")
@@ -530,7 +596,7 @@ class MainWindow(QMainWindow):
           Output7 = QLabel()
           Output7.setFont(self.labelFont)
 
-          if self.WaysideControllerRed.getSwitchPositions(5)==True:
+          if self.WaysideControllerRed.switches[7]==True:
                 Output7.setText("52 to 53")
           else:
                 Output7.setText("52 to 66")
@@ -538,7 +604,15 @@ class MainWindow(QMainWindow):
           Output7.setParent(self)
           Output7.move(1000,175)
           return(Output7)
-     
+
+    def PLCLabelSetup(self):
+          PLCLabel = QLabel()
+          PLCLabel.setFont(self.titleFont)
+          PLCLabel.setText("Upload PLC")
+          PLCLabel.move(860,220)
+          PLCLabel.setParent(self)
+          return(PLCLabel)
+
     def PLCButton(self):
          PLCButton = QPushButton("PLC")
          PLCButton.setFont(self.labelFont) 
@@ -590,7 +664,13 @@ class MainWindow(QMainWindow):
           
     def Switch7ButtonRClick(self):
           self.WaysideControllerRed.setSwitchPositions(False,7)          
+      
+    def UpClicked(self):
+          self.WaysideControllerRed.setGatePositions(True)
           
+    def DownClicked(self):
+          self.WaysideControllerRed.setGatePositions(False)  
+
     def updateVisualElements(self):
           #hour = str(self.WaysideController.realTime.hour) if self.WaysideController.realTime.hour <=12 else str(self.WaysideController.realTime.hour - 12)   
           #if(int(hour)==0):
@@ -600,37 +680,37 @@ class MainWindow(QMainWindow):
           #might add to ui
           #self.realTimeClock.setText(f'Time: {hour}:{minute}:{second}')
           
-          if self.WaysideControllerRed.getSwitchPositions(1)==True:
+          if self.WaysideControllerRed.switches[1]==True:
                 self.Switch1Out.setText("75 to Yard")
           else:
                 self.Switch1Out.setText("Yard to 75")
 
-          if self.WaysideControllerRed.getSwitchPositions(2)==True:
+          if self.WaysideControllerRed.switches[2]==True:
                 self.Switch2Out.setText("15 to 16")
           else:
                 self.Switch2Out.setText("1 to 16")    
 
-          if self.WaysideControllerRed.getSwitchPositions(3)==True:
+          if self.WaysideControllerRed.switches[3]==True:
                 self.Switch3Out.setText("27 to 28")
           else:
                 self.Switch3Out.setText("27 to 76")
 
-          if self.WaysideControllerRed.getSwitchPositions(4)==True:
+          if self.WaysideControllerRed.switches[4]==True:
                 self.Switch4Out.setText("32 to 33")
           else:
                 self.Switch4Out.setText("33 to 72")
 
-          if self.WaysideControllerRed.getSwitchPositions(5)==True:
+          if self.WaysideControllerRed.switches[5]==True:
                 self.Switch5Out.setText("38 to 39")
           else:
                 self.Switch5Out.setText("38 to 71")
 
-          if self.WaysideControllerRed.getSwitchPositions(6)==True:
+          if self.WaysideControllerRed.switches[6]==True:
                 self.Switch6Out.setText("43 to 44")
           else:
                 self.Switch6Out.setText("44 to 67")
 
-          if self.WaysideControllerRed.getSwitchPositions(7)==True:
+          if self.WaysideControllerRed.switches[7]==True:
                 self.Switch7Out.setText("52 to 53")
           else:
                 self.Switch7Out.setText("52 to 66")
@@ -638,67 +718,103 @@ class MainWindow(QMainWindow):
 #self.Authority
           i=0
           j=1
-          for k in range(1,151):
-                value=self.WaysideControllerRed.getAuthority(k)
+          for k in range(1,51):
+                value=self.WaysideControllerRed.authority[k]
                 self.Authority.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
                  j=0
                  i=i+1
+          for k in range(51,77):
+                value=self.WaysideControllerRed2.authority[k]
+                self.Authority.setItem(i,j,QTableWidgetItem(str(value)))
+                j=j+1
+                if j>9:
+                 j=0
+                 i=i+1                 
           #self.CommandedSpeed
           i=0
           j=1
-          for k in range(1,151):
-                value=self.WaysideControllerRed.getCommandedSpeed(k)
+          for k in range(1,51):
+                value=self.WaysideControllerRed.commandedSpeed[k]
                 self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
                         j=0
-                        i=i+1           
+                        i=i+1
+          for k in range(51,77):
+                value=self.WaysideControllerRed2.commandedSpeed[k]
+                self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
+                j=j+1
+                if j>9:
+                        j=0
+                        i=i+1                             
           #self.BrokenRail 
           i=0
           j=1
-          for k in range(1,151):
-                if value == self.WaysideControllerRed.getBrokenRail(k)== True:
+          for k in range(1,51):
+                if value == self.WaysideControllerRed.brokenRail[k]== True:
                         self.BrokenRail.setItem(i,j,QTableWidgetItem(str("ERROR")))
                         j=j+1
                 if j>9:
                  j=0
                  i=i+1
+          for k in range(51,77):
+                if value == self.WaysideControllerRed2.brokenRail[k]== True:
+                        self.BrokenRail.setItem(i,j,QTableWidgetItem(str("ERROR")))
+                        j=j+1
+                if j>9:
+                 j=0
+                 i=i+1                 
           #self.SignalLight 
           i=0
           j=1
-          for k in range(1,151):
-                value=self.WaysideControllerRed.getSignalLights(k)
+          for k in range(1,51):
+                value=self.WaysideControllerRed.signalLights[k]
                 self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
                  j=0
                  i=i+1
+          for k in range(51,77):
+                value=self.WaysideControllerRed2.signalLights[k]
+                self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
+                j=j+1
+                if j>9:
+                 j=0
+                 i=i+1                 
          #self.Occupancy
           i=0
           j=1
-          for k in range(1,151):
-                if value == self.WaysideControllerRed.getOccupancy(k):
+          for k in range(1,51):
+                if value == self.WaysideControllerRed.occupancy[k]:
                         self.Occupancy.setItem(i,j,QTableWidgetItem(str("X")))
                         j=j+1
                 if j>9:
                         j=0
                         i=i+1        
-
-          if self.WaysideControllerRed.getGatePositions()==True:
+          for k in range(51,77):
+                if value == self.WaysideControllerRed2.occupancy[k]:
+                        self.Occupancy.setItem(i,j,QTableWidgetItem(str("X")))
+                        j=j+1
+                if j>9:
+                        j=0
+                        i=i+1 
+          if self.WaysideControllerRed.gates[1]==True:
                 self.Gate.setText("Block 47 Gate:  UP")
           else:
                 self.Gate.setText("Block 47 Gate:  DOWN")
-
+          self.PLCMain.RloadValues1()
+          self.PLCMain.RloadValues2()
+          self.PLCMain.Rsetswitches()
     def mainEventLoop(self):
-          self.WaysideControllerRed.currentTime = self.WaysideControllerRed.realTime
 
           self.updateVisualElements()
 
-          self.WaysideControllerRed.previousTime = self.WaysideControllerRed.realTime
-          WaysideControllerRed.WaysideToCTC()
-          WaysideControllerRed.WaysideToTrack()
+          self.WaysideControllerRed.WaysideToTrackInfoR1()
+          self.WaysideControllerRed2.WaysideToTrackInfoR2()
+          self.WaysideControllerRed.WaysideToCTCInfoR1()
+          self.WaysideControllerRed2.WaysideToCTCInfoR2()
 
 app = QApplication(sys.argv)
 

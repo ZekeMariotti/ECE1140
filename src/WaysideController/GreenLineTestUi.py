@@ -18,10 +18,10 @@ class TestWindow(QMainWindow):
         #self.WaysideController.readInputs()
 
         #Window
-        self.storeAuthority
-        self.storeAuthorityBlock
-        self.storeCommandedSpeed
-        self.storeCommandedSpeedBlock
+        self.storeAuthority = None
+        self.storeAuthorityBlock = None
+        self.storeCommandedSpeed = None
+        self.storeCommandedSpeedBlock = None
         self.setWindowTitle("Green Line Test UI")
         self.setFixedSize(QSize(600,800))
         self.setMinimumSize(600,800)
@@ -282,7 +282,7 @@ class TestWindow(QMainWindow):
           return(AInput)
     
     def AuthorityBlockInput(self):
-          ABlock = QLineEdit()
+          ABlock = QComboBox()
           ABlock.setFixedSize(QSize(50,20))
          #AInput.textChanged.connect(self.setAuthorityTextChanged)
           ABlock.setParent(self)
@@ -298,7 +298,7 @@ class TestWindow(QMainWindow):
           return(CSInput)
     
     def CommandedSpeedBlockInput(self):
-          CSBlock = QLineEdit()
+          CSBlock = QComboBox()
           CSBlock.setFixedSize(QSize(50,20))
          #AInput.textChanged.connect(self.setAuthorityTextChanged)
           CSBlock.setParent(self)
@@ -322,7 +322,7 @@ class TestWindow(QMainWindow):
           return(SignalLabel)
     
     def OccupancyBlockInput(self):
-          OBlock = QLineEdit()
+          OBlock = QComboBox()
           OBlock.setFixedSize(QSize(50,20))
          #AInput.textChanged.connect(self.setAuthorityTextChanged)
           OBlock.setParent(self)
@@ -330,7 +330,7 @@ class TestWindow(QMainWindow):
           return(OBlock) 
     
     def SignalBlockInput(self):
-          SBlock = QLineEdit()
+          SBlock = QComboBox()
           SBlock.setFixedSize(QSize(50,20))
          #AInput.textChanged.connect(self.setAuthorityTextChanged)
           SBlock.setParent(self)
