@@ -19,16 +19,11 @@ class TrackModelTestUI(QWidget):
         "line" : 0,
         "blockNo" : 0,
         "stationName" : 0,
-        "moves" : [0, 9, None]
     }
 
     # Define an array to store train data
     train = {
         "trainNo" : 0,
-        "trainBlock" : [0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0],
     }
 
     # Temp boolean
@@ -336,27 +331,16 @@ class TrackModelTestUI(QWidget):
         outputText = "Green" if self.data["line"] == 1 else "Red"
         self.lineOutput.setText(outputText)
 
-        # Refresh Main UI
-        trackSignals.updateSignal.emit()
-
     # Gets the Block Number from the UI
     def getBlockInput(self, index):
         self.data["blockNo"] = index
         outputText = str(self.data["blockNo"] + 1)
         self.blockNumberOutput.setText(outputText)
-
-        # Refresh Main UI
-        trackSignals.updateSignal.emit()
     
     # Gets the Switch Position from the UI
     def getSwitchPositionInput(self, index):
         if self.toggleSwitch != 1:
-            if self.data["line"] == 0:
-                self.backEnd.data["switchPos"].removeAt(int(self.backEnd.csvConstants["switchRed"].__getitem__(self.data["blockNo"])) - 1)
-                self.backEnd.data["switchPos"].insertAt(index, int(self.backEnd.csvConstants["switchRed"].__getitem__(self.data["blockNo"])) - 1)
-            elif self.data["line"] == 1:
-                self.backEnd.data["switchPos"].removeAt(int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.data["blockNo"])) - 1)
-                self.backEnd.data["switchPos"].insertAt(index, int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.data["blockNo"])) - 1)
+            trackSignals.getSwitchPositionInput.emit(index, self.data["line"], self.data["blockNo"])
 
         if self.data["line"] == 0:
             if int(self.backEnd.csvConstants["switchRed"].__getitem__(self.data["blockNo"])) > 0 and int(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(self.data["blockNo"])) - 1)) == 0 and self.backEnd.data["switchPos"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(self.data["blockNo"])) - 1) == 1:
@@ -370,43 +354,23 @@ class TrackModelTestUI(QWidget):
                 outputText = str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.data["blockNo"])) - 1)) + "-" + str(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.data["blockNo"])) - 1)) if self.backEnd.data["switchPos"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.data["blockNo"])) - 1) == 1 else str(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.data["blockNo"])) - 1)) + "-" + str(self.backEnd.csvConstants["switchBlockC"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.data["blockNo"])) - 1))
         self.switchPositionOutput.setText(outputText) # Put output text in value box
 
-        self.updateVector()
-
-        # Update train block combo box
-        self.toggle = 1
         self.updateCombo()
-
-        # Refresh Main UI
-        trackSignals.updateSignal.emit()
 
     # Gets the Gate Position state from the UI
     def getGatePositionInput(self, index):
         if self.toggleGate != 1:
-            if self.data["line"] == 0:
-                self.backEnd.data["gatePos"].removeAt(int(self.backEnd.csvConstants["crossingRed"].__getitem__(self.data["blockNo"])) - 1)
-                self.backEnd.data["gatePos"].insertAt(index, int(self.backEnd.csvConstants["crossingRed"].__getitem__(self.data["blockNo"])) - 1)
-            elif self.data["line"] == 1:
-                self.backEnd.data["gatePos"].removeAt(int(self.backEnd.csvConstants["crossingGreen"].__getitem__(self.data["blockNo"])) - 1)
-                self.backEnd.data["gatePos"].insertAt(index, int(self.backEnd.csvConstants["crossingGreen"].__getitem__(self.data["blockNo"])) - 1)
-
+            trackSignals.getGatePositionInput.emit(index, self.data["line"], self.data["blockNo"])
+        
         if self.data["line"] == 0:
             outputText = "Down" if self.backEnd.data["gatePos"].__getitem__(int(self.backEnd.csvConstants["crossingRed"].__getitem__(self.data["blockNo"])) - 1) == 1 else "Up"
         elif self.data["line"] == 1:
             outputText = "Down" if self.backEnd.data["gatePos"].__getitem__(int(self.backEnd.csvConstants["crossingGreen"].__getitem__(self.data["blockNo"])) - 1) == 1 else "Up"
         self.gatePositionOutput.setText(outputText)
 
-        # Refresh Main UI
-        trackSignals.updateSignal.emit()
-
     # Gets the Signal State from the UI
     def getSignalStateInput(self, index):
-        if self.toggleSignal != 1:
-            if self.data["line"] == 0 and self.data["blockNo"] != -1:
-                self.backEnd.data["sigState"].removeAt(int(self.backEnd.csvConstants["signalRed"].__getitem__(self.data["blockNo"])) - 1)
-                self.backEnd.data["sigState"].insertAt(index, int(self.backEnd.csvConstants["signalRed"].__getitem__(self.data["blockNo"])) - 1)
-            elif self.data["line"] == 1 and self.data["blockNo"] != -1:
-                self.backEnd.data["sigState"].removeAt(int(self.backEnd.csvConstants["signalGreen"].__getitem__(self.data["blockNo"])) - 1)
-                self.backEnd.data["sigState"].insertAt(index, int(self.backEnd.csvConstants["signalGreen"].__getitem__(self.data["blockNo"])) - 1)
+        if self.toggleSignal != -1:
+            trackSignals.getSignalStateInput.emit(index, self.data["line"], self.data["blockNo"])
 
         if self.data["line"] == 0 and self.data["blockNo"] != -1:
             if self.backEnd.data["sigState"].__getitem__(int(self.backEnd.csvConstants["signalRed"].__getitem__(self.data["blockNo"])) - 1) == 2:
@@ -424,9 +388,6 @@ class TrackModelTestUI(QWidget):
             else:
                 outputText = "Green"
             self.signalStateOutput.setText(outputText)
-
-        # Refresh Main UI
-        trackSignals.updateSignal.emit()
 
     # Gets Signal State if block changes
     def blockChange(self, index):
@@ -513,7 +474,7 @@ class TrackModelTestUI(QWidget):
         else:
             i = self.gatePositionInput.count() - 1
             while i >= 0:
-                self.gatePositionInput.removeItem(i)
+                self.gatePositionInput.removeItem(i) 
                 i -= 1
             self.gatePositionInput.setEnabled(False)
             self.gatePositionOutput.setText("N/A")
@@ -570,9 +531,6 @@ class TrackModelTestUI(QWidget):
         elif self.data["line"] == 1:
             self.blockTrainOutput.setText(str(self.backEnd.data["blockTrainNoGreen"].__getitem__(self.data["blockNo"])))
 
-        # Refresh Main UI
-        trackSignals.updateSignal.emit()
-
     # Gets Signal State if line changes
     def lineChange(self, index):
         # Set new combo box values
@@ -599,30 +557,22 @@ class TrackModelTestUI(QWidget):
 
     # Gets the Temperature from the UI
     def getTempInput(self):
-        self.backEnd.data["temp"] = float(self.tempInput.text())
+        trackSignals.getTempInput.emit(float(self.tempInput.text()))
         self.tempOutput.setText(str(self.backEnd.data["temp"]) + " degrees F")
 
         # Configure Track Heaters
         if self.backEnd.data["temp"] > 32:
-            self.backEnd.data["trackHeater"] = 0
             self.trackHeaterOutput.setText("Off")
             self.trackHeaterInput.setCurrentText("Off")
         elif self.backEnd.data["temp"] < 32:
-            self.backEnd.data["trackHeater"] = 1
             self.trackHeaterOutput.setText("On")
             self.trackHeaterInput.setCurrentText("On")
-
-        # Refresh Main UI
-        trackSignals.updateSignal.emit()
     
     # Gets the Track Heater state from the UI
     def getTrackHeaterInput(self, index):
-        self.backEnd.data["trackHeater"] = index
+        trackSignals.getTrackHeaterInput.emit(index)
         outputText = "On" if self.backEnd.data["trackHeater"] == 1 else "Off"
         self.trackHeaterOutput.setText(outputText)
-
-        # Refresh Main UI
-        trackSignals.updateSignal.emit()
 
     # Gets the Station Name from the UI
     def getStationNameInput(self, index):
@@ -637,20 +587,13 @@ class TrackModelTestUI(QWidget):
             outputText1 = str(self.backEnd.data["stationOccupancy"].__getitem__(index)) + " people"
         self.occOutput.setText(outputText1)
 
-        # Refresh Main UI
-        trackSignals.updateSignal.emit()
-
     # Gets the Station Occupancy from the UI
     def getStationOccInput(self):
-        self.backEnd.data["stationOccupancy"].removeAt(self.data["stationName"])
-        self.backEnd.data["stationOccupancy"].insertAt(int(self.stationOccInput.text()), self.data["stationName"])
+        trackSignals.getStationOccInput.emit(int(self.stationOccInput.text()))
         if self.backEnd.data["stationOccupancy"].__getitem__(self.data["stationName"]) == 1:
             self.occOutput.setText("1 person")
         else:
             self.occOutput.setText(str(self.backEnd.data["stationOccupancy"].__getitem__(self.data["stationName"])) + " people")
-
-        # Refresh Main UI
-        trackSignals.updateSignal.emit()
 
     # Gets the Train Number from the UI
     def getTrainInput(self, index):
@@ -658,57 +601,43 @@ class TrackModelTestUI(QWidget):
         outputText = str(self.train["trainNo"] + 1)
         self.trainNumberOutput.setText(outputText)
 
-        # Refresh Main UI
-        trackSignals.updateSignal.emit()
-
     # Gets the Train Block from the UI
     def getTrainBlockInput(self, index):
+        print("Beginning", index)
         # Update block train number
         if self.toggle != 1:
-            if self.backEnd.data["trainLine"][self.train["trainNo"]] == 0 and self.data["moves"][0] != 0:
-                self.backEnd.data["blockTrainNoRed"].removeAt(self.data["moves"][0] - 1)
-                self.backEnd.data["blockTrainNoRed"].insertAt(0, self.data["moves"][0] - 1) # Sets last block train was at to 0
-            elif self.backEnd.data["trainLine"][self.train["trainNo"]] == 1 and self.data["moves"][0] != 0:
-                self.backEnd.data["blockTrainNoGreen"].removeAt(self.data["moves"][0] - 1)
-                self.backEnd.data["blockTrainNoGreen"].insertAt(0, self.data["moves"][0] - 1) # Sets last block train was at to 0
-            if self.data["moves"][index] != 0:
+            trackSignals.getTrainBlockInputSignal.emit(index, self.train["trainNo"])
+
+            # Display new train block
+            if self.backEnd.data["moves"][self.train["trainNo"]][index] != 0:
                 if self.backEnd.data["trainLine"][self.train["trainNo"]] == 0:
-                    self.backEnd.data["blockTrainNoRed"].removeAt(self.data["moves"][index] - 1)
-                    self.backEnd.data["blockTrainNoRed"].insertAt(self.train["trainNo"] + 1, self.data["moves"][index] - 1) # Sets train number to new block
                     self.blockTrainOutput.setText(str(self.backEnd.data["blockTrainNoRed"].__getitem__(self.train["trainNo"])))
                 elif self.backEnd.data["trainLine"][self.train["trainNo"]] == 1:
-                    self.backEnd.data["blockTrainNoGreen"].removeAt(self.data["moves"][index] - 1)
-                    self.backEnd.data["blockTrainNoGreen"].insertAt(self.train["trainNo"] + 1, self.data["moves"][index] - 1) # Sets train number to new block
                     self.blockTrainOutput.setText(str(self.backEnd.data["blockTrainNoGreen"].__getitem__(self.train["trainNo"])))
             else:
                 self.blockTrainOutput.setText("Yard")
    
             # Update Authority
-            self.backEnd.data["authority"][self.train["trainNo"]] -= 1
             if self.backEnd.data["authority"][self.train["trainNo"]] == 1:
                 self.authOutput.setText("1 block")
             else:
                 self.authOutput.setText(str(self.backEnd.data["authority"][self.train["trainNo"]]) + " blocks")
-            
-            # Update Block vector
-            self.data["moves"][0] = self.data["moves"][index]
-            self.updateVector()
-            
+
             # Update train block output
-            self.train["trainBlock"][self.train["trainNo"]] = self.data["moves"][0]
-            if self.train["trainBlock"][self.train["trainNo"]] == 0:
+            if self.backEnd.data["trainBlock"][self.train["trainNo"]] == 0:
                 outputText  = "Yard"
             else:
-                outputText = str(self.train["trainBlock"][self.train["trainNo"]])
+                outputText = str(self.backEnd.data["trainBlock"][self.train["trainNo"]])
             self.trainBlockOutput.setText(outputText)
             
+            #print(self.backEnd.data["moves"][self.train["trainNo"]])
             # Update train block combo box
             self.updateCombo()
 
             # Disable line change if not at yard
-            if self.data["moves"][0] > 0:
+            if self.backEnd.data["moves"][self.train["trainNo"]][0] > 0:
                 self.trainLnInput.setEnabled(False)
-            elif self.data["moves"][0] == 0:
+            elif self.backEnd.data["moves"][self.train["trainNo"]][0] == 0:
                 self.trainLnInput.setEnabled(True)
 
             # Update the block train number
@@ -717,35 +646,33 @@ class TrackModelTestUI(QWidget):
             elif self.data["line"] == 1:
                 self.blockTrainOutput.setText(str(self.backEnd.data["blockTrainNoGreen"].__getitem__(self.data["blockNo"])))
 
-            # Refresh Main UI
-            trackSignals.updateSignal.emit()
+            print("End", index)
 
     # Gets new data if train line changes
     def getTrainLnInput(self, index):
-        self.backEnd.data["trainLine"][self.train["trainNo"]] = index
+        trackSignals.getTrainLnInput.emit(index, self.train["trainNo"])
         outputText = "Green" if self.backEnd.data["trainLine"][self.train["trainNo"]] == 1 else "Red"
         self.trainLnOutput.setText(outputText)
-        self.updateVector()
         self.updateCombo()
 
     # Gets new data if train changes
     def trainChange(self, index):
         self.toggle = 1
         # Set new train block
-        if self.train["trainBlock"][index] == 0:
+        if self.backEnd.data["trainBlock"][index] == 0:
             outputText  = "Yard"
         else:
-            outputText = str(self.train["trainBlock"][index])
+            outputText = str(self.backEnd.data["trainBlock"][index])
         self.trainBlockOutput.setText(outputText)
-        self.data["moves"][0] = self.train["trainBlock"][index]
-        self.updateVector()
+        self.backEnd.data["moves"][self.train["trainNo"]][0] = self.backEnd.data["trainBlock"][index]
+        self.backEnd.updateVector(self.train["trainNo"])
         self.updateCombo()
         self.toggle = 0
 
         # Disable line change if not at yard
-        if self.data["moves"][0] > 0:
+        if self.backEnd.data["moves"][self.train["trainNo"]][0] > 0:
             self.trainLnInput.setEnabled(False)
-        elif self.data["moves"][0] == 0:
+        elif self.backEnd.data["moves"][self.train["trainNo"]][0] == 0:
             self.trainLnInput.setEnabled(True)
 
         # Update Passenger Count
@@ -763,44 +690,18 @@ class TrackModelTestUI(QWidget):
         # Update Commanded Speed
         self.cSpeedOutput.setText(str(self.backEnd.data["commandedSpeed"][self.train["trainNo"]]) + " MPH")
 
-        # Refresh Main UI
-        trackSignals.updateSignal.emit()
-
     # Gets the number of passengers off from the UI
     def getOffInput(self):
-        if self.backEnd.csvConstants["stationLine"].__getitem__(self.data["stationName"]) == 0:
-            for i in range(self.backEnd.data["blockTrainNoRed"].__len__()):
-                if int(self.backEnd.csvConstants["stationRed"].__getitem__(i)) > 0 and self.train["trainBlock"][self.train["trainNo"]] == i + 1 and self.backEnd.data["numPassengers"][self.train["trainNo"]] - int(self.offInput.text()) >= 0:
-                    self.backEnd.data["numPassengers"][self.train["trainNo"]] -= int(self.offInput.text())
-        elif self.backEnd.csvConstants["stationLine"].__getitem__(self.data["stationName"]) == 1:
-            for i in range(self.backEnd.data["blockTrainNoGreen"].__len__()):
-                if int(self.backEnd.csvConstants["stationGreen"].__getitem__(i)) > 0 and self.train["trainBlock"][self.train["trainNo"]] == i + 1 and self.backEnd.data["numPassengers"][self.train["trainNo"]] - int(self.offInput.text()) >= 0:
-                    self.backEnd.data["numPassengers"][self.train["trainNo"]] -= int(self.offInput.text())
+        trackSignals.getOffInput.emit(self.train["trainNo"], self.data["stationName"], int(self.offInput.text()))
 
         if self.backEnd.data["numPassengers"][self.train["trainNo"]] == 1:
             self.numPassengersOutput.setText("1 person")
         else:
             self.numPassengersOutput.setText(str(self.backEnd.data["numPassengers"][self.train["trainNo"]]) + " people")
 
-        # Refresh Main UI
-        trackSignals.updateSignal.emit()
-
     # Gets the number of passengers on from the UI
     def getOnInput(self):
-        if self.backEnd.csvConstants["stationLine"].__getitem__(self.data["stationName"]) == 0:
-            for i in range(self.backEnd.data["blockTrainNoRed"].__len__()):
-                if int(self.backEnd.data["blockTrainNoRed"].__getitem__(i)) > 0 and int(self.backEnd.csvConstants["stationRed"].__getitem__(i)) > 0 and int(self.backEnd.csvConstants["stationRed"].__getitem__(i)) - 1 == int(self.data["stationName"]) and int(self.backEnd.data["stationOccupancy"].__getitem__(self.data["stationName"])) - int(self.onInput.text()) >= 0:
-                    self.backEnd.data["numPassengers"][self.backEnd.data["blockTrainNoRed"].__getitem__(i) - 1] += int(self.onInput.text())
-                    currOcc = self.backEnd.data["stationOccupancy"].__getitem__(self.data["stationName"])
-                    self.backEnd.data["stationOccupancy"].removeAt(self.data["stationName"])
-                    self.backEnd.data["stationOccupancy"].insertAt(currOcc - int(self.onInput.text()), self.data["stationName"])
-        elif self.backEnd.csvConstants["stationLine"].__getitem__(self.data["stationName"]) == 1:
-            for i in range(self.backEnd.data["blockTrainNoGreen"].__len__()):
-                if int(self.backEnd.data["blockTrainNoGreen"].__getitem__(i)) > 0 and int(self.backEnd.csvConstants["stationGreen"].__getitem__(i)) > 0 and int(self.backEnd.csvConstants["stationGreen"].__getitem__(i)) - 1 == int(self.data["stationName"]) and int(self.backEnd.data["stationOccupancy"].__getitem__(self.data["stationName"])) - int(self.onInput.text()) >= 0:
-                    self.backEnd.data["numPassengers"][self.backEnd.data["blockTrainNoGreen"].__getitem__(i) - 1] += int(self.onInput.text())
-                    currOcc = self.backEnd.data["stationOccupancy"].__getitem__(self.data["stationName"])
-                    self.backEnd.data["stationOccupancy"].removeAt(self.data["stationName"])
-                    self.backEnd.data["stationOccupancy"].insertAt(currOcc - int(self.onInput.text()), self.data["stationName"])
+        trackSignals.getOnInput.emit(self.data["stationName"], int(self.onInput.text()))
 
         if int(self.backEnd.data["stationOccupancy"].__getitem__(self.data["stationName"])) == 1:
             self.occOutput.setText("1 person")
@@ -812,126 +713,24 @@ class TrackModelTestUI(QWidget):
         else:
             self.numPassengersOutput.setText(str(self.backEnd.data["numPassengers"][self.train["trainNo"]]) + " people")
 
-        # Refresh Main UI
-        trackSignals.updateSignal.emit()
-
     # Gets the authority input from the UI
     def getAuthInput(self):
-        self.backEnd.data["authority"][self.train["trainNo"]] = int(self.authInput.text())
+        trackSignals.getAuthInput.emit(int(self.authInput.text()), self.train["trainNo"])
+
         if self.backEnd.data["authority"][self.train["trainNo"]] == 1:
             self.authOutput.setText("1 block")
         else:
             self.authOutput.setText(str(self.backEnd.data["authority"][self.train["trainNo"]]) + " blocks")
 
-        # Refresh Main UI
-        trackSignals.updateSignal.emit()
-
     # Gets the commanded speed input from the UI
     def getCSpeedInput(self):
-        self.backEnd.data["commandedSpeed"][self.train["trainNo"]] = int(self.cSpeedInput.text())
+        trackSignals.getCSpeedInput.emit(int(self.cSpeedInput.text()), self.train["trainNo"])
         self.cSpeedOutput.setText(str(self.backEnd.data["commandedSpeed"][self.train["trainNo"]]) + " MPH")
-
-        # Refresh Main UI
-        trackSignals.updateSignal.emit()
 
     # Gets the Real Time Clock state from the UI
     def getRealTimeClockInput(self):
-        self.backEnd.data["rtc"] = self.realTimeClockInput.text()
+        trackSignals.getRealTimeClockInput.emit(self.realTimeClockInput.text())
         self.realTimeClockOutput.setText(self.backEnd.data["rtc"])
-
-        # Refresh Main UI
-        trackSignals.updateSignal.emit()
-
-    def updateVector(self):
-        if self.data["moves"][0] == 0 and self.backEnd.data["trainLine"][self.train["trainNo"]] == 0:
-            if int(self.backEnd.data["switchPos"].__getitem__(1)) == 1:
-                self.data["moves"][1] = 9
-            else:
-                self.data["moves"][1] = None
-            self.data["moves"][2] = None
-        elif self.data["moves"][0] == 0 and self.backEnd.data["trainLine"][self.train["trainNo"]] == 1:
-            if int(self.backEnd.data["switchPos"].__getitem__(9)) == 1 and int(self.backEnd.data["switchPos"].__getitem__(10)) == 1:
-                self.data["moves"][1] = 57
-                self.data["moves"][2] = 63
-            else:
-                if int(self.backEnd.data["switchPos"].__getitem__(9)) == 1:
-                    self.data["moves"][1] = 57
-                    self.data["moves"][2] = None
-                elif int(self.backEnd.data["switchPos"].__getitem__(10)) == 1:
-                    self.data["moves"][1] = 63
-                    self.data["moves"][2] = None
-                else:
-                    self.data["moves"][1] = None
-                    self.data["moves"][2] = None
-        elif self.backEnd.data["trainLine"][self.train["trainNo"]] == 0 and int(self.backEnd.csvConstants["switchRed"].__getitem__(self.data["moves"][0] - 1)) > 0:
-            sba = int(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(self.data["moves"][0] - 1)) - 1))
-            sbb = int(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(self.data["moves"][0] - 1)) - 1))
-            sbc = int(self.backEnd.csvConstants["switchBlockC"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(self.data["moves"][0] - 1)) - 1))
-            sPos = int(self.backEnd.data["switchPos"].__getitem__(int(self.backEnd.csvConstants["switchRed"].__getitem__(self.data["moves"][0] - 1)) - 1))
-            noGo = self.backEnd.csvConstants["noGoRed"].__getitem__(self.data["moves"][0] - 1)
-            if sba == self.data["moves"][0] and sbc == sba - 1 and sPos == 1:
-                self.data["moves"][1] = sbb
-                self.data["moves"][2] = self.data["moves"][0] + 1
-            elif sba == self.data["moves"][0] and sbc == sba + 1 and sPos == 1:
-                self.data["moves"][1] = self.data["moves"][0] - 1
-                self.data["moves"][2] = sbb
-            elif sbb == self.data["moves"][0] and int(noGo) == sbb + 1 and sPos == 1:
-                self.data["moves"][1] = sba
-                self.data["moves"][2] = self.data["moves"][0] - 1
-            elif sbb == self.data["moves"][0] and int(noGo) == sbb - 1 and sPos == 1:
-                self.data["moves"][1] = self.data["moves"][0] + 1
-                self.data["moves"][2] = sba
-            elif sbc == self.data["moves"][0] and sba == sbc + 1 and sPos == 1:
-                self.data["moves"][1] = self.data["moves"][0] - 1
-                self.data["moves"][2] = None
-            elif sbc == self.data["moves"][0] and sba == sbc - 1 and sPos == 1:
-                self.data["moves"][1] = self.data["moves"][0] + 1
-                self.data["moves"][2] = None
-            elif sbb == self.data["moves"][0] and int(noGo) == sbb + 1 and sPos == 0:
-                self.data["moves"][1] = self.data["moves"][0] - 1
-                self.data["moves"][2] = None
-            elif sbb == self.data["moves"][0] and int(noGo) == sbb - 1 and sPos == 0:
-                self.data["moves"][1] = self.data["moves"][0] + 1
-                self.data["moves"][2] = None
-            else:
-                self.data["moves"][1] = self.data["moves"][0] + 1
-                self.data["moves"][2] = self.data["moves"][0] - 1
-        elif self.backEnd.data["trainLine"][self.train["trainNo"]] == 1 and int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.data["moves"][0] - 1)) > 0:
-            sba = int(self.backEnd.csvConstants["switchBlockA"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.data["moves"][0] - 1)) - 1))
-            sbb = int(self.backEnd.csvConstants["switchBlockB"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.data["moves"][0] - 1)) - 1))
-            sbc = int(self.backEnd.csvConstants["switchBlockC"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.data["moves"][0] - 1)) - 1))
-            sPos = int(self.backEnd.data["switchPos"].__getitem__(int(self.backEnd.csvConstants["switchGreen"].__getitem__(self.data["moves"][0] - 1)) - 1))
-            noGo = self.backEnd.csvConstants["noGoGreen"].__getitem__(self.data["moves"][0] - 1)
-            if sba == self.data["moves"][0] and sbc == sba - 1 and sPos == 1:
-                self.data["moves"][1] = sbb
-                self.data["moves"][2] = self.data["moves"][0] + 1
-            elif sba == self.data["moves"][0] and sbc == sba + 1 and sPos == 1:
-                self.data["moves"][1] = self.data["moves"][0] - 1
-                self.data["moves"][2] = sbb
-            elif sbb == self.data["moves"][0] and int(noGo) == sbb + 1 and sPos == 1:
-                self.data["moves"][1] = sba
-                self.data["moves"][2] = self.data["moves"][0] - 1
-            elif sbb == self.data["moves"][0] and int(noGo) == sbb - 1 and sPos == 1:
-                self.data["moves"][1] = self.data["moves"][0] + 1
-                self.data["moves"][2] = sba
-            elif sbc == self.data["moves"][0] and sba == sbc + 1 and sPos == 1:
-                self.data["moves"][1] = self.data["moves"][0] - 1
-                self.data["moves"][2] = None
-            elif sbc == self.data["moves"][0] and sba == sbc - 1 and sPos == 1:
-                self.data["moves"][1] = self.data["moves"][0] + 1
-                self.data["moves"][2] = None
-            elif sbb == self.data["moves"][0] and int(noGo) == sbb + 1 and sPos == 0:
-                self.data["moves"][1] = self.data["moves"][0] - 1
-                self.data["moves"][2] = None
-            elif sbb == self.data["moves"][0] and int(noGo) == sbb - 1 and sPos == 0:
-                self.data["moves"][1] = self.data["moves"][0] + 1
-                self.data["moves"][2] = None
-            else:
-                self.data["moves"][1] = self.data["moves"][0] + 1
-                self.data["moves"][2] = self.data["moves"][0] - 1
-        else:
-            self.data["moves"][1] = self.data["moves"][0] + 1
-            self.data["moves"][2] = self.data["moves"][0] - 1
 
     def updateCombo(self):
         self.toggle = 1
@@ -940,20 +739,20 @@ class TrackModelTestUI(QWidget):
             self.trainBlockInput.removeItem(i)
             i -= 1
 
-        if self.data["moves"][0] == 0:
+        if self.backEnd.data["moves"][self.train["trainNo"]][0] == 0:
             self.trainBlockInput.addItem("Yard")
         else:
-            self.trainBlockInput.addItem(str(self.data["moves"][0]))
-        if self.data["moves"][1] != None:
-            if self.data["moves"][1] == 0:
+            self.trainBlockInput.addItem(str(self.backEnd.data["moves"][self.train["trainNo"]][0]))
+        if self.backEnd.data["moves"][self.train["trainNo"]][1] != None:
+            if self.backEnd.data["moves"][self.train["trainNo"]][1] == 0:
                 self.trainBlockInput.addItem("Yard")
             else:
-                self.trainBlockInput.addItem(str(self.data["moves"][1]))
-        if self.data["moves"][2] != None:
-            if self.data["moves"][2] == 0:
+                self.trainBlockInput.addItem(str(self.backEnd.data["moves"][self.train["trainNo"]][1]))
+        if self.backEnd.data["moves"][self.train["trainNo"]][2] != None:
+            if self.backEnd.data["moves"][self.train["trainNo"]][2] == 0:
                 self.trainBlockInput.addItem("Yard")
             else:
-                self.trainBlockInput.addItem(str(self.data["moves"][2]))
+                self.trainBlockInput.addItem(str(self.backEnd.data["moves"][self.train["trainNo"]][2]))
         self.toggle = 0
 
     # Returns all the data in the inputData Array
