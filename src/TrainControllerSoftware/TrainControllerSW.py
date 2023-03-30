@@ -4,10 +4,18 @@ from datetime import *
 from distutils.cmd import Command
 import sys
 import os
-import json
-from json import JSONEncoder
 
-# TODO: doors must close after leaving station 
+
+sys.path.append(__file__.replace("\TrainControllerSoftware\TrainControllerSW.py", ""))
+
+import json
+from Inputs import Inputs
+from Outputs import Outputs
+import Integration.Conversions as Conversions
+from Integration.TMTCSignals import *
+from Integration.TimeSignals import *
+
+from json import JSONEncoder
 
 # Class for the TrainControllerSW
 class TrainControllerSW:
@@ -16,28 +24,51 @@ class TrainControllerSW:
                  serviceBrakeState, emergencyBrakeState, serviceBrakeStatus, engineStatus, communicationsStatus, power, leftDoorCommand, 
                  rightDoorCommand, serviceBrakeCommand, emergencyBrakeCommand, externalLightCommand, internalLightCommand, stationAnnouncement):
         
+        # Signals
+        rtcSignals.rtcSignal.connect(self.rtcSignalHandler)
+        TMTCSignals.commandedSpeedSignal.connect(self.commandedSpeedSignalHandler)
+        TMTCSignals.currentSpeedSignal.connect(self.currentSpeedSignalHandler)
+        TMTCSignals.authoritySignal.connect(self.authoritySignalHandler)
+        TMTCSignals.undergroundSignal.connect(self.undergroundSignalHandler)
+        TMTCSignals.temperatureSignal.connect(self.temperatureSignalHandler)
+        TMTCSignals.stationNameSignal.connect(self.stationNameSignalHandler)
+        TMTCSignals.platformSideSignal.connect(self.platformSideSignalHandler)
+        TMTCSignals.nextStationNameSignal.connect(self.nextStationNameSignalHandler)
+        TMTCSignals.isBeaconSignal.connect(self.isBeaconSignalHandler)
+        TMTCSignals.externalLightsStateSignal.connect(self.externalLightsStateSignalHandler)
+        TMTCSignals.internalLightsStateSignal.connect(self.internalLightsStateSignalHandler)
+        TMTCSignals.leftDoorStateSignal.connect(self.leftDoorStateSignalHandler)
+        TMTCSignals.rightDoorStateSignal.connect(self.rightDoorStateSignalHandler)
+        TMTCSignals.serviceBrakeStateSignal.connect(self.serviceBrakeStateSignalHandler)
+        TMTCSignals.emergencyBrakeStateSignal.connect(self.emergencyBrakeStateSignalHandler)
+        TMTCSignals.serviceBrakeStatusSignal.connect(self.serviceBrakeStatusSignalHandler)
+        TMTCSignals.engineStatusSignal.connect(self.engineStatusSignalHandler)
+        TMTCSignals.communicationsStatusSignal.connect(self.communicationsStatusSignalHandler)      
+
         # Train id
         self.trainId = trainId
 
-        # stationState and speed limit
+        # Internal Variables
         self.stationState = False
+        self.firstBeaconPassed = False
+        self.secondBeaconPassed = False
+        self.exitBeacon = False
         self.speedLimit = 100
+        self.commandedSpeedManual = 0
+        self.manualMode = False
+        self.simulationSpeed = 1        
 
         # Constants
-        # serviceBrake deceleration = 1.2 m/s^2, e-brake deceleration = 2.73 m/s^2
         # Max Speed in km/hr
         self.MAX_SPEED = 70
 
         # Max Power in Watts
         self.MAX_POWER = 120000
-        
-        self.realTime = None
-        self.manualMode = False
-        
-        self.previousTime = None
-        self.currentTime = None
-        self.commandedSpeedInternal = None
-        
+
+        # Time variables
+        self.realTime = datetime
+        self.previousTime = datetime
+        self.currentTime = datetime     
 
         # Power variables (ek1/uk1 = previous ek/uk, or e(k-1)/u(k-1) )
         self.ek = None
@@ -45,9 +76,9 @@ class TrainControllerSW:
         self.uk = None
         self.uk1 = 0
         
-        self.T = 0.1
-        self.Kp = 50
-        self.Ki = 50
+        self.T = timedelta
+        self.Kp = 50000
+        self.Ki = 2500
 
         # Variables to check states between mainEventLoops
         self.lightsEnabledPrevious = None
@@ -59,36 +90,135 @@ class TrainControllerSW:
         self.outputs = Outputs(power, leftDoorCommand, 
                  rightDoorCommand, serviceBrakeCommand, emergencyBrakeCommand, externalLightCommand, internalLightCommand, stationAnnouncement)
         
-        print(f'trainId: {self.trainId}')
+        # Convert initial time
+        self.convertTime()
+        
            
 
     # methods   
-    
-    # Writes all output variables to output JSON file
-    def writeOutputs(self):
-        with open(os.path.join(sys.path[0], "TrainControllerSWOutputs.json"), "w") as filename:
-            (json.dump(self.outputs.__dict__, filename, indent=4))
 
-    # Reads in all input fields from input JSON file and updates Input variables
-    def readInputs(self):
-        with open(os.path.join(sys.path[0], "TrainControllerSWInputs.json"), "r") as filename:
-            self.inputs = Inputs(**json.loads(filename.read()))
+    def writeOutputs(self):
+        TMTCSignals.commandedPowerSignal.emit(self.trainId, self.outputs.power)
+        TMTCSignals.leftDoorCommandSignal.emit(self.trainId, self.outputs.leftDoorCommand)
+        TMTCSignals.rightDoorCommandSignal.emit(self.trainId, self.outputs.rightDoorCommand)
+        TMTCSignals.serviceBrakeCommandSignal.emit(self.trainId, self.outputs.serviceBrakeCommand)
+        TMTCSignals.emergencyBrakeCommandSignal.emit(self.trainId, self.outputs.emergencyBrakeCommand)
+        TMTCSignals.externalLightCommandSignal.emit(self.trainId, self.outputs.externalLightCommand)
+        TMTCSignals.internalLightCommandSignal.emit(self.trainId, self.outputs.internalLightCommand)
+        TMTCSignals.stationAnnouncementSignal.emit(self.trainId, self.outputs.stationAnnouncement)
+
+    # Signal handlers
+    def rtcSignalHandler(self, rtcString):
+        self.inputs.inputTime = rtcString
         self.convertTime()
 
-    # Only used in Test UI and commandedSpeed manual input - writes to input file
-    def writeInputs(self):
-        with open(os.path.join(sys.path[0], "TrainControllerSWInputs.json"), "w") as filename:
-            (json.dump(self.inputs.__dict__, filename, indent=4))
+    def commandedSpeedSignalHandler(self, id, cmdSpeed):
+        if(self.trainId == id):
+            self.inputs.commandedSpeed = cmdSpeed
+    
+    def currentSpeedSignalHandler(self, id, currSpeed):
+        if(self.trainId == id):
+            self.inputs.currentSpeed = currSpeed
 
-    # Only used in Test UI - reads from output file
-    def readOutputs(self):
-        with open(os.path.join(sys.path[0], "TrainControllerSWOutputs.json"), "r") as filename:
-            self.outputs = Outputs(**json.loads(filename.read()))
+    def authoritySignalHandler(self, id, auth):
+        if(self.trainId == id):
+            self.inputs.authority = auth
+
+    def undergroundSignalHandler(self, id, undgnd):
+        if(self.trainId == id):
+            self.inputs.undergroundState = undgnd
+
+    def temperatureSignalHandler(self, id, temp):
+        if(self.trainId == id):
+            self.inputs.temperature = temp
+
+    def stationNameSignalHandler(self, id, statName):
+        if(self.trainId == id):
+            self.inputs.stationName = statName
+
+    def platformSideSignalHandler(self, id, platSide):
+        if(self.trainId == id):
+            self.inputs.platformSide = platSide
+
+    def nextStationNameSignalHandler(self, id, nxtStatName):
+        if(self.trainId == id):
+            self.inputs.nextStationName = nxtStatName
+
+    def isBeaconSignalHandler(self, id, isBeac):
+        if(self.trainId == id):
+            self.inputs.isBeacon = isBeac
+
+    def externalLightsStateSignalHandler(self, id, extLight):
+        if(self.trainId == id):
+            self.inputs.externalLightsState = extLight
+
+    def internalLightsStateSignalHandler(self, id, intLight):
+        if(self.trainId == id):
+            self.inputs.internalLightsState = intLight
+
+    def leftDoorStateSignalHandler(self, id, lftDoor):
+        if(self.trainId == id):
+            self.inputs.leftDoorState = lftDoor
+
+    def rightDoorStateSignalHandler(self, id, rghtDoor):
+        if(self.trainId == id):
+            self.inputs.rightDoorState = rghtDoor
+
+    def serviceBrakeStateSignalHandler(self, id, srvcBrk):
+        if(self.trainId == id):
+            self.inputs.serviceBrakeState = srvcBrk
+
+    def emergencyBrakeStateSignalHandler(self, id, emgBrk):
+        if(self.trainId == id):
+            self.inputs.emergencyBrakeState = emgBrk
+
+    def serviceBrakeStatusSignalHandler(self, id, srvcBrkStatus):
+        if(self.trainId == id):
+            self.inputs.serviceBrakeStatus = srvcBrkStatus
+
+    def engineStatusSignalHandler(self, id, engStatus):
+        if(self.trainId == id):
+            self.inputs.engineStatus = engStatus
+
+    def communicationsStatusSignalHandler(self, id, comStatus):
+        if(self.trainId == id):
+            self.inputs.communicationsStatus = comStatus
+
+    # Determines whether the train is at a station or not
+    def setStationState(self):
+        # if isBeacon and !firstBeaconPassed, entering station
+        if(self.inputs.isBeacon == True and self.firstBeaconPassed == False):
+            self.firstBeaconPassed = True
+        elif(self.inputs.isBeacon == False and self.firstBeaconPassed == True):
+            self.stationState = True
+
+        # if isBeacon and stationState and !secondBeaconPassed, exiting station
+        if(self.inputs.isBeacon == True and self.stationState == True and self.secondBeaconPassed == False):
+            self.secondBeaconPassed = True
+
+        # if !isBeacon and secondBeaconPassed, reset stationState and beaconPassed variables (left the station)
+        if(self.inputs.isBeacon == False and self.secondBeaconPassed == True):
+            self.stationState = False
+            self.firstBeaconPassed = False
+            self.secondBeaconPassed = False
 
     # Calculates the power to output to the train model 
     def calculatePower(self):
+        # Set T value
+        T = self.currentTime - self.previousTime
+        self.T = T.total_seconds()
+        #print(self.T)
+        #print(f'prevTime: {self.previousTime.time()}')
+        #print(f'currTime: {self.currentTime.time()}\n')
+
+        # Temporary set T to fixed value
+        #self.T = timedelta(0, 0, 0, 100).total_seconds()
+
         # ek = velocity error
-        self.ek = float(self.inputs.commandedSpeed) - float(self.inputs.currentSpeed)
+        if(self.manualMode == True):
+            self.ek = float(self.commandedSpeedManual) - float(self.inputs.currentSpeed)
+        else:
+            self.ek = float(self.inputs.commandedSpeed) - float(self.inputs.currentSpeed)
         
         # Don't update uk if at max power
         if (self.outputs.power < self.MAX_POWER):
@@ -114,14 +244,21 @@ class TrainControllerSW:
         else:
             self.outputs.power = round(self.outputs.power, 1)
 
+        # If currentSpeed > commandedSpeed, power = 0
+        if(self.manualMode == True):
+            if(self.inputs.currentSpeed > self.commandedSpeedManual):
+                self.outputs.power = 0
+        else:
+            if(self.inputs.currentSpeed > self.inputs.commandedSpeed):
+                self.outputs.power = 0
+
         # Set ek1/uk1 to current ek/uk
         self.ek1 = self.ek
         self.uk1 = self.uk
 
-    # TODO: Fix this function
-    # Automatically opens/closes doors based on platformSide
+    # Automatically opens/closes doors based on platformSide and stationState
     def autoUpdateDoorState(self):
-        if(self.inputs.currentSpeed == 0):
+        if(self.stationState == True and self.inputs.currentSpeed == 0 and self.inputs.commandedSpeed == 0):
             if(self.inputs.platformSide == 0):
                 self.outputs.leftDoorCommand = True
                 self.outputs.rightDoorCommand = False
@@ -134,6 +271,9 @@ class TrainControllerSW:
             else:
                 self.outputs.leftDoorCommand = False
                 self.outputs.rightDoorCommand = False
+        else:
+            self.outputs.leftDoorCommand = False
+            self.outputs.rightDoorCommand = False
     
     # Automatically turns on/off lights based on underground state
     # NOTE: update based on time of day? (currently always on between 8pm - 5am)
@@ -158,7 +298,7 @@ class TrainControllerSW:
     def autoSetServiceBrake(self):
         if (self.inputs.authority == 0):
             self.outputs.serviceBrakeCommand = True
-        elif(self.inputs.currentSpeed > self.inputs.commandedSpeed + 1):
+        elif(self.inputs.currentSpeed > self.inputs.commandedSpeed + 0.5):
             self.outputs.serviceBrakeCommand = True
         else:
             self.outputs.serviceBrakeCommand = False
@@ -167,8 +307,8 @@ class TrainControllerSW:
     def stayBelowSpeedLimitAndMaxSpeed(self):
         if(float(self.inputs.commandedSpeed) > float(self.speedLimit)):
             self.inputs.commandedSpeed = self.speedLimit
-        elif(float(self.inputs.commandedSpeed) > self.MAX_SPEED):
-            self.inputs.commandedSpeed = self.MAX_SPEED
+        elif(float(self.inputs.commandedSpeed) > Conversions.kmPerHourToMetersPerSecond(self.MAX_SPEED)):
+            self.inputs.commandedSpeed = Conversions.kmPerHourToMetersPerSecond(self.MAX_SPEED)
 
     # Runs when there is a communications failure
     def failureMode(self):
@@ -248,46 +388,6 @@ class TrainControllerSW:
             return "OFF"
         else:
             return "ERROR: UNKNOWN STATE"
-        
-# class for TrainController inputs
-class Inputs:
-    def __init__(self, commandedSpeed, currentSpeed, authority, inputTime, undergroundState, temperature, 
-                 stationName, platformSide, nextStationName, isBeacon, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
-                 serviceBrakeState, emergencyBrakeState, serviceBrakeStatus, engineStatus, communicationsStatus):
-        # Inputs
-        self.commandedSpeed = commandedSpeed
-        self.currentSpeed = currentSpeed
-        self.authority = authority
-        self.inputTime = str(inputTime)
-        self.undergroundState = undergroundState
-        self.temperature = temperature
-        self.stationName = stationName
-        self.platformSide = platformSide
-        self.nextStationName = nextStationName
-        self.isBeacon = isBeacon
-        self.externalLightsState = externalLightsState
-        self.internalLightsState = internalLightsState
-        self.leftDoorState = leftDoorState
-        self.rightDoorState = rightDoorState
-        self.serviceBrakeState = serviceBrakeState
-        self.emergencyBrakeState = emergencyBrakeState
-        self.serviceBrakeStatus = serviceBrakeStatus
-        self.engineStatus = engineStatus
-        self.communicationsStatus = communicationsStatus
-
-# class for TrainController outputs
-class Outputs:
-    def __init__(self, power, leftDoorCommand, 
-                 rightDoorCommand, serviceBrakeCommand, emergencyBrakeCommand, externalLightCommand, internalLightCommand, stationAnnouncement):
-        # outputs
-        self.power = power
-        self.leftDoorCommand = leftDoorCommand
-        self.rightDoorCommand = rightDoorCommand
-        self.serviceBrakeCommand = serviceBrakeCommand
-        self.emergencyBrakeCommand = emergencyBrakeCommand
-        self.externalLightCommand = externalLightCommand
-        self.internalLightCommand = internalLightCommand
-        self.stationAnnouncement = stationAnnouncement
         
 # Function to remove character from a string at nth position
 def stringRemove(string, n):  
