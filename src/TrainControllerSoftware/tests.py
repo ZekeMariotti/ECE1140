@@ -12,4 +12,4 @@ TrainControllerSW_ = TrainControllerSW(None, None, None, None, None, None, None,
                                        None, None)
 
 TrainControllerSW_.writeOutputs()
-TrainControllerSW_.readInputs()
+#TrainControllerSW_.readInputs()

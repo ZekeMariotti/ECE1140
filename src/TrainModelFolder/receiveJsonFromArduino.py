@@ -13,7 +13,6 @@ print(f'Start listening to {ip}:{port}')
 
 
 trainControllerToTrainModel = {
-    "id"                    : 0,         # ID number for the train
     "power"                 : 0.0,       # Power input from the Train Controller
     "leftDoorCommand"       : False,     # Left Door Command from the Train Controller, False if closed, True if open
     "rightDoorCommand"      : False,     # Right Door Command from the Train Controller, False if closed, True if open
@@ -30,7 +29,7 @@ trainControllerToTrainModel = {
 
 # JSON function to write outputs to a JSON file for the Train Controller
 def writeToJson():
-    with open(os.path.join(sys.path[0], "TrainControllerToTrainModel.json"), "w") as filename:
+    with open(os.path.join(sys.path[0], "TCtoTM1.json"), "w") as filename:
             (json.dump(trainControllerToTrainModel, filename, indent = 4))
 
 # # def getDataFromTrainController():
@@ -48,5 +47,4 @@ while True:
     print(trainControllerToTrainModel)
     # parseToJson();
     writeToJson()
-    time.sleep(0.5)
-
+    #time.sleep(0.5)

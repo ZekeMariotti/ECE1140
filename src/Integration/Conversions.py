@@ -27,6 +27,16 @@ def wattsToHorsepower(number):
 
 # Converts a string for ISO8601 format to a human readable string
 def ISO8601ToHumanTime(string):
+    #print(string)
     inputTime = string[:26] + string[27:]
+    #print(inputTime)
     temp = datetime.strptime(inputTime, "%Y-%m-%dT%H:%M:%S.%f%z")
     return temp
+
+# Takes an input in Celsius and converts it to Fahrenheit
+def celsiusToFahrenheit(number):
+    return round(number*1.8 + 32)
+
+# Takes an input in km/h and converts it to m/s
+def kmPerHourToMetersPerSecond(number):
+    return round(number*0.2777782, 2)
