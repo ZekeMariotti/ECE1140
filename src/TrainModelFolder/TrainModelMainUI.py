@@ -10,18 +10,22 @@
 
 # Imports needed for the UI
 from sys import argv
-from TrainModel import TrainModel
-from TrainModelSignals import *
+
+import sys
+sys.path.append(__file__.replace("\TrainModelFolder\TrainModelMainUI.py", ""))
+
+from TrainModelFolder.TrainModel import TrainModel
+from TrainModelFolder.TrainModelSignals import *
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
-from Conversions import *
+from Integration.Conversions import *
 
 # Class for the Main UI of the Train Model
 class TrainModelUI(QWidget):
 
     # Instantiating the Back End
-    TrainModel = TrainModel()
+    UIId = 0
 
     # Fonts and Alignments to make coding easier
     timesNewRoman12 = QFont("Times New Roman", 12)
@@ -35,14 +39,18 @@ class TrainModelUI(QWidget):
     alignRight      = Qt.AlignmentFlag.AlignRight
 
     # Initialization of the UI
-    def __init__(self):
-
+    def __init__(self, id, line):
+        
         # SIGNAL USED FOR TEST UI
         trainSignals.updateOutputs.connect(self.updateOutputs)
+        self.TrainModel = TrainModel(id, line)
 
         # Initializing and setting the layout of the UI
         super().__init__()
-        self.setWindowTitle("Train Model")
+        self.mainTimer = self.mainTimerSetup()
+        self.UIId = id
+        self.TrainModel.setFirstSection()
+        self.setWindowTitle("Train Model " + str(self.UIId))
         layout = QGridLayout()
         self.setLayout(layout)
         self.setFont(QFont("Times New Roman"))
@@ -374,27 +382,38 @@ class TrainModelUI(QWidget):
             updateButton.pressed.connect(self.updateOutputs)
             layout.addWidget(updateButton, 9, 2, 1, 2, self.alignCenter)
 
+    def closeEvent(self, event):
+        if __name__ == "__main__":
+            self.close()
+        else:
+            self.setVisible(False)
 
     # Handler for when Communcations Failure State button is pressed
     def communicationsButtonPressed(self):
-        trainSignals.commButtonPressedSignal.emit()
+        trainSignals.commButtonPressedSignal.emit(self.UIId)
         
     # Handler for when Engine Failure State button is pressed
     def engineButtonPressed(self):
-        trainSignals.engineButtonPressedSignal.emit()
+        trainSignals.engineButtonPressedSignal.emit(self.UIId)
 
     # Handler for when Brake Failure State button is pressed
     def brakeButtonPressed(self):
-        trainSignals.brakeButtonPressedSignal.emit()
+        trainSignals.brakeButtonPressedSignal.emit(self.UIId)
 
     # Handler for when the Emergency Brake is pulled
     def emergencyBrakeButtonPressed(self):
-        trainSignals.eBrakePressedSignal.emit()
+        trainSignals.eBrakePressedSignal.emit(self.UIId)
     
     # Handler for when the temperature from the user is set
     def tempInputChanged(self):
-        temperature = round(float(self.temperatureInput.text()) * 2) / 2
-        trainSignals.tempChangedSignal.emit(temperature)
+        if (self.temperatureInput.text() == ""):
+            tempNum = 68
+        else:
+            try:
+                tempNum = round(float(self.temperatureInput.text()) * 2) / 2
+            except ValueError:
+                tempNum = 68.0
+        trainSignals.tempChangedSignal.emit(self.UIId, tempNum)
 
     # Function to convert boolean to string for the status messages of failure
     def failureBoolean(self, value):
@@ -423,15 +442,44 @@ class TrainModelUI(QWidget):
             return "ON"
         else:
             return "Off"
-        
+
+    def mainThreadSetup(self):
+        self.timerThread = QThread()
+        self.timerThread.started.connect(self.mainTimerSetup)
+
+    def mainTimerSetup(self):     
+        mainTimer = QTimer()
+        mainTimer.setInterval(100)
+        mainTimer.timeout.connect(self.updateOutputs)
+        mainTimer.setParent(self)
+        mainTimer.start()
+        return mainTimer
+
     # Updates outputs every time period
     def updateOutputs(self):
 
         # Run back end function updating
-        self.TrainModel.runFunctions()
+        tempTimeDiff = self.TrainModel.findTimeDifference()
+        self.TrainModel.failureStates()
+        self.TrainModel.brakeCaclulator()
+        self.TrainModel.findCurrentAcceleration()
+        self.TrainModel.findCurrentVelocity()
+        self.TrainModel.findCurrentDistance()
+        self.TrainModel.findBlockExiting()
+        self.TrainModel.airConditioningControl()
+        if self.TrainModel.data["atStation"]:
+            self.TrainModel.passengersGettingOff()
+            self.TrainModel.passengersGettingOn()
+        self.TrainModel.findCurrentMass()
+        if tempTimeDiff != 0:
+            self.TrainModel.moveToPrevious()
+        #self.TrainModel.writeTrainModelToTrackModel()
+        #self.TrainModel.writeTrainModelToTrainController()
+        self.TrainModel.writeTMtoTkM()
+        self.TrainModel.writeTMtoTC()
 
         # Update Left Column of data outputs
-        self.realTimeClockOutput.setText(str(ISO8601ToHumanTime(self.TrainModel.data["rtc"]))[:-6])
+        self.realTimeClockOutput.setText(str(ISO8601ToHumanTime("2023-02-23T00:00:06.0000000-05:00"))[:-6])
         self.passengersOutput.setText(str(self.TrainModel.data["passengers"]))
         self.crewOutput.setText(str(self.TrainModel.data["crew"]))
         self.undergroundOutput.setText(str(self.TrainModel.data["underground"]))
@@ -441,7 +489,7 @@ class TrainModelUI(QWidget):
         # Update Middle Column of data outputs
         self.velocityOutput.setText(str(metersPerSecondToMilesPerHour(self.TrainModel.data["velocity"])) + " mph")
         self.accelerationOutput.setText(str(metersPerSecondSquaredToFeetPerSecondSquared(self.TrainModel.data["acceleration"])) + " ft/s^2")
-        self.powerOutput.setText(str(wattsToHorsepower(self.TrainModel.data["power"])) + " hp")
+        self.powerOutput.setText(str(round(self.TrainModel.data["power"], 2)) + " W")
         self.stationOutput.setText(self.TrainModel.data["station"])
 
         # Setting communication status output and color
@@ -500,6 +548,7 @@ class TrainModelUI(QWidget):
         else:
             self.iLightsOutput.setStyleSheet("background-color: white")
 
+        #print(f'Updater: ID: {self.TrainModel.data["id"]}, State: {self.TrainModel.data["eLights"]}')
         # Setting external lights output as well as color
         self.eLightsOutput.setText(self.lightState(self.TrainModel.data["eLights"]))
         if (self.TrainModel.data["eLights"] == 1):
@@ -519,8 +568,10 @@ class TrainModelUI(QWidget):
 
 def main():
     app = QApplication(argv)
-    UI = TrainModelUI()
+    UI = TrainModelUI(2, "Green")
     UI.show()
+    UI2 = TrainModelUI(3, "Green")
+    UI2.show()
     app.exec()
 
 if (__name__ == "__main__"):

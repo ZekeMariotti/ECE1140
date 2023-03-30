@@ -1,8 +1,8 @@
 from datetime import *
-from Conversions import ISO8601ToHumanTime
+from Integration.Conversions import ISO8601ToHumanTime
 
-testTime = datetime.fromisoformat("2023-02-22T11:00:01.10210000-05:00")
-testTime2 = datetime.fromisoformat("2023-02-22T11:00:01.19211000-05:00")
+testTime = datetime.fromisoformat("2023-02-22T23:59:59.10210000-05:00")
+testTime2 = datetime.fromisoformat("2023-02-23T00:00:00.19211000-05:00")
 print(testTime)
 print(testTime2)
 tempTime = testTime2 - testTime
