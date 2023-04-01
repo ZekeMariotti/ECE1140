@@ -1,12 +1,14 @@
 # Train Model Back End
 
-from random import randint
-from TrackModelSignals import *
-from TMTkMSignals import *
-from PyQt6.QtCore import *
-from dynamicArray import *
 import sys
 import os
+sys.path.append(__file__.replace("\TrackModel\TrackModelBackEnd.py", ""))
+
+from random import randint
+from TrackModel.TrackModelSignals import *
+from Integration.TMTkMSignals import *
+from PyQt6.QtCore import *
+from dynamicArray import *
 
 
 class backEndCalculations():
@@ -35,7 +37,7 @@ class backEndCalculations():
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0],
-        "trainLine" : [0, 0, 0, 0, 0, 0,
+        "trainLine" : [0, 1, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0],
@@ -49,7 +51,7 @@ class backEndCalculations():
         "circuitStatusGreen" : DynamicArray(),
         "railStatusRed" : DynamicArray(),        # Broken rail failure states
         "railStatusGreen" : DynamicArray(),
-        "moves" : [[0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None],
+        "moves" : [[0, 9, None], [0, 63, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None],
                    [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None],
                    [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None],
                    [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None],
@@ -109,10 +111,34 @@ class backEndCalculations():
         TMTkMSignals.currBlockSignal.connect(self.currBlockHandler)
 
     def passengersExiting(self, id, num):
-        print(f'ID: {id}, Passengers: {num}')
+        1 + 1
 
-    def currBlockHandler(self, id, block):
-        print(f'ID: {id}, Block: {block}')
+    def currBlockHandler(self, id, currBlock, prevBlock, transition):
+        if (transition):
+            TMTkMSignals.blockLengthSignal.emit(id, float(self.csvConstants["lengthGreen"].__getitem__(currBlock - 1)))
+            TMTkMSignals.elevationSignal.emit(id, float(self.csvConstants["elevationGreen"].__getitem__(currBlock - 1)))
+            TMTkMSignals.undergroundStateSignal.emit(id, bool(self.csvConstants["undergroundGreen"].__getitem__(currBlock - 1)))
+            #TMTkMSignals.beaconSignal.emit(id, self.csvConstants["beaconGreen"][0], int(self.csvConstants["beaconGreen"][1]), self.csvConstants["beaconGreen"][2], bool(self.csvConstants["beaconGreen"][3]), -1, 0)
+            if (prevBlock == 0):
+                TMTkMSignals.switchSignal.emit(id, 0)
+                TMTkMSignals.switchStateSignal.emit(id, 1)
+            elif (int(self.csvConstants["switchGreen"].__getitem__(currBlock - 1)) > 0) & (int(self.csvConstants["switchGreen"].__getitem__(prevBlock - 1)) > 0):
+                TMTkMSignals.switchSignal.emit(id, 0)
+                TMTkMSignals.switchStateSignal.emit(id, bool(self.data["switchPos"].__getitem__(int(self.csvConstants["switchGreen"].__getitem__(currBlock - 1)) - 1)))
+            elif (int(self.csvConstants["switchGreen"].__getitem__(currBlock - 1)) > 0):
+                TMTkMSignals.switchSignal.emit(id, 1)
+                TMTkMSignals.switchStateSignal.emit(id, bool(self.data["switchPos"].__getitem__(int(self.csvConstants["switchGreen"].__getitem__(currBlock - 1)) - 1)))
+            else:
+                TMTkMSignals.switchSignal.emit(id, 0)
+                TMTkMSignals.switchStateSignal.emit(id, 0)
+            if (currBlock == self.data["moves"][id - 1][0]):
+                index = 0
+            elif (currBlock == self.data["moves"][id - 1][1]):
+                index = 1
+            elif (currBlock == self.data["moves"][id - 1][2]):
+                index = 2
+            if (index != 0):
+                self.getTrainBlockInputFunction(index, id - 1)
 
     # Gets the Switch Position from the UI
     def getSwitchPositionInput(self, index, line, blockNo):
@@ -187,6 +213,7 @@ class backEndCalculations():
 
     # Gets the Train Block from the UI
     def getTrainBlockInputFunction(self, index, trainNo):
+        
         # Update block train number
         # Sets last block train was at to 0
         if self.data["trainLine"][trainNo] == 0 and self.data["moves"][trainNo][0] != 0:
@@ -206,7 +233,31 @@ class backEndCalculations():
 
         # Update Authority
         self.data["authority"][trainNo] -= 1
-        
+
+        # Send Beacon
+        #if self.data["trainLine"][trainNo] == 0:
+        #    if self.csvConstants["stationRed"].__getitem__(self.data["moves"][trainNo][index] - 1) > 0:
+        #        beaconArr = self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][0] - 1)
+        #        TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
+        #    elif self.csvConstants["stationRed"].__getitem__(self.data["moves"][trainNo][0] - 1) > 0:
+        #        beaconArr = self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][index] - 1)
+        #        TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
+        #    else:
+        #        TMTkMSignals.beaconSignal.emit(trainNo + 1, "", 0, "", 0, -1, 0)
+        #elif self.data["trainLine"][trainNo] == 1:
+        #    print("in green", index, self.data["moves"][trainNo][0], self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][1]))
+        #    if (self.data["moves"][trainNo][index] != 0) & (self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][index] - 1) > 0):
+        #        print("in if 1")
+        #        beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)
+        #        TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
+        #    elif (self.data["moves"][trainNo][0] != 0) & (self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][0] - 1) > 0):
+        #        print("in if 2")
+        #        beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)
+        #        TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
+        #    else:
+        #        print("in else")
+        #        TMTkMSignals.beaconSignal.emit(trainNo + 1, "", 0, "", 0, -1, 0)
+        #print("hello?")
         # Update Block vector
         self.data["moves"][trainNo][0] = self.data["moves"][trainNo][index]
         self.updateVector(trainNo)
@@ -258,14 +309,16 @@ class backEndCalculations():
 
     # Gets the authority input from the UI
     def getAuthInput(self, auth, trainNo):
-        self.data["authority"][trainNo] = auth
+        self.data["authority"][trainNo - 1] = auth
+        TMTkMSignals.authoritySignal.emit(trainNo, auth)
 
         # Refresh Main UI
         trackSignals.updateSignal.emit()
 
     # Gets the commanded speed input from the UI
     def getCSpeedInput(self, CSpeed, trainNo):
-        self.data["commandedSpeed"][trainNo] = CSpeed
+        self.data["commandedSpeed"][trainNo - 1] = CSpeed
+        TMTkMSignals.commandedSpeedSignal.emit(trainNo, CSpeed)
 
         # Refresh Main UI
         trackSignals.updateSignal.emit()
@@ -379,6 +432,7 @@ class backEndCalculations():
 import csv
 
 with open(os.path.join(sys.path[0], "RedLine.csv"), 'r') as redLn:
+#with open(os.path.join(sys.path[0].replace("\src", "\src\TrackModel")), 'r') as redLn:
 #with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/RedLine.csv", 'r') as redLn:
     redLine = csv.DictReader(redLn)
 

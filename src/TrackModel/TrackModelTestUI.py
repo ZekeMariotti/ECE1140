@@ -1,19 +1,21 @@
 # Track Model Test UI
 
+import sys
 # Import all reuired modules
+sys.path.append(__file__.replace("\TrackModel\TrackModelBackEnd.py", ""))
+
 from sys import argv, exit
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import QWidget, QLabel, QApplication, QGridLayout, QComboBox, QLineEdit
-from TrackModelBackEnd import *
-from TrackModelMainUI import TrackModelMainUI
-from TrackModelSignals import *
+from TrackModel.TrackModelBackEnd import *
+from TrackModel.TrackModelMainUI import TrackModelMainUI
+from TrackModel.TrackModelSignals import *
 
 # Class for the Track Model Test UI
 class TrackModelTestUI(QWidget):
 
     backEnd = backEndCalculations()
-
 
     # Define an array to store block and station data
     data = {

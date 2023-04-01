@@ -3,9 +3,14 @@
 # QTimer for Simulation
 
 # Imports needed for the UI
+import sys
+
+sys.path.append(__file__.replace("\TrackModel\TrackModelBackEnd.py", ""))
+
 from sys import argv
-from TrackModelBackEnd import *
-from TrackModelSignals import *
+from TrackModel.TrackModelBackEnd import *
+from TrackModel.TrackModelSignals import *
+from Integration.Conversions import *
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
@@ -370,11 +375,11 @@ class TrackModelMainUI(QWidget):
             self.authLbl.setVisible(True)
             if self.backEnd.data["line"] == 0:
                 self.numPassengersLbl.setText("# of Passengers: " + str(self.backEnd.data["numPassengers"][self.backEnd.data["blockTrainNoRed"][self.backEnd.data["blockNo"]] - 1]) + " people")
-                self.cSpeedLbl.setText("Commanded Speed: " + str(self.backEnd.data["commandedSpeed"][self.backEnd.data["blockTrainNoRed"][self.backEnd.data["blockNo"]] - 1]) + " MPH")
+                self.cSpeedLbl.setText("Commanded Speed: " + str(metersPerSecondToMilesPerHour(float(self.backEnd.data["commandedSpeed"][self.backEnd.data["blockTrainNoRed"][self.backEnd.data["blockNo"]] - 1]))) + " MPH")
                 self.authLbl.setText("Authority: " + str(self.backEnd.data["authority"][self.backEnd.data["blockTrainNoRed"][self.backEnd.data["blockNo"]] - 1]) + " blocks")
             else:
                 self.numPassengersLbl.setText("# of Passengers: " + str(self.backEnd.data["numPassengers"][self.backEnd.data["blockTrainNoGreen"][self.backEnd.data["blockNo"]] - 1]) + " people")
-                self.cSpeedLbl.setText("Commanded Speed: " + str(self.backEnd.data["commandedSpeed"][self.backEnd.data["blockTrainNoGreen"][self.backEnd.data["blockNo"]] - 1]) + " MPH")
+                self.cSpeedLbl.setText("Commanded Speed: " + str(metersPerSecondToMilesPerHour(float(self.backEnd.data["commandedSpeed"][self.backEnd.data["blockTrainNoGreen"][self.backEnd.data["blockNo"]] - 1]))) + " MPH")
                 self.authLbl.setText("Authority: " + str(self.backEnd.data["authority"][self.backEnd.data["blockTrainNoGreen"][self.backEnd.data["blockNo"]] - 1]) + " blocks")
 
         # Update Track heater and temp

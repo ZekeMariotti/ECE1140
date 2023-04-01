@@ -449,7 +449,7 @@ class TrainModelUI(QWidget):
 
     def mainTimerSetup(self):     
         mainTimer = QTimer()
-        mainTimer.setInterval(100)
+        mainTimer.setInterval(1000)
         mainTimer.timeout.connect(self.updateOutputs)
         mainTimer.setParent(self)
         mainTimer.start()
@@ -479,7 +479,8 @@ class TrainModelUI(QWidget):
         self.TrainModel.writeTMtoTC()
 
         # Update Left Column of data outputs
-        self.realTimeClockOutput.setText(str(ISO8601ToHumanTime("2023-02-23T00:00:06.0000000-05:00"))[:-6])
+        #-21 to -13
+        self.realTimeClockOutput.setText(str(ISO8601ToHumanTime(self.TrainModel.data["rtc"]))[-21:-13])
         self.passengersOutput.setText(str(self.TrainModel.data["passengers"]))
         self.crewOutput.setText(str(self.TrainModel.data["crew"]))
         self.undergroundOutput.setText(str(self.TrainModel.data["underground"]))
