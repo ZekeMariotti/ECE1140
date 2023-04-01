@@ -68,6 +68,7 @@ class backEndCalculations():
         "signalRed" : DynamicArray(),
         "crossingRed" : DynamicArray(),
         "noGoRed" : DynamicArray(),
+        "beaconRed" : DynamicArray(),
         "elevationGreen" : DynamicArray(),
         "gradeGreen" : DynamicArray(),
         "lengthGreen" : DynamicArray(),
@@ -78,6 +79,7 @@ class backEndCalculations():
         "crossingGreen" : DynamicArray(),
         "signalGreen" : DynamicArray(),
         "noGoGreen" : DynamicArray(),
+        "beaconGreen" : DynamicArray(),
         "stationName" : DynamicArray(),
         "stationSide" : DynamicArray(),
         "stationLine" : DynamicArray(),
@@ -389,6 +391,7 @@ with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/RedLine.csv
         backEndCalculations.csvConstants["signalRed"].append(row["Signal"])
         backEndCalculations.csvConstants["crossingRed"].append(row["Crossing"])
         backEndCalculations.csvConstants["noGoRed"].append(row["NoGo"])
+        backEndCalculations.csvConstants["beaconRed"].append(row["b0"], row["b1"], row["b2"], row["b3"])
         backEndCalculations.data["blockTrainNoRed"].append(0)
         backEndCalculations.data["circuitStatusRed"].append(0)
         backEndCalculations.data["railStatusRed"].append(0)
@@ -413,6 +416,7 @@ with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/GreenLine.c
         backEndCalculations.csvConstants["signalGreen"].append(row["Signal"])
         backEndCalculations.csvConstants["crossingGreen"].append(row["Crossing"])
         backEndCalculations.csvConstants["noGoGreen"].append(row["NoGo"])
+        backEndCalculations.csvConstants["beaconGreen"].append(row["b0"], row["b1"], row["b2"], row["b3"])
         backEndCalculations.data["blockTrainNoGreen"].append(0)
         backEndCalculations.data["circuitStatusGreen"].append(0)
         backEndCalculations.data["railStatusGreen"].append(0)
