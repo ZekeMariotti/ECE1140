@@ -5,6 +5,8 @@ from TrackModelSignals import *
 from TMTkMSignals import *
 from PyQt6.QtCore import *
 from dynamicArray import *
+import sys
+import os
 
 
 class backEndCalculations():
@@ -109,7 +111,7 @@ class backEndCalculations():
     def passengersExiting(self, id, num):
         print(f'ID: {id}, Passengers: {num}')
 
-    def currBlockHander(self, id, block):
+    def currBlockHandler(self, id, block):
         print(f'ID: {id}, Block: {block}')
 
     # Gets the Switch Position from the UI
@@ -376,7 +378,8 @@ class backEndCalculations():
 
 import csv
 
-with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/RedLine.csv", 'r') as redLn:
+with open(os.path.join(sys.path[0], "RedLine.csv"), 'r') as redLn:
+#with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/RedLine.csv", 'r') as redLn:
     redLine = csv.DictReader(redLn)
 
     for row in redLine:
@@ -391,7 +394,7 @@ with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/RedLine.csv
         backEndCalculations.csvConstants["signalRed"].append(row["Signal"])
         backEndCalculations.csvConstants["crossingRed"].append(row["Crossing"])
         backEndCalculations.csvConstants["noGoRed"].append(row["NoGo"])
-        backEndCalculations.csvConstants["beaconRed"].append(row["b0"], row["b1"], row["b2"], row["b3"])
+        backEndCalculations.csvConstants["beaconRed"].append([row["b0"], row["b1"], row["b2"], row["b3"]])
         backEndCalculations.data["blockTrainNoRed"].append(0)
         backEndCalculations.data["circuitStatusRed"].append(0)
         backEndCalculations.data["railStatusRed"].append(0)
@@ -400,8 +403,8 @@ with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/RedLine.csv
         if int(row["Signal"]) > 1:
             backEndCalculations.data["sigState"].append(0)
 
-
-with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/GreenLine.csv", 'r') as greenLn:
+with open(os.path.join(sys.path[0], "GreenLine.csv"), 'r') as greenLn:
+#with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/GreenLine.csv", 'r') as greenLn:
     greenLine = csv.DictReader(greenLn)
 
     for row in greenLine:
@@ -416,7 +419,7 @@ with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/GreenLine.c
         backEndCalculations.csvConstants["signalGreen"].append(row["Signal"])
         backEndCalculations.csvConstants["crossingGreen"].append(row["Crossing"])
         backEndCalculations.csvConstants["noGoGreen"].append(row["NoGo"])
-        backEndCalculations.csvConstants["beaconGreen"].append(row["b0"], row["b1"], row["b2"], row["b3"])
+        backEndCalculations.csvConstants["beaconGreen"].append([row["b0"], row["b1"], row["b2"], row["b3"]])
         backEndCalculations.data["blockTrainNoGreen"].append(0)
         backEndCalculations.data["circuitStatusGreen"].append(0)
         backEndCalculations.data["railStatusGreen"].append(0)
@@ -425,7 +428,8 @@ with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/GreenLine.c
         if int(row["Signal"]) > 1:
             backEndCalculations.data["sigState"].append(0)
 
-with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/Stations.csv", 'r') as sta:
+with open(os.path.join(sys.path[0], "Stations.csv"), 'r') as sta:
+#with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/Stations.csv", 'r') as sta:
     stations = csv.DictReader(sta)
 
     for row in stations:
@@ -437,7 +441,8 @@ with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/Stations.cs
         elif row["Line"] == "GREEN":
             backEndCalculations.csvConstants["stationLine"].append(1)
 
-with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/Switches.csv", 'r') as swi:
+with open(os.path.join(sys.path[0], "Switches.csv"), 'r') as swi:
+#with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/Switches.csv", 'r') as swi:
     switches = csv.DictReader(swi)
 
     for row in switches:
