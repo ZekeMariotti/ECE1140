@@ -1,4 +1,4 @@
-BlockNo,BlockLength,Grade,SpeedLimit,StationID,Elevation,Switch,Underground,Crossing,NoGo,Signal
+BlockNo,BlockLength,Grade,SpeedLimit,StationID,Elevation,Switch,Underground,Crossing,NoGo,Signal,b0,b1,b2,b3
 1,100,0.5,45,0,0.5,8,0,0,0,21,0,0,0,0
 2,100,1,45,9,1,0,0,0,,0,0,0,0,0
 3,100,1.5,45,0,1.5,0,0,0,,0,PIONEER,0,BROOKLINE,1
