@@ -462,9 +462,9 @@ class TrainModelUI(QWidget):
         tempTimeDiff = self.TrainModel.findTimeDifference()
         self.TrainModel.failureStates()
         self.TrainModel.brakeCaclulator()
-        self.TrainModel.findCurrentAcceleration()
-        self.TrainModel.findCurrentVelocity()
-        self.TrainModel.findCurrentDistance()
+        self.TrainModel.findCurrentAcceleration(tempTimeDiff)
+        self.TrainModel.findCurrentVelocity(tempTimeDiff)
+        self.TrainModel.findCurrentDistance(tempTimeDiff)
         self.TrainModel.findBlockExiting()
         self.TrainModel.airConditioningControl()
         if self.TrainModel.data["atStation"]:

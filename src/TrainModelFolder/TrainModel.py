@@ -3,7 +3,7 @@ import sys
 sys.path.append(__file__.replace("\TrainModelFolder\TrainModel.py", ""))
 
 from random import randint
-from math import cos, asin
+from math import cos, asin, exp
 from datetime import *
 from TrainModelFolder.TrainModelSignals import *
 from Integration.TMTkMSignals import *
@@ -222,6 +222,8 @@ class TrainModel():
         # Time From Main Signal
         rtcSignals.rtcSignal.connect(self.realTimeHandler)
 
+        self.data["rtc"] = datetime.now().isoformat() + "0-05:00"
+        self.data["prevRTC"] = datetime.now().isoformat() + "0-05:00"
         self.data["length"] = self.constants["length"] * self.data["numCars"]
 
     def realTimeHandler(self, rtc):
@@ -307,7 +309,6 @@ class TrainModel():
 
     # Data Handler for Outputs to the Train Controller
     def writeTMtoTC(self):
-        #print(f'{self.TrainID}, {self.data["currTemp"]}')
         TMTCSignals.commandedSpeedSignal.emit(self.TrainID, self.passThroughData["commandedSpeed"])
         TMTCSignals.currentSpeedSignal.emit(self.TrainID, self.data["velocity"])
         TMTCSignals.authoritySignal.emit(self.TrainID, self.passThroughData["authority"])
@@ -485,9 +486,13 @@ class TrainModel():
             if(powerForce > 120000):
                 powerForce = 120000
 
-        # Deal with the force from brakes, if any
-        if (self.data["eBrakeState"] | self.data["sBrakeState"]):
-            brakeForce = self.data["acceleration"] * self.data["mass"]
+        # If the Service Brake is pulled
+        if (self.data["sBrakeState"]):
+            brakeForce = self.constants["serviceBrake"] * self.data["mass"]
+
+        # If the Emergency Brake is pulled
+        if (self.data["eBrakeState"]):
+            brakeForce = self.constatns["emergencyBrake"] * self.data["mass"]
 
         # Calculate the sum of the forces and current Acceleration
         forces = powerForce + brakeForce + frictionalForce + gravitationalForce
@@ -549,7 +554,7 @@ class TrainModel():
         currTime = datetime.fromisoformat(self.data["rtc"])
         prevTime = datetime.fromisoformat(self.data["prevRTC"])
         newTime = currTime - prevTime
-        return int(newTime.seconds)
+        return float(newTime.total_seconds())
 
     # Finds the Block the train is on and the Block the train is exiting
     def findBlockExiting(self):
@@ -623,7 +628,6 @@ class TrainModel():
                         case 77:
                             self.trackData["trackSection"] = self.greenSection4
                         case 100:
-                            print("I SHOULD BE HERE")
                             self.trackData["trackSection"] = self.greenSection2R
                         case 150:
                             self.trackData["trackSection"] = self.greenSection5
@@ -747,13 +751,12 @@ class TrainModel():
 
     # Air Conditioning System that changes based on user input
     def airConditioningControl(self, time = 1):
-        if (time == 1):
-            if self.data["currTemp"] < self.data["goalTemp"]:
-                self.data["currTemp"] += 0.5
-            elif self.data["currTemp"] == self.data["goalTemp"]:
-                self.data["currTemp"] += 0
-            else:
-                self.data["currTemp"] -= 0.5
+        if self.data["currTemp"] < self.data["goalTemp"]:
+            self.data["currTemp"] += round(0.5 * time, 2)
+        elif self.data["currTemp"] == self.data["goalTemp"]:
+            self.data["currTemp"] += 0
+        else:
+            self.data["currTemp"] -= round(0.5 * time, 2)
 
     # Find the current mass of the entire train including passengers 
     def findCurrentMass(self):
@@ -770,12 +773,12 @@ class TrainModel():
     # Function to be called when updating the values to set the emergency brake state
     def brakeCaclulator(self):
         self.data["eBrakeState"] = self.eBrakes["user"] | self.eBrakes["trainController"]
-        if (self.data["eBrakeState"] == True):
-            self.data["acceleration"] = self.constants["emergencyBrake"]
-        elif (self.data["sBrakeState"] == True):
-            self.data["acceleration"] = self.constants["serviceBrake"]
-        else:
-            self.data["acceleration"] = 0
+        #if (self.data["eBrakeState"] == True):
+        #    self.data["acceleration"] = self.constants["emergencyBrake"]
+        #elif (self.data["sBrakeState"] == True):
+        #    self.data["acceleration"] = self.constants["serviceBrake"]
+        #else:
+        #    self.data["acceleration"] = 0
 
     # Handle change in input from the user about temperature
     def tempChangeHandler(self, id, temp):
