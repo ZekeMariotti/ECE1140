@@ -44,7 +44,9 @@ unsigned int Ki;
 int switchStateArray[NUMBEROFSWITCHES];
 StaticJsonDocument<768> jsonDataIn;
 StaticJsonDocument<768> jsonDataOut;
+StaticJsonDocument<768> jsonDataUI;
 String serialJSONOut;
+String serialJSONUI;
 
 
 // we use includes below define so we can use definitions in library when needed
@@ -65,7 +67,7 @@ long tsUsed; // in ms
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
-  Serial1.begin(115200);
+  Serial1.begin(9600);
   
   //input setup for control interface
   setSwitches();
@@ -107,9 +109,12 @@ void loop() {
     sendJSONData(switchStateArray);
     tsLastLoop = millis();
   }
+
+  //send data to the UI
+  sendJSONDataUI(switchStateArray);
   
   // Serial.println("in loop");
-  // delay(50);
+  delay(50);
 
 }
 
@@ -239,42 +244,51 @@ void sendJSONData(int *switchStateArray){
   serialJSONOut="";
   // StaticJsonDocument<256> JSONdataOut;
 
-  parseJSONData2(switchStateArray);
+  parseJSONData(switchStateArray);
   serializeJson(jsonDataOut, serialJSONOut);
   // Serial.println(serialJSONOut);
   sendUDP();
 }
 
-void parseJSONData(int *switchStateArray){
-  jsonDataOut["Power"] = power;
-  jsonDataOut["Left Door Command"] = switchStateArray[3];
-  jsonDataOut["Right Door Command"] = switchStateArray[2];
-  jsonDataOut["Service Brake Command"] = serviceBrakeCommand;
-  jsonDataOut["Emergency Brake Command"] = switchStateArray[6];
-  jsonDataOut["External Light Command"] = switchStateArray[5];
-  jsonDataOut["Internal Light Command"] = switchStateArray[4];
-  jsonDataOut["AC"] = 999;
-  jsonDataOut["Station Announcement"] = "text";
-  jsonDataOut["Engine State"] = switchStateArray[0];
-  jsonDataOut["Emergency Brake State"] = emergencyBrakeState;
-  jsonDataOut["Service Brake State"] = jsonDataIn["Service Brake State"];
-  jsonDataOut["Internal Lights State"] = switchStateArray[4];
-  jsonDataOut["External Lights State"] = switchStateArray[5];
-  jsonDataOut["Left Door State"] = jsonDataIn["Left Door State"];
-  jsonDataOut["Right Door State"] = jsonDataIn["Right Door State"];
-  jsonDataOut["Station"] = "text";
-  jsonDataOut["Current Speed"] = jsonDataIn["Current Speed"];
-  jsonDataOut["Commanded Speed"] = jsonDataIn["Commanded Speed"];
-  jsonDataOut["Authority"] = jsonDataIn["Authority"];
-  jsonDataOut["Speed Limit"] = jsonDataIn["Speed Limit"];
-  jsonDataOut["Temperature"] = 999;
-  jsonDataOut["Communications Status"] = 999;
-  jsonDataOut["Kp"] = Kp;
-  jsonDataOut["Ki"] = Ki;
+void sendJSONDataUI(int *switchStateArray){
+  serialJSONUI="";
+  // StaticJsonDocument<256> JSONdataOut;
+
+  parseJSONDataUI(switchStateArray);
+  serializeJson(jsonDataUI, serialJSONUI);
+  Serial1.println(serialJSONUI);
+}
+
+void parseJSONDataUI(int *switchStateArray){
+  jsonDataUI["Power"] = power;
+  jsonDataUI["Left Door Command"] = switchStateArray[3];
+  jsonDataUI["Right Door Command"] = switchStateArray[2];
+  jsonDataUI["Service Brake Command"] = serviceBrakeCommand;
+  jsonDataUI["Emergency Brake Command"] = switchStateArray[6];
+  jsonDataUI["External Light Command"] = switchStateArray[5];
+  jsonDataUI["Internal Light Command"] = switchStateArray[4];
+  jsonDataUI["AC"] = 999;
+  jsonDataUI["Station Announcement"] = "text";
+  jsonDataUI["Engine State"] = switchStateArray[0];
+  jsonDataUI["Emergency Brake State"] = emergencyBrakeState;
+  jsonDataUI["Service Brake State"] = jsonDataIn["serviceBrakeState"];
+  jsonDataUI["Internal Lights State"] = switchStateArray[4];
+  jsonDataUI["External Lights State"] = switchStateArray[5];
+  jsonDataUI["Left Door State"] = jsonDataIn["leftDoorState"];
+  jsonDataUI["Right Door State"] = jsonDataIn["rightDoorState"];
+  jsonDataUI["Station"] = "text";
+  jsonDataUI["Current Speed"] = jsonDataIn["currentSpeed"];
+  jsonDataUI["Commanded Speed"] = jsonDataIn["commandedSpeed"];
+  jsonDataUI["Authority"] = jsonDataIn["authority"];
+  jsonDataUI["Speed Limit"] = 999;
+  jsonDataUI["Temperature"] = 999;
+  jsonDataUI["Communications Status"] = jsonDataIn["communicationsStatus"];
+  jsonDataUI["Kp"] = Kp;
+  jsonDataUI["Ki"] = Ki;
   
 }
 
-void parseJSONData2(int *switchStateArray){
+void parseJSONData(int *switchStateArray){
   jsonDataOut["power"] = power;
   jsonDataOut["leftDoorCommand"] = switchStateArray[3];
   jsonDataOut["rightDoorCommand"] = switchStateArray[2];
