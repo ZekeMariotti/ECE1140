@@ -36,10 +36,10 @@ class BasicTestUI(QWidget):
         self.trainID = int(self.trainIDEdit.text())
 
     def authorityHandler(self):
-        TMTkMSignals.authoritySignal.emit(self.trainID, int(self.authorityEdit.text()))
+        #TMTkMSignals.authoritySignal.emit(self.trainID, int(self.authorityEdit.text()))
         trackSignals.getAuthInput.emit(int(self.authorityEdit.text()), self.trainID)
 
     def cmdSpeedHandler(self):
-        TMTkMSignals.commandedSpeedSignal.emit(self.trainID, float(self.commandedSpeedEdit.text()))
+        #TMTkMSignals.commandedSpeedSignal.emit(self.trainID, float(self.commandedSpeedEdit.text()))
         trackSignals.getCSpeedInput.emit(float(self.commandedSpeedEdit.text()), self.trainID)
     
