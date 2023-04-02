@@ -24,19 +24,21 @@
 byte mac[] = {
   0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
 };
+IPAddress ip(192, 168, 1, 101);
 // An EthernetUDP instance to let us send and receive packets over UDP
 EthernetUDP Udp;
 
 // buffers for receiving and sending data
-char packetBuffer[1000];
+char packetBuffer[600];
 //======================================================================================
 
 //output variables, 
-int power, serviceBrakeCommand, emergencyBrakeState, autoDriveCommand, currentSpeed, commandedSpeed; 
+int serviceBrakeCommand, emergencyBrakeState, autoDriveCommand, currentSpeed, commandedSpeed; 
+unsigned long power; 
 
-int prevTime = 0; 
-int Kp = 50000;
-int Ki = 5000;
+unsigned long prevTime = 0; 
+unsigned int Kp;
+unsigned int Ki;
 
 //Global and system wide variables 
 int switchStateArray[NUMBEROFSWITCHES];
@@ -62,7 +64,7 @@ long tsUsed; // in ms
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial1.begin(115200);
   
   //input setup for control interface
@@ -71,36 +73,43 @@ void setup() {
   // engineState = 
   setupUDP();
   // Serial.println("End of setup");
+
+  Kp = 50000;
+  Ki = 500;
   
 }
 
 void loop() {
+  // Serial.println(Ki);
+  // Serial.println(Kp);
   // put your main code here, to run repeatedly:
-  readUDP();
-  getJSONData();
+  if(readUDP()){
+    getJSONData();
+  }
+  
   // delay(1000);
-  int currTime = millis();
+  unsigned long currTime = millis();
   // int currTime = jsonDataIn["inputTime"];
-  int dt = currTime-prevTime;
+  float dt = currTime-prevTime;
   updateSwitchStates(switchStateArray);
-  drive(dt);
+  drive(dt/1000);
   emergencyBrake();
   // automaticSpeedControl();
   // delay(10);
   prevTime = currTime;
-  sendJSONData(switchStateArray);
   
-  // tsUsed = millis() - tsLastLoop;
-  //   if (update_period > tsUsed) {
-  //       // we still have some time remained
-  //       delay(update_period - tsUsed);
-  //   } else {
-  //       Serial.print("too slow: remain_t (ms) =");
-  //       Serial.println((long)update_period - tsUsed);
-  //   }
-  //   tsLastLoop = millis();
+    
+  tsUsed = millis() - tsLastLoop;
+  if (1000 > tsUsed) {
+      //Do nothing
+  } else {
+    //send data
+    sendJSONData(switchStateArray);
+    tsLastLoop = millis();
+  }
+  
   // Serial.println("in loop");
-  delay(100);
+  // delay(50);
 
 }
 
@@ -221,7 +230,7 @@ void getJSONData(){
   // String dat1 = dat.replace(">","");
   // dat = dat.replace("<","");
   DeserializationError error = deserializeJson(jsonDataIn, packetBuffer);
-  // int x = jsonDataIn["Authority"];
+  // int x = jsonDataIn["commandedSpeed"];
   // Serial.println(x);
   // Serial.println(dat);
 }
@@ -275,6 +284,9 @@ void parseJSONData2(int *switchStateArray){
   jsonDataOut["internalLightCommand"] = switchStateArray[4];
   jsonDataOut["stationAnnouncement"] = jsonDataIn["stationName"];
   jsonDataOut["isAtStation"] = 1;
+  int x = jsonDataOut["power"];
+  Serial.print("JSON OUT:");
+  Serial.println(x);
   
 }
 ////////////////////////////////UDP Shit////////////////////////////////////
@@ -285,7 +297,6 @@ void setupUDP(){
   Ethernet.begin(mac);
 
   // Open serial communications and wait for port to open:
-  Serial.begin(9600);
   if (Ethernet.linkStatus() == LinkOFF) {
     Serial.println("Ethernet cable is not connected.");
   }
@@ -299,39 +310,43 @@ void setupUDP(){
   //Udp.endPacket();
 }
 void sendUDP(){
-  Udp.beginPacket("192.168.1.2", 27001);
-  char Buf[200];
+  Udp.beginPacket("192.168.1.3", 27001);
+  char Buf[300];
   // Serial.println("Before conversion");
-  serialJSONOut.toCharArray(Buf, 200);
+  serialJSONOut.toCharArray(Buf, 300);
   // Serial.println("After conversion");
   Udp.write(Buf);
+  Udp.endPacket();
   // Serial.println("After write");
-  Serial.println(Udp.endPacket());
+  // Serial.println(Udp.endPacket());
   // Serial.println("End of UDP Send");
 }
 
-void readUDP(){
+bool readUDP(){
 
   // if there's data available, read a packet
   int packetSize = Udp.parsePacket();
   if (packetSize) {
-    Serial.print("Received packet of size ");
-    Serial.println(packetSize);
-    Serial.print("From ");
-    IPAddress remote = Udp.remoteIP();
-    for (int i=0; i < 4; i++) {
-      Serial.print(remote[i], DEC);
-      if (i < 3) {
-        Serial.print(".");
-      }
-    }
-    Serial.print(", port ");
-    Serial.println(Udp.remotePort());
+    // Serial.print("Received packet of size ");
+    // Serial.println(packetSize);
+    // Serial.print("From ");
+    // IPAddress remote = Udp.remoteIP();
+    // for (int i=0; i < 4; i++) {
+    //   Serial.print(remote[i], DEC);
+    //   if (i < 3) {
+    //     Serial.print(".");
+    //   }
+    // }
+    // Serial.print(", port ");
+    // Serial.println(Udp.remotePort());
 
     // read the packet into packetBufffer
-    Udp.read(packetBuffer, 1000);
-    Serial.println("Contents:");
-    Serial.println(packetBuffer);
+    Udp.read(packetBuffer, 600);
+    // Serial.println("Contents:");
+    // Serial.println(packetBuffer);
+    return true;
+  }else{
+    return false;
   }
 }
 
@@ -365,12 +380,14 @@ void drive(int dt){
     //this is the main drive function to make the train move. 
     //This also calls the power and brake functions
   autoDriveCommand = switchStateArray[1];//jsonDataIn["Manual Speed Override"];
+  // Serial.println(autoDriveCommand);
   currentSpeed = jsonDataIn["currentSpeed"];
   commandedSpeed = jsonDataIn["commandedSpeed"];
   if(autoDriveCommand){
     autodrive(currentSpeed, commandedSpeed, dt);
+    // Serial.println(power);
   }else{
-    power = tControl.calculatePower(currentSpeed, commandedSpeed, dt, Kp, Ki);  
+    power = tControl.calculatePower(currentSpeed, commandedSpeed, dt, Kp, Ki);
     serviceBrakeCommand = tControl.calculateBrake((bool)switchStateArray[7]);
     if(serviceBrakeCommand || emergencyBrakeState){
       power=0; //set the power to 0 if service brake or emergency brake requested - redundancy for emergency brake
