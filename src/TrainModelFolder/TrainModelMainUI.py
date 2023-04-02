@@ -16,6 +16,7 @@ sys.path.append(__file__.replace("\TrainModelFolder\TrainModelMainUI.py", ""))
 
 from TrainModelFolder.TrainModel import TrainModel
 from TrainModelFolder.TrainModelSignals import *
+from Integration.TMTkMSignals import *
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
@@ -467,9 +468,11 @@ class TrainModelUI(QWidget):
         self.TrainModel.findCurrentDistance(tempTimeDiff)
         self.TrainModel.findBlockExiting()
         self.TrainModel.airConditioningControl()
-        if self.TrainModel.data["atStation"]:
+        if (self.TrainModel.data["velocity"] == 0) & (self.TrainModel.data["lDoors"] | self.TrainModel.data["rDoors"]) & (~self.TrainModel.data["runOnce"]):
+        #if self.TrainModel.data["atStation"]:
             self.TrainModel.passengersGettingOff()
-            self.TrainModel.passengersGettingOn()
+            TMTkMSignals.passengersExitingSignal.emit(self.TrainModel.TrainID, self.TrainModel.data["passengersOff"])
+            self.TrainModel.data["passengersOff"] = 0
         self.TrainModel.findCurrentMass()
         if tempTimeDiff != 0:
             self.TrainModel.moveToPrevious()
@@ -549,7 +552,6 @@ class TrainModelUI(QWidget):
         else:
             self.iLightsOutput.setStyleSheet("background-color: white")
 
-        #print(f'Updater: ID: {self.TrainModel.data["id"]}, State: {self.TrainModel.data["eLights"]}')
         # Setting external lights output as well as color
         self.eLightsOutput.setText(self.lightState(self.TrainModel.data["eLights"]))
         if (self.TrainModel.data["eLights"] == 1):

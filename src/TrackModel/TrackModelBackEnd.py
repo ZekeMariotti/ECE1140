@@ -13,6 +13,7 @@ from dynamicArray import *
 
 class backEndCalculations():
 
+    runOnce = False
     # Private data variable to store all the data needed for the back end
     data = {
         "line" : 0,                          # Selected line
@@ -21,7 +22,7 @@ class backEndCalculations():
         "sigState" : DynamicArray(),         # States of signals on each block next to a switch
         "gatePos" : DynamicArray(),          # Position of crossing gates
         "temp" : 70.0,                       # Outdoor temperature
-        "numPassengers" : [0, 0, 0, 0, 0, 0,
+        "numPassengers" : [0, 222, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0],                   # number of passengers on each train
@@ -123,7 +124,13 @@ class backEndCalculations():
 
     # Handler PassengersExiting signal from the train model
     def passengersExiting(self, id, num):
-        1 + 1
+        if (num > 0) & ~self.runOnce:
+            print(f'TrainID: {id}, Passengers Off: {num}')
+            self.passengersGettingOff(id, num)
+            self.passengersGettingOn(id)
+            print("Track Model - Return From Track Model Function")
+            if (self.csvConstants["stationGreen"].__getitem__(int(self.data["trainBlock"][id - 1]) - 1) == 0):
+                self.runOnce = False
 
     # Hander for the current block from the Train Model
     def currBlockHandler(self, id, currBlock, prevBlock, transition):
@@ -260,40 +267,15 @@ class backEndCalculations():
             else:
                 TMTkMSignals.beaconSignal.emit(trainNo + 1, "", 0, "", 0, -1, 0)
         elif self.data["trainLine"][trainNo] == 1:
-            print("in green", index, self.data["moves"][trainNo][0], self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][1]))
-            print("HERE!")
-            print(int(self.data["moves"][trainNo][index] - 1) > 0, int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)) > 0)
-            print(int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][0])))
-            #print(int(self.data["moves"][trainNo][0] - 1) > 0, int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)) > 0)
             if (int(self.data["moves"][trainNo][index] - 1) > 0) & (int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)) > 0):
-                print("Inside If 1")
                 beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)
                 TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
             elif (int(self.data["moves"][trainNo][0] - 1) > 0):
-                print("Inside If 2")    
                 if (int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)) > 0):
-                    print("Inside If 2.2")
                     beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)
                     TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
             else:
-                print("Inside Else")
                 TMTkMSignals.beaconSignal.emit(trainNo + 1, "", 0, "", 0, -1, 0)
-            #print(self.data["moves"][trainNo][index], self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][index] - 1))
-            #print(self.data["moves"][trainNo][0])
-            #if (self.data["moves"][trainNo][index] != 0) & (self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][index] - 1) > 0):
-            #    print("in if 1")
-            #    beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)
-            #    TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
-            #elif (self.data["moves"][trainNo][0] != 0):
-            #    print("inside of here")
-            #    if (self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][0] - 1) > 0):
-            #        print("in if 2")
-            #        beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)
-            #        TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
-            #else:
-            #    print("in else")
-            #    TMTkMSignals.beaconSignal.emit(trainNo + 1, "", 0, "", 0, -1, 0)
-        print("hello?")
 
         # Update Block vector
         self.data["moves"][trainNo][0] = self.data["moves"][trainNo][index]
@@ -322,6 +304,7 @@ class backEndCalculations():
                     self.data["numPassengers"][trainNo] -= passengers
 
         # Refresh Main UI
+        self.runOnce = True
         trackSignals.updateSignal.emit()
 
     # Gets the number of passengers on from the UI
@@ -335,7 +318,7 @@ class backEndCalculations():
                     self.data["stationOccupancy"].insertAt(currOcc - passengers, sName)
         elif self.csvConstants["stationLine"].__getitem__(sName) == 1:
             for i in range(self.data["blockTrainNoGreen"].__len__()):
-                if int(self.data["blockTrainNoGreen"].__getitem__(i)) > 0 and int(self.csvConstants["stationGreen"].__getitem__(i)) > 0 and int(self.csvConstants["stationGreen"].__getitem__(i)) - 1 == int(self.data["stationName"]) and int(self.data["stationOccupancy"].__getitem__(self.data["stationName"])) - passengers >= 0:
+                if int(self.data["blockTrainNoGreen"].__getitem__(i)) > 0 and int(self.csvConstants["stationGreen"].__getitem__(i)) > 0 and int(self.csvConstants["stationGreen"].__getitem__(i)) - 1 == sName and int(self.data["stationOccupancy"].__getitem__(sName)) - passengers >= 0:
                     self.data["numPassengers"][self.data["blockTrainNoGreen"].__getitem__(i) - 1] += passengers
                     currOcc = self.data["stationOccupancy"].__getitem__(sName)
                     self.data["stationOccupancy"].removeAt(sName)
@@ -458,6 +441,25 @@ class backEndCalculations():
             self.data["moves"][trainNo][1] = self.data["moves"][trainNo][0] + 1
             self.data["moves"][trainNo][2] = self.data["moves"][trainNo][0] - 1
 
+    # Determines how many passengers get on at each station
+    def passengersGettingOn(self, trainNo):
+        # Generate number of passengers getting on the train at the station
+        if self.data["trainLine"][trainNo - 1] == 0:
+            passOn = randint(0, int(self.data["stationOccupancy"].__getitem__(int(self.csvConstants["stationRed"].__getitem__(self.data["trainBlock"][trainNo - 1])) - 1)))
+            self.getOnInput(int(self.csvConstants["stationRed"].__getitem__(self.data["trainBlock"][trainNo - 1])) - 1, passOn)
+        elif self.data["trainLine"][trainNo - 1] == 1:
+            passOn = randint(0, int(self.data["stationOccupancy"].__getitem__(int(self.csvConstants["stationGreen"].__getitem__(self.data["trainBlock"][trainNo - 1] - 1)) - 1)))
+            self.getOnInput(int(self.csvConstants["stationGreen"].__getitem__(self.data["trainBlock"][trainNo - 1] - 1)) - 1, passOn)
+        TMTkMSignals.passengersEnteringSignal.emit(trainNo, passOn)
+
+    # Determines how many passengers get off at each station
+    def passengersGettingOff(self, trainNo, passOff):
+        # Update number of passengers getting off the train at the station
+        if self.data["trainLine"][trainNo - 1] == 0:
+            self.getOffInput(trainNo - 1, int(self.csvConstants["stationRed"].__getitem__(self.data["trainBlock"][trainNo - 1] - 1)) - 1, passOff)
+        elif self.data["trainLine"][trainNo - 1] == 1:
+            self.getOffInput(trainNo - 1, int(self.csvConstants["stationGreen"].__getitem__(self.data["trainBlock"][trainNo - 1] - 1)) - 1, passOff)
+
     # Determines how many passengers get off at each station
     def passengersGettingOnB(self, index):
         passOff = randint(0, self.data["stationOccupancy"].__getitem__(self.data["stationRed"].__getitem__(index) - 1))
@@ -526,7 +528,7 @@ with open(os.path.join(sys.path[0], "TrackModel", "Stations.csv"), 'r') as sta:
     for row in stations:
         backEndCalculations.csvConstants["stationName"].append(row["StationName"])
         backEndCalculations.csvConstants["stationSide"].append(row["StationSide"])
-        backEndCalculations.data["stationOccupancy"].append(0)
+        backEndCalculations.data["stationOccupancy"].append(5)
         if row["Line"] == "RED":
             backEndCalculations.csvConstants["stationLine"].append(0)
         elif row["Line"] == "GREEN":
