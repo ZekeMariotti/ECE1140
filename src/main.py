@@ -124,7 +124,7 @@ class MainWindow(QMainWindow):
 
             # Instantiate the Track Model
             self.TkM = TrackModelMainUI.TrackModelMainUI()
-            
+
             # Test TM and TC
             for i in range(2, 4):
                 self.trainDispatch(i)    
