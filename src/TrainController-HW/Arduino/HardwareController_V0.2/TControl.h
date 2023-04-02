@@ -7,11 +7,11 @@ class TControl
 {
 private:
     /* data */
-    int previousError;
-    int previousU; 
+    unsigned int previousError;
+    unsigned int previousU; 
 public:
     TControl();
-    int calculatePower(int currentSpeed, int commandedSpeed, float dt, int Kp, int Ki);
+    unsigned long calculatePower(int currentSpeed, int commandedSpeed, float dt, int Kp, int Ki);
     bool calculateBrake(bool state);
 };
 

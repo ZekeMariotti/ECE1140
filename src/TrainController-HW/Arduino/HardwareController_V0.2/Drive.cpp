@@ -2,7 +2,7 @@
 #include "Drive.h"
 #include "TControl.h"
 
-Drive::Drive(TControl *_tc, int *_Kp, int *_Ki, int *_power, 
+Drive::Drive(TControl *_tc, int *_Kp, int *_Ki, unsigned long *_power, 
     int *_serviceBrakeCommand, int *_emergencyBrakeState, int *_switchStateArray){
      tc=_tc;
      Kp=_Kp;
@@ -27,6 +27,7 @@ void Drive::autodrive(int currentSpeed, int commandedSpeed, int dt){
     }else{
         *power=0;
     }
+    Serial.println(*Kp);
 }
     
     

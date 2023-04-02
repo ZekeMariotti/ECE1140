@@ -11,12 +11,12 @@ private:
     TControl *tc;
     int *Kp;
     int *Ki;
-    int *power;
+    unsigned long *power;
     int *serviceBrakeCommand;
     int *emergencyBrakeState;
     int *switchStateArray;
 public:
-    Drive(TControl *_tc, int *_Kp, int *_Ki, int *_power, 
+    Drive(TControl *_tc, int *_Kp, int *_Ki, unsigned long *_power, 
     int *_serviceBrakeCommand, int *_emergencyBrakeState, int *_switchStateArray);
     void autodrive(int currentSpeed, int commandedSpeed, int dt);
     void drive(int dt);
