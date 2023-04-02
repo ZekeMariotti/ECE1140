@@ -51,7 +51,7 @@ class backEndCalculations():
         "circuitStatusGreen" : DynamicArray(),
         "railStatusRed" : DynamicArray(),        # Broken rail failure states
         "railStatusGreen" : DynamicArray(),
-        "moves" : [[0, 9, None], [0, 63, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None],
+        "moves" : [[0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None],
                    [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None],
                    [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None],
                    [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None],
@@ -110,9 +110,22 @@ class backEndCalculations():
         TMTkMSignals.passengersExitingSignal.connect(self.passengersExiting)
         TMTkMSignals.currBlockSignal.connect(self.currBlockHandler)
 
+    # Handler for when a new train is made
+    def newTrainMade(self, id, line):
+        if (line == "Green"):
+            self.data["trainLine"][id - 1] = 1
+            self.data["moves"][id - 1] = [0, 63, None]
+        elif(line == "Red"):
+            self.data["trainLine"][id - 1] = 0
+            self.data["moves"][id - 1] = [0, 9, None]
+        else:
+            print("Something")
+
+    # Handler PassengersExiting signal from the train model
     def passengersExiting(self, id, num):
         1 + 1
 
+    # Hander for the current block from the Train Model
     def currBlockHandler(self, id, currBlock, prevBlock, transition):
         if (transition):
             TMTkMSignals.blockLengthSignal.emit(id, float(self.csvConstants["lengthGreen"].__getitem__(currBlock - 1)))

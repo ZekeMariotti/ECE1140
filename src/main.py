@@ -122,11 +122,13 @@ class MainWindow(QMainWindow):
             self.mainWidget.setLayout(self.gridLayout)
             self.setCentralWidget(self.mainWidget)
 
+            # Instantiate the Track Model
+            self.TkM = TrackModelMainUI.TrackModelMainUI()
+            
             # Test TM and TC
             for i in range(2, 4):
                 self.trainDispatch(i)    
             self.TMTestUI = TrainModelTestUI.TrainModelTestUI() # temporary TM test UI 
-            self.TkM = TrackModelMainUI.TrackModelMainUI()
             #self.TkMTestUI = TrackModelTestUI.TrackModelTestUI()
             self.TESTUI = IntegrationTestUI.BasicTestUI()
         
@@ -327,6 +329,7 @@ class MainWindow(QMainWindow):
         def trainDispatch(self, trainId):
             self.TrainControllerList.append(TrainControllerMainUI.MainWindow(trainId))
             self.TrainModelList.append(TrainModelMainUI.TrainModelUI(trainId, "Green"))
+            self.TkM.backEnd.newTrainMade(trainId, "Green")
             self.TrainControllerList[len(self.TrainControllerList)-1].move(800, 10)
             self.TrainModelList[len(self.TrainModelList)-1].move(self.screen().availableGeometry().width()-1480, 
                                                                  self.screen().availableGeometry().height()-self.TrainModelList[len(self.TrainModelList)-1].frameGeometry().height()-40)
