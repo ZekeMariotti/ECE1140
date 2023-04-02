@@ -314,9 +314,10 @@ class TrainModel():
         TMTCSignals.authoritySignal.emit(self.TrainID, self.passThroughData["authority"])
         TMTCSignals.undergroundSignal.emit(self.TrainID, self.data["underground"])
         TMTCSignals.temperatureSignal.emit(self.TrainID, self.data["currTemp"])
-        TMTCSignals.stationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][0])
-        TMTCSignals.platformSideSignal.emit(self.TrainID, self.passThroughData["beacon"][1])
-        TMTCSignals.nextStationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][2])
+        if (self.passThroughData["beacon"][3] == 1):
+            TMTCSignals.stationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][0])
+            TMTCSignals.platformSideSignal.emit(self.TrainID, self.passThroughData["beacon"][1])
+            TMTCSignals.nextStationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][2])
         TMTCSignals.isBeaconSignal.emit(self.TrainID, self.passThroughData["beacon"][3])
         TMTCSignals.externalLightsStateSignal.emit(self.TrainID, self.data["eLights"])
         TMTCSignals.internalLightsStateSignal.emit(self.TrainID, self.data["iLights"])

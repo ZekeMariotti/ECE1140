@@ -152,6 +152,8 @@ class backEndCalculations():
                 index = 2
             if (index != 0):
                 self.getTrainBlockInputFunction(index, id - 1)
+        else:
+            TMTkMSignals.beaconSignal.emit(id, "", 0, "", 0, -1, 0)
 
     # Gets the Switch Position from the UI
     def getSwitchPositionInput(self, index, line, blockNo):
@@ -248,29 +250,51 @@ class backEndCalculations():
         self.data["authority"][trainNo] -= 1
 
         # Send Beacon
-        #if self.data["trainLine"][trainNo] == 0:
-        #    if self.csvConstants["stationRed"].__getitem__(self.data["moves"][trainNo][index] - 1) > 0:
-        #        beaconArr = self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][0] - 1)
-        #        TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
-        #    elif self.csvConstants["stationRed"].__getitem__(self.data["moves"][trainNo][0] - 1) > 0:
-        #        beaconArr = self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][index] - 1)
-        #        TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
-        #    else:
-        #        TMTkMSignals.beaconSignal.emit(trainNo + 1, "", 0, "", 0, -1, 0)
-        #elif self.data["trainLine"][trainNo] == 1:
-        #    print("in green", index, self.data["moves"][trainNo][0], self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][1]))
-        #    if (self.data["moves"][trainNo][index] != 0) & (self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][index] - 1) > 0):
-        #        print("in if 1")
-        #        beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)
-        #        TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
-        #    elif (self.data["moves"][trainNo][0] != 0) & (self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][0] - 1) > 0):
-        #        print("in if 2")
-        #        beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)
-        #        TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
-        #    else:
-        #        print("in else")
-        #        TMTkMSignals.beaconSignal.emit(trainNo + 1, "", 0, "", 0, -1, 0)
-        #print("hello?")
+        if self.data["trainLine"][trainNo] == 0:
+            if self.csvConstants["stationRed"].__getitem__(self.data["moves"][trainNo][index] - 1) > 0:
+                beaconArr = self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][0] - 1)
+                TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
+            elif self.csvConstants["stationRed"].__getitem__(self.data["moves"][trainNo][0] - 1) > 0:
+                beaconArr = self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][index] - 1)
+                TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
+            else:
+                TMTkMSignals.beaconSignal.emit(trainNo + 1, "", 0, "", 0, -1, 0)
+        elif self.data["trainLine"][trainNo] == 1:
+            print("in green", index, self.data["moves"][trainNo][0], self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][1]))
+            print("HERE!")
+            print(int(self.data["moves"][trainNo][index] - 1) > 0, int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)) > 0)
+            print(int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][0])))
+            #print(int(self.data["moves"][trainNo][0] - 1) > 0, int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)) > 0)
+            if (int(self.data["moves"][trainNo][index] - 1) > 0) & (int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)) > 0):
+                print("Inside If 1")
+                beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)
+                TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
+            elif (int(self.data["moves"][trainNo][0] - 1) > 0):
+                print("Inside If 2")    
+                if (int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)) > 0):
+                    print("Inside If 2.2")
+                    beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)
+                    TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
+            else:
+                print("Inside Else")
+                TMTkMSignals.beaconSignal.emit(trainNo + 1, "", 0, "", 0, -1, 0)
+            #print(self.data["moves"][trainNo][index], self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][index] - 1))
+            #print(self.data["moves"][trainNo][0])
+            #if (self.data["moves"][trainNo][index] != 0) & (self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][index] - 1) > 0):
+            #    print("in if 1")
+            #    beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)
+            #    TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
+            #elif (self.data["moves"][trainNo][0] != 0):
+            #    print("inside of here")
+            #    if (self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][0] - 1) > 0):
+            #        print("in if 2")
+            #        beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)
+            #        TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
+            #else:
+            #    print("in else")
+            #    TMTkMSignals.beaconSignal.emit(trainNo + 1, "", 0, "", 0, -1, 0)
+        print("hello?")
+
         # Update Block vector
         self.data["moves"][trainNo][0] = self.data["moves"][trainNo][index]
         self.updateVector(trainNo)
