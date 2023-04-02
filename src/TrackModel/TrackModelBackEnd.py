@@ -444,7 +444,7 @@ class backEndCalculations():
 
 import csv
 
-with open(os.path.join(sys.path[0], "RedLine.csv"), 'r') as redLn:
+with open(os.path.join(sys.path[0], "TrackModel", "RedLine.csv"), 'r') as redLn:
 #with open(os.path.join(sys.path[0].replace("\src", "\src\TrackModel")), 'r') as redLn:
 #with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/RedLine.csv", 'r') as redLn:
     redLine = csv.DictReader(redLn)
@@ -470,7 +470,7 @@ with open(os.path.join(sys.path[0], "RedLine.csv"), 'r') as redLn:
         if int(row["Signal"]) > 1:
             backEndCalculations.data["sigState"].append(0)
 
-with open(os.path.join(sys.path[0], "GreenLine.csv"), 'r') as greenLn:
+with open(os.path.join(sys.path[0], "TrackModel", "GreenLine.csv"), 'r') as greenLn:
 #with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/GreenLine.csv", 'r') as greenLn:
     greenLine = csv.DictReader(greenLn)
 
@@ -495,7 +495,7 @@ with open(os.path.join(sys.path[0], "GreenLine.csv"), 'r') as greenLn:
         if int(row["Signal"]) > 1:
             backEndCalculations.data["sigState"].append(0)
 
-with open(os.path.join(sys.path[0], "Stations.csv"), 'r') as sta:
+with open(os.path.join(sys.path[0], "TrackModel", "Stations.csv"), 'r') as sta:
 #with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/Stations.csv", 'r') as sta:
     stations = csv.DictReader(sta)
 
@@ -508,7 +508,7 @@ with open(os.path.join(sys.path[0], "Stations.csv"), 'r') as sta:
         elif row["Line"] == "GREEN":
             backEndCalculations.csvConstants["stationLine"].append(1)
 
-with open(os.path.join(sys.path[0], "Switches.csv"), 'r') as swi:
+with open(os.path.join(sys.path[0], "TrackModel", "Switches.csv"), 'r') as swi:
 #with open("C:/Systems and Project Engineering/ECE1140/src/TrackModel/Switches.csv", 'r') as swi:
     switches = csv.DictReader(swi)
 
