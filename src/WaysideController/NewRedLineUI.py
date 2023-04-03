@@ -13,18 +13,20 @@ colheaders =["0","1","2","3","4","5","6","7","8","9"]
 class Worker(QObject):
       finished = pyqtSignal()
 
-class MainWindow(QMainWindow):
+class MainWindowR(QMainWindow):
     def __init__(self):
 
         super().__init__()
 
         #Intialize Wayside class change sim time int later
-        self.WaysideControllerRed = Wayside(1)
-        self.WaysideControllerRed2 = Wayside(1)
+        self.WaysideControllerRed = Wayside(1,True)
+        self.WaysideControllerRed2 = Wayside(1,True)
         self.WaysideControllerRed.setdictionarysizes(1,51,8)
         self.WaysideControllerRed2.setdictionarysizes(51,77,8)
         self.WaysideControllerRed.setCommandedSpeed()
         self.WaysideControllerRed2.setCommandedSpeed()
+        self.WaysideControllerRed.setAuthority()
+        self.WaysideControllerRed2.setAuthority()
         #Window
 
         self.setWindowTitle("Red Line")
@@ -75,6 +77,7 @@ class MainWindow(QMainWindow):
         self.Switch6BR = self.Switch6ButtonR()
         self.Switch7BL = self.Switch7ButtonL()
         self.Switch7BR = self.Switch7ButtonR()
+              
 
         #Switch Outputs
         self.Switch1Out = self.Switch1OutSetup()
@@ -97,6 +100,8 @@ class MainWindow(QMainWindow):
         self.maintenanceMode = False
         self.maintenanceButton = self.maintenanceButtonSetup()   
         self.PLCMain = PLC(self.WaysideControllerRed,self.WaysideControllerRed2,"Red")
+       
+
     def mainThreadSetup(self):
           self.timerThread = QThread()
           self.timerThread.started.connect(self.mainTimerSetup)
@@ -257,14 +262,20 @@ class MainWindow(QMainWindow):
             i=0
             j=1
             for k in range(1,51):
-                value=self.WaysideControllerRed.signalLights[k]
+                if self.WaysideControllerRed.signalLights[k]==True:
+                     value="G"
+                else:
+                     value="R"
                 SignalLight.setItem(i,j,QTableWidgetItem((value)))
                 j=j+1
                 if j>9:
                  j=0
                  i=i+1
             for k in range(51,77):
-                value=self.WaysideControllerRed2.signalLights[k]
+                if self.WaysideControllerRed2.signalLights[k]==True:
+                  value="G"
+                else:
+                  value="R"
                 SignalLight.setItem(i,j,QTableWidgetItem((value)))
                 j=j+1
                 if j>9:
@@ -367,7 +378,7 @@ class MainWindow(QMainWindow):
           Man = QPushButton("Maintenance")
           Man.setFont(self.labelFont)
           Man.setFixedSize(QSize(90,40))
-          #Man.clicked.connect(self.maintenance)
+          Man.clicked.connect(self.maintenance)
           Man.setParent(self)
           Man.move(1000,0)
           return(Man)
@@ -624,52 +635,80 @@ class MainWindow(QMainWindow):
                   
     #Clicking stuff    
     def Switch1ButtonLClick(self):
-          self.WaysideControllerRed.setSwitchPositions(True,1)
-    
+          if(self.maintenanceMode==True):
+            self.WaysideControllerRed.setSwitchPositions(True,1)
+            self.WaysideControllerRed.setSwitchPositions(True,1)
     def Switch1ButtonRClick(self):
-          self.WaysideControllerRed.setSwitchPositions(False,1)
-    
+          if(self.maintenanceMode==True):
+            self.WaysideControllerRed.setSwitchPositions(False,1)
+            self.WaysideControllerRed.setSwitchPositions(False,1)
     def Switch2ButtonLClick(self):
-          self.WaysideControllerRed.setSwitchPositions(True,2)
-    
+          if(self.maintenanceMode==True):
+            self.WaysideControllerRed.setSwitchPositions(True,2)
+            self.WaysideControllerRed.setSwitchPositions(True,2)
     def Switch2ButtonRClick(self):
-          self.WaysideControllerRed.setSwitchPositions(False,2)
-    
+          if(self.maintenanceMode==True):
+            self.WaysideControllerRed.setSwitchPositions(False,2)
+            self.WaysideControllerRed.setSwitchPositions(False,2)  
     def Switch3ButtonLClick(self):
-          self.WaysideControllerRed.setSwitchPositions(True,3)
-    
+          if(self.maintenanceMode==True):
+            self.WaysideControllerRed.setSwitchPositions(True,3)
+            self.WaysideControllerRed.setSwitchPositions(True,3)
     def Switch3ButtonRClick(self):
-          self.WaysideControllerRed.setSwitchPositions(False,3)
+          if(self.maintenanceMode==True):
+            self.WaysideControllerRed.setSwitchPositions(False,3)
+            self.WaysideControllerRed2.setSwitchPositions(False,3)
     
     def Switch4ButtonLClick(self):
-          self.WaysideControllerRed.setSwitchPositions(True,4)
-    
+          if(self.maintenanceMode==True):
+            self.WaysideControllerRed.setSwitchPositions(True,4)
+            self.WaysideControllerRed2.setSwitchPositions(True,4)
     def Switch4ButtonRClick(self):
-          self.WaysideControllerRed.setSwitchPositions(False,4)          
+          if(self.maintenanceMode==True):
+            self.WaysideControllerRed.setSwitchPositions(False,4)
+            self.WaysideControllerRed.setSwitchPositions(False,4)          
     
     def Switch5ButtonLClick(self):
-          self.WaysideControllerRed.setSwitchPositions(True,5)          
-          
+          if(self.maintenanceMode==True):
+            self.WaysideControllerRed.setSwitchPositions(True,5)          
+            self.WaysideControllerRed.setSwitchPositions(True,5)
+
     def Switch5ButtonRClick(self):
-          self.WaysideControllerRed.setSwitchPositions(False,5)
+          if(self.maintenanceMode==True):
+            self.WaysideControllerRed.setSwitchPositions(False,5)
+            self.WaysideControllerRed.setSwitchPositions(False,5)
 
     def Switch6ButtonLClick(self):
-          self.WaysideControllerRed.setSwitchPositions(True,6)          
-          
+          if(self.maintenanceMode==True):
+            self.WaysideControllerRed.setSwitchPositions(True,6)          
+            self.WaysideControllerRed2.setSwitchPositions(True,6)
     def Switch6ButtonRClick(self):
-          self.WaysideControllerRed.setSwitchPositions(False,6)
-
+          if(self.maintenanceMode==True):
+            self.WaysideControllerRed.setSwitchPositions(False,6)
+            self.WaysideControllerRed2.setSwitchPositions(False,6)
     def Switch7ButtonLClick(self):
-          self.WaysideControllerRed.setSwitchPositions(True,7)          
-          
+          if(self.maintenanceMode==True):
+            self.WaysideControllerRed.setSwitchPositions(True,7)          
+            self.WaysideControllerRed.setSwitchPositions(True,7)
     def Switch7ButtonRClick(self):
-          self.WaysideControllerRed.setSwitchPositions(False,7)          
+          if(self.maintenanceMode==True):
+            self.WaysideControllerRed.setSwitchPositions(False,7)
+            self.WaysideControllerRed2.setSwitchPositions(False,7)          
       
     def UpClicked(self):
-          self.WaysideControllerRed.setGatePositions(True)
+          if(self.maintenanceMode==True):
+            self.WaysideControllerRed.setGatePositions(True)
+            self.WaysideControllerRed2.setGatePositions(True)
           
     def DownClicked(self):
-          self.WaysideControllerRed.setGatePositions(False)  
+          if(self.maintenanceMode==True):
+            self.WaysideControllerRed.setGatePositions(False)
+            self.WaysideControllerRed2.setGatePositions(False)
+    def maintenance(self):
+          if(self.maintenanceMode==True):
+            self.maintenanceMode=False
+          else:
+            self.maintenanceMode=True  
 
     def updateVisualElements(self):
           #hour = str(self.WaysideController.realTime.hour) if self.WaysideController.realTime.hour <=12 else str(self.WaysideController.realTime.hour - 12)   
@@ -770,14 +809,20 @@ class MainWindow(QMainWindow):
           i=0
           j=1
           for k in range(1,51):
-                value=self.WaysideControllerRed.signalLights[k]
+                if self.WaysideControllerRed.signalLights[k]==True:
+                     value="G"
+                else:
+                     value="R"
                 self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
                  j=0
                  i=i+1
           for k in range(51,77):
-                value=self.WaysideControllerRed2.signalLights[k]
+                if self.WaysideControllerRed2.signalLights[k]==True:
+                     value="G"
+                else:
+                     value="R"
                 self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
@@ -804,9 +849,10 @@ class MainWindow(QMainWindow):
                 self.Gate.setText("Block 47 Gate:  UP")
           else:
                 self.Gate.setText("Block 47 Gate:  DOWN")
-          self.PLCMain.RloadValues1()
-          self.PLCMain.RloadValues2()
-          self.PLCMain.Rsetswitches()
+          if(self.maintenanceMode==False):
+            self.PLCMain.RloadValues1()
+            self.PLCMain.RloadValues2()
+            self.PLCMain.Rsetswitches()
     def mainEventLoop(self):
 
           self.updateVisualElements()
@@ -818,7 +864,7 @@ class MainWindow(QMainWindow):
 
 app = QApplication(sys.argv)
 
-mainWindow = MainWindow()
+mainWindow = MainWindowR()
 mainWindow.show()
 
 app.exec()

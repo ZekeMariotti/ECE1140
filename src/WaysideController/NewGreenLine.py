@@ -2,7 +2,7 @@ from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 from TestGenericWayside import Wayside
-#from GreenLineTestUi import TestWindow
+from GreenLineTestUi import TestWindow
 from PLC import PLC
 import sys
 
@@ -23,15 +23,19 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         #Intialize Wayside class
-        self.WaysideControllerGreen = Wayside(1)
-        self.WaysideControllerGreen2 = Wayside(1)
+        self.WaysideControllerGreen = Wayside(1,True)
+        self.WaysideControllerGreen2 = Wayside(1,True)
+        self.File1 = "GreenLine.txt"
+        self.File2 = "GreenLine2.txt"
         self.blocks1 =101
         self.blocks2 =151
         self.WaysideControllerGreen.setdictionarysizes(1,self.blocks1,7)
         self.WaysideControllerGreen.setCommandedSpeed()
+        self.WaysideControllerGreen.setAuthority()
         self.WaysideControllerGreen2.setdictionarysizes(self.blocks1,self.blocks2,6)
         self.WaysideControllerGreen2.setCommandedSpeed()
-        self.TestUI = False
+        self.WaysideControllerGreen2.setAuthority()        
+        self.TestUI = True
         self.PLCMain = PLC(self.WaysideControllerGreen,self.WaysideControllerGreen2,"Green")
         #Window
 
@@ -108,7 +112,7 @@ class MainWindow(QMainWindow):
         self.maintenanceButton = self.maintenanceButtonSetup()
         #Test UI
         if self.TestUI :
-              self.WaysideControllerGreenTestUI = TestWindow()
+              self.WaysideControllerGreenTestUI = TestWindow(self.WaysideControllerGreen,self.WaysideControllerGreen2)
         #widget setups
     def mainThreadSetup(self):
           self.timerThread = QThread()
@@ -806,15 +810,15 @@ class MainWindow(QMainWindow):
                 j=j+1
                 if j>9:
                  j=0
-                 i=i+1  
-          if(self.maintenanceMode==False):                    
-            if self.WaysideControllerGreen.gates[1]==True:
+                 i=i+1
+          if self.WaysideControllerGreen.gates[1]==True:
                 self.Gate.setText("Block 19 Gate:  UP")
-            else:
-                  self.Gate.setText("Block 19 Gate:  DOWN")
-                  self.PLCMain.GloadValues1()
-                  self.PLCMain.GloadValues2()
-                  self.PLCMain.setswitches()
+          else:
+                  self.Gate.setText("Block 19 Gate:  DOWN")    
+          if(self.maintenanceMode==False):                    
+            self.PLCMain.GloadValues1(self.File1)
+            self.PLCMain.GloadValues2(self.File2)
+            self.PLCMain.setswitches()
 
     def mainEventLoop(self):
           self.updateVisualElements()

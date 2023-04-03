@@ -34,8 +34,9 @@ class PLC():
         self.Wayside2 = Wayside2
         self.Line    = Line
     
-    def GloadValues1(self):
-        file = open("C:\\Users\danek\Documents\GreenLine.txt", "r")
+    def GloadValues1(self,filename):
+        file = open(filename, "r")
+        #file = open(txtfile,"r")
         for i in range(0,100):
             line=file.readline()
             line=line.strip()
@@ -54,22 +55,22 @@ class PLC():
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside1.occupancy[int(line)]               
-                Gswitch1True.append(logic)
+                Gswitch3True.append(logic)
             if(line=="ocT4"):
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside1.occupancy[int(line)]              
-                Gswitch1True.append(logic)
+                Gswitch4True.append(logic)
             if(line=="ocT5"):
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside1.occupancy[int(line)]
-                Gswitch1True.append(logic)
+                Gswitch5True.append(logic)
             if(line=="ocT6"):
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside1.occupancy[int(line)]
-                Gswitch1True.append(logic)
+                Gswitch6True.append(logic)
             # False Path
             if(line=="ocF1"):
                 line=file.readline()
@@ -80,31 +81,31 @@ class PLC():
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside1.occupancy[int(line)]
-                Gswitch1False.append(logic)
+                Gswitch2False.append(logic)
             if(line=="ocF3"):
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside1.occupancy[int(line)]
-                Gswitch1False.append(logic)
+                Gswitch3False.append(logic)
             if(line=="ocF4"):
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside1.occupancy[int(line)]
-                Gswitch1False.append(logic)
+                Gswitch4False.append(logic)
             if(line=="ocF5"):
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside1.occupancy[int(line)]
-                Gswitch1False.append(logic)
+                Gswitch5False.append(logic)
             if(line=="ocF6"):
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside1.occupancy[int(line)]
-                Gswitch1False.append(logic)
+                Gswitch6False.append(logic)
         file.close()
 
-    def GloadValues2(self):
-        file = open("C:\\Users\danek\Documents\GreenLine2.txt", "r")
+    def GloadValues2(self,File2):
+        file = open(File2, "r")
         for i in range(0,100):
             line=file.readline()
             line=line.strip()

@@ -1,5 +1,8 @@
 {
-    "Switches": {},
+    "Switches": {
+        "3": true,
+        "4": true
+    },
     "Lights": {
         "101": true,
         "102": true,

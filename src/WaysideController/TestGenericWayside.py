@@ -6,9 +6,11 @@ import json
 from json import JSONEncoder
 
 class Wayside:
-    def __init__(self,simTime):
+    def __init__(self,simTime,maintenance):
             self.simTime=simTime
+            self.maintenance=maintenance
             self.gates={}
+            self.suggestedAuthority={}
             self.authority={}
             self.suggestedSpeed={}
             self.commandedSpeed={}
@@ -34,7 +36,7 @@ class Wayside:
         
     def setdictionarysizes(self,start,blocks,switches):
           for i in range (start,blocks):
-                self.authority[i] = 0
+                self.suggestedAuthority[i] = 0
           for i in range (start,blocks):
                 self.suggestedSpeed[i] = 0
           for i in range (start,switches):
@@ -54,10 +56,12 @@ class Wayside:
             else:
                 self.commandedSpeed[i]=self.suggestedSpeed[i]
                       
-
-    def setAuthority(self,authority,Block):
-        self.authority[Block]=authority
-
+    def setAuthority(self):
+        for i in self.suggestedAuthority:
+            if self.suggestedAuthority[i]>150 | self.suggestedAuthority[i]<0:
+                self.authority[i]=0
+            else:
+                self.authority[i]=self.suggestedAuthority[i]
     def setOccupancy(self,occupancy,Block):
         self.occupancy[Block]=occupancy
 
@@ -109,6 +113,23 @@ class Wayside:
     def WaysideToCTCInfoR2(self):
         with open(os.path.join(sys.path[0], "Red2CTC.json"), "w") as filename:
             (json.dump(self.WaysideToCTC, filename, indent = 4))
+
+    def readTrackModelToWayside(self):
+        with open(os.path.join(sys.path[0], ".json"), "r") as filename:
+            self.TrackToWayside = json.loads(filename.read())
+
+        # Loading internal inputs data variable
+        self.data["occupancy"]                 = self.occupancy
+        self.data["brokenRail"]               = self.brokenRail
+
+    def readCTCToWayside(self):
+        with open(os.path.join(sys.path[0],".json"),"r") as filename:
+            self.CTCToWayside = json.loads(filename.read())
+        self.data["suggestedSpeed"] =self.suggestedSpeed
+        self.data["RTC"]=self.realTime
+        self.data["authority"]=self.authority
+
+    
 
 def stringRemove(string, n):  
         first = string[: n]   

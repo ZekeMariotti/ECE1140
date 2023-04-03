@@ -15,14 +15,16 @@ class TestWindow(QMainWindow):
         #Intialize Wayside class
         self.WaysideControllerGreen = Wayside1
         self.WaysideControllerGreen2 = Wayside2
-        #self.WaysideController.writeOutputs()
-        #self.WaysideController.readInputs()
+        self.blocks=[]
+        for i in range(0,151):
+             self.blocks.append(str(i))        
 
         #Window
         self.storeAuthority = None
-        self.storeAuthorityBlock = None
+        self.storeOccupancy = None
         self.storeCommandedSpeed = None
-        self.storeCommandedSpeedBlock = None
+        self.storeLight = None
+        self.storeBlock = None
         self.setWindowTitle("Green Line Test UI")
         self.setFixedSize(QSize(600,800))
         self.setMinimumSize(600,800)
@@ -45,18 +47,12 @@ class TestWindow(QMainWindow):
         self.Right5 = self.Switch5ButtonR()
         self.AuthorityLabel = self.AuthorityLabelSetup()
         self.Authority = self.AuthorityInput()
-        self.AuthorityBlock = self. AuthorityBlockInput()
         self.CommandedSpeedLabel = self.CommandedSpeedLabelSetup()
         self.CommandedSpeed = self.CommandedSpeedInput()
         self.CommandedSpeedBlock = self.CommandedSpeedBlockInput()
-        self.OccupancyBlock = self.OccupancyBlockInput()
-        self.OccupancyLabel = self.OccupancyLabelSetup()
-        #self.Occupied = self.OccupiedButton()
-        #self.Unoccupied = self.UnoccupiedButton()
-        self.SignalLabel = self.SignalLabelSetup()
-        self.signalsBlock = self.SignalBlockInput()
-        #self.RedSignal = self.RedButton()
-        #self.GreenSignal = self.GreenButton()
+        self.Occupied = self.OccupiedBoxSetup()
+        self.Broken   = self.BrokenBoxSetup()
+        self.LightColor = self.LightBoxSetup()
         self.GateLabel = self.GateLabelSetup()
         self.Up = self.GateUp()
         self.Down = self.GateDown()
@@ -80,7 +76,7 @@ class TestWindow(QMainWindow):
     def AuthorityLabelSetup(self):
           Auth = QLabel()
           Auth.setFont(self.labelFont)
-          Auth.setText("Authority            Block")
+          Auth.setText("Authority")
           Auth.setParent(self)
           Auth.move(50,-70)
           return(Auth)
@@ -88,7 +84,7 @@ class TestWindow(QMainWindow):
     def CommandedSpeedLabelSetup(self):
           CSL = QLabel()
           CSL.setFont(self.labelFont)
-          CSL.setText("Commanded Speed       Block")
+          CSL.setText("Commanded Speed")
           CSL.setParent(self)
           CSL.move(20,20)
           return(CSL)
@@ -275,68 +271,56 @@ class TestWindow(QMainWindow):
           return(Down)
 
     def AuthorityInput(self):
-          AInput = QLineEdit()
+          AInput = QComboBox()
           AInput.setFixedSize(QSize(50,20))
+          AInput.addItems(self.blocks)
          #AInput.textChanged.connect(self.setAuthorityTextChanged)
           AInput.setParent(self)
-          AInput.move(50,200)
+          AInput.move(100,500)
           return(AInput)
-    
-    def AuthorityBlockInput(self):
-          ABlock = QComboBox()
-          ABlock.setFixedSize(QSize(50,20))
-         #AInput.textChanged.connect(self.setAuthorityTextChanged)
-          ABlock.setParent(self)
-          ABlock.move(150,200)
-          return(ABlock)
      
     def CommandedSpeedInput(self):
-          CSInput = QLineEdit()
+          CSInput = QComboBox()
           CSInput.setFixedSize(QSize(50,20))
+          CSInput.addItems(self.blocks)
          #AInput.textChanged.connect(self.setAuthorityTextChanged)
           CSInput.setParent(self)
-          CSInput.move(50,300)
+          CSInput.move(50,500)
           return(CSInput)
     
     def CommandedSpeedBlockInput(self):
           CSBlock = QComboBox()
           CSBlock.setFixedSize(QSize(50,20))
+          CSBlock.addItems(self.blocks)
          #AInput.textChanged.connect(self.setAuthorityTextChanged)
           CSBlock.setParent(self)
-          CSBlock.move(150,300)
+          CSBlock.move(50,550)
           return(CSBlock)   
     
-    def OccupancyLabelSetup(self):
-          OblockI = QLabel()
-          OblockI.setFont(self.labelFont)
-          OblockI.setText("Block") 
-          OblockI.setParent(self)
-          OblockI.move(60,220)
-          return(OblockI)
+    def OccupiedBoxSetup(self):
+          OBox = QComboBox()
+          OBox.setFixedSize(QSize(80,20))
+          OBox.addItems(["Occupied","Unoccupied"])
+          OBox.setParent(self)
+          OBox.move(50,600)
+          return(OBox)
     
-    def SignalLabelSetup(self):
-          SignalLabel = QLabel()
-          SignalLabel.setFont(self.labelFont)
-          SignalLabel.setText("Block") 
-          SignalLabel.setParent(self)
-          SignalLabel.move(60,320)
-          return(SignalLabel)
+    def LightBoxSetup(self):
+          LBox = QComboBox()
+          LBox.setFixedSize(QSize(60,20))
+          LBox.addItems(["Green","Red"])
+          LBox.setParent(self)
+          LBox.move(50,650)  
+          return(LBox)   
+      
     
-    def OccupancyBlockInput(self):
-          OBlock = QComboBox()
-          OBlock.setFixedSize(QSize(50,20))
-         #AInput.textChanged.connect(self.setAuthorityTextChanged)
-          OBlock.setParent(self)
-          OBlock.move(50,500)
-          return(OBlock) 
-    
-    def SignalBlockInput(self):
-          SBlock = QComboBox()
-          SBlock.setFixedSize(QSize(50,20))
-         #AInput.textChanged.connect(self.setAuthorityTextChanged)
-          SBlock.setParent(self)
-          SBlock.move(50,600)
-          return(SBlock)
+    def BrokenBoxSetup(self):
+          BBox = QComboBox()
+          BBox.setFixedSize(QSize(60,20))
+          BBox.addItems(["Good","Broken"])
+          BBox.setParent(self)
+          BBox.move(50,700)  
+          return(BBox) 
 
     #Clicking stuff    
     def Switch1ButtonLClick(self):
