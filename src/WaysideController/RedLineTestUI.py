@@ -13,8 +13,8 @@ class TestWindow(QMainWindow):
         super().__init__()
 
         #Intialize Wayside class
-        self.WaysideControllerGreen = Wayside1
-        self.WaysideControllerGreen2 = Wayside2
+        self.WaysideControllerRed = Wayside1
+        self.WaysideControllerRed2 = Wayside2
         self.blocks=[]
         for i in range(0,151):
              self.blocks.append(str(i))        
@@ -26,7 +26,7 @@ class TestWindow(QMainWindow):
         self.storeLight = None
         self.storeBlock = None
         self.storeState = None
-        self.setWindowTitle("Green Line Test UI")
+        self.setWindowTitle("Red Line Test UI")
         self.setFixedSize(QSize(600,800))
         self.setMinimumSize(600,800)
         self.move(0,0)
@@ -190,7 +190,7 @@ class TestWindow(QMainWindow):
           Output1 = QLabel()
           Output1.setFont(self.labelFont)
 
-          if self.WaysideControllerGreen.getSwitchPositions(1)==True:
+          if self.WaysideControllerRed.getSwitchPositions(1)==True:
                 Output1.setText("12 to 13")
           else:
                 Output1.setText("1 to 13")
@@ -203,7 +203,7 @@ class TestWindow(QMainWindow):
           Output2 = QLabel()
           Output2.setFont(self.labelFont)
 
-          if self.WaysideControllerGreen.getSwitchPositions(2)==True:
+          if self.WaysideControllerRed.getSwitchPositions(2)==True:
                 Output2.setText("29 to 30")
           else:
                 Output2.setText("29 to 150")
@@ -216,7 +216,7 @@ class TestWindow(QMainWindow):
           Output3 = QLabel()
           Output3.setFont(self.labelFont)
 
-          if self.WaysideControllerGreen.getSwitchPositions(3)==True:
+          if self.WaysideControllerRed.getSwitchPositions(3)==True:
                 Output3.setText("57 to Yard")
           else:
                 Output3.setText("57 to 58")
@@ -229,7 +229,7 @@ class TestWindow(QMainWindow):
           Output4 = QLabel()
           Output4.setFont(self.labelFont)
 
-          if self.WaysideControllerGreen.getSwitchPositions(4)==True:
+          if self.WaysideControllerRed.getSwitchPositions(4)==True:
                 Output4.setText("76 to 77")
           else:
                 Output4.setText("77 to 101")
@@ -242,7 +242,7 @@ class TestWindow(QMainWindow):
           Output5 = QLabel()
           Output5.setFont(self.labelFont)
 
-          if self.WaysideControllerGreen.getSwitchPositions(5)==True:
+          if self.WaysideControllerRed.getSwitchPositions(5)==True:
                 Output5.setText("85 to 86")
           else:
                 Output5.setText("100 to 85")
@@ -379,41 +379,44 @@ class TestWindow(QMainWindow):
           
     #Clicking stuff    
     def Switch1ButtonLClick(self):
-          self.WaysideControllerGreen.setSwitchPositions(True,1)
-    
-    def Switch1ButtonRClick(self):
-          self.WaysideControllerGreen.setSwitchPositions(False,1)
-    
-    def Switch2ButtonLClick(self):
-          self.WaysideControllerGreen.setSwitchPositions(True,2)
-    
-    def Switch2ButtonRClick(self):
-          self.WaysideControllerGreen.setSwitchPositions(False,2)
-    
-    def Switch3ButtonLClick(self):
-          self.WaysideControllerGreen.setSwitchPositions(True,3)
-    
-    def Switch3ButtonRClick(self):
-          self.WaysideControllerGreen.setSwitchPositions(False,3)
-    
-    def Switch4ButtonLClick(self):
-          self.WaysideControllerGreen.setSwitchPositions(True,4)
-    
-    def Switch4ButtonRClick(self):
-          self.WaysideControllerGreen.setSwitchPositions(False,4)          
-    
-    def Switch5ButtonLClick(self):
-          self.WaysideControllerGreen.setSwitchPositions(True,5)          
-          
-    def Switch5ButtonRClick(self):
-          self.WaysideControllerGreen.setSwitchPositions(False,5)
-    
-    def UpClicked(self):
-          self.WaysideControllerGreen.setGatePositions(True)
-          
-    def DownClicked(self):
-          self.WaysideControllerGreen.setGatePositions(False)
+          self.WaysideControllerRed.setSwitchPositions(True,1)
+          self.WaysideControllerRed2.setSwitchPositions(True,1)
 
+    def Switch1ButtonRClick(self):
+          self.WaysideControllerRed.setSwitchPositions(False,1)
+          self.WaysideControllerRed2.setSwitchPositions(False,1)
+
+    def Switch2ButtonLClick(self):
+          self.WaysideControllerRed.setSwitchPositions(True,2)
+          self.WaysideControllerRed2.setSwitchPositions(True,2)
+
+    def Switch2ButtonRClick(self):
+          self.WaysideControllerRed.setSwitchPositions(False,2)
+          self.WaysideControllerRed2.setSwitchPositions(False,2)    
+    def Switch3ButtonLClick(self):
+          self.WaysideControllerRed.setSwitchPositions(True,3)
+          self.WaysideControllerRed2.setSwitchPositions(True,3)    
+    def Switch3ButtonRClick(self):
+          self.WaysideControllerRed.setSwitchPositions(False,3)
+          self.WaysideControllerRed2.setSwitchPositions(False,3)    
+    def Switch4ButtonLClick(self):
+          self.WaysideControllerRed.setSwitchPositions(True,4)
+          self.WaysideControllerRed2.setSwitchPositions(True,4)    
+    def Switch4ButtonRClick(self):
+          self.WaysideControllerRed.setSwitchPositions(False,4)          
+          self.WaysideControllerRed2.setSwitchPositions(False,4)    
+    def Switch5ButtonLClick(self):
+          self.WaysideControllerRed.setSwitchPositions(True,5)          
+          self.WaysideControllerRed2.setSwitchPositions(True,5)
+    def Switch5ButtonRClick(self):
+          self.WaysideControllerRed.setSwitchPositions(False,5)
+          self.WaysideControllerRed2.setSwitchPositions(False,5)    
+    def UpClicked(self):
+          self.WaysideControllerRed.setGatePositions(True)
+          self.WaysideControllerRed2.setGatePositions(True)          
+    def DownClicked(self):
+          self.WaysideControllerRed.setGatePositions(False)
+          self.WaysideControllerRed2.setGatePositions(False)
     def setCommanded(self):
           self.storeCommandedSpeed = self.CommandedSpeed.currentText()
 
@@ -437,42 +440,42 @@ class TestWindow(QMainWindow):
                 x=True
           else:
                 x=False
-          if int(self.storeBlock)<101:
-                self.WaysideControllerGreen.setOccupancy(x,int(self.storeBlock))
+          if int(self.storeBlock)<51:
+                self.WaysideControllerRed.setOccupancy(x,int(self.storeBlock))
           else:
-                self.WaysideControllerGreen2.setOccupancy(x,int(self.storeBlock)) 
+                self.WaysideControllerRed2.setOccupancy(x,int(self.storeBlock)) 
 
     def LightClick(self):
           if self.storeLight == "Green":
                 x=True
           else:
                 x=False
-          if int(self.storeBlock)<101:
-                self.WaysideControllerGreen.setSignalLights(x,int(self.storeBlock))
+          if int(self.storeBlock)<51:
+                self.WaysideControllerRed.setSignalLights(x,int(self.storeBlock))
           else:
-                self.WaysideControllerGreen2.setSignalLights(x,int(self.storeBlock)) 
+                self.WaysideControllerRed2.setSignalLights(x,int(self.storeBlock)) 
 
     def BrokenClick(self):
           if self.storeState == "Broken":
                 x=True
           else:
                 x=True
-          if int(self.storeBlock)<101:
-                self.WaysideControllerGreen.setBrokenRail(x,int(self.storeBlock))
+          if int(self.storeBlock)<51:
+                self.WaysideControllerRed.setBrokenRail(x,int(self.storeBlock))
           else:
-                self.WaysideControllerGreen2.setBrokenRail(x,int(self.storeBlock))  
+                self.WaysideControllerRed2.setBrokenRail(x,int(self.storeBlock))  
 
     def CommandedClick(self):
-          if int(self.storeBlock)<101:
-                self.WaysideControllerGreen.setACommandedSpeed(int(self.storeCommandedSpeed),int(self.storeBlock))
+          if int(self.storeBlock)<51:
+                self.WaysideControllerRed.setACommandedSpeed(int(self.storeCommandedSpeed),int(self.storeBlock))
           else:
-                self.WaysideControllerGreen2.setACommandedSpeed(int(self.storeCommandedSpeed),int(self.storeBlock))
+                self.WaysideControllerRed2.setACommandedSpeed(int(self.storeCommandedSpeed),int(self.storeBlock))
 
     def AuthorityClick(self):
-          if int(self.storeBlock)<101:
-                self.WaysideControllerGreen.setAAuthority(int(self.storeAuthority),int(self.storeBlock))
+          if int(self.storeBlock)<51:
+                self.WaysideControllerRed.setAAuthority(int(self.storeAuthority),int(self.storeBlock))
           else:
-                self.WaysideControllerGreen2.setAAuthority(int(self.storeAuthority),int(self.storeBlock)) 
+                self.WaysideControllerRed2.setAAuthority(int(self.storeAuthority),int(self.storeBlock)) 
 
 if(__name__ == "__main__"):
     app = QApplication(sys.argv)

@@ -25,8 +25,8 @@ class MainWindow(QMainWindow):
         #Intialize Wayside class
         self.WaysideControllerGreen = Wayside(1,True)
         self.WaysideControllerGreen2 = Wayside(1,True)
-        self.File1 = "GreenLine.txt"
-        self.File2 = "GreenLine2.txt"
+        self.File1 = "C:\\Users\danek\Documents\GreenLine.txt"
+        self.File2 = "C:\\Users\danek\Documents\GreenLine2.txt"
         self.blocks1 =101
         self.blocks2 =151
         self.WaysideControllerGreen.setdictionarysizes(1,self.blocks1,7)
@@ -712,13 +712,15 @@ class MainWindow(QMainWindow):
                 if j>9:
                  j=0
                  i=i+1
+          i=10
+          j=1
           for k in range(101,self.blocks2):
                 value=self.WaysideControllerGreen2.commandedSpeed[k]
                 self.Authority.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
-                        j=0
-                        i=i+1 
+                  j=0
+                  i=i+1 
           #self.CommandedSpeed
           i=0
           j=1

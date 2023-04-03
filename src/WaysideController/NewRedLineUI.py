@@ -3,6 +3,7 @@ from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 from TestGenericWayside import Wayside
 from PLC import PLC
+from RedLineTestUI import TestWindow
 import sys
 
 #global variables
@@ -27,6 +28,7 @@ class MainWindowR(QMainWindow):
         self.WaysideControllerRed2.setCommandedSpeed()
         self.WaysideControllerRed.setAuthority()
         self.WaysideControllerRed2.setAuthority()
+        self.TestUI = True
         #Window
 
         self.setWindowTitle("Red Line")
@@ -100,6 +102,8 @@ class MainWindowR(QMainWindow):
         self.maintenanceMode = False
         self.maintenanceButton = self.maintenanceButtonSetup()   
         self.PLCMain = PLC(self.WaysideControllerRed,self.WaysideControllerRed2,"Red")
+        if self.TestUI :
+              self.WaysideControllerRedTestUI = TestWindow(self.WaysideControllerRed,self.WaysideControllerRed2)        
        
 
     def mainThreadSetup(self):
@@ -792,14 +796,18 @@ class MainWindowR(QMainWindow):
           i=0
           j=1
           for k in range(1,51):
-                if value == self.WaysideControllerRed.brokenRail[k]== True:
+                value = self.WaysideControllerRed.brokenRail[k]        
+                if value == True:
                         self.BrokenRail.setItem(i,j,QTableWidgetItem(str("ERROR")))
                         j=j+1
                 if j>9:
                  j=0
                  i=i+1
+          j=1
+          i=5
           for k in range(51,77):
-                if value == self.WaysideControllerRed2.brokenRail[k]== True:
+                value = self.WaysideControllerRed2.brokenRail[k]             
+                if value == True:
                         self.BrokenRail.setItem(i,j,QTableWidgetItem(str("ERROR")))
                         j=j+1
                 if j>9:
@@ -818,6 +826,8 @@ class MainWindowR(QMainWindow):
                 if j>9:
                  j=0
                  i=i+1
+          i=5
+          j=1
           for k in range(51,77):
                 if self.WaysideControllerRed2.signalLights[k]==True:
                      value="G"
@@ -832,14 +842,18 @@ class MainWindowR(QMainWindow):
           i=0
           j=1
           for k in range(1,51):
-                if value == self.WaysideControllerRed.occupancy[k]:
+                value = self.WaysideControllerRed.occupancy[k]
+                if value == True:
                         self.Occupancy.setItem(i,j,QTableWidgetItem(str("X")))
                         j=j+1
                 if j>9:
                         j=0
-                        i=i+1        
+                        i=i+1  
+          i=5
+          j=1      
           for k in range(51,77):
-                if value == self.WaysideControllerRed2.occupancy[k]:
+                value = self.WaysideControllerRed2.occupancy[k]
+                if value == True:
                         self.Occupancy.setItem(i,j,QTableWidgetItem(str("X")))
                         j=j+1
                 if j>9:
@@ -866,6 +880,8 @@ app = QApplication(sys.argv)
 
 mainWindow = MainWindowR()
 mainWindow.show()
+if (mainWindow.TestUI) :
+      mainWindow.WaysideControllerRedTestUI.show()
 
 app.exec()
         

@@ -9,7 +9,7 @@
         "7": true
     },
     "Lights": {
-        "51": true,
+        "51": false,
         "52": true,
         "53": true,
         "54": true,
@@ -37,7 +37,7 @@
         "76": true
     },
     "Occupancy": {
-        "51": false,
+        "51": true,
         "52": false,
         "53": false,
         "54": false,
@@ -65,7 +65,7 @@
         "76": false
     },
     "BrokenRail": {
-        "51": false,
+        "51": true,
         "52": false,
         "53": false,
         "54": false,

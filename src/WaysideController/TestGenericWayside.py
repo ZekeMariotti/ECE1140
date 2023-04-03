@@ -55,13 +55,18 @@ class Wayside:
                 self.commandedSpeed[i]=0
             else:
                 self.commandedSpeed[i]=self.suggestedSpeed[i]
-                      
+    def setACommandedSpeed(self,Value,block):
+          self.commandedSpeed[block]=Value         
     def setAuthority(self):
         for i in self.suggestedAuthority:
             if self.suggestedAuthority[i]>150 | self.suggestedAuthority[i]<0:
                 self.authority[i]=0
             else:
                 self.authority[i]=self.suggestedAuthority[i]
+
+    def setAAuthority(self,Value,block):
+         self.authority[block]=Value
+         
     def setOccupancy(self,occupancy,Block):
         self.occupancy[Block]=occupancy
 
@@ -71,8 +76,8 @@ class Wayside:
     def setTrackOperational(self, trackOperational):
             self.trackOperational = trackOperational
 
-    def setBrokenRail(self,brokenRail):
-            self.brokenrail = brokenRail
+    def setBrokenRail(self,logic,number):
+            self.brokenRail[number] = logic
 
     def setSwitchPositions(self,logic,number):
             self.switches[number]=logic
@@ -80,8 +85,8 @@ class Wayside:
     def setGatePositions(self,Direction):
             self.gates[1]=Direction
 
-    def setSignalLights(self,Color):
-            self.signalLights = Color
+    def setSignalLights(self,logic,number):
+            self.signalLights[number]=logic
 
     def convertTime(self):
             inputTime = stringRemove(self.time, 26)
