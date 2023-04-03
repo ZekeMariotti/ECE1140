@@ -14,7 +14,7 @@ class trackModelSignals(QObject):
     getOffInput = pyqtSignal(int, int, int)
     getOnInput = pyqtSignal(int, int)
     getAuthInput = pyqtSignal(int, int)
-    getCSpeedInput = pyqtSignal(int, int)
+    getCSpeedInput = pyqtSignal(float, int)
     getRealTimeClockInput = pyqtSignal(str)
 
 

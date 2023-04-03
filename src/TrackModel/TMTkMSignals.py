@@ -2,7 +2,7 @@ from PyQt6.QtCore import QObject, pyqtSignal
 
 class trainModelTrackModelSignals(QObject):
     passengersExitingSignal = pyqtSignal(int, int)
-    currBlockSignal = pyqtSignal(int, int)
+    currBlockSignal = pyqtSignal(int, int, bool)
 
     authoritySignal = pyqtSignal(int, int)
     commandedSpeedSignal = pyqtSignal(int, float)

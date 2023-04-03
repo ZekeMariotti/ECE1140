@@ -3,7 +3,7 @@ from PyQt6.QtCore import QObject, pyqtSignal
 class trainModelTrackModelSignals(QObject):
     # Train Model to Track Model Signals
     passengersExitingSignal  = pyqtSignal(int, int)
-    currBlockSignal          = pyqtSignal(int, int)
+    currBlockSignal          = pyqtSignal(int, int, int, bool)
     prevBlockSignal          = pyqtSignal(int, int)
     
     # Track Model to Train Model Signals

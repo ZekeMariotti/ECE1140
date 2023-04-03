@@ -298,6 +298,8 @@ class TrainControllerSW:
     def autoSetServiceBrake(self):
         if (self.inputs.authority == 0):
             self.outputs.serviceBrakeCommand = True
+        elif (self.inputs.commandedSpeed == 0):   # ADDED IF FOR COMMANDED SPEED
+            self.outputs.serviceBrakeCommand = True
         elif(self.inputs.currentSpeed > self.inputs.commandedSpeed + 0.5):
             self.outputs.serviceBrakeCommand = True
         else:

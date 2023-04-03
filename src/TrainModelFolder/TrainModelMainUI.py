@@ -16,6 +16,7 @@ sys.path.append(__file__.replace("\TrainModelFolder\TrainModelMainUI.py", ""))
 
 from TrainModelFolder.TrainModel import TrainModel
 from TrainModelFolder.TrainModelSignals import *
+from Integration.TMTkMSignals import *
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
@@ -449,7 +450,7 @@ class TrainModelUI(QWidget):
 
     def mainTimerSetup(self):     
         mainTimer = QTimer()
-        mainTimer.setInterval(100)
+        mainTimer.setInterval(1000)
         mainTimer.timeout.connect(self.updateOutputs)
         mainTimer.setParent(self)
         mainTimer.start()
@@ -462,14 +463,16 @@ class TrainModelUI(QWidget):
         tempTimeDiff = self.TrainModel.findTimeDifference()
         self.TrainModel.failureStates()
         self.TrainModel.brakeCaclulator()
-        self.TrainModel.findCurrentAcceleration()
-        self.TrainModel.findCurrentVelocity()
-        self.TrainModel.findCurrentDistance()
+        self.TrainModel.findCurrentAcceleration(tempTimeDiff)
+        self.TrainModel.findCurrentVelocity(tempTimeDiff)
+        self.TrainModel.findCurrentDistance(tempTimeDiff)
         self.TrainModel.findBlockExiting()
         self.TrainModel.airConditioningControl()
-        if self.TrainModel.data["atStation"]:
+        if (self.TrainModel.data["velocity"] == 0) & (self.TrainModel.data["lDoors"] | self.TrainModel.data["rDoors"]) & (~self.TrainModel.data["runOnce"]):
+        #if self.TrainModel.data["atStation"]:
             self.TrainModel.passengersGettingOff()
-            self.TrainModel.passengersGettingOn()
+            TMTkMSignals.passengersExitingSignal.emit(self.TrainModel.TrainID, self.TrainModel.data["passengersOff"])
+            self.TrainModel.data["passengersOff"] = 0
         self.TrainModel.findCurrentMass()
         if tempTimeDiff != 0:
             self.TrainModel.moveToPrevious()
@@ -479,7 +482,8 @@ class TrainModelUI(QWidget):
         self.TrainModel.writeTMtoTC()
 
         # Update Left Column of data outputs
-        self.realTimeClockOutput.setText(str(ISO8601ToHumanTime("2023-02-23T00:00:06.0000000-05:00"))[:-6])
+        #-21 to -13
+        self.realTimeClockOutput.setText(str(ISO8601ToHumanTime(self.TrainModel.data["rtc"]))[-21:-13])
         self.passengersOutput.setText(str(self.TrainModel.data["passengers"]))
         self.crewOutput.setText(str(self.TrainModel.data["crew"]))
         self.undergroundOutput.setText(str(self.TrainModel.data["underground"]))
@@ -548,7 +552,6 @@ class TrainModelUI(QWidget):
         else:
             self.iLightsOutput.setStyleSheet("background-color: white")
 
-        #print(f'Updater: ID: {self.TrainModel.data["id"]}, State: {self.TrainModel.data["eLights"]}')
         # Setting external lights output as well as color
         self.eLightsOutput.setText(self.lightState(self.TrainModel.data["eLights"]))
         if (self.TrainModel.data["eLights"] == 1):

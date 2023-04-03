@@ -3,11 +3,12 @@ import sys
 sys.path.append(__file__.replace("\TrainModelFolder\TrainModel.py", ""))
 
 from random import randint
-from math import cos, asin
+from math import cos, asin, exp
 from datetime import *
 from TrainModelFolder.TrainModelSignals import *
 from Integration.TMTkMSignals import *
 from Integration.TMTCSignals import *
+from Integration.TimeSignals import *
 from PyQt6.QtCore import *
 
 class TrainModel():
@@ -131,7 +132,7 @@ class TrainModel():
             "rtc"              : "",             # Real Time Clock in ISO 8601 Format
             "prevRTC"          : "",             # Previous State RTC in ISO 8601 Format
             "simSpeed"         : 1,              # Simulation Speed of the system
-            "passengers"       : 0,              # Number of passengers on the train
+            "passengers"       : 222,            # Number of passengers on the train
             "passengersOn"     : 0,              # Number of passengers getting on the train
             "passengersOff"    : 0,              # Number of passengers getting off the train
             "crew"             : 1,              # Number of crew members on the train (Default of driver and conductor)
@@ -157,6 +158,7 @@ class TrainModel():
             "currTemp"         : 68.0,           # Current temperature inside the train in degrees fahrenheit
             "goalTemp"         : 68.0,           # Temperature goal given by the user in degrees fahrenehit
             "numCars"          : 1,              # Length of the train based on number of cars attached to the train
+            "runOnce"          : False,          # Boolean used for calculating passengers on and off at a station
         }
 
         # Dictionary used for intercommunication between the track model and train model only
@@ -166,7 +168,7 @@ class TrainModel():
             "distance"         : 0.0,            # Distance the train has traveled since the last time period in meters
             "remDistance"      : 0.1,            # Distance remaining in the current block, if any, in meters (Initialized as 10 meters for coming out of the yard)
             "switch"           : True,           # If the current block is attached to a switch, True if on a switch, false if otherwise
-            "switchState"      : 0,              # State of the switch if the current block is attached to one (default is 0)
+            "switchState"      : 1,              # State of the switch if the current block is attached to one (default is 0)
             "blockLength"      : 10.0,           # Length of the current block, provided by the Track Model
             "elevation"        : 0.0,            # Relative elevation increase of the block, provided by the Track Model
             "trainLine"        : "",             # Line the train is on
@@ -218,7 +220,15 @@ class TrainModel():
         TMTCSignals.internalLightCommandSignal.connect(self.internalLightCommandSignalHandler)
         TMTCSignals.stationAnnouncementSignal.connect(self.stationAnnouncementSignalHandler)
 
+        # Time From Main Signal
+        rtcSignals.rtcSignal.connect(self.realTimeHandler)
+
+        self.data["rtc"] = datetime.now().isoformat() + "0-05:00"
+        self.data["prevRTC"] = datetime.now().isoformat() + "0-05:00"
         self.data["length"] = self.constants["length"] * self.data["numCars"]
+
+    def realTimeHandler(self, rtc):
+        self.data["rtc"] = rtc
 
     def setFirstSection(self):
         if self.trackData["trainLine"] == "Green":
@@ -300,20 +310,20 @@ class TrainModel():
 
     # Data Handler for Outputs to the Train Controller
     def writeTMtoTC(self):
-        #print(f'{self.TrainID}, {self.data["currTemp"]}')
         TMTCSignals.commandedSpeedSignal.emit(self.TrainID, self.passThroughData["commandedSpeed"])
         TMTCSignals.currentSpeedSignal.emit(self.TrainID, self.data["velocity"])
         TMTCSignals.authoritySignal.emit(self.TrainID, self.passThroughData["authority"])
         TMTCSignals.undergroundSignal.emit(self.TrainID, self.data["underground"])
         TMTCSignals.temperatureSignal.emit(self.TrainID, self.data["currTemp"])
-        TMTCSignals.stationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][0])
-        TMTCSignals.platformSideSignal.emit(self.TrainID, self.passThroughData["beacon"][1])
-        TMTCSignals.nextStationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][2])
+        if (self.passThroughData["beacon"][3] == 1):
+            TMTCSignals.stationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][0])
+            TMTCSignals.platformSideSignal.emit(self.TrainID, self.passThroughData["beacon"][1])
+            TMTCSignals.nextStationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][2])
         TMTCSignals.isBeaconSignal.emit(self.TrainID, self.passThroughData["beacon"][3])
         TMTCSignals.externalLightsStateSignal.emit(self.TrainID, self.data["eLights"])
         TMTCSignals.internalLightsStateSignal.emit(self.TrainID, self.data["iLights"])
-        TMTCSignals.leftDoorStateSignal.emit(self.TrainID, self.data["rDoors"])
-        TMTCSignals.rightDoorStateSignal.emit(self.TrainID, self.data["lDoors"])
+        TMTCSignals.leftDoorStateSignal.emit(self.TrainID, self.data["lDoors"])
+        TMTCSignals.rightDoorStateSignal.emit(self.TrainID, self.data["rDoors"])
         TMTCSignals.serviceBrakeStateSignal.emit(self.TrainID, self.data["sBrakeState"])
         TMTCSignals.emergencyBrakeStateSignal.emit(self.TrainID, self.data["eBrakeState"])
         TMTCSignals.serviceBrakeStatusSignal.emit(self.TrainID, self.data["brakeStatus"])
@@ -348,7 +358,6 @@ class TrainModel():
 
     # External Light Command input handler
     def externalLightCommandSignalHandler(self, id, state):
-        #print(f'ID: {id}, State: {state}')
         if (id == self.TrainID):
             self.data["eLights"] = state
 
@@ -364,16 +373,13 @@ class TrainModel():
 
     # Data Handler for Outputs to the Track Model
     def writeTMtoTkM(self):
-        TMTkMSignals.passengersExitingSignal.emit(self.TrainID, self.data["passengersOff"])
-        TMTkMSignals.currBlockSignal.emit(self.TrainID, self.trackData["currBlock"])
-        #TMTkMSignals.prevBlockSignal.emit(self.TrainID, self.trackData["prevBlock"])        
+        TMTkMSignals.currBlockSignal.emit(self.TrainID, self.trackData["currBlock"], self.trackData["prevBlock"], self.trackData["overflow"])
 
     # Data Handlers for Inputs from the Track Model
     # Authority Input Handler
     def authoritySignalHandler(self, id, numBlocks):
         if (id == self.TrainID):
             self.passThroughData["authority"] = numBlocks
-            #TMTCSignals.authoritySignal.emit(self.TrainID, numBlocks)
     
     # Commanded Speed Input Handler
     def commandedSpeedSignalHandler(self, id, cmdSpeed):
@@ -383,7 +389,9 @@ class TrainModel():
     # Passengers Entering Input Handler
     def passengersEnteringSignalHandler(self, id, passengers):
         if (id == self.TrainID):
+            print("Passengers On: ", passengers)
             self.data["passengersOn"] = passengers
+            self.passengersGettingOn()
 
     # Underground State Input Handler
     def undergroundStateSignalHandler(self, id, state):
@@ -397,6 +405,8 @@ class TrainModel():
             self.passThroughData["beacon"][1] = platformSide
             self.passThroughData["beacon"][2] = nextStationName
             self.passThroughData["beacon"][3] = isBeacon
+            a = blockCount + 1
+            b = fromSwitch
 
     # Switch Input Handler
     def switchSignalHandler(self, id, state):
@@ -419,27 +429,27 @@ class TrainModel():
             self.trackData["elevation"] = height
 
     # Function to run all internal methods when the method is called by the updater in the UI
-    def runFunctions(self): 
-        #self.readTrainControllerToTrainModel()
-        #self.readTrackModelToTrainModel()
-        tempTimeDiff = self.findTimeDifference()
-        self.failureStates()
-        self.brakeCaclulator()
-        self.findCurrentAcceleration()
-        self.findCurrentVelocity()
-        self.findCurrentDistance()
-        self.findBlockExiting()
-        self.airConditioningControl()
-        if self.data["atStation"]:
-            self.passengersGettingOff()
-            self.passengersGettingOn()
-        self.findCurrentMass()
-        if tempTimeDiff != 0:
-            self.moveToPrevious()
-        #self.writeTrainModelToTrackModel()
-        #self.writeTrainModelToTrainController()
-        self.writeTMtoTkM()
-        self.writeTMtoTC()
+    #def runFunctions(self): 
+    #    #self.readTrainControllerToTrainModel()
+    #    #self.readTrackModelToTrainModel()
+    #    tempTimeDiff = self.findTimeDifference()
+    #    self.failureStates()
+    #    self.brakeCaclulator()
+    #    self.findCurrentAcceleration(tempTimeDiff)
+    #    self.findCurrentVelocity(tempTimeDiff)
+    #    self.findCurrentDistance(tempTimeDiff)
+    #    self.findBlockExiting()
+    #    self.airConditioningControl()
+    #    if self.data["atStation"]:
+    #        self.passengersGettingOff()
+    #        self.passengersGettingOn()
+    #    self.findCurrentMass()
+    #    if tempTimeDiff != 0:
+    #        self.moveToPrevious()
+    #    #self.writeTrainModelToTrackModel()
+    #    #self.writeTrainModelToTrainController()
+    #    self.writeTMtoTkM()
+    #    self.writeTMtoTC()
         
     # Function to move the current velocity and acceleration to previous in order to calculate next time periods values
     def moveToPrevious(self):
@@ -477,19 +487,21 @@ class TrainModel():
             if(powerForce > 120000):
                 powerForce = 120000
 
-        # Deal with the force from brakes, if any
-        if (self.data["eBrakeState"] | self.data["sBrakeState"]):
-            brakeForce = self.data["acceleration"] * self.data["mass"]
+        # If the Service Brake is pulled
+        if (self.data["sBrakeState"]):
+            brakeForce = self.constants["serviceBrake"] * self.data["mass"]
+
+        # If the Emergency Brake is pulled
+        if (self.data["eBrakeState"]):
+            brakeForce = self.constants["emergencyBrake"] * self.data["mass"]
 
         # Calculate the sum of the forces and current Acceleration
-        #print("powerForce: ", powerForce, " brakeForce: ", brakeForce, " frictionalForce: ", frictionalForce, " gravitationalForce: ", gravitationalForce)
         forces = powerForce + brakeForce + frictionalForce + gravitationalForce
         tempAcceleration = forces / self.data["mass"]
 
         # Limit the acceleration to follow F = ma
         if (time > 0):
             self.data["acceleration"] = tempAcceleration if tempAcceleration <= (forces / self.data["mass"]) else (forces / self.data["mass"])
-        #print(self.data["acceleration"])
 
         # Limits the power of the engine
         #if self.data["power"] > 120000:
@@ -543,7 +555,7 @@ class TrainModel():
         currTime = datetime.fromisoformat(self.data["rtc"])
         prevTime = datetime.fromisoformat(self.data["prevRTC"])
         newTime = currTime - prevTime
-        return int(newTime.seconds)
+        return float(newTime.total_seconds())
 
     # Finds the Block the train is on and the Block the train is exiting
     def findBlockExiting(self):
@@ -570,10 +582,8 @@ class TrainModel():
             
     # Finds the next block in sequence based on a switch state saved internally
     def findNextBlock(self):
-        #print(self.trackData["trackSection"][0], self.trackData["trackSection"][1], self.trackData["switch"], self.trackData["switchState"])
         # If the train is on the green line
         if self.trackData["trainLine"] == "Green":
-
             # If the train is in the yard, done with it's cycle
             if (self.trackData["trackSection"] == [0, 0]):
                 self.trackData["prevBlock"] = self.trackData["currBlock"]
@@ -635,7 +645,6 @@ class TrainModel():
                 
             # Case where the train needs to just increase block by 1
             else:
-                print("regular block")
                 if self.trackData["trackSection"][0] < self.trackData["trackSection"][1]:
                     self.trackData["prevBlock"] = self.trackData["currBlock"]
                     return (self.trackData["currBlock"] + 1)
@@ -729,7 +738,6 @@ class TrainModel():
                     return 333
                         # Case where the train needs to just increase block by 1
             else:
-                print("regular block")
                 if self.trackData["trackSection"][0] < self.trackData["trackSection"][1]:
                     self.trackData["prevBlock"] = self.trackData["currBlock"]
                     return (self.trackData["currBlock"] + 1)
@@ -741,13 +749,13 @@ class TrainModel():
 
 
     # Air Conditioning System that changes based on user input
-    def airConditioningControl(self):
+    def airConditioningControl(self, time = 1):
         if self.data["currTemp"] < self.data["goalTemp"]:
-            self.data["currTemp"] += 0.5
+            self.data["currTemp"] += round(0.5 * time, 2)
         elif self.data["currTemp"] == self.data["goalTemp"]:
             self.data["currTemp"] += 0
         else:
-            self.data["currTemp"] -= 0.5
+            self.data["currTemp"] -= round(0.5 * time, 2)
 
     # Find the current mass of the entire train including passengers 
     def findCurrentMass(self):
@@ -764,27 +772,20 @@ class TrainModel():
     # Function to be called when updating the values to set the emergency brake state
     def brakeCaclulator(self):
         self.data["eBrakeState"] = self.eBrakes["user"] | self.eBrakes["trainController"]
-        if (self.data["eBrakeState"] == True):
-            self.data["acceleration"] = self.constants["emergencyBrake"]
-        elif (self.data["sBrakeState"] == True):
-            self.data["acceleration"] = self.constants["serviceBrake"]
-        else:
-            self.data["acceleration"] = 0
 
     # Handle change in input from the user about temperature
     def tempChangeHandler(self, id, temp):
         if (id == self.TrainID):
             self.data["goalTemp"] = temp
             self.goalTemp = temp
-        print(f'ID: {id}, TrainID: {self.TrainID}, GoalTemp(Dict): {self.data["goalTemp"]}, GoalTemp(Var): {self.goalTemp}')
 
 
     # Determines how many passengers get off at each station
     def passengersGettingOff(self):
-        if self.data["atStation"]:
+        if ~self.data["runOnce"]:
             self.data["passengersOff"] = randint(0, self.data["passengers"])
-
             self.data["passengers"] -= self.data["passengersOff"]
+            self.data["runOnce"] = True
 
     # Adds passengers getting on to total passengers
     def passengersGettingOn(self):

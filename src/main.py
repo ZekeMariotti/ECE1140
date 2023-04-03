@@ -7,9 +7,12 @@ import requests
 sys.path.append(os.path.join(os.path.dirname(__file__), "Integration"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "TrainModel"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "TrainControllerSoftware"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "TrackModel"))
+
 
 from TrainModelFolder import TrainModelMainUI, TrainModelTestUI
 from TrainControllerSoftware import TrainControllerMainUI
+from TrackModel import TrackModelMainUI, TrackModelTestUI, IntegrationTestUI
 from Integration.TimeSignals import *
 from Integration.TMTCSignals import *
 
@@ -33,7 +36,7 @@ class MainWindow(QMainWindow):
 
             # Main clock and simulation speed
             self.RTC = datetime.now() # Temporarily set time manually
-            self.simulationSpeed = 10
+            self.simulationSpeed = 1
             self.timerInterval = 100  
             rtcSignals.rtcSignal.connect(self.rtcSignalHandler) # Temporary for testing rtc
 
@@ -119,12 +122,15 @@ class MainWindow(QMainWindow):
             self.mainWidget.setLayout(self.gridLayout)
             self.setCentralWidget(self.mainWidget)
 
+            # Instantiate the Track Model
+            self.TkM = TrackModelMainUI.TrackModelMainUI()
+
             # Test TM and TC
             for i in range(2, 4):
                 self.trainDispatch(i)    
             self.TMTestUI = TrainModelTestUI.TrainModelTestUI() # temporary TM test UI 
-
-
+            #self.TkMTestUI = TrackModelTestUI.TrackModelTestUI()
+            self.TESTUI = IntegrationTestUI.BasicTestUI()
         
         # Widget Setups
         def mainThreadSetup(self):
@@ -304,7 +310,7 @@ class MainWindow(QMainWindow):
             print("Wayside Controller Four")
 
         def launchTrackModelClick(self):
-            print("Track Model")
+            self.TkM.setVisible(True)
 
         def launchTrainModelClick(self):
              if(len(self.TrainModelList) > 0):
@@ -323,6 +329,7 @@ class MainWindow(QMainWindow):
         def trainDispatch(self, trainId):
             self.TrainControllerList.append(TrainControllerMainUI.MainWindow(trainId))
             self.TrainModelList.append(TrainModelMainUI.TrainModelUI(trainId, "Green"))
+            self.TkM.backEnd.newTrainMade(trainId, "Green")
             self.TrainControllerList[len(self.TrainControllerList)-1].move(800, 10)
             self.TrainModelList[len(self.TrainModelList)-1].move(self.screen().availableGeometry().width()-1480, 
                                                                  self.screen().availableGeometry().height()-self.TrainModelList[len(self.TrainModelList)-1].frameGeometry().height()-40)
@@ -345,6 +352,8 @@ mainWindow = MainWindow()
 mainWindow.show()
 
 # Temporary
-mainWindow.TMTestUI.showMinimized()
+#mainWindow.TMTestUI.showMinimized()
+#mainWindow.TkMTestUI.showMinimized()
+mainWindow.TESTUI.show()
 
 app.exec() 
