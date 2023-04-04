@@ -6,6 +6,7 @@ from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 from Integration.TkMWCSignals import *
+from Integration.ActiveSignals import *
 from WaysideController.TestGenericWayside import Wayside
 from WaysideController.GreenLineTestUi import TestWindow
 from WaysideController.PLC import PLC
@@ -42,7 +43,9 @@ class MainWindow(QMainWindow):
         self.WaysideControllerGreen2.setCommandedSpeed()
         self.WaysideControllerGreen2.setAuthority()        
         self.TestUI = True
+        self.active = False
         self.PLCMain = PLC(self.WaysideControllerGreen,self.WaysideControllerGreen2,"Green")
+        activeSignals.activeSignal.connect(self.activeSignal)
         #Window
 
         self.setWindowTitle("Green Line")
@@ -133,6 +136,8 @@ class MainWindow(QMainWindow):
           return(mainTimer)
     
                 #Commanded Speed Functions
+    def activeSignal(self):
+         self.active = True
 
     def CommandedSpeedLabelSetup(self):
             CommandedLabel = QLabel()
@@ -670,7 +675,7 @@ class MainWindow(QMainWindow):
          else: 
             self.maintenanceMode=False
           
-    def updateVisualElements(self):
+    def updateVisualElements(self, active):
           #hour = str(self.WaysideController.realTime.hour) if self.WaysideController.realTime.hour <=12 else str(self.WaysideController.realTime.hour - 12)   
           #if(int(hour)==0):
            #     hour = "12"
@@ -713,7 +718,7 @@ class MainWindow(QMainWindow):
           j=1
           for k in range(1,self.blocks1):
                 value=self.WaysideControllerGreen.authority[k]
-                if value != int(self.Authority.item(i,j).text()):
+                if active and value != int(self.Authority.item(i,j).text()):
                   TkMWCSignals.authoritySignal.emit(k, value)
                 self.Authority.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
@@ -723,9 +728,9 @@ class MainWindow(QMainWindow):
           i=10
           j=1
           for k in range(101,self.blocks2):
-                value=self.WaysideControllerGreen2.authority[k]
-                if value != int(self.Authority.item(i,j).text()):
-                  TkMWCSignals.authoritySignal.emit(k, value)
+                #value=self.WaysideControllerGreen2.authority[k]
+                #if active and value != int(self.Authority.item(i,j).text()):
+                  #TkMWCSignals.authoritySignal.emit(k, value)
                 self.Authority.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
@@ -736,7 +741,8 @@ class MainWindow(QMainWindow):
           j=1
           for k in range(1,self.blocks1):
                 value=self.WaysideControllerGreen.commandedSpeed[k]
-                if value != int(self.CommandedSpeed.item(i,j).text()):
+                self.CommandedSpeed.item(i,j).setText("0")
+                if active and value != int(self.CommandedSpeed.item(i,j).text()):
                   TkMWCSignals.commandedSpeedSignal.emit(k, float(value))
                 self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
@@ -746,9 +752,9 @@ class MainWindow(QMainWindow):
           j=1
           i=10
           for k in range(101,self.blocks2):
-                value=self.WaysideControllerGreen2.commandedSpeed[k]
-                if value != int(self.CommandedSpeed.item(i,j).text()):
-                  TkMWCSignals.commandedSpeedSignal.emit(k, float(value))
+                #value=self.WaysideControllerGreen2.commandedSpeed[k]
+                #if active and value != int(self.CommandedSpeed.item(i,j).text()):
+                  #TkMWCSignals.commandedSpeedSignal.emit(k, float(value))
                 self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
@@ -837,14 +843,14 @@ class MainWindow(QMainWindow):
             self.PLCMain.setswitches()
 
     def mainEventLoop(self):
-          self.updateVisualElements()
+          self.updateVisualElements(self.active)
           self.WaysideControllerGreen.WaysideToTrackInfoG1()
           self.WaysideControllerGreen2.WaysideToTrackInfoG2()
           self.WaysideControllerGreen.WaysideToCTCInfoG1()
           self.WaysideControllerGreen2.WaysideToCTCInfoG2()
           
 
-def main():    
+def main():
       app = QApplication(sys.argv)
 
       mainWindow = MainWindow()

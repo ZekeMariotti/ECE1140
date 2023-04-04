@@ -16,6 +16,7 @@ from TrackModel import TrackModelMainUI, TrackModelTestUI, IntegrationTestUI
 from WaysideController import NewGreenLine,GreenLineTestUi
 from Integration.TimeSignals import *
 from Integration.TMTCSignals import *
+from Integration.ActiveSignals import *
 
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
@@ -127,7 +128,7 @@ class MainWindow(QMainWindow):
             self.TkM = TrackModelMainUI.TrackModelMainUI()
 
             # Instantiate the Track Model
-            self.wc = NewGreenLine.MainWindow()
+            # self.wc = NewGreenLine.MainWindow()
 
             # Test TM and TC
             for i in range(2, 4):
@@ -303,8 +304,10 @@ class MainWindow(QMainWindow):
              print("CTC")
 
         def launchWaysideControllerOneClick(self):
+            self.wc = NewGreenLine.MainWindow()
             self.wc.setVisible(True)
             self.wc.WaysideControllerGreenTestUI.show()
+            activeSignals.activeSignal.emit()
             print("Wayside Controller One")
 
         def launchWaysideControllerTwoClick(self):
