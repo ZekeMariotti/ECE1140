@@ -398,7 +398,7 @@ class MainWindow(QMainWindow):
           return(Switch1Label)
       
     def Switch1ButtonL(self):
-          Push1L = QPushButton("12 to 13")
+          Push1L = QPushButton("1 to 13")
           Push1L.setFont(self.labelFont) 
           Push1L.setFixedSize(QSize(70,40))  
           Push1L.clicked.connect(self.Switch1ButtonLClick)
@@ -407,7 +407,7 @@ class MainWindow(QMainWindow):
           return(Push1L)
     
     def Switch1ButtonR(self):
-          Push1R = QPushButton("1 to 13")
+          Push1R = QPushButton("12 to 13")
           Push1R.setFont(self.labelFont) 
           Push1R.setFixedSize(QSize(70,40))  
           Push1R.clicked.connect(self.Switch1ButtonRClick)
@@ -416,7 +416,7 @@ class MainWindow(QMainWindow):
           return(Push1R)
     
     def Switch2ButtonL(self):
-          Push2L = QPushButton("29 to 30")
+          Push2L = QPushButton("29 to 150")
           Push2L.setFont(self.labelFont) 
           Push2L.setFixedSize(QSize(70,40))  
           Push2L.clicked.connect(self.Switch2ButtonLClick)
@@ -425,7 +425,7 @@ class MainWindow(QMainWindow):
           return(Push2L)
     
     def Switch2ButtonR(self):
-          Push2R = QPushButton("29 to 150")
+          Push2R = QPushButton("29 to 30")
           Push2R.setFont(self.labelFont) 
           Push2R.setFixedSize(QSize(70,40))  
           Push2R.clicked.connect(self.Switch2ButtonRClick)
@@ -443,7 +443,7 @@ class MainWindow(QMainWindow):
           return(Push3L)
     
     def Switch3ButtonR(self):
-          Push3R = QPushButton("57 to Yard")
+          Push3R = QPushButton("57 to 58")
           Push3R.setFont(self.labelFont) 
           Push3R.setFixedSize(QSize(70,40))  
           Push3R.clicked.connect(self.Switch3ButtonRClick)
@@ -461,7 +461,7 @@ class MainWindow(QMainWindow):
           return(Push4L)
     
     def Switch4ButtonR(self):
-          Push4R = QPushButton("Yard to 63")
+          Push4R = QPushButton("62 to 63")
           Push4R.setFont(self.labelFont) 
           Push4R.setFixedSize(QSize(70,40))  
           Push4R.clicked.connect(self.Switch4ButtonRClick)
@@ -470,7 +470,7 @@ class MainWindow(QMainWindow):
           return(Push4R)
     
     def Switch5ButtonL(self):
-          Push5L = QPushButton("76 to 77")
+          Push5L = QPushButton("77 to 101")
           Push5L.setFont(self.labelFont) 
           Push5L.setFixedSize(QSize(70,40))  
           Push5L.clicked.connect(self.Switch5ButtonLClick)
@@ -479,7 +479,7 @@ class MainWindow(QMainWindow):
           return(Push5L)
     
     def Switch5ButtonR(self):
-          Push5R = QPushButton("77 to 101")
+          Push5R = QPushButton("76 to 77")
           Push5R.setFont(self.labelFont) 
           Push5R.setFixedSize(QSize(70,40))  
           Push5R.clicked.connect(self.Switch5ButtonRClick)
@@ -488,7 +488,7 @@ class MainWindow(QMainWindow):
           return(Push5R)
     
     def Switch6ButtonL(self):
-          Push6L = QPushButton("85 to 86")
+          Push6L = QPushButton("85 to 100")
           Push6L.setFont(self.labelFont) 
           Push6L.setFixedSize(QSize(70,40))  
           Push6L.clicked.connect(self.Switch6ButtonLClick)
@@ -497,7 +497,7 @@ class MainWindow(QMainWindow):
           return(Push6L)
     
     def Switch6ButtonR(self):
-          Push6R = QPushButton("100 to 85")
+          Push6R = QPushButton("85 to 86")
           Push6R.setFont(self.labelFont) 
           Push6R.setFixedSize(QSize(70,40))  
           Push6R.clicked.connect(self.Switch6ButtonRClick)
@@ -509,9 +509,9 @@ class MainWindow(QMainWindow):
           Output1.setFont(self.labelFont)
 
           if self.WaysideControllerGreen.switches[1]==True:
-                Output1.setText("12 to 13")
-          else:
                 Output1.setText("1 to 13")
+          else:
+                Output1.setText("12 to 13")
 
           Output1.setParent(self)
           Output1.move(1000,-165)
@@ -522,9 +522,9 @@ class MainWindow(QMainWindow):
           Output2.setFont(self.labelFont)
 
           if self.WaysideControllerGreen.switches[2]==True:
-                Output2.setText("29 to 30")
-          else:
                 Output2.setText("29 to 150")
+          else:
+                Output2.setText("29 to 30")
 
           Output2.setParent(self)
           Output2.move(1000,-115)
@@ -537,7 +537,7 @@ class MainWindow(QMainWindow):
           if self.WaysideControllerGreen.switches[3]==True:
                 Output3.setText("57 to Yard")
           else:
-                Output3.setText("57 to Yard")
+                Output3.setText("57 to 58")
 
           Output3.setParent(self)
           Output3.move(1000,-60)
@@ -550,7 +550,7 @@ class MainWindow(QMainWindow):
           if self.WaysideControllerGreen.switches[4]==True:
                 Output4.setText("Yard to 63")
           else:
-                Output4.setText("Yard to 63")
+                Output4.setText("62 to 63")
 
           Output4.setParent(self)
           Output4.move(1000,-5)
@@ -561,9 +561,9 @@ class MainWindow(QMainWindow):
           Output5.setFont(self.labelFont)
 
           if self.WaysideControllerGreen.switches[5]==True:
-                Output5.setText("76 to 77")
-          else:
                 Output5.setText("77 to 101")
+          else:
+                Output5.setText("76 to 77")
 
           Output5.setParent(self)
           Output5.move(1000,50)
@@ -574,9 +574,9 @@ class MainWindow(QMainWindow):
           Output5.setFont(self.labelFont)
 
           if self.WaysideControllerGreen.switches[5]==True:
-                Output5.setText("85 to 86")
+                Output5.setText("85 to 100")
           else:
-                Output5.setText("100 to 85")
+                Output5.setText("85 to 86")
 
           Output5.setParent(self)
           Output5.move(1000,105)
@@ -684,35 +684,49 @@ class MainWindow(QMainWindow):
           #might add to ui
           #self.realTimeClock.setText(f'Time: {hour}:{minute}:{second}')
           
+          if (self.Switch1Out.text() == "1 to 13" and self.WaysideControllerGreen.switches[1] == False) or (self.Switch1Out.text() == "12 to 13" and self.WaysideControllerGreen.switches[1] == True):
+            TkMWCSignals.switchStateSignal.emit(int(self.WaysideControllerGreen.switches[1]), 1, 12)
+          if (self.Switch2Out.text() == "29 to 150" and self.WaysideControllerGreen.switches[2] == False) or (self.Switch2Out.text() == "29 to 30" and self.WaysideControllerGreen.switches[2] == True):
+            TkMWCSignals.switchStateSignal.emit(int(self.WaysideControllerGreen.switches[2]), 1, 28)
+          if (self.Switch3Out.text() == "57 to Yard" and self.WaysideControllerGreen.switches[3] == False) or (self.Switch3Out.text() == "57 to 58" and self.WaysideControllerGreen.switches[3] == True):
+            TkMWCSignals.switchStateSignal.emit(int(self.WaysideControllerGreen.switches[3]), 1, 56)
+          if (self.Switch4Out.text() == "Yard to 63" and self.WaysideControllerGreen.switches[4] == False) or (self.Switch4Out.text() == "62 to 63" and self.WaysideControllerGreen.switches[4] == True):
+            TkMWCSignals.switchStateSignal.emit(int(self.WaysideControllerGreen.switches[4]), 1, 62)
+          if (self.Switch5Out.text() == "77 to 101" and self.WaysideControllerGreen.switches[5] == False) or (self.Switch5Out.text() == "76 to 77" and self.WaysideControllerGreen.switches[5] == True):
+            TkMWCSignals.switchStateSignal.emit(int(self.WaysideControllerGreen.switches[5]), 1, 76)
+          if (self.Switch6Out.text() == "85 to 100" and self.WaysideControllerGreen.switches[6] == False) or (self.Switch6Out.text() == "85 to 86" and self.WaysideControllerGreen.switches[6] == True):
+            print("emitSig")
+            TkMWCSignals.switchStateSignal.emit(int(self.WaysideControllerGreen.switches[6]), 1, 84)
+
           if self.WaysideControllerGreen.switches[1]==True:
-                self.Switch1Out.setText("12 to 13")
-          else:
                 self.Switch1Out.setText("1 to 13")
+          else:
+                self.Switch1Out.setText("12 to 13")
 
           if self.WaysideControllerGreen.switches[2]==True:
-                self.Switch2Out.setText("29 to 30")
+                self.Switch2Out.setText("29 to 150")
           else:
-                self.Switch2Out.setText("29 to 150")    
+                self.Switch2Out.setText("29 to 30")    
 
           if self.WaysideControllerGreen.switches[3]==True:
                 self.Switch3Out.setText("57 to Yard")
           else:
-                self.Switch3Out.setText("57 to Yard")
+                self.Switch3Out.setText("57 to 58")
 
           if self.WaysideControllerGreen.switches[4]==True:
                 self.Switch4Out.setText("Yard to 63")
           else:
-                self.Switch4Out.setText("Yard to 63")
+                self.Switch4Out.setText("62 to 63")
 
           if self.WaysideControllerGreen.switches[5]==True:
-                self.Switch5Out.setText("76 to 77")
-          else:
                 self.Switch5Out.setText("77 to 101")
+          else:
+                self.Switch5Out.setText("76 to 77")
 
           if self.WaysideControllerGreen.switches[6]==True:
-                self.Switch6Out.setText("85 to 86")
+                self.Switch6Out.setText("85 to 100")
           else:
-                self.Switch6Out.setText("100 to 85")
+                self.Switch6Out.setText("85 to 86")
           #self.Authority
           i=0
           j=1

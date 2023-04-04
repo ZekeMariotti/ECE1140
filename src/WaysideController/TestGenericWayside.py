@@ -39,8 +39,12 @@ class Wayside:
                 self.suggestedAuthority[i] = 0
           for i in range (start,blocks):
                 self.suggestedSpeed[i] = 0
-          for i in range (start,switches):
-                self.switches[i] = True
+          self.switches[1] = False
+          self.switches[2] = False
+          self.switches[3] = True
+          self.switches[4] = True
+          self.switches[5] = False
+          self.switches[6] = False
           for i in range(start,blocks):
                 self.occupancy[i] = False
           for i in range(start,blocks):

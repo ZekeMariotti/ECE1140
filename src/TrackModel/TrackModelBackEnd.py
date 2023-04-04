@@ -114,6 +114,7 @@ class backEndCalculations():
 
         TkMWCSignals.authoritySignal.connect(self.authHandler)
         TkMWCSignals.commandedSpeedSignal.connect(self.cSpeedHandler)
+        TkMWCSignals.switchStateSignal.connect(self.getSwitchPositionInput)
 
     # Handler for when a new train is made
     def newTrainMade(self, id, line):
@@ -553,7 +554,10 @@ with open(os.path.join(sys.path[0], "TrackModel", "Switches.csv"), 'r') as swi:
         backEndCalculations.csvConstants["switchBlockA"].append(row["BlockA"])
         backEndCalculations.csvConstants["switchBlockB"].append(row["BlockB"])
         backEndCalculations.csvConstants["switchBlockC"].append(row["BlockC"])
-        backEndCalculations.data["switchPos"].append(0)
+        if row == 9 or row == 10:
+            backEndCalculations.data["switchPos"].append(1)
+        else:
+            backEndCalculations.data["switchPos"].append(0)
         backEndCalculations.data["sigState"].append(0)
         backEndCalculations.data["sigState"].append(0)
         backEndCalculations.data["sigState"].append(0)
