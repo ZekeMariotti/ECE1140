@@ -9,36 +9,37 @@ type RouteCalculator struct {
 	data *datastore.DataStore
 }
 
-func (r *RouteCalculator) CalculateRoute(train common.Train, destination common.Block) []common.Block {
+func (r *RouteCalculator) CalculateRoute(train common.Train, destination common.Block) []int {
 	// Ensure they are not the same block
 	if train.Location.Blocks[len(train.Location.Blocks)-1] == destination.Number {
-		return []common.Block{}
+		return make([]int, 0)
 	}
 
 	// Advance search in the direction the train can go
 	stop := false
+	line := r.data.Lines.Get(train.Line)
 	startBlock := r.data.Lines.Get(train.Line).Blocks.Get(train.Location.Blocks[len(train.Location.Blocks)-1])
-	searchRoutes := make([][]common.Block, 0)
-	searchRoutes = append(searchRoutes, make([]common.Block, 0))
-	searchRoutes[0][0] = startBlock
+	searchRoutes := make([][]int, 0)
+	searchRoutes = append(searchRoutes, make([]int, 0))
+	searchRoutes[0][0] = startBlock.Number
 	successfulPathIndexes := make([]int, 0)
 	for !stop {
 		// Do search for each path we are currently searching
 		for i := 0; i < len(searchRoutes); i++ {
 			currentBlock := searchRoutes[i][len(searchRoutes[i])-1]
-			nextBlocks := r.getNextBlocks(currentBlock, train.Direction, r.data.Lines.Get(train.Line))
+			nextBlocks := r.getNextBlocks(line.Blocks.Get(currentBlock), train.Direction, line)
 			if len(nextBlocks) > 1 {
 				for j := 1; j < len(nextBlocks); j++ {
 					// Make a branch from the current path
-					newRoute := make([]common.Block, 0)
+					newRoute := make([]int, 0)
 					newRoute = append(newRoute, searchRoutes[i]...)
-					newRoute = append(newRoute, nextBlocks[j])
+					newRoute = append(newRoute, nextBlocks[j].Number)
 					searchRoutes = append(searchRoutes, newRoute)
 				}
 			}
 
 			// Check if done
-			if searchRoutes[i][len(searchRoutes)-1].Number == destination.Number {
+			if searchRoutes[i][len(searchRoutes)-1] == destination.Number {
 				stop = true
 				successfulPathIndexes = append(successfulPathIndexes, i)
 			}
