@@ -152,8 +152,8 @@ class TrainControllerSW:
 
     def isBeaconSignalHandler(self, id, isBeac):
         if(self.trainId == id):
-            if (self.trainId == 2):
-                print("isBeacon in Train Controller: ", isBeac)
+            #if (self.trainId == 2):
+            #    print("isBeacon in Train Controller: ", isBeac)
             self.inputs.isBeacon = isBeac
             self.setStationState()
 
@@ -198,19 +198,19 @@ class TrainControllerSW:
         # if isBeacon and !firstBeaconPassed, entering station
         if(self.inputs.isBeacon == True and self.firstBeaconPassed == False):
             self.firstBeaconPassed = True
-            print("First Beacon Passed")
+            #print("First Beacon Passed")
         elif(self.inputs.isBeacon == False and self.firstBeaconPassed == True):
             self.stationState = True
-            print("WE GOT TO A STATION")
+            #print("WE GOT TO A STATION")
 
         # if isBeacon and stationState and !secondBeaconPassed, exiting station
         if(self.inputs.isBeacon == True and self.stationState == True and self.secondBeaconPassed == False):
             self.secondBeaconPassed = True
-            print("Second Beacon Passed")
+            #print("Second Beacon Passed")
 
         # if !isBeacon and secondBeaconPassed, reset stationState and beaconPassed variables (left the station)
         if(self.inputs.isBeacon == False and self.secondBeaconPassed == True):
-            print("Reset Data")
+            #print("Reset Data")
             self.stationState = False
             self.firstBeaconPassed = False
             self.secondBeaconPassed = False

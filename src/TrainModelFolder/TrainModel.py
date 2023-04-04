@@ -219,6 +219,7 @@ class TrainModel():
         TMTCSignals.externalLightCommandSignal.connect(self.externalLightCommandSignalHandler)
         TMTCSignals.internalLightCommandSignal.connect(self.internalLightCommandSignalHandler)
         TMTCSignals.stationAnnouncementSignal.connect(self.stationAnnouncementSignalHandler)
+        TMTCSignals.stationStateSignal.connect(self.stationStateSignalHandler)
 
         # Time From Main Signal
         rtcSignals.rtcSignal.connect(self.realTimeHandler)
