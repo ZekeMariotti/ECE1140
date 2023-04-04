@@ -9,7 +9,7 @@ class trackModelWaysideControllerSignals(QObject):
     gateStateInput = pyqtSignal(int, int)
 
     # Track Model to Wayide
-    failureSignal = pyqtSignal(int, bool)
+    failureSignal = pyqtSignal(int, int, int)
     currBlockSignal = pyqtSignal(int, bool)
 
 TkMWCSignals = trackModelWaysideControllerSignals()

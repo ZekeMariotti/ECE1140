@@ -46,6 +46,7 @@ class MainWindow(QMainWindow):
         self.active = False
         self.PLCMain = PLC(self.WaysideControllerGreen,self.WaysideControllerGreen2,"Green")
         activeSignals.activeSignal.connect(self.activeSignal)
+        TkMWCSignals.failureSignal.connect(self.brokenRailHandler)
         #Window
 
         self.setWindowTitle("Green Line")
@@ -598,8 +599,16 @@ class MainWindow(QMainWindow):
          PLCButton.setParent(self)
          PLCButton.move(870,450)
          return(PLCButton) 
+    
+    def brokenRailHandler(self, line, logic, blockNo):
+         #print(line, logic, blockNo)
+         if line == 1 and blockNo <= 100:
+            self.WaysideControllerGreen.setBrokenRail(bool(logic), blockNo)
+         elif line == 1 and blockNo > 100:
+            self.WaysideControllerGreen2.setBrokenRail(bool(logic), blockNo)
+         
             
-    #Clicking stuff    
+    #Clicking stuff
     def Switch1ButtonLClick(self):
           if self.maintenanceMode == True:
             self.WaysideControllerGreen.setSwitchPositions(True,1)
