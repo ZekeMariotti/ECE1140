@@ -30,5 +30,6 @@ class trainModelTrainControllerSignals(QObject):
     externalLightCommandSignal = pyqtSignal(int, bool)
     internalLightCommandSignal = pyqtSignal(int, bool)
     stationAnnouncementSignal = pyqtSignal(int, str)
+    stationStateSignal = pyqtSignal(int, bool)
 
 TMTCSignals = trainModelTrainControllerSignals()

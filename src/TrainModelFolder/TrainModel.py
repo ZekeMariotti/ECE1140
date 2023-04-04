@@ -371,6 +371,11 @@ class TrainModel():
         if (id == self.TrainID):
             self.data["station"] = station
 
+    # Station State input handler
+    def stationStateSignalHandler(self, id, atStation):
+        if (id == self.TrainID):
+            self.data["atStation"] = atStation
+
     # Data Handler for Outputs to the Track Model
     def writeTMtoTkM(self):
         TMTkMSignals.currBlockSignal.emit(self.TrainID, self.trackData["currBlock"], self.trackData["prevBlock"], self.trackData["overflow"])
@@ -484,8 +489,9 @@ class TrainModel():
         # If the train is moving and has power input
         elif (self.data["power"] > 0.0):
             powerForce = self.data["power"] / self.data["prevVelocity"]
-            if(powerForce > 120000):
+            if(powerForce > 4000000):
                 powerForce = 120000
+        
 
         # If the Service Brake is pulled
         if (self.data["sBrakeState"]):
@@ -496,6 +502,7 @@ class TrainModel():
             brakeForce = self.constants["emergencyBrake"] * self.data["mass"]
 
         # Calculate the sum of the forces and current Acceleration
+        #print(f'ID: {self.TrainID}, powerForce: {powerForce}, brakeForce: {brakeForce}, frictionForce: {frictionalForce}, gravitationalForce: {gravitationalForce}')
         forces = powerForce + brakeForce + frictionalForce + gravitationalForce
         tempAcceleration = forces / self.data["mass"]
 

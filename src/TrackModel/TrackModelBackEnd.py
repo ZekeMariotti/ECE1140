@@ -137,7 +137,7 @@ class backEndCalculations():
         if (transition):
             TMTkMSignals.blockLengthSignal.emit(id, float(self.csvConstants["lengthGreen"].__getitem__(currBlock - 1)))
             TMTkMSignals.elevationSignal.emit(id, float(self.csvConstants["elevationGreen"].__getitem__(currBlock - 1)))
-            TMTkMSignals.undergroundStateSignal.emit(id, bool(self.csvConstants["undergroundGreen"].__getitem__(currBlock - 1)))
+            TMTkMSignals.undergroundStateSignal.emit(id, bool(int(self.csvConstants["undergroundGreen"].__getitem__(currBlock - 1))))
             #TMTkMSignals.beaconSignal.emit(id, self.csvConstants["beaconGreen"][0], int(self.csvConstants["beaconGreen"][1]), self.csvConstants["beaconGreen"][2], bool(self.csvConstants["beaconGreen"][3]), -1, 0)
             if (prevBlock == 0):
                 TMTkMSignals.switchSignal.emit(id, 0)

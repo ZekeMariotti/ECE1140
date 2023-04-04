@@ -105,7 +105,13 @@ class TrainControllerSW:
         TMTCSignals.emergencyBrakeCommandSignal.emit(self.trainId, self.outputs.emergencyBrakeCommand)
         TMTCSignals.externalLightCommandSignal.emit(self.trainId, self.outputs.externalLightCommand)
         TMTCSignals.internalLightCommandSignal.emit(self.trainId, self.outputs.internalLightCommand)
-        TMTCSignals.stationAnnouncementSignal.emit(self.trainId, self.outputs.stationAnnouncement)
+        
+        if(self.stationState):
+            TMTCSignals.stationAnnouncementSignal.emit(self.trainId, self.inputs.stationName)
+        else:
+            TMTCSignals.stationAnnouncementSignal.emit(self.trainId, self.inputs.nextStationName)
+
+        TMTCSignals.stationStateSignal.emit(self.trainId, self.stationState)
 
     # Signal handlers
     def rtcSignalHandler(self, rtcString):
