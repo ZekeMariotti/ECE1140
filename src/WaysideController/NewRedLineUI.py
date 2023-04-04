@@ -642,22 +642,27 @@ class MainWindowR(QMainWindow):
           if(self.maintenanceMode==True):
             self.WaysideControllerRed.setSwitchPositions(True,1)
             self.WaysideControllerRed.setSwitchPositions(True,1)
+            
     def Switch1ButtonRClick(self):
           if(self.maintenanceMode==True):
             self.WaysideControllerRed.setSwitchPositions(False,1)
             self.WaysideControllerRed.setSwitchPositions(False,1)
+
     def Switch2ButtonLClick(self):
           if(self.maintenanceMode==True):
             self.WaysideControllerRed.setSwitchPositions(True,2)
             self.WaysideControllerRed.setSwitchPositions(True,2)
+
     def Switch2ButtonRClick(self):
           if(self.maintenanceMode==True):
             self.WaysideControllerRed.setSwitchPositions(False,2)
             self.WaysideControllerRed.setSwitchPositions(False,2)  
+
     def Switch3ButtonLClick(self):
           if(self.maintenanceMode==True):
             self.WaysideControllerRed.setSwitchPositions(True,3)
             self.WaysideControllerRed.setSwitchPositions(True,3)
+
     def Switch3ButtonRClick(self):
           if(self.maintenanceMode==True):
             self.WaysideControllerRed.setSwitchPositions(False,3)
@@ -667,6 +672,7 @@ class MainWindowR(QMainWindow):
           if(self.maintenanceMode==True):
             self.WaysideControllerRed.setSwitchPositions(True,4)
             self.WaysideControllerRed2.setSwitchPositions(True,4)
+
     def Switch4ButtonRClick(self):
           if(self.maintenanceMode==True):
             self.WaysideControllerRed.setSwitchPositions(False,4)
@@ -686,14 +692,17 @@ class MainWindowR(QMainWindow):
           if(self.maintenanceMode==True):
             self.WaysideControllerRed.setSwitchPositions(True,6)          
             self.WaysideControllerRed2.setSwitchPositions(True,6)
+
     def Switch6ButtonRClick(self):
           if(self.maintenanceMode==True):
             self.WaysideControllerRed.setSwitchPositions(False,6)
             self.WaysideControllerRed2.setSwitchPositions(False,6)
+
     def Switch7ButtonLClick(self):
           if(self.maintenanceMode==True):
             self.WaysideControllerRed.setSwitchPositions(True,7)          
             self.WaysideControllerRed.setSwitchPositions(True,7)
+
     def Switch7ButtonRClick(self):
           if(self.maintenanceMode==True):
             self.WaysideControllerRed.setSwitchPositions(False,7)
