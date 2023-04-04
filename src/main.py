@@ -3,6 +3,7 @@
 import sys
 import os
 import requests
+import subprocess
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "Integration"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "TrainModel"))
@@ -36,7 +37,7 @@ class MainWindow(QMainWindow):
 
             # Main clock and simulation speed
             self.RTC = datetime.now() # Temporarily set time manually
-            self.simulationSpeed = 5
+            self.simulationSpeed = 1
             self.timerInterval = 100  
             rtcSignals.rtcSignal.connect(self.rtcSignalHandler) # Temporary for testing rtc
 
@@ -128,6 +129,7 @@ class MainWindow(QMainWindow):
             # Test TM and TC
             for i in range(2, 4):
                 self.trainDispatch(i)    
+            self.HWTrainModel = TrainModelMainUI.TrainModelUI(1, "Green")
             self.TMTestUI = TrainModelTestUI.TrainModelTestUI() # temporary TM test UI 
             #self.TkMTestUI = TrackModelTestUI.TrackModelTestUI()
             self.TESTUI = IntegrationTestUI.BasicTestUI()
@@ -347,6 +349,12 @@ class MainWindow(QMainWindow):
 
 # Start application
 app = QApplication(sys.argv)
+#exec(open("\Integration\\receiveJsonFromArduino.py").read())
+#exec(open(os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py")).read())
+#os.system("python" + os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py"))
+subprocess.Popen(['python', os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py")])
+subprocess.Popen(['python', os.path.join(sys.path[0], "Integration", "sendJsonToArduino.py")])
+
 
 mainWindow = MainWindow()
 mainWindow.show()
@@ -355,5 +363,6 @@ mainWindow.show()
 #mainWindow.TMTestUI.showMinimized()
 #mainWindow.TkMTestUI.showMinimized()
 mainWindow.TESTUI.show()
+mainWindow.HWTrainModel.show()
 
 app.exec() 

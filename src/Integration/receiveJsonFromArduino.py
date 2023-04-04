@@ -4,10 +4,13 @@ import os
 import sys
 import time
 
+sys.path.append(__file__.replace("\Integration\\receiveJsonFromArduino.py", ""))
+from Integration.TMTCSignals import *
+
 # ip = "127.0.0.1"
 # port = 27000
 
-ip = "192.168.1.3"
+ip = "192.168.1.2"
 port = 27001
 sock = socket.socket(socket.AF_INET,
                      socket.SOCK_DGRAM)
@@ -22,7 +25,7 @@ trainControllerToTrainModel = {
     "serviceBrakeCommand"   : False,     # Service Brake Command from the Train Controller, True if engaged, False is disengaged
     "emergencyBrakeCommand" : False,     # Emergency Brake Command from the Train Controller, True if engaged, False is isengaged
     "externalLightCommand"  : False,     # External Light Command from the Train Controller, True if on, False if off
-    "InternalLightCommand"  : False,     # External Light Command from the Train Controller, True if on, False if off
+    "internalLightCommand"  : False,     # External Light Command from the Train Controller, True if on, False if off
     "stationAnnouncement"   : "The Yard", # Station Announcement from the Train Controller
     "isAtStation"           : False
 }
@@ -62,8 +65,19 @@ while True:
     # print(type(data))
     trainControllerToTrainModel = json.loads(data)
     print(trainControllerToTrainModel)
-    parseToJson()
+    #parseToJson()
     trainControllerToTrainModel["emergencyBrakeCommand"]=0
-    writeToJson()
+    #writeToJson()
+    # EMITTING SIGNALS TO TRAIN MODEL
+    #TMTCSignals.commandedPowerSignal.emit(1, trainControllerToTrainModel["power"])
+    TMTCSignals.commandedPowerSignal.emit(1, 120000)
+    TMTCSignals.leftDoorCommandSignal.emit(1, trainControllerToTrainModel["leftDoorCommand"])
+    TMTCSignals.rightDoorCommandSignal.emit(1, trainControllerToTrainModel["rightDoorCommand"])
+    TMTCSignals.serviceBrakeCommandSignal.emit(1, trainControllerToTrainModel["serviceBrakeCommand"])
+    TMTCSignals.emergencyBrakeCommandSignal.emit(1, trainControllerToTrainModel["emergencyBrakeCommand"])
+    TMTCSignals.externalLightCommandSignal.emit(1, trainControllerToTrainModel["externalLightCommand"])
+    TMTCSignals.internalLightCommandSignal.emit(1, trainControllerToTrainModel["internalLightCommand"])
+    TMTCSignals.stationAnnouncementSignal.emit(1, trainControllerToTrainModel["stationAnnouncement"])
+    TMTCSignals.stationStateSignal.emit(1, trainControllerToTrainModel["isAtStation"])
     time.sleep(0.5)
     print(f"received message: {data}")
