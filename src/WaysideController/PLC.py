@@ -1,5 +1,5 @@
 #PLC as a class
-from TestGenericWayside import Wayside
+from WaysideController.TestGenericWayside import Wayside
 Gswitch1True=[]
 Gswitch1False=[]
 Gswitch2True=[]

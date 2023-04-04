@@ -1,7 +1,7 @@
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
-from TestGenericWayside import Wayside
+from WaysideController.TestGenericWayside import Wayside
 import sys 
 
 class Worker(QObject):

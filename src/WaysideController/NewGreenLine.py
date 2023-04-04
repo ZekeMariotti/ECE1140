@@ -1,10 +1,14 @@
+import sys
+import os
+sys.path.append(__file__.replace("/WaysideController/NewGreenLine.py", ""))
+
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
-from TestGenericWayside import Wayside
-from GreenLineTestUi import TestWindow
-from PLC import PLC
-import sys
+from Integration.TkMWCSignals import *
+from WaysideController.TestGenericWayside import Wayside
+from WaysideController.GreenLineTestUi import TestWindow
+from WaysideController.PLC import PLC
 
 #global variables
 
@@ -25,8 +29,10 @@ class MainWindow(QMainWindow):
         #Intialize Wayside class
         self.WaysideControllerGreen = Wayside(1,True)
         self.WaysideControllerGreen2 = Wayside(1,True)
-        self.File1 = "C:\\Users\danek\Documents\GreenLine.txt"
-        self.File2 = "C:\\Users\danek\Documents\GreenLine2.txt"
+        #self.File1 = "C:\\Systems and Progect Engineering\ECE1140-1\src\waysideController\GreenLine.txt"
+        #self.File2 = "C:\\Systems and Progect Engineering\ECE1140-1\src\waysideController\GreenLine2.txt"
+        self.File1 = os.path.join(sys.path[0], "WaysideController", "GreenLine.txt")
+        self.File2 = os.path.join(sys.path[0], "WaysideController", "GreenLine2.txt")
         self.blocks1 =101
         self.blocks2 =151
         self.WaysideControllerGreen.setdictionarysizes(1,self.blocks1,7)
@@ -139,7 +145,7 @@ class MainWindow(QMainWindow):
     def CommandedSpeedSetup(self):
             CommandedSpeed = QTableWidget()
             CommandedSpeed.setFont(self.labelFont)
-            CommandedSpeed.setFixedSize(QSize(0.6*self.windowWidth,0.12*self.windowHeight))
+            CommandedSpeed.setFixedSize(QSize(int(round(0.6*self.windowWidth)),int(round(0.12*self.windowHeight))))
             CommandedSpeed.setColumnCount(10)
             CommandedSpeed.setRowCount(16)
             CommandedSpeed.setVerticalHeaderLabels(rowheaders)
@@ -175,7 +181,7 @@ class MainWindow(QMainWindow):
     def AuthoritySetup(self):
             Authority = QTableWidget()
             Authority.setFont(self.labelFont)
-            Authority.setFixedSize(QSize(0.6*self.windowWidth,0.12*self.windowHeight))
+            Authority.setFixedSize(QSize(int(round(0.6*self.windowWidth)),int(round(0.12*self.windowHeight))))
             Authority.setColumnCount(10)
             Authority.setRowCount(16)
             Authority.setVerticalHeaderLabels(rowheaders)
@@ -211,7 +217,7 @@ class MainWindow(QMainWindow):
     def BrokenRailSetup(self):
             BrokenRail = QTableWidget()
             BrokenRail.setFont(self.labelFont)
-            BrokenRail.setFixedSize(QSize(0.6*self.windowWidth,0.12*self.windowHeight))
+            BrokenRail.setFixedSize(QSize(int(round(0.6*self.windowWidth)),int(round(0.12*self.windowHeight))))
             BrokenRail.setColumnCount(10)
             BrokenRail.setRowCount(16)
             BrokenRail.setVerticalHeaderLabels(rowheaders)
@@ -250,7 +256,7 @@ class MainWindow(QMainWindow):
     def SignalLightSetup(self):
             SignalLight = QTableWidget()
             SignalLight.setFont(self.labelFont)
-            SignalLight.setFixedSize(QSize(0.6*self.windowWidth,0.12*self.windowHeight))
+            SignalLight.setFixedSize(QSize(int(round(0.6*self.windowWidth)),int(round(0.12*self.windowHeight))))
             SignalLight.setColumnCount(10)
             SignalLight.setRowCount(16)
             SignalLight.setVerticalHeaderLabels(rowheaders)
@@ -290,7 +296,7 @@ class MainWindow(QMainWindow):
     def OccupancySetup(self):
             Occupancy = QTableWidget()
             Occupancy.setFont(self.labelFont)
-            Occupancy.setFixedSize(QSize(0.6*self.windowWidth,0.12*self.windowHeight))
+            Occupancy.setFixedSize(QSize(int(round(0.6*self.windowWidth)),int(round(0.12*self.windowHeight))))
             Occupancy.setColumnCount(10)
             Occupancy.setRowCount(16)
             Occupancy.setVerticalHeaderLabels(rowheaders)
@@ -314,7 +320,7 @@ class MainWindow(QMainWindow):
                 Occupancy.setItem(15,j,QTableWidgetItem("-"))
                 j=j+1            
             Occupancy.setParent(self)
-            Occupancy.move(0.0*self.windowWidth,0.85*self.windowHeight)
+            Occupancy.move(int(round(0.0*self.windowWidth)),int(round(0.85*self.windowHeight)))
             return(Occupancy)
     
                     #Gate Functions
@@ -323,7 +329,7 @@ class MainWindow(QMainWindow):
           GateLabel = QLabel()
           GateLabel.setFont(self.titleFont)
           GateLabel.setText("Gate State")
-          GateLabel.move(0.85*self.windowWidth,0.45*self.windowHeight)
+          GateLabel.move(int(round(0.85*self.windowWidth)),int(round(0.45*self.windowHeight)))
           GateLabel.setParent(self)
           return(GateLabel)  
     
@@ -337,7 +343,7 @@ class MainWindow(QMainWindow):
             else:
                 gate.setText("Block 19 Gate:  DOWN")
 
-            gate.move(0.85*self.windowWidth,0.55*self.windowHeight)
+            gate.move(int(round(0.85*self.windowWidth)),int(round(0.55*self.windowHeight)))
             gate.setParent(self)
             return(gate)
 
@@ -349,7 +355,7 @@ class MainWindow(QMainWindow):
           Up.setFixedSize(QSize(self.buttonWidth,self.buttonHeight))  
           Up.clicked.connect(self.UpClicked)
           Up.setParent(self)
-          Up.move(0.7*self.windowWidth,0.8*self.windowHeight)
+          Up.move(int(round(0.7*self.windowWidth)),int(round(0.8*self.windowHeight)))
           return(Up)
 
     def GateDown(self):
@@ -358,7 +364,7 @@ class MainWindow(QMainWindow):
           Down.setFixedSize(QSize(self.buttonWidth,self.buttonHeight))  
           Down.clicked.connect(self.DownClicked)
           Down.setParent(self)
-          Down.move(0.7*self.windowWidth,0.9*self.windowHeight)
+          Down.move(int(round(0.7*self.windowWidth)),int(round(0.9*self.windowHeight)))
           return(Down)
     
     def maintenanceButtonSetup(self):
@@ -383,7 +389,7 @@ class MainWindow(QMainWindow):
           Switch1Label.setFont(self.labelFont)
           Switch1Label.setText("\nSwitch 1\n\n\nSwitch 2\n\n\nSwitch 3\n\n\nSwitch 4\n\n\nSwitch 5\n\n\nSwitch 6") 
           Switch1Label.setParent(self)
-          Switch1Label.move(0.62*self.windowWidth,-0.05*self.windowHeight)
+          Switch1Label.move(int(round(0.62*self.windowWidth)),int(round(-0.05*self.windowHeight)))
           return(Switch1Label)
       
     def Switch1ButtonL(self):
@@ -707,6 +713,8 @@ class MainWindow(QMainWindow):
           j=1
           for k in range(1,self.blocks1):
                 value=self.WaysideControllerGreen.authority[k]
+                if value != int(self.Authority.item(i,j).text()):
+                  TkMWCSignals.authoritySignal.emit(k, value)
                 self.Authority.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
@@ -715,7 +723,9 @@ class MainWindow(QMainWindow):
           i=10
           j=1
           for k in range(101,self.blocks2):
-                value=self.WaysideControllerGreen2.commandedSpeed[k]
+                value=self.WaysideControllerGreen2.authority[k]
+                if value != int(self.Authority.item(i,j).text()):
+                  TkMWCSignals.authoritySignal.emit(k, value)
                 self.Authority.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
@@ -726,6 +736,8 @@ class MainWindow(QMainWindow):
           j=1
           for k in range(1,self.blocks1):
                 value=self.WaysideControllerGreen.commandedSpeed[k]
+                if value != int(self.CommandedSpeed.item(i,j).text()):
+                  TkMWCSignals.commandedSpeedSignal.emit(k, float(value))
                 self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
@@ -735,11 +747,13 @@ class MainWindow(QMainWindow):
           i=10
           for k in range(101,self.blocks2):
                 value=self.WaysideControllerGreen2.commandedSpeed[k]
+                if value != int(self.CommandedSpeed.item(i,j).text()):
+                  TkMWCSignals.commandedSpeedSignal.emit(k, float(value))
                 self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
                         j=0
-                        i=i+1            
+                        i=i+1          
           #self.BrokenRail 
           i=0
           j=1
@@ -830,15 +844,15 @@ class MainWindow(QMainWindow):
           self.WaysideControllerGreen2.WaysideToCTCInfoG2()
           
 
-          
-app = QApplication(sys.argv)
+def main():    
+      app = QApplication(sys.argv)
 
-mainWindow = MainWindow()
-mainWindow.show()
+      mainWindow = MainWindow()
+      mainWindow.show()
 
-if (mainWindow.TestUI) :
-      mainWindow.WaysideControllerGreenTestUI.show()
+      if (mainWindow.TestUI) :
+            mainWindow.WaysideControllerGreenTestUI.show()
 
-app.exec()
-        
+      app.exec()
+            
   
