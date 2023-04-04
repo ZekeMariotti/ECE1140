@@ -7,6 +7,7 @@ sys.path.append(__file__.replace("\TrackModel\TrackModelBackEnd.py", ""))
 from random import randint
 from TrackModel.TrackModelSignals import *
 from Integration.TMTkMSignals import *
+from Integration.TkMWCSignals import *
 from PyQt6.QtCore import *
 from dynamicArray import *
 
@@ -110,6 +111,9 @@ class backEndCalculations():
 
         TMTkMSignals.passengersExitingSignal.connect(self.passengersExiting)
         TMTkMSignals.currBlockSignal.connect(self.currBlockHandler)
+
+        TkMWCSignals.authoritySignal.connect(self.authHandler)
+        TkMWCSignals.commandedSpeedSignal.connect(self.cSpeedHandler)
 
     # Handler for when a new train is made
     def newTrainMade(self, id, line):
@@ -460,13 +464,20 @@ class backEndCalculations():
         elif self.data["trainLine"][trainNo - 1] == 1:
             self.getOffInput(trainNo - 1, int(self.csvConstants["stationGreen"].__getitem__(self.data["trainBlock"][trainNo - 1] - 1)) - 1, passOff)
 
-    # Determines how many passengers get off at each station
-    def passengersGettingOnB(self, index):
-        passOff = randint(0, self.data["stationOccupancy"].__getitem__(self.data["stationRed"].__getitem__(index) - 1))
-        self.data["numPassengers"][index] += passOff
-        # curr = self.data["stationOccupancy"].__getitem__(self.data["stationRed"].__getitem__(index) - 1)
-        # self.data["stationOccupancy"].removeAt(self.data["stationRed"].__getitem__(index) - 1)
-        # -= passOff
+    # Wayside authority handler
+    def authHandler(self, blockNo, auth, line):
+        if line == 0:
+            self.getAuthInput(auth, int(self.data["blockTrainNoRed"].__getitem__(blockNo - 1)))
+        elif line == 1:
+            self.getAuthInput(auth, int(self.data["blockTrainNoGreen"].__getitem__(blockNo - 1)))
+
+    # Wayside commanded speed handler
+    def cSpeedHandler(self, blockNo, cSpeed, line):
+        if line == 0:
+            self.getCSpeedInput(cSpeed, int(self.data["blockTrainNoRed"].__getitem__(blockNo - 1)))
+        elif line == 1:
+            self.getCSpeedInput(cSpeed, int(self.data["blockTrainNoGreen"].__getitem__(blockNo - 1)))
+
 
 import csv
 

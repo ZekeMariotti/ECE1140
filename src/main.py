@@ -308,7 +308,6 @@ class MainWindow(QMainWindow):
             self.wc.setVisible(True)
             self.wc.WaysideControllerGreenTestUI.show()
             activeSignals.activeSignal.emit()
-            print("Wayside Controller One")
 
         def launchWaysideControllerTwoClick(self):
             print("Wayside Controller Two")

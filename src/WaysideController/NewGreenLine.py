@@ -719,7 +719,7 @@ class MainWindow(QMainWindow):
           for k in range(1,self.blocks1):
                 value=self.WaysideControllerGreen.authority[k]
                 if active and value != int(self.Authority.item(i,j).text()):
-                  TkMWCSignals.authoritySignal.emit(k, value)
+                  TkMWCSignals.authoritySignal.emit(k, value, 1)
                 self.Authority.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
@@ -730,7 +730,7 @@ class MainWindow(QMainWindow):
           for k in range(101,self.blocks2):
                 #value=self.WaysideControllerGreen2.authority[k]
                 #if active and value != int(self.Authority.item(i,j).text()):
-                  #TkMWCSignals.authoritySignal.emit(k, value)
+                  #TkMWCSignals.authoritySignal.emit(k, value, 1)
                 self.Authority.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
@@ -743,7 +743,7 @@ class MainWindow(QMainWindow):
                 value=self.WaysideControllerGreen.commandedSpeed[k]
                 self.CommandedSpeed.item(i,j).setText("0")
                 if active and value != int(self.CommandedSpeed.item(i,j).text()):
-                  TkMWCSignals.commandedSpeedSignal.emit(k, float(value))
+                  TkMWCSignals.commandedSpeedSignal.emit(k, float(value), 1)
                 self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
@@ -754,7 +754,7 @@ class MainWindow(QMainWindow):
           for k in range(101,self.blocks2):
                 #value=self.WaysideControllerGreen2.commandedSpeed[k]
                 #if active and value != int(self.CommandedSpeed.item(i,j).text()):
-                  #TkMWCSignals.commandedSpeedSignal.emit(k, float(value))
+                  #TkMWCSignals.commandedSpeedSignal.emit(k, float(value), 1)
                 self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
