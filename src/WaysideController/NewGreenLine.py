@@ -601,7 +601,6 @@ class MainWindow(QMainWindow):
          return(PLCButton) 
     
     def brokenRailHandler(self, line, logic, blockNo):
-         #print(line, logic, blockNo)
          if line == 1 and blockNo <= 100:
             self.WaysideControllerGreen.setBrokenRail(bool(logic), blockNo)
          elif line == 1 and blockNo > 100:
