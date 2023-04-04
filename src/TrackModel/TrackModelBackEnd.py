@@ -115,6 +115,7 @@ class backEndCalculations():
         TkMWCSignals.authoritySignal.connect(self.authHandler)
         TkMWCSignals.commandedSpeedSignal.connect(self.cSpeedHandler)
         TkMWCSignals.switchStateSignal.connect(self.getSwitchPositionInput)
+        TkMWCSignals.signalStateSignal.connect(self.getSignalStateInput)
 
     # Handler for when a new train is made
     def newTrainMade(self, id, line):

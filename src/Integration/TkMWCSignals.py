@@ -5,7 +5,7 @@ class trackModelWaysideControllerSignals(QObject):
     authoritySignal = pyqtSignal(int, int, int)
     commandedSpeedSignal = pyqtSignal(int, float, int)
     switchStateSignal = pyqtSignal(int, int, int)
-    signalStateSignal = pyqtSignal(int, int)
+    signalStateSignal = pyqtSignal(int, int, int)
     gateStateInput = pyqtSignal(int, int)
 
     # Track Model to Wayide

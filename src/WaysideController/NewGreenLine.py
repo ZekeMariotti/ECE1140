@@ -755,7 +755,6 @@ class MainWindow(QMainWindow):
           j=1
           for k in range(1,self.blocks1):
                 value=self.WaysideControllerGreen.commandedSpeed[k]
-                self.CommandedSpeed.item(i,j).setText("0")
                 if active and value != int(self.CommandedSpeed.item(i,j).text()):
                   TkMWCSignals.commandedSpeedSignal.emit(k, float(value), 1)
                 self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
@@ -807,6 +806,11 @@ class MainWindow(QMainWindow):
                   value="G"
                 else:
                   value="R"
+                if active and value != self.SignalLight.item(i,j).text():
+                  if value == "G":
+                        TkMWCSignals.signalStateSignal.emit(0, 1, k - 1)
+                  elif value == "R":
+                        TkMWCSignals.signalStateSignal.emit(2, 1, k - 1)
                 self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
@@ -819,6 +823,11 @@ class MainWindow(QMainWindow):
                   value="G"
                 else:
                   value="R"
+                #if active and value != self.SignalLight.item(i,j).text():
+                  #if value == "G":
+                        #TkMWCSignals.signalStateSignal.emit(0, 1, k - 1)
+                  #elif value == "R":
+                        #TkMWCSignals.signalStateSignal.emit(2, 1, k - 1)
                 self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
