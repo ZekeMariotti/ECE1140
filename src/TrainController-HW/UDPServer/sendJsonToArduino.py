@@ -3,7 +3,7 @@ import time
 import os
 import sys
 import json
-# from datetime import *
+from datetime import *
 # import datetime
 
 ip = "192.168.1.3"
@@ -13,15 +13,15 @@ counter = 0
 
 # Dictionary for outputs to the Train Controller
 trainModelToTrainController = {
-    "id"                    : 0,                                   # ID number for the train
+    #"id"                    : 1,                                   # ID number for the train
     "commandedSpeed"        : 0.0,                                 # Commanded Speed in m/s
     "currentSpeed"          : 0.0,                                 # Current Speed in m/s
     "authority"             : 0,                                   # Authority in Blocks
     "inputTime"             : "2023-03-26T19:45:19+0000", # RTC Clock in ISO 8601
     "undergroundState"      : False,                               # Underground State
-    "speedLimit"            : 0.0,                                 # Speed Limit in m/s
+    #"speedLimit"            : 0.0,                                 # Speed Limit in m/s
     "temperature"           : 0.0,                                 # Temperature inside the Train in degrees Fahrenheit
-    "engineState"           : True,                                # State of the Engine, True if on, False if off
+    #"engineState"           : True,                                # State of the Engine, True if on, False if off
     "stationName"           : "The Yard",                          # Station Name, from the beacon
     "platformSide"          : 0,                                   # Platform Side, 0 if left, 1 if right, 2 if both, from the beacon
     "nextStationName"       : "",                                  # Name of the next station, from the beacon
@@ -54,6 +54,83 @@ def findTimeInSeconds():
         if (trainModelToTrainController["inputTime"] != ""):
             clock = datetime.fromisoformat(trainModelToTrainController["inputTime"])
             print (float(clock.seconds))
+
+def catchRealTimeClock(rtc):
+    trainModelToTrainController["inputTime"] = rtc
+
+def commandedSpeedSignalHandler(id, cmdSpeed):
+    if (id == 1):
+        trainModelToTrainController["commandedSpeed"] = cmdSpeed
+     
+def currentSpeedSignalHandler(id, currSpeed):
+    if (id == 1):
+        trainModelToTrainController["currentSpeed"] = currSpeed
+     
+def authoritySignalHandler(id, authority):
+    if (id == 1):
+        trainModelToTrainController["authority"] = authority
+
+def undergroundSignalHandler(id, underground):
+    if (id == 1):
+        trainModelToTrainController["undergroundState"] = underground
+
+def temperatureSignalHandler(id, temp):
+    if (id == 1):
+        trainModelToTrainController["temperature"] = temp 
+
+def stationNameSignalHandler(id, station):
+    if (id == 1):
+        trainModelToTrainController["stationName"] = station
+
+def platformSideSignalHandler(id, platform):
+    if (id == 1):
+        trainModelToTrainController["platformSide"] = platform
+
+def nextStationNameSignalHandler(id, nextStation):
+    if (id == 1):
+        trainModelToTrainController["nextStationName"] = nextStation
+
+def isBeaconSignalHandler(id, isBeacon):
+    if (id == 1):
+        trainModelToTrainController["isBeacon"] = isBeacon
+
+def externalLightsStateSignalHandler(id, eLights):
+    if (id == 1):
+        trainModelToTrainController["externalLightsState"] = eLights
+
+def internalLightsStateSignalHandler(id, iLights):
+    if (id == 1):
+        trainModelToTrainController["internalLightsState"] = iLights
+
+def leftDoorStateSignalHandler(id, lDoors):
+    if (id == 1):
+        trainModelToTrainController["leftDoorState"] = lDoors
+     
+def rightDoorStateSignalHandler(id, rDoors):
+    if (id == 1):
+        trainModelToTrainController["rightDoorState"] = rDoors
+     
+def serviceBrakeStateSignalHandler(id, state):
+    if (id == 1):
+        trainModelToTrainController["serviceBrakeState"] = state
+     
+def emergencyBrakeStateSignalHandler(id, state):
+    if (id == 1):
+        trainModelToTrainController["emergencyBrakeState"] = state
+     
+def serviceBrakeStatusSignalHandler(id, status):
+    if (id == 1):
+        trainModelToTrainController["serviceBrakeStatus"] = status
+     
+def engineStatusSignalHandler(id, status):
+    if (id == 1):
+        trainModelToTrainController["engineStatus"] = status
+     
+def communicationsStatusSignalHandler(id, status):
+    if (id == 1):
+        trainModelToTrainController["communicationsStatus"] = status
+
+
 
 
 

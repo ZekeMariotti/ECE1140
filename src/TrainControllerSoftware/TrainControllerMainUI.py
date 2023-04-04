@@ -590,7 +590,7 @@ class MainWindow(QMainWindow):
             self.TrainControllerSW.currentTime = self.TrainControllerSW.realTime
             self.TrainControllerSW.calculatePower()     
             self.TrainControllerSW.failureMode()
-            self.TrainControllerSW.setStationState()
+            #self.TrainControllerSW.setStationState()
 
             # Only run in automatic mode
             if(self.TrainControllerSW.manualMode == False):

@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
 
             # Main clock and simulation speed
             self.RTC = datetime.now() # Temporarily set time manually
-            self.simulationSpeed = 1
+            self.simulationSpeed = 5
             self.timerInterval = 100  
             rtcSignals.rtcSignal.connect(self.rtcSignalHandler) # Temporary for testing rtc
 

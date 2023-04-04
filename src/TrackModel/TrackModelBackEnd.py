@@ -254,7 +254,9 @@ class backEndCalculations():
             self.data["blockTrainNoGreen"].insertAt(trainNo + 1, self.data["moves"][trainNo][index] - 1)
 
         # Update Authority
-        self.data["authority"][trainNo] -= 1
+        if (self.data["authority"][trainNo] != 0):  
+            self.data["authority"][trainNo] -= 1
+        TMTkMSignals.authoritySignal.emit(trainNo + 1, self.data["authority"][trainNo])
 
         # Send Beacon
         if self.data["trainLine"][trainNo] == 0:
