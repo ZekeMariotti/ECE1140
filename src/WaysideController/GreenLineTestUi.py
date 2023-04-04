@@ -102,7 +102,7 @@ class TestWindow(QMainWindow):
           Push1L.setFixedSize(QSize(70,40)) 
           Push1L.clicked.connect(self.Switch1ButtonLClick)
           Push1L.setParent(self)
-          Push1L.move(400,105)
+          Push1L.move(400,450)
           return(Push1L)
     
     def Switch1ButtonR(self):
@@ -111,7 +111,7 @@ class TestWindow(QMainWindow):
           Push1R.setFixedSize(QSize(70,40))  
           Push1R.clicked.connect(self.Switch1ButtonRClick)
           Push1R.setParent(self)
-          Push1R.move(500,105)
+          Push1R.move(500,450)
           return(Push1R)
     
     def Switch2ButtonL(self):
@@ -120,7 +120,7 @@ class TestWindow(QMainWindow):
           Push2L.setFixedSize(QSize(70,40))  
           Push2L.clicked.connect(self.Switch2ButtonLClick)
           Push2L.setParent(self)
-          Push2L.move(400,160)
+          Push2L.move(400,500)
           return(Push2L)
     
     def Switch2ButtonR(self):
@@ -129,7 +129,7 @@ class TestWindow(QMainWindow):
           Push2R.setFixedSize(QSize(70,40))  
           Push2R.clicked.connect(self.Switch2ButtonRClick)
           Push2R.setParent(self)
-          Push2R.move(500,160)
+          Push2R.move(500,500)
           return(Push2R)
     
     def Switch3ButtonL(self):
@@ -138,7 +138,7 @@ class TestWindow(QMainWindow):
           Push3L.setFixedSize(QSize(70,40))  
           Push3L.clicked.connect(self.Switch3ButtonLClick)
           Push3L.setParent(self)
-          Push3L.move(400,215)
+          Push3L.move(400,550)
           return(Push3L)
     
     def Switch3ButtonR(self):
@@ -147,7 +147,7 @@ class TestWindow(QMainWindow):
           Push3R.setFixedSize(QSize(70,40))  
           Push3R.clicked.connect(self.Switch3ButtonRClick)
           Push3R.setParent(self)
-          Push3R.move(500,215)
+          Push3R.move(500,550)
           return(Push3R)
 
     def Switch4ButtonL(self):
@@ -156,7 +156,7 @@ class TestWindow(QMainWindow):
           Push4L.setFixedSize(QSize(70,40))  
           Push4L.clicked.connect(self.Switch4ButtonLClick)
           Push4L.setParent(self)
-          Push4L.move(400,270)
+          Push4L.move(400,600)
           return(Push4L)
     
     def Switch4ButtonR(self):
@@ -165,7 +165,7 @@ class TestWindow(QMainWindow):
           Push4R.setFixedSize(QSize(70,40))  
           Push4R.clicked.connect(self.Switch4ButtonRClick)
           Push4R.setParent(self)
-          Push4R.move(500,270)
+          Push4R.move(500,600)
           return(Push4R)
     
     def Switch5ButtonL(self):
@@ -174,7 +174,7 @@ class TestWindow(QMainWindow):
           Push5L.setFixedSize(QSize(70,40))  
           Push5L.clicked.connect(self.Switch5ButtonLClick)
           Push5L.setParent(self)
-          Push5L.move(400,325)
+          Push5L.move(400,650)
           return(Push5L)
     
     def Switch5ButtonR(self):
@@ -183,7 +183,7 @@ class TestWindow(QMainWindow):
           Push5R.setFixedSize(QSize(70,40))  
           Push5R.clicked.connect(self.Switch5ButtonRClick)
           Push5R.setParent(self)
-          Push5R.move(500,325)
+          Push5R.move(500,650)
           return(Push5R)
     
     def Switch1OutSetup(self):
@@ -380,40 +380,47 @@ class TestWindow(QMainWindow):
     #Clicking stuff    
     def Switch1ButtonLClick(self):
           self.WaysideControllerGreen.setSwitchPositions(True,1)
-    
+          self.WaysideControllerGreen2.setSwitchPositions(True,1)
     def Switch1ButtonRClick(self):
           self.WaysideControllerGreen.setSwitchPositions(False,1)
-    
+          self.WaysideControllerGreen2.setSwitchPositions(False,1)
+
     def Switch2ButtonLClick(self):
           self.WaysideControllerGreen.setSwitchPositions(True,2)
+          self.WaysideControllerGreen2.setSwitchPositions(True,2)
     
     def Switch2ButtonRClick(self):
           self.WaysideControllerGreen.setSwitchPositions(False,2)
+          self.WaysideControllerGreen2.setSwitchPositions(False,2)
     
     def Switch3ButtonLClick(self):
           self.WaysideControllerGreen.setSwitchPositions(True,3)
     
     def Switch3ButtonRClick(self):
           self.WaysideControllerGreen.setSwitchPositions(False,3)
+          self.WaysideControllerGreen2.setSwitchPositions(False,3)
     
     def Switch4ButtonLClick(self):
           self.WaysideControllerGreen.setSwitchPositions(True,4)
+          self.WaysideControllerGreen2.setSwitchPositions(True,4)
     
     def Switch4ButtonRClick(self):
           self.WaysideControllerGreen.setSwitchPositions(False,4)          
-    
+          self.WaysideControllerGreen2.setSwitchPositions(False,4)
+
     def Switch5ButtonLClick(self):
           self.WaysideControllerGreen.setSwitchPositions(True,5)          
-          
+          self.WaysideControllerGreen2.setSwitchPositions(True,5)
+
     def Switch5ButtonRClick(self):
           self.WaysideControllerGreen.setSwitchPositions(False,5)
-    
+          self.WaysideControllerGreen2.setSwitchPositions(False,5)
     def UpClicked(self):
           self.WaysideControllerGreen.setGatePositions(True)
-          
+          self.WaysideControllerGreen2.setGatePositions(True)
     def DownClicked(self):
           self.WaysideControllerGreen.setGatePositions(False)
-
+          self.WaysideControllerGreen2.setGatePositions(False)
     def setCommanded(self):
           self.storeCommandedSpeed = self.CommandedSpeed.currentText()
 
