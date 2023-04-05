@@ -79,7 +79,7 @@ func (r *RouteCalculator) CalculateRoute(train common.Train, destination common.
 }
 
 func (r *RouteCalculator) getNextBlocks(block common.Block, trainDir common.TrainDirection, line common.Line) []common.Block {
-	hasSwitch, trackSwitch := r.isSwitchBlock(block.Number, line)
+	hasSwitch, trackSwitch := r.IsSwitchBlock(block.Number, line)
 	nextBlocksIDs := make([]int, 0)
 
 	switch block.Direction {
@@ -119,7 +119,7 @@ func (r *RouteCalculator) getNextBlocks(block common.Block, trainDir common.Trai
 	return nextBlocks
 }
 
-func (r *RouteCalculator) isSwitchBlock(block int, line common.Line) (bool, *common.Switch) {
+func (r *RouteCalculator) IsSwitchBlock(block int, line common.Line) (bool, *common.Switch) {
 	for i := range line.Switches {
 		if line.Switches[i].Destination1 == block {
 			return true, &line.Switches[i]
