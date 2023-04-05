@@ -100,22 +100,22 @@ void ui(){
   //drawTextBoxWithBackground(50, 120, 200, 60, fontSize, "Engine State: "+((boolean(engineState)) ? "On" : "Off"), 167);
   drawTextBoxWithBackground(50, 120, 200, 60, fontSize, "Man Comd Spd: "+manualCommandedSpeed, 167);
   drawTextBoxWithBackground(50, 190, 200, 60, fontSize, "Service Brake: "+serviceBrakeState, 167);
-  drawTextBoxWithBackground(50, 260, 200, 60, fontSize, "Ext Lights: "+externalLightState, 167);
-  drawTextBoxWithBackground(50, 330, 200, 60, fontSize, "Int Lights: "+internalLightState, 167);
+  drawTextBoxWithBackground(50, 260, 200, 60, fontSize, "Ext Lights: "+((boolean(externalLightState)) ? "On" : "Off"), 167);
+  drawTextBoxWithBackground(50, 330, 200, 60, fontSize, "Int Lights: "+((boolean(internalLightState)) ? "On" : "Off"), 167);
 
   drawTextBoxWithBackground(350, 50, 200, 60, fontSize, "Station: "+stationName, 167); //TODO: implemet current station in JSON
   drawTextBoxWithBackground(350, 120, 200, 60+80, fontSize, "Speed: "+currentSpeed+"MPH", 167);
   drawTextBoxWithBackground(350, 190+80, 200, 60, fontSize, "Manual Spd Ovrd: ", 167);
-  drawTextBoxWithBackground(350, 260+80, 200, 60, fontSize, "Emergency Brake: "+emergencyBrakeState, 167);
+  drawTextBoxWithBackground(350, 260+80, 200, 60, fontSize, "Emergency Brake: "+((boolean(emergencyBrakeState)) ? "On" : "Off"), 167);
 
   drawTextBoxWithBackground(650, 50, 200, 60, fontSize, "Comd Spd: "+commandedSpeed+"MPH", 167);
   drawTextBoxWithBackground(650, 120, 200, 60, fontSize, "Authority: "+authority+" Blocks", 167);
   drawTextBoxWithBackground(650, 190, 200, 60, fontSize, "Spd Lim: "+speedLimit+"MPH", 167);
-  drawTextBoxWithBackground(650, 260, 200, 60, fontSize, "Right Door: "+rightDoorState, 167);
-  drawTextBoxWithBackground(650, 330, 200, 60, fontSize, "Left Door: "+leftDoorState, 167);
+  drawTextBoxWithBackground(650, 260, 200, 60, fontSize, "Right Door: "+((rightDoorState) ? "Open" : "Closed"), 167);
+  drawTextBoxWithBackground(650, 330, 200, 60, fontSize, "Left Door: "+((leftDoorState) ? "Open" : "Closed"), 167);
   
   drawTextBoxWithBackground(50, 480, 200, 60, fontSize, "Power: "+power, 167);
-  drawTextBoxWithBackground(50, 550, 200, 60, fontSize, "Service Brake State: "+serviceBrakeState, 167);
+  drawTextBoxWithBackground(50, 550, 200, 60, fontSize, "Service Brake State: "+((boolean(serviceBrakeState)) ? "On" : "Off"), 167);
   drawTextBoxWithBackground(350, 480, 200, 60, fontSize, "Station: "+stationName, 167); //TODO: implemet current station in JSON
   drawTextBoxWithBackground(350, 550, 200, 60+80, fontSize, "Speed: "+currentSpeed, 167);
   drawTextBoxWithBackground(650, 480, 200, 60, fontSize, "Comd Spd: "+commandedSpeed, 167);
