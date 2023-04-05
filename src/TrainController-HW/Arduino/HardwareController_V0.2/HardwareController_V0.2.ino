@@ -36,6 +36,9 @@ char packetBuffer[600];
 int serviceBrakeCommand, emergencyBrakeState, autoDriveCommand, currentSpeed, commandedSpeed, manualCommandedSpeed, authority; 
 unsigned long power; 
 
+//internal beacon variables
+bool isBeacon, firstBeaconPassed, secondBeaconPassed, stationState;
+
 unsigned long prevTime = 0; 
 unsigned int Kp;
 unsigned int Ki;
@@ -98,6 +101,7 @@ void loop() {
   // printSwitchStates();//this is to test the hardware
   drive(dt/1000);
   emergencyBrake();
+  setStationState();
   // automaticSpeedControl();
   // delay(10);
   prevTime = currTime;
@@ -278,7 +282,7 @@ void parseJSONDataUI(int *switchStateArray){
   jsonDataUI["External Lights State"] = switchStateArray[5];
   jsonDataUI["Left Door State"] = jsonDataIn["leftDoorState"];
   jsonDataUI["Right Door State"] = jsonDataIn["rightDoorState"];
-  jsonDataUI["Station"] = "text";
+  jsonDataUI["Station"] = (stationState) ? jsonDataIn["stationName"] : jsonDataIn["nextStationName"];
   jsonDataUI["Current Speed"] = jsonDataIn["currentSpeed"];
   jsonDataUI["Commanded Speed"] = jsonDataIn["commandedSpeed"];
   jsonDataUI["Manual Commanded Speed"] = manualCommandedSpeed;
@@ -300,7 +304,7 @@ void parseJSONData(int *switchStateArray){
   jsonDataOut["externalLightCommand"] = switchStateArray[5];
   jsonDataOut["internalLightCommand"] = switchStateArray[4];
   jsonDataOut["stationAnnouncement"] = jsonDataIn["stationName"];
-  jsonDataOut["isAtStation"] = 0;
+  jsonDataOut["isAtStation"] = stationState;
   int x = jsonDataOut["power"];
   Serial.print("JSON OUT:");
   Serial.println(x);
@@ -442,6 +446,35 @@ bool emergencyBrake(){
   return emergencyBrakeState; 
 }
 
+
+//==============BEACON SHIT================
+void setStationState(){
+  // # if isBeacon and !firstBeaconPassed, entering station
+  if(isBeacon && !firstBeaconPassed){
+    firstBeaconPassed = true;
+    // #print("First Beacon Passed")
+  }else if(!isBeacon && firstBeaconPassed){
+    stationState = true;
+      // #print("WE GOT TO A STATION")
+  }      
+
+  // # if isBeacon and stationState and !secondBeaconPassed, exiting station
+  if(isBeacon && stationState && !secondBeaconPassed){
+    secondBeaconPassed = true;
+      // #print("Second Beacon Passed")
+  }
+      
+
+  // # if !isBeacon and secondBeaconPassed, reset stationState and beaconPassed variables (left the station)
+  if(!isBeacon && secondBeaconPassed){
+    //  #print("Reset Data")
+    stationState = false;
+    firstBeaconPassed = false;
+    secondBeaconPassed = false;
+  }
+     
+}
+//=========================================
 
 
 

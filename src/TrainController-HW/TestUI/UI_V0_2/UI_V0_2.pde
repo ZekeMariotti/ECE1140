@@ -103,7 +103,7 @@ void ui(){
   drawTextBoxWithBackground(50, 260, 200, 60, fontSize, "Ext Lights: "+externalLightState, 167);
   drawTextBoxWithBackground(50, 330, 200, 60, fontSize, "Int Lights: "+internalLightState, 167);
 
-  drawTextBoxWithBackground(350, 50, 200, 60, fontSize, "Curr Station: ", 167); //TODO: implemet current station in JSON
+  drawTextBoxWithBackground(350, 50, 200, 60, fontSize, "Station: "+stationName, 167); //TODO: implemet current station in JSON
   drawTextBoxWithBackground(350, 120, 200, 60+80, fontSize, "Speed: "+currentSpeed+"MPH", 167);
   drawTextBoxWithBackground(350, 190+80, 200, 60, fontSize, "Manual Spd Ovrd: ", 167);
   drawTextBoxWithBackground(350, 260+80, 200, 60, fontSize, "Emergency Brake: "+emergencyBrakeState, 167);
@@ -116,7 +116,7 @@ void ui(){
   
   drawTextBoxWithBackground(50, 480, 200, 60, fontSize, "Power: "+power, 167);
   drawTextBoxWithBackground(50, 550, 200, 60, fontSize, "Service Brake State: "+serviceBrakeState, 167);
-  drawTextBoxWithBackground(350, 480, 200, 60, fontSize, "Curr Station: ", 167); //TODO: implemet current station in JSON
+  drawTextBoxWithBackground(350, 480, 200, 60, fontSize, "Station: "+stationName, 167); //TODO: implemet current station in JSON
   drawTextBoxWithBackground(350, 550, 200, 60+80, fontSize, "Speed: "+currentSpeed, 167);
   drawTextBoxWithBackground(650, 480, 200, 60, fontSize, "Comd Spd: "+commandedSpeed, 167);
   drawTextBoxWithBackground(650, 550, 200, 60, fontSize, "Authority: "+authority, 167);
@@ -145,6 +145,7 @@ void updateUI(JSONObject jsonDataIn){
     rightDoorState = getBooleanSafe(rightDoorState, "Right Door State");
     leftDoorState = getBooleanSafe(leftDoorState, "Left Door State");
     power = getIntSafe(power, "Power");
+    stationName = getStringSafe(stationName, "Station");
 }
 
 void drawTextBoxWithBackground(int x, int y, int xsize, int ysize,
@@ -210,6 +211,16 @@ float getFloatSafe(float currValue, String setValue){
   float value; 
   try {
     value = jsonDataIn.getFloat(setValue);
+  } catch (Exception e) {
+    value=currValue;
+  }
+  return value;
+}
+
+String getStringSafe(String currValue, String setValue){
+  String value; 
+  try {
+    value = jsonDataIn.getString(setValue);
   } catch (Exception e) {
     value=currValue;
   }
