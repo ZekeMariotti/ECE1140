@@ -2,12 +2,15 @@
 
 import sys
 import os
+import requests, json
 sys.path.append(__file__.replace("\TrackModel\TrackModelBackEnd.py", ""))
 
 from random import randint
+from datetime import *
 from TrackModel.TrackModelSignals import *
 from Integration.TMTkMSignals import *
 from Integration.TkMWCSignals import *
+from Integration.TimeSignals import *
 from PyQt6.QtCore import *
 from dynamicArray import *
 
@@ -15,6 +18,17 @@ from dynamicArray import *
 class backEndCalculations():
 
     runOnce = False
+    # Get temperature in Pittsburgh using HTTP request
+    api_key = "953d0d2dbcbd81b1e91ccb899240145d"
+    base_url = "http://api.openweathermap.org/data/2.5/weather?"
+    city_name = "Pittsburgh"
+    complete_url = base_url + "appid=" + api_key + "&q=" + city_name
+    response = requests.get(complete_url)
+    x = response.json()
+    if x["cod"] != "404":
+        y = x["main"]
+        current_temperature = round((y["temp"] - 273.15) * 1.8 + 32, 2)
+
     # Private data variable to store all the data needed for the back end
     data = {
         "line" : 0,                          # Selected line
@@ -22,7 +36,7 @@ class backEndCalculations():
         "switchPos" : DynamicArray(),        # Position of switches
         "sigState" : DynamicArray(),         # States of signals on each block next to a switch
         "gatePos" : DynamicArray(),          # Position of crossing gates
-        "temp" : 70.0,                       # Outdoor temperature
+        "temp" : current_temperature,        # Outdoor temperature
         "numPassengers" : [0, 222, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -47,12 +61,14 @@ class backEndCalculations():
         "blockTrainNoRed" : DynamicArray(),  # Train number on each block   
         "blockTrainNoGreen" : DynamicArray(),             
         "stationOccupancy" : DynamicArray(), # Number of people at each station
-        "rtc"              : "12:00:00 pm",  # Real Time Clock,
+        "rtc"              : "",
+        "prevRTC"          : "",
         "powerStatus": 0,                    # Power failure state
         "circuitStatusRed" : DynamicArray(),     # Track circuit failure states
         "circuitStatusGreen" : DynamicArray(),
         "railStatusRed" : DynamicArray(),        # Broken rail failure states
         "railStatusGreen" : DynamicArray(),
+        "val" : 0,
         "moves" : [[0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None],
                    [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None],
                    [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None],
@@ -116,6 +132,30 @@ class backEndCalculations():
         TkMWCSignals.commandedSpeedSignal.connect(self.cSpeedHandler)
         TkMWCSignals.switchStateSignal.connect(self.getSwitchPositionInput)
         TkMWCSignals.signalStateSignal.connect(self.getSignalStateInput)
+
+        rtcSignals.rtcSignal.connect(self.realTimeHandler)
+
+        self.data["rtc"] = datetime.now().isoformat() + "0-05:00"
+        self.data["prevRTC"] = datetime.now().isoformat() + "0-05:00"
+
+    # Handler for RTC
+    def realTimeHandler(self, rtc):
+        self.data["rtc"] = rtc
+        if int(self.findTimeDifference()) % 20 == 0 and int(self.findTimeDifference()) == self.data["val"]:
+            for i in range(self.data["stationOccupancy"].__len__()):
+                self.generatePassengers(i)
+            self.data["val"] += 20
+
+    # Get time
+    def findTimeDifference(self):
+        if (self.data["prevRTC"] == "") & (self.data["rtc"] == ""):
+            return 0
+        if (self.data["prevRTC"] == "") & (self.data["rtc"] != ""):
+            return 1
+        currTime = datetime.fromisoformat(self.data["rtc"])
+        prevTime = datetime.fromisoformat(self.data["prevRTC"])
+        newTime = currTime - prevTime
+        return float(newTime.total_seconds())
 
     # Handler for when a new train is made
     def newTrainMade(self, id, line):
@@ -469,6 +509,15 @@ class backEndCalculations():
             self.getOffInput(trainNo - 1, int(self.csvConstants["stationRed"].__getitem__(self.data["trainBlock"][trainNo - 1] - 1)) - 1, passOff)
         elif self.data["trainLine"][trainNo - 1] == 1:
             self.getOffInput(trainNo - 1, int(self.csvConstants["stationGreen"].__getitem__(self.data["trainBlock"][trainNo - 1] - 1)) - 1, passOff)
+
+    # Generates passengers at station every n seconds
+    def generatePassengers(self, stationID):
+        print(stationID)
+        currOcc = self.data["stationOccupancy"].__getitem__(stationID)
+        self.data["stationOccupancy"].removeAt(stationID)
+        self.data["stationOccupancy"].insertAt(currOcc + randint(0, 5), stationID)
+
+        trackSignals.updateSignal.emit()
 
     # Wayside authority handler
     def authHandler(self, blockNo, auth, line):
