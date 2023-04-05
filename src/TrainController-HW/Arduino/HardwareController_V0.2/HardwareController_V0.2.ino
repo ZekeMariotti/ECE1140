@@ -129,7 +129,7 @@ void updateSwitchStates(int *switchStateArray){
   switchStateArray[5]=!digitalRead(EXTERIORLIGHTSWICH);
   switchStateArray[6]=!digitalRead(EMERGENCYBRAKESWITCH);
   switchStateArray[7]=digitalRead(SERVICEBRAKESWITCH);
-  switchStateArray[8]=analogRead(SPEEDPOT);
+  switchStateArray[8]=map(analogRead(SPEEDPOT), 0, 1023, 0, 20);
   switchStateArray[9]=analogRead(BRAKEPOT);
 }
 
