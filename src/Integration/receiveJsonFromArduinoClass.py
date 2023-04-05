@@ -75,10 +75,10 @@ class arduinoToJson(QRunnable):
 
     def run(self):
         while True:
-            #data, addr = self.sock.recvfrom(1024) # buffer
+            self.data, self.addr = self.sock.recvfrom(1024) # buffer
             #print(f"received message: {data}")
-            # print(type(data))
-            #self.trainControllerToTrainModel = json.loads(data)
+            #print(type(data))
+            self.trainControllerToTrainModel = json.loads(self.data)
 
             print("Recieve")
             print(self.trainControllerToTrainModel)

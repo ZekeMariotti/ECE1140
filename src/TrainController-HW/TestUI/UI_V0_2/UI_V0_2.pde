@@ -18,9 +18,11 @@ String dataIn, dataOut;
 //String time, beacon, nextStationName;
 
 //input cariables
-int engineState, serviceBrakeState, emergencyBrakeState, internalLightState, externalLightState, leftDoorState,
-      rightDoorState, currentSpeed, commandedSpeed, authority, speedLimit, temperature, communicationState, time,
+int engineState, serviceBrakeState, emergencyBrakeState, internalLightState, externalLightState,
+      currentSpeed, commandedSpeed, authority, speedLimit, temperature, communicationState, time,
       power;
+      
+boolean rightDoorState, leftDoorState;
 String stationName;
 
 void setup(){
@@ -139,7 +141,7 @@ void updateUI(JSONObject jsonDataIn){
     commandedSpeed = jsonDataIn.getInt("Commanded Speed");
     authority = jsonDataIn.getInt("Authority");
     speedLimit = (int)jsonDataIn.getFloat("Speed Limit");
-    rightDoorState = jsonDataIn.getInt("Right Door State");
+    rightDoorState = jsonDataIn.getBoolean("Right Door State");
     leftDoorState = jsonDataIn.getInt("Left Door State");
     power = jsonDataIn.getInt("Power");
 }

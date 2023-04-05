@@ -102,7 +102,7 @@ void loop() {
   
     
   tsUsed = millis() - tsLastLoop;
-  if (1000 > tsUsed) {
+  if (500 > tsUsed) {
       //Do nothing
   } else {
     //send data
@@ -297,7 +297,7 @@ void parseJSONData(int *switchStateArray){
   jsonDataOut["externalLightCommand"] = switchStateArray[5];
   jsonDataOut["internalLightCommand"] = switchStateArray[4];
   jsonDataOut["stationAnnouncement"] = jsonDataIn["stationName"];
-  jsonDataOut["isAtStation"] = 1;
+  jsonDataOut["isAtStation"] = 0;
   int x = jsonDataOut["power"];
   Serial.print("JSON OUT:");
   Serial.println(x);
@@ -324,7 +324,7 @@ void setupUDP(){
   //Udp.endPacket();
 }
 void sendUDP(){
-  Udp.beginPacket("192.168.1.3", 27001);
+  Udp.beginPacket("192.168.1.2", 27001);
   char Buf[300];
   // Serial.println("Before conversion");
   serialJSONOut.toCharArray(Buf, 300);
@@ -394,7 +394,7 @@ void drive(int dt){
     //this is the main drive function to make the train move. 
     //This also calls the power and brake functions
   autoDriveCommand = switchStateArray[1];//jsonDataIn["Manual Speed Override"];
-  // Serial.println(autoDriveCommand);
+  Serial.println(autoDriveCommand);
   currentSpeed = jsonDataIn["currentSpeed"];
   commandedSpeed = jsonDataIn["commandedSpeed"];
   if(autoDriveCommand){
