@@ -75,7 +75,6 @@ class jsonToArduino(QRunnable):
     #                trainModelToTrainController = trainModelToTrainController
 
     def parseJson(self):
-        #TODO: Parse to ArduinoJsonFormat
         global udpMessage
         udpMessage = json.dumps(self.trainModelToTrainController)
         # print(udpMessage)
@@ -93,6 +92,7 @@ class jsonToArduino(QRunnable):
     def commandedSpeedSignalHandler(self, id, cmdSpeed):
         if (id == 1):
             self.trainModelToTrainController["commandedSpeed"] = cmdSpeed
+            # print(cmdSpeed)
         
     def currentSpeedSignalHandler(self, id, currSpeed):
         if (id == 1):
@@ -171,12 +171,13 @@ class jsonToArduino(QRunnable):
             self.parseJson()
             #print(udpMessage)
 
-            print(f'Sending {udpMessage} to {self.ip}:{self.port}    Counter:{self.counter}')
+            print(f'Sending \n{udpMessage} to {self.ip}:{self.port}    Counter:{self.counter}\n')
+            
             # print(trainModelToTrainController)
-            #sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             
             
 
-            #sock.sendto(udpMessage.encode('utf-8'), (self.ip, self.port))
+            sock.sendto(udpMessage.encode('utf-8'), (self.ip, self.port))
             self.counter+=1
             time.sleep(0.5)

@@ -4,7 +4,7 @@ import os
 import sys
 import time
 
-sys.path.append(__file__.replace("\Integration\\receiveJsonFromArduino.py", ""))
+sys.path.append(__file__.replace("\Integration\\receiveJsonFromArduinoClass.py", ""))
 from Integration.TMTCSignals import *
 from PyQt6.QtCore import QRunnable
 
@@ -17,8 +17,8 @@ class arduinoToJson(QRunnable):
         super().__init__()
 
         # UNCOMMENT IF WORKING WITH REAL HARDWARE
-        #self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        #self.sock.bind((self.ip, self.port))
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock.bind((self.ip, self.port))
 
         print(f'Start listening to {self.ip}:{self.port}')
 
@@ -63,7 +63,7 @@ class arduinoToJson(QRunnable):
     def emitSignals(self):
         # EMITTING SIGNALS TO TRAIN MODEL
         #TMTCSignals.commandedPowerSignal.emit(1, trainControllerToTrainModel["power"])
-        TMTCSignals.commandedPowerSignal.emit(1, 120000)
+        TMTCSignals.commandedPowerSignal.emit(1, self.trainControllerToTrainModel["power"])
         TMTCSignals.leftDoorCommandSignal.emit(1, self.trainControllerToTrainModel["leftDoorCommand"])
         TMTCSignals.rightDoorCommandSignal.emit(1, self.trainControllerToTrainModel["rightDoorCommand"])
         TMTCSignals.serviceBrakeCommandSignal.emit(1, self.trainControllerToTrainModel["serviceBrakeCommand"])
@@ -79,7 +79,10 @@ class arduinoToJson(QRunnable):
             #print(f"received message: {data}")
             # print(type(data))
             #self.trainControllerToTrainModel = json.loads(data)
+
+            print("Recieve")
             print(self.trainControllerToTrainModel)
+
             #parseToJson()
             #self.trainControllerToTrainModel["emergencyBrakeCommand"] = 0
             #writeToJson()
