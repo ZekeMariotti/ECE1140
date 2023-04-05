@@ -1,21 +1,26 @@
+<div class="text-center">
+  <a class="btn btn-outline-primary" (click)="getData()">Refresh Table</a>
+</div>
 <table class="table table-striped">
 	<thead>
 		<tr>
 			<th scope="col">ID</th>
 			<th scope="col">Line</th>
 			<th scope="col">Driver</th>
+      <th scope="col">Block(s)</th>
 			<th scope="col">Stops</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr *ngFor="let train of trains; index as i">
-			<th scope="row">{{ train.id }}</th>
+			<th scope="row row-no-gutters my-0">{{ train.id }}</th>
 			<td>{{ train.line }}</td>
 			<td>{{ train.driver }}</td>
+      <td>{{ train.location.blocks}}</td>
 			<td>
-        <dl class="row" *ngFor="let stop of train.stops">
-          <dt class="col-sm-3">{{ stop.station }}</dt>
-          <dd class="col-sm-9">{{ stop.time | date:'d/M/Y - hh:mm:ss a z' }}</dd>
+        <dl class="row row-no-gutters my-0" *ngFor="let stop of train.stops">
+          <dd class="col-sm-3 my-0">{{ stop.station }}</dd>
+          <dd class="col-sm-9 my-0">{{ stop.time | date:'M/d/Y - hh:mm:ss a z' }}</dd>
         </dl>
       </td>
 		</tr>

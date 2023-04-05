@@ -7,27 +7,23 @@ import (
 type Line struct {
 	Name     string        `json:"name"`
 	Blocks   *SafeBlockMap `json:"blocks"`
-	Switches []*Switch     `json:"switches"`
-	Stations []*Station    `json:"stations"`
+	Switches []Switch      `json:"switches"`
+	Stations []Station     `json:"stations"`
 }
 
 func NewLineFromSlice(name string, blocks []Block, switches []Switch, stations []Station) *Line {
 	l := Line{
 		Name:     name,
 		Blocks:   NewSafeBlockMap(),
-		Switches: make([]*Switch, len(switches)),
-		Stations: make([]*Station, len(stations)),
+		Switches: make([]Switch, len(switches)),
+		Stations: make([]Station, len(stations)),
 	}
 
 	for _, v := range blocks {
 		l.Blocks.Set(v.Number, v)
 	}
-	for i, v := range switches {
-		l.Switches[i] = &v
-	}
-	for i, v := range stations {
-		l.Stations[i] = &v
-	}
+	copy(l.Switches, switches)
+	copy(l.Stations, stations)
 
 	return &l
 }
@@ -40,9 +36,9 @@ func (l *Line) SetBlockInfos(occupancies []BlockInfo) {
 
 func (l *Line) SetSwitchPositions(positions []SwitchInfo) {
 	for _, v := range positions {
-		for _, w := range l.Switches {
-			if w.Source == v.Source {
-				w.SetPosition(v.Position)
+		for i := range l.Switches {
+			if l.Switches[i].Source == v.Source {
+				l.Switches[i].SetPosition(v.Position)
 			}
 		}
 	}
@@ -88,8 +84,8 @@ func (l *Line) GetLineOutput() LineOutput {
 
 func (l *Line) GetStations() []string {
 	result := make([]string, len(l.Stations))
-	for i, v := range l.Stations {
-		result[i] = v.Name
+	for i := range l.Stations {
+		result[i] = l.Stations[i].Name
 	}
 	return result
 }
@@ -114,4 +110,15 @@ func (l *Line) GetBlocks() []BlockFrontend {
 		return result[i].Number < result[j].Number
 	})
 	return result
+}
+
+func (l *Line) GetStationByName(name string) Station {
+	for i, v := range l.Stations {
+		if v.Name == name {
+			return l.Stations[i]
+		}
+	}
+
+	// Failed
+	return Station{}
 }

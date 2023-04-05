@@ -3,6 +3,7 @@ package common
 import (
 	"sync"
 
+	"github.com/shopspring/decimal"
 	"golang.org/x/exp/maps"
 )
 
@@ -109,4 +110,60 @@ func (m *SafeLineMap) GetBlocks(line string) []BlockFrontend {
 
 	l := m.data[line]
 	return l.GetBlocks()
+}
+
+func (m *SafeLineMap) GetBlocksUI(line string) []BlockFrontend {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	l := m.data[line]
+	blocks := l.GetBlocks()
+	mftconv, _ := decimal.NewFromString(METERS_TO_FEET_STR)
+	msmphconv, _ := decimal.NewFromString(MS_TO_MPH_STR)
+	for i := range blocks {
+		blocks[i].Length = blocks[i].Length.Mul(mftconv)
+		blocks[i].SuggestedSpeed = blocks[i].SuggestedSpeed.Mul(msmphconv)
+	}
+
+	return blocks
+}
+
+func (m *SafeLineMap) SetBlockOpen(line string, block int, open bool) {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	l := m.data[line]
+	l.Blocks.SetBlockOpen(block, open)
+	m.data[line] = l
+}
+
+func (m *SafeLineMap) SetBlockAuthority(line string, block int, authority int) {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	l := m.data[line]
+	l.Blocks.SetBlockAuthority(block, authority)
+	m.data[line] = l
+}
+
+func (m *SafeLineMap) SetBlockSpeed(line string, block int, speed decimal.Decimal) {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	l := m.data[line]
+	l.Blocks.SetBlockSpeed(block, speed)
+	m.data[line] = l
+}
+
+func (m *SafeLineMap) SetBlockSpeedUI(line string, block int, speed decimal.Decimal) {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	// Convert from MPH to M/S
+	conv, _ := decimal.NewFromString(MPH_TO_MS_STR)
+	speed = speed.Mul(conv)
+
+	l := m.data[line]
+	l.Blocks.SetBlockSpeed(block, speed)
+	m.data[line] = l
 }

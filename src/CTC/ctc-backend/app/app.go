@@ -5,15 +5,17 @@ import (
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/datastore"
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/frontendAPI"
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/outputs"
+	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/updateservice"
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/wayside"
 )
 
 type App struct {
-	TimeKeeper  *common.TimeKeeper
-	FrontendAPI *frontendAPI.FrontendAPI
-	OutputAPI   *outputs.OutputAPI
-	DataStore   *datastore.DataStore
-	Waysides    []*wayside.WaysideController
+	TimeKeeper    *common.TimeKeeper
+	FrontendAPI   *frontendAPI.FrontendAPI
+	OutputAPI     *outputs.OutputAPI
+	DataStore     *datastore.DataStore
+	Waysides      []*wayside.WaysideController
+	UpdateService *updateservice.UpdateService
 }
 
 // Returns a new instance of the application
@@ -25,6 +27,7 @@ func NewApp() *App {
 	app.FrontendAPI = frontendAPI.NewFrontendAPI(8080, app.DataStore)
 	app.OutputAPI = outputs.NewOutputAPI(8090, app.DataStore)
 	app.DataStore.TimeKeeper = app.TimeKeeper
+	app.UpdateService = updateservice.NewUpdateService(app.DataStore)
 	return &app
 }
 
@@ -43,6 +46,7 @@ func (a *App) AddWayside(address string) {
 // Starts running the app
 func (a *App) Start() {
 	a.TimeKeeper.StartSimulation()
+	a.UpdateService.Start()
 	go a.OutputAPI.Serve()
 	go a.FrontendAPI.Serve()
 }

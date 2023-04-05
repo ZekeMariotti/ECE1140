@@ -18,10 +18,32 @@ const (
 	BLOCKDIRECTION_BIDIRECTIONAL BlockDirection = 2
 )
 
+type TrainDirection uint8
+
+const (
+	TRAINDIRECTION_ASCENDING  TrainDirection = 0
+	TRAINDIRECTION_DESCENDING TrainDirection = 1
+)
+
+type BlockSide uint8
+
+const (
+	BLOCKSIDE_ASCEND  BlockSide = 0
+	BLOCKSIDE_DESCEND BlockSide = 1
+)
+
 type BlockSignal string
 
 const (
 	BLOCKSIGNAL_GREEN  BlockSignal = "Green"
 	BLOCKSIGNAL_YELLOW BlockSignal = "Yellow"
 	BLOCKSIGNAL_RED    BlockSignal = "Red"
+)
+
+// Units
+const (
+	METERS_TO_FEET_STR string = "3.280839895"
+	KMPH_TO_MPH_STR    string = "0.6213711922"
+	MS_TO_MPH_STR      string = "2.23694"
+	MPH_TO_MS_STR      string = "0.44704"
 )

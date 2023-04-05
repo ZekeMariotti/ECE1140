@@ -19,10 +19,10 @@ export class TrainTableComponent {
   ngOnInit(): void {
     this.getData();
 
-    interval(1000).subscribe(() => {this.getData()});
+    //interval(1000).subscribe(() => {this.getData()});
   }
 
-  private getData(): void {
+  getData(): void {
     this.backendService.getTrains().subscribe(trains => this.trains = trains);
   }
 }

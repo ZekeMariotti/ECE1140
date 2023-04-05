@@ -1,5 +1,5 @@
-import { Time } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { DatePipe, formatDate, Time } from '@angular/common';
+import { Component, LOCALE_ID, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AbstractControl, FormGroup, FormBuilder, FormControl, Validators, FormArray} from '@angular/forms';
 import { Train } from '../models/train';
@@ -19,7 +19,8 @@ export class TrainDispatchComponent implements OnInit {
   id: number = 0;
   line: string = this.lines[0];
   driver: string = '';
-  stops: TrainStop[] = [];
+  stops: TrainStop[] = new Array<TrainStop>();
+  stationSelect: boolean[] = [];
   stationTimes: Date[] = [];
 
 
@@ -30,6 +31,10 @@ export class TrainDispatchComponent implements OnInit {
 
   ngOnInit() {
     this.getData()
+
+    for (let i = 0; i < this.stations.length; i++) {
+      this.stationTimes[i] = new Date()
+    }
   }
 
   setLine(line: string): void {
@@ -39,11 +44,14 @@ export class TrainDispatchComponent implements OnInit {
 
   getData(): void {
     this.backend.getStations(this.line).subscribe(stations => this.stations = stations);
+    this.backend.getNextTrainID().subscribe(id => this.id = id);
   }
 
   getStops(): void {
     for (let index = 0; index < this.stations.length; index++) {
-      this.stops[index] = new TrainStop(this.stations[index], this.stationTimes[index]);
+      if (this.stationSelect[index] == true) {
+        this.stops.push(new TrainStop(this.stations[index], formatDate(this.stationTimes[index], 'yyyy-MM-ddTHH:mm:ssZ', 'en-US')));
+      }
     }
   }
 

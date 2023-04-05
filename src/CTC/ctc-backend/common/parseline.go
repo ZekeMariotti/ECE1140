@@ -3,7 +3,6 @@ package common
 import (
 	"encoding/csv"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 
@@ -37,6 +36,8 @@ func ParseLine(pathBlocks string, pathSwitches string) *Line {
 		length, _ := decimal.NewFromString(v[3])
 		grade, _ := decimal.NewFromString(v[4])
 		speed, _ := decimal.NewFromString(v[5])
+		speedconv, _ := decimal.NewFromString("3.6")
+		speed = speed.Div(speedconv)
 		dir := BLOCKDIRECTION_BIDIRECTIONAL
 		switch v[6] {
 		case "ASC":
@@ -81,8 +82,9 @@ func ParseLine(pathBlocks string, pathSwitches string) *Line {
 			}
 
 			station := Station{
-				Name: stationName,
-				Side: side,
+				Name:    stationName,
+				Side:    side,
+				BlockID: b.Number,
 			}
 			b.Station = &station
 			stations = append(stations, station)
@@ -102,7 +104,6 @@ func ParseLine(pathBlocks string, pathSwitches string) *Line {
 	switchCSV, err := rSwitch.ReadAll()
 	if err != nil {
 		fmt.Println(err)
-		log.Fatalln(err)
 	}
 	defer fSwitch.Close()
 
@@ -117,10 +118,17 @@ func ParseLine(pathBlocks string, pathSwitches string) *Line {
 		dest1, _ := strconv.Atoi(v[1])
 		dest2, _ := strconv.Atoi(v[2])
 
+		// Get block orientation
+		orientation := BLOCKSIDE_ASCEND
+		if source > dest1 {
+			orientation = BLOCKSIDE_DESCEND
+		}
+
 		s := Switch{
 			Source:       source,
 			Destination1: dest1,
 			Destination2: dest2,
+			Side:         orientation,
 		}
 		switches = append(switches, s)
 

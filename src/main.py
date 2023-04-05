@@ -15,8 +15,10 @@ from TrainModelFolder import TrainModelMainUI, TrainModelTestUI
 from TrainControllerSoftware import TrainControllerMainUI
 from TrackModel import TrackModelMainUI, TrackModelTestUI, IntegrationTestUI
 from Integration import sendJsonToArduinoClass, receiveJsonFromArduinoClass
+from WaysideController import NewGreenLine,GreenLineTestUi
 from Integration.TimeSignals import *
 from Integration.TMTCSignals import *
+from Integration.ActiveSignals import *
 
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
@@ -136,6 +138,9 @@ class MainWindow(QMainWindow):
             # Instantiate the Track Model
             self.TkM = TrackModelMainUI.TrackModelMainUI()
 
+            # Instantiate the Track Model
+            # self.wc = NewGreenLine.MainWindow()
+
             # Test TM and TC
             for i in range(2, 4):
                 self.trainDispatch(i)    
@@ -144,6 +149,7 @@ class MainWindow(QMainWindow):
             self.TMTestUI = TrainModelTestUI.TrainModelTestUI() # temporary TM test UI 
             #self.TkMTestUI = TrackModelTestUI.TrackModelTestUI()
             self.TESTUI = IntegrationTestUI.BasicTestUI()
+            #self.TESTUI = GreenLineTestUi.TestWindow()
         
         # Widget Setups
         def mainThreadSetup(self):
@@ -311,7 +317,10 @@ class MainWindow(QMainWindow):
              print("CTC")
 
         def launchWaysideControllerOneClick(self):
-            print("Wayside Controller One")
+            self.wc = NewGreenLine.MainWindow()
+            self.wc.setVisible(True)
+            self.wc.WaysideControllerGreenTestUI.show()
+            activeSignals.activeSignal.emit()
 
         def launchWaysideControllerTwoClick(self):
             print("Wayside Controller Two")
