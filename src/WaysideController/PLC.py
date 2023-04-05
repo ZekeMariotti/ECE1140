@@ -176,22 +176,22 @@ class PLC():
     def setswitches(self):
         for i in Gswitch1True:
             if(Gswitch1True.pop()==True):
-                self.Wayside1.switches[1]=True
-                self.Wayside2.switches[1]=True
-        for i in Gswitch1False:
-            if(Gswitch1False.pop()==True):
                 self.Wayside1.switches[1]=False
                 self.Wayside2.switches[1]=False
+        for i in Gswitch1False:
+            if(Gswitch1False.pop()==True):
+                self.Wayside1.switches[1]=True
+                self.Wayside2.switches[1]=True
 
         for i in Gswitch2True:
             if(Gswitch2True.pop()==True):
-                self.Wayside1.switches[2]=True
-                self.Wayside2.switches[1]=True
+                self.Wayside1.switches[2]=False
+                self.Wayside2.switches[2]=False
 
         for i in Gswitch2False:
             if(Gswitch2False.pop()==True):
-                self.Wayside1.switches[2]=False
-                self.Wayside2.switches[1]=False
+                self.Wayside1.switches[2]=True
+                self.Wayside2.switches[2]=True
 
     #Always go to yard
         self.Wayside1.switches[3]=True
@@ -200,20 +200,20 @@ class PLC():
         self.Wayside2.switches[4]=True
         for i in Gswitch5True:
             if(Gswitch5True.pop()==True):
-                self.Wayside1.switches[5]=True
-                self.Wayside2.switches[5]=True
+                self.Wayside1.switches[5]=False
+                self.Wayside2.switches[5]=False
         for i in Gswitch5False:
             if(Gswitch5False.pop()==True):
-                self.Wayside1.switches[5]=False
-                self.Wayside2.switches[6]=False
+                self.Wayside1.switches[5]=True
+                self.Wayside2.switches[6]=True
         for i in Gswitch6True:
             if(Gswitch6True.pop()==True):
-                self.Wayside1.switches[6]=True
-                self.Wayside2.switches[6]=True
+                self.Wayside1.switches[6]=False
+                self.Wayside2.switches[6]=False
         for i in Gswitch6False:
             if(Gswitch6False.pop()==True):
-                self.Wayside1.switches[6]=False
-                self.Wayside1.switches[6]=False
+                self.Wayside1.switches[6]=True
+                self.Wayside1.switches[6]=True
         if(self.Wayside1.occupancy[18]==True|self.Wayside1.occupancy[19]==True|self.Wayside1.occupancy[20]==True):
             self.Wayside1.gates[1]=False
             self.Wayside1.gates[1]=False

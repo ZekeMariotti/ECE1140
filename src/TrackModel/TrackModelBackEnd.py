@@ -179,7 +179,6 @@ class backEndCalculations():
     # Hander for the current block from the Train Model
     def currBlockHandler(self, id, currBlock, prevBlock, transition):
         if (transition):
-            print(currBlock)
             TMTkMSignals.blockLengthSignal.emit(id, float(self.csvConstants["lengthGreen"].__getitem__(currBlock - 1)))
             TMTkMSignals.elevationSignal.emit(id, float(self.csvConstants["elevationGreen"].__getitem__(currBlock - 1)))
             TMTkMSignals.undergroundStateSignal.emit(id, bool(self.csvConstants["undergroundGreen"].__getitem__(currBlock - 1)))
@@ -191,6 +190,7 @@ class backEndCalculations():
                 TMTkMSignals.switchSignal.emit(id, 0)
                 TMTkMSignals.switchStateSignal.emit(id, bool(self.data["switchPos"].__getitem__(int(self.csvConstants["switchGreen"].__getitem__(currBlock - 1)) - 1)))
             elif (int(self.csvConstants["switchGreen"].__getitem__(currBlock - 1)) > 0):
+                print("SwitchB", str(self.data["switchPos"].__getitem__(int(self.csvConstants["switchGreen"].__getitem__(currBlock - 1)) - 1)), str(int(self.csvConstants["switchGreen"].__getitem__(currBlock - 1)) - 1))
                 TMTkMSignals.switchSignal.emit(id, 1)
                 TMTkMSignals.switchStateSignal.emit(id, bool(self.data["switchPos"].__getitem__(int(self.csvConstants["switchGreen"].__getitem__(currBlock - 1)) - 1)))
             else:
