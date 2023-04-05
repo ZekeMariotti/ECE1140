@@ -50,7 +50,7 @@ func (c *WaysideController) updateService() {
 }
 
 func (c *WaysideController) getBlocks() {
-	resp, err := http.Get(c.address + "/blocks")
+	resp, err := http.Get(c.address + "/wayside")
 	if err != nil {
 		fmt.Println(err)
 		return
