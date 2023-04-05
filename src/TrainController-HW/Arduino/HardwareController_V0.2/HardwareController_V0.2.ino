@@ -33,7 +33,7 @@ char packetBuffer[600];
 //======================================================================================
 
 //output variables, 
-int serviceBrakeCommand, emergencyBrakeState, autoDriveCommand, currentSpeed, commandedSpeed, manualCommandedSpeed; 
+int serviceBrakeCommand, emergencyBrakeState, autoDriveCommand, currentSpeed, commandedSpeed, manualCommandedSpeed, authority; 
 unsigned long power; 
 
 unsigned long prevTime = 0; 
@@ -400,8 +400,14 @@ void drive(int dt){
   // Serial.println(autoDriveCommand);
   currentSpeed = jsonDataIn["currentSpeed"];
   commandedSpeed = jsonDataIn["commandedSpeed"];
+  authority = jsonDataIn["authority"];
   if(autoDriveCommand){
-    autodrive(currentSpeed, commandedSpeed, dt);
+    if (authority>0){
+      autodrive(currentSpeed, commandedSpeed, dt);
+    }else{
+      power=0;
+      serviceBrakeCommand = tControl.calculateBrake(true);
+    }
     Serial.println(power);
   }else{
     manualCommandedSpeed = switchStateArray[8];
