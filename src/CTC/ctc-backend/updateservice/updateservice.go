@@ -69,6 +69,9 @@ func (s *UpdateService) doUpdate() {
 	}
 }
 
+// The function that follows below has come straight from the depths of hell.
+// Before continuing, understand that there is no turning back. Continuing to read this
+// may cause incurable mental insanity. You have been warned.
 func (s *UpdateService) updateAuthorities(routeMap map[int][]int, useMap map[int][]int) {
 	// Reset all authorities
 	lines := s.data.Lines.GetSlice()
