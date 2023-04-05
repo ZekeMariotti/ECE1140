@@ -219,6 +219,7 @@ class TrainModel():
         TMTCSignals.externalLightCommandSignal.connect(self.externalLightCommandSignalHandler)
         TMTCSignals.internalLightCommandSignal.connect(self.internalLightCommandSignalHandler)
         TMTCSignals.stationAnnouncementSignal.connect(self.stationAnnouncementSignalHandler)
+        TMTCSignals.stationStateSignal.connect(self.stationStateSignalHandler)
 
         # Time From Main Signal
         rtcSignals.rtcSignal.connect(self.realTimeHandler)
@@ -315,6 +316,8 @@ class TrainModel():
         TMTCSignals.authoritySignal.emit(self.TrainID, self.passThroughData["authority"])
         TMTCSignals.undergroundSignal.emit(self.TrainID, self.data["underground"])
         TMTCSignals.temperatureSignal.emit(self.TrainID, self.data["currTemp"])
+        if (self.TrainID == 2) & (self.passThroughData["beacon"][3] == 1):
+            print(self.TrainID, self.passThroughData["beacon"])
         if (self.passThroughData["beacon"][3] == 1):
             TMTCSignals.stationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][0])
             TMTCSignals.platformSideSignal.emit(self.TrainID, self.passThroughData["beacon"][1])
@@ -371,6 +374,11 @@ class TrainModel():
         if (id == self.TrainID):
             self.data["station"] = station
 
+    # Station State input handler
+    def stationStateSignalHandler(self, id, atStation):
+        if (id == self.TrainID):
+            self.data["atStation"] = atStation
+
     # Data Handler for Outputs to the Track Model
     def writeTMtoTkM(self):
         TMTkMSignals.currBlockSignal.emit(self.TrainID, self.trackData["currBlock"], self.trackData["prevBlock"], self.trackData["overflow"])
@@ -401,6 +409,8 @@ class TrainModel():
     # Beacons Input Handler
     def beaconSignalHandler(self, id, stationName, platformSide, nextStationName, isBeacon, blockCount, fromSwitch):
         if (id == self.TrainID):
+            if (isBeacon == 1):
+                print(id, stationName, platformSide, nextStationName, isBeacon, blockCount, fromSwitch)
             self.passThroughData["beacon"][0] = stationName
             self.passThroughData["beacon"][1] = platformSide
             self.passThroughData["beacon"][2] = nextStationName
@@ -484,8 +494,9 @@ class TrainModel():
         # If the train is moving and has power input
         elif (self.data["power"] > 0.0):
             powerForce = self.data["power"] / self.data["prevVelocity"]
-            if(powerForce > 120000):
+            if(powerForce > 4000000):
                 powerForce = 120000
+        
 
         # If the Service Brake is pulled
         if (self.data["sBrakeState"]):
@@ -496,6 +507,7 @@ class TrainModel():
             brakeForce = self.constants["emergencyBrake"] * self.data["mass"]
 
         # Calculate the sum of the forces and current Acceleration
+        #print(f'ID: {self.TrainID}, powerForce: {powerForce}, brakeForce: {brakeForce}, frictionForce: {frictionalForce}, gravitationalForce: {gravitationalForce}')
         forces = powerForce + brakeForce + frictionalForce + gravitationalForce
         tempAcceleration = forces / self.data["mass"]
 
@@ -554,7 +566,12 @@ class TrainModel():
             return 1
         currTime = datetime.fromisoformat(self.data["rtc"])
         prevTime = datetime.fromisoformat(self.data["prevRTC"])
+        #if (self.TrainID == 2):
+        #    print("currTime: ", currTime)
+        #    print("prevTime: ", prevTime)
         newTime = currTime - prevTime
+        #if (self.TrainID == 2):
+        #    print(newTime.total_seconds())
         return float(newTime.total_seconds())
 
     # Finds the Block the train is on and the Block the train is exiting

@@ -17,10 +17,10 @@ unsigned long TControl::calculatePower(int currentSpeed, int commandedSpeed, flo
       unsigned long power = Kp*error + Ki*(previousU + (dt/2)*(error-previousError));
       previousU = (dt/2)*(error-previousError);
       previousError = error;    
-      Serial.println(power);
+      // Serial.println(power);
       return power;  
     }else{
-      Serial.println(120000);
+      // Serial.println(120000);
       return 120000;
     }
 

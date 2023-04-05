@@ -105,7 +105,13 @@ class TrainControllerSW:
         TMTCSignals.emergencyBrakeCommandSignal.emit(self.trainId, self.outputs.emergencyBrakeCommand)
         TMTCSignals.externalLightCommandSignal.emit(self.trainId, self.outputs.externalLightCommand)
         TMTCSignals.internalLightCommandSignal.emit(self.trainId, self.outputs.internalLightCommand)
-        TMTCSignals.stationAnnouncementSignal.emit(self.trainId, self.outputs.stationAnnouncement)
+
+        if(self.stationState):
+            TMTCSignals.stationAnnouncementSignal.emit(self.trainId, self.inputs.stationName)
+        else:
+            TMTCSignals.stationAnnouncementSignal.emit(self.trainId, self.inputs.nextStationName)
+
+        TMTCSignals.stationStateSignal.emit(self.trainId, self.stationState)
 
     # Signal handlers
     def rtcSignalHandler(self, rtcString):
@@ -146,7 +152,10 @@ class TrainControllerSW:
 
     def isBeaconSignalHandler(self, id, isBeac):
         if(self.trainId == id):
+            #if (self.trainId == 2):
+            #    print("isBeacon in Train Controller: ", isBeac)
             self.inputs.isBeacon = isBeac
+            self.setStationState()
 
     def externalLightsStateSignalHandler(self, id, extLight):
         if(self.trainId == id):
@@ -189,15 +198,19 @@ class TrainControllerSW:
         # if isBeacon and !firstBeaconPassed, entering station
         if(self.inputs.isBeacon == True and self.firstBeaconPassed == False):
             self.firstBeaconPassed = True
+            #print("First Beacon Passed")
         elif(self.inputs.isBeacon == False and self.firstBeaconPassed == True):
             self.stationState = True
+            #print("WE GOT TO A STATION")
 
         # if isBeacon and stationState and !secondBeaconPassed, exiting station
         if(self.inputs.isBeacon == True and self.stationState == True and self.secondBeaconPassed == False):
             self.secondBeaconPassed = True
+            #print("Second Beacon Passed")
 
         # if !isBeacon and secondBeaconPassed, reset stationState and beaconPassed variables (left the station)
         if(self.inputs.isBeacon == False and self.secondBeaconPassed == True):
+            #print("Reset Data")
             self.stationState = False
             self.firstBeaconPassed = False
             self.secondBeaconPassed = False

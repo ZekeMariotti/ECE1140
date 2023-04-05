@@ -37,7 +37,7 @@ class backEndCalculations():
         "sigState" : DynamicArray(),         # States of signals on each block next to a switch
         "gatePos" : DynamicArray(),          # Position of crossing gates
         "temp" : current_temperature,        # Outdoor temperature
-        "numPassengers" : [0, 222, 0, 0, 0, 0,
+        "numPassengers" : [222, 222, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0],                   # number of passengers on each train
@@ -181,7 +181,7 @@ class backEndCalculations():
         if (transition):
             TMTkMSignals.blockLengthSignal.emit(id, float(self.csvConstants["lengthGreen"].__getitem__(currBlock - 1)))
             TMTkMSignals.elevationSignal.emit(id, float(self.csvConstants["elevationGreen"].__getitem__(currBlock - 1)))
-            TMTkMSignals.undergroundStateSignal.emit(id, bool(self.csvConstants["undergroundGreen"].__getitem__(currBlock - 1)))
+            TMTkMSignals.undergroundStateSignal.emit(id, bool(int(self.csvConstants["undergroundGreen"].__getitem__(currBlock - 1))))
             #TMTkMSignals.beaconSignal.emit(id, self.csvConstants["beaconGreen"][0], int(self.csvConstants["beaconGreen"][1]), self.csvConstants["beaconGreen"][2], bool(self.csvConstants["beaconGreen"][3]), -1, 0)
             if (prevBlock == 0):
                 TMTkMSignals.switchSignal.emit(id, 0)
@@ -301,7 +301,8 @@ class backEndCalculations():
             TkMWCSignals.currBlockSignal.emit(1, True, self.data["moves"][trainNo][index])
 
         # Update Authority
-        self.data["authority"][trainNo] -= 1
+        if (self.data["authority"][trainNo] != 0):  
+            self.data["authority"][trainNo] -= 1
         TMTkMSignals.authoritySignal.emit(trainNo + 1, self.data["authority"][trainNo])
 
         # Send Beacon

@@ -7,7 +7,7 @@
 #define EXTERIORLIGHTSWICH 27
 #define EMERGENCYBRAKESWITCH 28
 #define SERVICEBRAKESWITCH 29
-#define SPEEDPOT A0
+#define SPEEDPOT A8
 #define BRAKEPOT A1
 
 #define NUMBEROFSWITCHES 10
@@ -33,8 +33,11 @@ char packetBuffer[600];
 //======================================================================================
 
 //output variables, 
-int serviceBrakeCommand, emergencyBrakeState, autoDriveCommand, currentSpeed, commandedSpeed; 
+int serviceBrakeCommand, emergencyBrakeState, autoDriveCommand, currentSpeed, commandedSpeed, manualCommandedSpeed, authority; 
 unsigned long power; 
+
+//internal beacon variables
+bool isBeacon, firstBeaconPassed, secondBeaconPassed, stationState;
 
 unsigned long prevTime = 0; 
 unsigned int Kp;
@@ -76,8 +79,9 @@ void setup() {
   setupUDP();
   // Serial.println("End of setup");
 
-  Kp = 50000;
-  Ki = 500;
+  Kp = 1;
+  Ki = 1;
+  manualCommandedSpeed=0;
   
 }
 
@@ -94,15 +98,17 @@ void loop() {
   // int currTime = jsonDataIn["inputTime"];
   float dt = currTime-prevTime;
   updateSwitchStates(switchStateArray);
+  // printSwitchStates();//this is to test the hardware
   drive(dt/1000);
   emergencyBrake();
+  setStationState();
   // automaticSpeedControl();
   // delay(10);
   prevTime = currTime;
   
     
   tsUsed = millis() - tsLastLoop;
-  if (1000 > tsUsed) {
+  if (200 > tsUsed) {
       //Do nothing
   } else {
     //send data
@@ -119,15 +125,15 @@ void loop() {
 }
 
 void updateSwitchStates(int *switchStateArray){
-  switchStateArray[0]=digitalRead(ENGINESWITCH);
+  switchStateArray[0]=!digitalRead(ENGINESWITCH);
   switchStateArray[1]=digitalRead(AUTODRIVESWITCH);
-  switchStateArray[2]=digitalRead(RIGHTDOORSWITCH);
+  switchStateArray[2]=!digitalRead(RIGHTDOORSWITCH);
   switchStateArray[3]=digitalRead(LEFTDOORSWITCH);
   switchStateArray[4]=digitalRead(INTERIORLIGHTSWITCH);
-  switchStateArray[5]=digitalRead(EXTERIORLIGHTSWICH);
-  switchStateArray[6]=digitalRead(EMERGENCYBRAKESWITCH);
+  switchStateArray[5]=!digitalRead(EXTERIORLIGHTSWICH);
+  switchStateArray[6]=!digitalRead(EMERGENCYBRAKESWITCH);
   switchStateArray[7]=digitalRead(SERVICEBRAKESWITCH);
-  switchStateArray[8]=analogRead(SPEEDPOT);
+  switchStateArray[8]=map(analogRead(SPEEDPOT), 0, 1023, 0, 20);
   switchStateArray[9]=analogRead(BRAKEPOT);
 }
 
@@ -276,9 +282,10 @@ void parseJSONDataUI(int *switchStateArray){
   jsonDataUI["External Lights State"] = switchStateArray[5];
   jsonDataUI["Left Door State"] = jsonDataIn["leftDoorState"];
   jsonDataUI["Right Door State"] = jsonDataIn["rightDoorState"];
-  jsonDataUI["Station"] = "text";
+  jsonDataUI["Station"] = (stationState) ? jsonDataIn["stationName"] : jsonDataIn["nextStationName"];
   jsonDataUI["Current Speed"] = jsonDataIn["currentSpeed"];
   jsonDataUI["Commanded Speed"] = jsonDataIn["commandedSpeed"];
+  jsonDataUI["Manual Commanded Speed"] = manualCommandedSpeed;
   jsonDataUI["Authority"] = jsonDataIn["authority"];
   jsonDataUI["Speed Limit"] = 999;
   jsonDataUI["Temperature"] = 999;
@@ -297,7 +304,7 @@ void parseJSONData(int *switchStateArray){
   jsonDataOut["externalLightCommand"] = switchStateArray[5];
   jsonDataOut["internalLightCommand"] = switchStateArray[4];
   jsonDataOut["stationAnnouncement"] = jsonDataIn["stationName"];
-  jsonDataOut["isAtStation"] = 1;
+  jsonDataOut["isAtStation"] = stationState;
   int x = jsonDataOut["power"];
   Serial.print("JSON OUT:");
   Serial.println(x);
@@ -324,7 +331,7 @@ void setupUDP(){
   //Udp.endPacket();
 }
 void sendUDP(){
-  Udp.beginPacket("192.168.1.3", 27001);
+  Udp.beginPacket("192.168.1.2", 27001);
   char Buf[300];
   // Serial.println("Before conversion");
   serialJSONOut.toCharArray(Buf, 300);
@@ -397,11 +404,19 @@ void drive(int dt){
   // Serial.println(autoDriveCommand);
   currentSpeed = jsonDataIn["currentSpeed"];
   commandedSpeed = jsonDataIn["commandedSpeed"];
+  authority = jsonDataIn["authority"];
   if(autoDriveCommand){
-    autodrive(currentSpeed, commandedSpeed, dt);
-    // Serial.println(power);
+    if (authority>0){
+      autodrive(currentSpeed, commandedSpeed, dt);
+    }else{
+      power=0;
+      serviceBrakeCommand = tControl.calculateBrake(true);
+    }
+    Serial.println(power);
   }else{
-    power = tControl.calculatePower(currentSpeed, commandedSpeed, dt, Kp, Ki);
+    manualCommandedSpeed = switchStateArray[8];
+    autodrive(currentSpeed, manualCommandedSpeed, dt);
+    // power = tControl.calculatePower(currentSpeed, commandedSpeed, dt, Kp, Ki);
     serviceBrakeCommand = tControl.calculateBrake((bool)switchStateArray[7]);
     if(serviceBrakeCommand || emergencyBrakeState){
       power=0; //set the power to 0 if service brake or emergency brake requested - redundancy for emergency brake
@@ -431,6 +446,35 @@ bool emergencyBrake(){
   return emergencyBrakeState; 
 }
 
+
+//==============BEACON SHIT================
+void setStationState(){
+  // # if isBeacon and !firstBeaconPassed, entering station
+  if(isBeacon && !firstBeaconPassed){
+    firstBeaconPassed = true;
+    // #print("First Beacon Passed")
+  }else if(!isBeacon && firstBeaconPassed){
+    stationState = true;
+      // #print("WE GOT TO A STATION")
+  }      
+
+  // # if isBeacon and stationState and !secondBeaconPassed, exiting station
+  if(isBeacon && stationState && !secondBeaconPassed){
+    secondBeaconPassed = true;
+      // #print("Second Beacon Passed")
+  }
+      
+
+  // # if !isBeacon and secondBeaconPassed, reset stationState and beaconPassed variables (left the station)
+  if(!isBeacon && secondBeaconPassed){
+    //  #print("Reset Data")
+    stationState = false;
+    firstBeaconPassed = false;
+    secondBeaconPassed = false;
+  }
+     
+}
+//=========================================
 
 
 

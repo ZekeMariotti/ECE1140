@@ -201,15 +201,15 @@ class TrainModelUI(QWidget):
         layout.addWidget(self.powerOutput, 3, 2, self.alignCenter)
 
         # Station Label and Output
-        stationLabel = QLabel("Station")
-        stationLabel.setFont(self.timesNewRoman18)
+        self.stationLabel = QLabel("Station")
+        self.stationLabel.setFont(self.timesNewRoman18)
         self.stationOutput = QLineEdit()
         self.stationOutput.setReadOnly(True)
-        self.stationOutput.setFont(self.timesNewRoman36)
+        self.stationOutput.setFont(self.timesNewRoman24)
         self.stationOutput.setAlignment(self.alignCenter)
         self.stationOutput.setText("Shadyside")
 
-        layout.addWidget(stationLabel, 2, 3, self.alignCenter)
+        layout.addWidget(self.stationLabel, 2, 3, self.alignCenter)
         layout.addWidget(self.stationOutput, 3, 3, self.alignCenter)
 
         # Emergency Brake Label and Button
@@ -494,6 +494,10 @@ class TrainModelUI(QWidget):
         self.velocityOutput.setText(str(metersPerSecondToMilesPerHour(self.TrainModel.data["velocity"])) + " mph")
         self.accelerationOutput.setText(str(metersPerSecondSquaredToFeetPerSecondSquared(self.TrainModel.data["acceleration"])) + " ft/s^2")
         self.powerOutput.setText(str(round(self.TrainModel.data["power"], 2)) + " W")
+        if (self.TrainModel.data["atStation"]):
+            self.stationLabel.setText("Current Station")
+        else:
+            self.stationLabel.setText("Next Station")
         self.stationOutput.setText(self.TrainModel.data["station"])
 
         # Setting communication status output and color
