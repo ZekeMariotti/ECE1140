@@ -1,6 +1,7 @@
 package common
 
 import (
+	"strconv"
 	"sync"
 
 	"github.com/shopspring/decimal"
@@ -165,5 +166,37 @@ func (m *SafeLineMap) SetBlockSpeedUI(line string, block int, speed decimal.Deci
 
 	l := m.data[line]
 	l.Blocks.SetBlockSpeed(block, speed)
+	m.data[line] = l
+}
+
+func (m *SafeLineMap) UpdateWayside(line string, data WaysideToCTC) {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	l := m.data[line]
+	blocksUpdated := make([]int, len(data.Occupancy))
+	idx := 0
+
+	// Update switches
+	for key, val := range data.Switches {
+		id, err := strconv.Atoi(key)
+		if err == nil {
+			l.Switches[id].UpdateDestinationFromWayside(val)
+		}
+	}
+
+	// Update occupancies
+	for key, val := range data.Occupancy {
+		id, err := strconv.Atoi(key)
+		if err == nil {
+			l.Blocks.SetBlockOccupancy(id, val)
+		}
+		blocksUpdated[idx] = id
+		idx++
+	}
+
+	//
+
+	// Push updates
 	m.data[line] = l
 }

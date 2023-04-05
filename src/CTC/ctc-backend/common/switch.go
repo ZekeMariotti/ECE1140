@@ -3,6 +3,7 @@ package common
 import "sync"
 
 type Switch struct {
+	ID           int       `json:"id"`
 	Source       int       `json:"source"`
 	Destination1 int       `json:"destination1"`
 	Destination2 int       `json:"destination2"`
@@ -31,4 +32,12 @@ func (s *Switch) GetNextBlocks(block int) []int {
 		return []int{s.Source}
 	}
 	return []int{-1}
+}
+
+func (s *Switch) UpdateDestinationFromWayside(wayside bool) {
+	if wayside {
+		s.currentDest = s.Destination2
+	} else {
+		s.currentDest = s.Destination1
+	}
 }

@@ -1,4 +1,4 @@
-package wayside
+package common
 
 type WaysideToCTC struct {
 	Switches   map[string]bool `json:"Switches"`
