@@ -53,10 +53,13 @@ func (a *FrontendAPI) setupPaths() {
 	a.router.GET("/api/frontend/nexttrainid", a.getNextTrainID)
 	a.router.GET("/api/frontend/time", a.getTime)
 	a.router.GET("/api/frontend/simulationspeed", a.getSimulationSpeed)
+	a.router.GET("/api/frontend/automode", a.getAutoMode)
 	// POST (Create) Commands
 	a.router.POST("/api/frontend/trains", a.postTrains)
+	// PUT (Update) Commands
 	a.router.PUT("/api/frontend/simulationspeed", a.putSimulationSpeed)
 	a.router.PUT("/api/frontend/lines/:name/blocks/:block/open", a.putBlockOpen)
+	a.router.PUT("/api/frontend/automode", a.putAutoMode)
 }
 
 // Handler for GET /lines
@@ -115,6 +118,12 @@ func (a *FrontendAPI) getSimulationSpeed(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, speed)
 }
 
+// Handler for GET /automode
+func (a *FrontendAPI) getAutoMode(c *gin.Context) {
+	mode := a.datastore.AutoMode
+	c.IndentedJSON(http.StatusOK, mode)
+}
+
 // Handler for POST /trains
 func (a *FrontendAPI) postTrains(c *gin.Context) {
 	result := common.TrainFrontend{}
@@ -140,4 +149,12 @@ func (a *FrontendAPI) putBlockOpen(c *gin.Context) {
 	body, _ := io.ReadAll(c.Request.Body)
 	json.Unmarshal(body, &result)
 	a.datastore.Lines.SetBlockOpen(line, block, result)
+}
+
+// Handler for PUT /automode
+func (a *FrontendAPI) putAutoMode(c *gin.Context) {
+	result := bool(true)
+	body, _ := io.ReadAll(c.Request.Body)
+	json.Unmarshal(body, &result)
+	a.datastore.AutoMode = result
 }

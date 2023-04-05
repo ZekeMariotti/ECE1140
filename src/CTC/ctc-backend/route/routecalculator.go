@@ -9,6 +9,14 @@ type RouteCalculator struct {
 	data *datastore.DataStore
 }
 
+func NewRouteCalculator(data *datastore.DataStore) *RouteCalculator {
+	calc := RouteCalculator{
+		data: data,
+	}
+
+	return &calc
+}
+
 func (r *RouteCalculator) CalculateRoute(train common.Train, destination common.Block) []int {
 	// Ensure they are not the same block
 	if train.Location.Blocks[len(train.Location.Blocks)-1] == destination.Number {

@@ -8,6 +8,7 @@ type DataStore struct {
 	Lines      common.SafeLineMap  `json:"lines"`
 	Trains     common.SafeTrainMap `json:"trains"`
 	TimeKeeper *common.TimeKeeper  `json:"timekeeper"`
+	AutoMode   bool                `json:"auto"`
 }
 
 func NewDataStore() *DataStore {

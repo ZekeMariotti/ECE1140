@@ -3,6 +3,7 @@ package common
 import (
 	"sync"
 
+	"github.com/shopspring/decimal"
 	"golang.org/x/exp/maps"
 )
 
@@ -101,4 +102,27 @@ func (m *SafeBlockMap) GetMaxID() int {
 	}
 
 	return max
+}
+
+func (m *SafeBlockMap) SetBlockAuthority(key int, authority int) {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	block := m.data[key]
+	block.Authority = authority
+	m.data[key] = block
+}
+
+func (m *SafeBlockMap) SetBlockSpeed(key int, speed decimal.Decimal) {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	block := m.data[key]
+
+	if speed.Cmp(block.SpeedLimit) > 0 {
+		speed = block.SpeedLimit
+	}
+
+	block.SuggestedSpeed = speed
+	m.data[key] = block
 }

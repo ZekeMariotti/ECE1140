@@ -132,5 +132,25 @@ func (m *SafeLineMap) SetBlockOpen(line string, block int, open bool) {
 	m.mute.Lock()
 	defer m.mute.Unlock()
 
-	m.data[line].Blocks.SetBlockOpen(block, open)
+	l := m.data[line]
+	l.Blocks.SetBlockOpen(block, open)
+	m.data[line] = l
+}
+
+func (m *SafeLineMap) SetBlockAuthority(line string, block int, authority int) {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	l := m.data[line]
+	l.Blocks.SetBlockAuthority(block, authority)
+	m.data[line] = l
+}
+
+func (m *SafeLineMap) SetBlockSpeed(line string, block int, speed decimal.Decimal) {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	l := m.data[line]
+	l.Blocks.SetBlockSpeed(block, speed)
+	m.data[line] = l
 }

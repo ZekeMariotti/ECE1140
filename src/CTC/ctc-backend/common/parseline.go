@@ -80,8 +80,9 @@ func ParseLine(pathBlocks string, pathSwitches string) *Line {
 			}
 
 			station := Station{
-				Name: stationName,
-				Side: side,
+				Name:    stationName,
+				Side:    side,
+				BlockID: b.Number,
 			}
 			b.Station = &station
 			stations = append(stations, station)
