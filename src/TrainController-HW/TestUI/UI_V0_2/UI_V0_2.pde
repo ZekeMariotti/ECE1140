@@ -36,7 +36,7 @@ void setup(){
   print("List:");
   printArray(Serial.list());
   // Open the port you are using at the rate you want:
-  myPort = new Serial(this, "COM6", 9600); //TODO: Uncomment
+  myPort = new Serial(this, "COM9", 9600); //TODO: Uncomment
   println(Serial.list());
   //------------------------End Serial--------------------------
 }
@@ -128,22 +128,22 @@ void updateUI(JSONObject jsonDataIn){
   
     //println(jsonDataIn.getInt("Right Door Command"));
     //time = jsonDataIn.getString("Time");
-    engineState = jsonDataIn.getInt("Right Door Command");
-    serviceBrakeState = jsonDataIn.getInt("Service Brake Command");
-    externalLightState = jsonDataIn.getInt("External Lights State");
-    internalLightState = jsonDataIn.getInt("Internal Lights State");
+    engineState = getIntSafe(engineState, "Right Door Command");
+    serviceBrakeState = getIntSafe(serviceBrakeState, "Service Brake Command");
+    externalLightState = getIntSafe(externalLightState, "External Lights State");
+    internalLightState = getIntSafe(internalLightState, "Internal Lights State");
     
     // //TODO: implemet current station in JSON
-    currentSpeed = jsonDataIn.getInt("Current Speed");
+    currentSpeed = (int)((getIntSafe(currentSpeed, "Current Speed"))*2.23694;
     //jsonDataIn.getInt("Manual Speed Override"), 167);
-    emergencyBrakeState = jsonDataIn.getInt("Emergency Brake State");
+    emergencyBrakeState = getIntSafe(emergencyBrakeState, "Emergency Brake State");
     
-    commandedSpeed = jsonDataIn.getInt("Commanded Speed");
-    authority = jsonDataIn.getInt("Authority");
-    speedLimit = (int)jsonDataIn.getFloat("Speed Limit");
-    rightDoorState = jsonDataIn.getBoolean("Right Door State");
-    leftDoorState = jsonDataIn.getBoolean("Left Door State");
-    power = jsonDataIn.getInt("Power");
+    commandedSpeed = getIntSafe(commandedSpeed, "Commanded Speed");
+    authority = getIntSafe(authority, "Authority");
+    speedLimit = (int)getFloatSafe(speedLimit, "Speed Limit");
+    rightDoorState = getBooleanSafe(rightDoorState, "Right Door State");
+    leftDoorState = getBooleanSafe(leftDoorState, "Left Door State");
+    power = getIntSafe(power, "Power");
 }
 
 void drawTextBoxWithBackground(int x, int y, int xsize, int ysize,
@@ -183,4 +183,34 @@ String getSerialData(){
   }
   //println(data);
   return data;
+}
+
+int getIntSafe(int currValue, String setValue){
+  int value; 
+  try {
+    value = jsonDataIn.getInt(setValue);
+  } catch (Exception e) {
+    value=currValue;
+  }
+  return value;
+}
+
+boolean getBooleanSafe(boolean currValue, String setValue){
+  boolean value; 
+  try {
+    value = jsonDataIn.getBoolean(setValue);
+  } catch (Exception e) {
+    value=currValue;
+  }
+  return value;
+}
+
+float getFloatSafe(float currValue, String setValue){
+  float value; 
+  try {
+    value = jsonDataIn.getFloat(setValue);
+  } catch (Exception e) {
+    value=currValue;
+  }
+  return value;
 }
