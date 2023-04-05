@@ -7,7 +7,7 @@
 #define EXTERIORLIGHTSWICH 27
 #define EMERGENCYBRAKESWITCH 28
 #define SERVICEBRAKESWITCH 29
-#define SPEEDPOT A0
+#define SPEEDPOT A8
 #define BRAKEPOT A1
 
 #define NUMBEROFSWITCHES 10
@@ -33,7 +33,7 @@ char packetBuffer[600];
 //======================================================================================
 
 //output variables, 
-int serviceBrakeCommand, emergencyBrakeState, autoDriveCommand, currentSpeed, commandedSpeed; 
+int serviceBrakeCommand, emergencyBrakeState, autoDriveCommand, currentSpeed, commandedSpeed, manualCommandedSpeed; 
 unsigned long power; 
 
 unsigned long prevTime = 0; 
@@ -76,8 +76,9 @@ void setup() {
   setupUDP();
   // Serial.println("End of setup");
 
-  Kp = 50000;
-  Ki = 500;
+  Kp = 1;
+  Ki = 1;
+  manualCommandedSpeed=0;
   
 }
 
@@ -94,6 +95,7 @@ void loop() {
   // int currTime = jsonDataIn["inputTime"];
   float dt = currTime-prevTime;
   updateSwitchStates(switchStateArray);
+  // printSwitchStates();//this is to test the hardware
   drive(dt/1000);
   emergencyBrake();
   // automaticSpeedControl();
@@ -102,7 +104,7 @@ void loop() {
   
     
   tsUsed = millis() - tsLastLoop;
-  if (500 > tsUsed) {
+  if (200 > tsUsed) {
       //Do nothing
   } else {
     //send data
@@ -119,13 +121,13 @@ void loop() {
 }
 
 void updateSwitchStates(int *switchStateArray){
-  switchStateArray[0]=digitalRead(ENGINESWITCH);
+  switchStateArray[0]=!digitalRead(ENGINESWITCH);
   switchStateArray[1]=digitalRead(AUTODRIVESWITCH);
-  switchStateArray[2]=digitalRead(RIGHTDOORSWITCH);
+  switchStateArray[2]=!digitalRead(RIGHTDOORSWITCH);
   switchStateArray[3]=digitalRead(LEFTDOORSWITCH);
   switchStateArray[4]=digitalRead(INTERIORLIGHTSWITCH);
-  switchStateArray[5]=digitalRead(EXTERIORLIGHTSWICH);
-  switchStateArray[6]=digitalRead(EMERGENCYBRAKESWITCH);
+  switchStateArray[5]=!digitalRead(EXTERIORLIGHTSWICH);
+  switchStateArray[6]=!digitalRead(EMERGENCYBRAKESWITCH);
   switchStateArray[7]=digitalRead(SERVICEBRAKESWITCH);
   switchStateArray[8]=analogRead(SPEEDPOT);
   switchStateArray[9]=analogRead(BRAKEPOT);
@@ -279,6 +281,7 @@ void parseJSONDataUI(int *switchStateArray){
   jsonDataUI["Station"] = "text";
   jsonDataUI["Current Speed"] = jsonDataIn["currentSpeed"];
   jsonDataUI["Commanded Speed"] = jsonDataIn["commandedSpeed"];
+  jsonDataUI["Manual Commanded Speed"] = manualCommandedSpeed;
   jsonDataUI["Authority"] = jsonDataIn["authority"];
   jsonDataUI["Speed Limit"] = 999;
   jsonDataUI["Temperature"] = 999;
@@ -394,14 +397,16 @@ void drive(int dt){
     //this is the main drive function to make the train move. 
     //This also calls the power and brake functions
   autoDriveCommand = switchStateArray[1];//jsonDataIn["Manual Speed Override"];
-  Serial.println(autoDriveCommand);
+  // Serial.println(autoDriveCommand);
   currentSpeed = jsonDataIn["currentSpeed"];
   commandedSpeed = jsonDataIn["commandedSpeed"];
   if(autoDriveCommand){
     autodrive(currentSpeed, commandedSpeed, dt);
-    // Serial.println(power);
+    Serial.println(power);
   }else{
-    power = tControl.calculatePower(currentSpeed, commandedSpeed, dt, Kp, Ki);
+    manualCommandedSpeed = switchStateArray[8];
+    autodrive(currentSpeed, manualCommandedSpeed, dt);
+    // power = tControl.calculatePower(currentSpeed, commandedSpeed, dt, Kp, Ki);
     serviceBrakeCommand = tControl.calculateBrake((bool)switchStateArray[7]);
     if(serviceBrakeCommand || emergencyBrakeState){
       power=0; //set the power to 0 if service brake or emergency brake requested - redundancy for emergency brake
