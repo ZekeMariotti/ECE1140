@@ -20,7 +20,7 @@ String dataIn, dataOut;
 //input cariables
 int engineState, serviceBrakeState, emergencyBrakeState, internalLightState, externalLightState,
       currentSpeed, commandedSpeed, authority, speedLimit, temperature, communicationState, time,
-      power;
+      power, manualCommandedSpeed;
       
 boolean rightDoorState, leftDoorState;
 String stationName;
@@ -97,7 +97,8 @@ void draw(){
 void ui(){
   int fontSize = 20;
   drawTextBoxWithBackground(50, 50, 200, 60, fontSize, "Time: "+time, 167);
-  drawTextBoxWithBackground(50, 120, 200, 60, fontSize, "Engine State: "+((boolean(engineState)) ? "On" : "Off"), 167);
+  //drawTextBoxWithBackground(50, 120, 200, 60, fontSize, "Engine State: "+((boolean(engineState)) ? "On" : "Off"), 167);
+  drawTextBoxWithBackground(50, 120, 200, 60, fontSize, "Man Comd Spd: "+manualCommandedSpeed, 167);
   drawTextBoxWithBackground(50, 190, 200, 60, fontSize, "Service Brake: "+serviceBrakeState, 167);
   drawTextBoxWithBackground(50, 260, 200, 60, fontSize, "Ext Lights: "+externalLightState, 167);
   drawTextBoxWithBackground(50, 330, 200, 60, fontSize, "Int Lights: "+internalLightState, 167);
@@ -108,7 +109,7 @@ void ui(){
   drawTextBoxWithBackground(350, 260+80, 200, 60, fontSize, "Emergency Brake: "+emergencyBrakeState, 167);
 
   drawTextBoxWithBackground(650, 50, 200, 60, fontSize, "Comd Spd: "+commandedSpeed+"MPH", 167);
-  drawTextBoxWithBackground(650, 120, 200, 60, fontSize, "Authority: "+authority+"Blocks", 167);
+  drawTextBoxWithBackground(650, 120, 200, 60, fontSize, "Authority: "+authority+" Blocks", 167);
   drawTextBoxWithBackground(650, 190, 200, 60, fontSize, "Spd Lim: "+speedLimit+"MPH", 167);
   drawTextBoxWithBackground(650, 260, 200, 60, fontSize, "Right Door: "+rightDoorState, 167);
   drawTextBoxWithBackground(650, 330, 200, 60, fontSize, "Left Door: "+leftDoorState, 167);
@@ -128,13 +129,13 @@ void updateUI(JSONObject jsonDataIn){
   
     //println(jsonDataIn.getInt("Right Door Command"));
     //time = jsonDataIn.getString("Time");
-    engineState = getIntSafe(engineState, "Right Door Command");
+    manualCommandedSpeed = (int)(getFloatSafe(manualCommandedSpeed, "Manual Commanded Speed")*2.23694);
     serviceBrakeState = getIntSafe(serviceBrakeState, "Service Brake Command");
     externalLightState = getIntSafe(externalLightState, "External Lights State");
     internalLightState = getIntSafe(internalLightState, "Internal Lights State");
     
     // //TODO: implemet current station in JSON
-    currentSpeed = (int)((getIntSafe(currentSpeed, "Current Speed"))*2.23694;
+    currentSpeed = (int)((getFloatSafe(currentSpeed, "Current Speed"))*2.23694);
     //jsonDataIn.getInt("Manual Speed Override"), 167);
     emergencyBrakeState = getIntSafe(emergencyBrakeState, "Emergency Brake State");
     
