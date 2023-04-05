@@ -134,11 +134,16 @@ func (s *UpdateService) updateSpeeds(routeMap map[int][]int) {
 	// Add new speeds
 	for train, route := range routeMap {
 		line := s.data.Trains.Get(train).Line
+		lineData := s.data.Lines.Get(line)
 		for i := range route {
 			// Calculate suggested speed
 			blocks := route[i:]
 			distance := s.getDistanceToRouteEnd(line, blocks)
 			speed := s.getMaxSpeedFromDistance(distance)
+			limit := lineData.Blocks.Get(route[i]).SpeedLimit
+			if speed.Cmp(limit) > 0 {
+				speed = limit
+			}
 			// Set suggested speed
 			s.data.Lines.SetBlockSpeed(line, route[i], speed)
 		}
