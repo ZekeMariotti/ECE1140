@@ -142,7 +142,7 @@ void updateUI(JSONObject jsonDataIn){
     authority = jsonDataIn.getInt("Authority");
     speedLimit = (int)jsonDataIn.getFloat("Speed Limit");
     rightDoorState = jsonDataIn.getBoolean("Right Door State");
-    leftDoorState = jsonDataIn.getInt("Left Door State");
+    leftDoorState = jsonDataIn.getBoolean("Left Door State");
     power = jsonDataIn.getInt("Power");
 }
 
