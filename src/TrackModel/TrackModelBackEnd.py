@@ -171,16 +171,15 @@ class backEndCalculations():
     # Handler PassengersExiting signal from the train model
     def passengersExiting(self, id, num):
         if (num > 0) & ~self.runOnce:
-            print(f'TrainID: {id}, Passengers Off: {num}')
             self.passengersGettingOff(id, num)
             self.passengersGettingOn(id)
-            print("Track Model - Return From Track Model Function")
             if (self.csvConstants["stationGreen"].__getitem__(int(self.data["trainBlock"][id - 1]) - 1) == 0):
                 self.runOnce = False
 
     # Hander for the current block from the Train Model
     def currBlockHandler(self, id, currBlock, prevBlock, transition):
         if (transition):
+            print(currBlock)
             TMTkMSignals.blockLengthSignal.emit(id, float(self.csvConstants["lengthGreen"].__getitem__(currBlock - 1)))
             TMTkMSignals.elevationSignal.emit(id, float(self.csvConstants["elevationGreen"].__getitem__(currBlock - 1)))
             TMTkMSignals.undergroundStateSignal.emit(id, bool(self.csvConstants["undergroundGreen"].__getitem__(currBlock - 1)))
@@ -304,7 +303,7 @@ class backEndCalculations():
 
         # Update Authority
         self.data["authority"][trainNo] -= 1
-        TMTkMSignals.authoritySignal.emit(trainNo, self.data["authority"][trainNo])
+        TMTkMSignals.authoritySignal.emit(trainNo + 1, self.data["authority"][trainNo])
 
         # Send Beacon
         if self.data["trainLine"][trainNo] == 0:
@@ -512,7 +511,6 @@ class backEndCalculations():
 
     # Generates passengers at station every n seconds
     def generatePassengers(self, stationID):
-        print(stationID)
         currOcc = self.data["stationOccupancy"].__getitem__(stationID)
         self.data["stationOccupancy"].removeAt(stationID)
         self.data["stationOccupancy"].insertAt(currOcc + randint(0, 5), stationID)

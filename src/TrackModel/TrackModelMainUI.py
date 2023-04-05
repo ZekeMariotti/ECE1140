@@ -465,19 +465,23 @@ class TrackModelMainUI(QWidget):
                 self.backEnd.data["circuitStatusRed"].removeAt(self.backEnd.data["blockNo"])
                 self.backEnd.data["circuitStatusRed"].insertAt(1, self.backEnd.data["blockNo"])
                 self.circuitButton.setStyleSheet("background-color: red")
+                TkMWCSignals.currBlockSignal.emit(0, True, self.backEnd.data["blockNo"] + 1)
             else:
                 self.backEnd.data["circuitStatusRed"].removeAt(self.backEnd.data["blockNo"])
                 self.backEnd.data["circuitStatusRed"].insertAt(0, self.backEnd.data["blockNo"])
                 self.circuitButton.setStyleSheet("background-color: green; color: white")
+                TkMWCSignals.currBlockSignal.emit(0, False, self.backEnd.data["blockNo"] + 1)
         elif self.backEnd.data["line"] == 1:
             if self.backEnd.data["circuitStatusGreen"][self.backEnd.data["blockNo"]] == 0:
                 self.backEnd.data["circuitStatusGreen"].removeAt(self.backEnd.data["blockNo"])
                 self.backEnd.data["circuitStatusGreen"].insertAt(1, self.backEnd.data["blockNo"])
                 self.circuitButton.setStyleSheet("background-color: red")
+                TkMWCSignals.currBlockSignal.emit(1, True, self.backEnd.data["blockNo"] + 1)
             else:
                 self.backEnd.data["circuitStatusGreen"].removeAt(self.backEnd.data["blockNo"])
                 self.backEnd.data["circuitStatusGreen"].insertAt(0, self.backEnd.data["blockNo"])
                 self.circuitButton.setStyleSheet("background-color: green; color: white")
+                TkMWCSignals.currBlockSignal.emit(1, False, self.backEnd.data["blockNo"] + 1)
 
     # Handler for when Brake Failure State button is pressed
     def brokenRailButtonPressed(self):

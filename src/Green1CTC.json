@@ -4,7 +4,7 @@
         "2": false,
         "3": true,
         "4": true,
-        "5": false,
+        "5": true,
         "6": false
     },
     "Lights": {
@@ -185,7 +185,7 @@
         "73": false,
         "74": false,
         "75": false,
-        "76": false,
+        "76": true,
         "77": false,
         "78": false,
         "79": false,
