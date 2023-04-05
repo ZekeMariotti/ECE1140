@@ -44,4 +44,6 @@ const (
 const (
 	METERS_TO_FEET_STR string = "3.280839895"
 	KMPH_TO_MPH_STR    string = "0.6213711922"
+	MS_TO_MPH_STR      string = "2.23694"
+	MPH_TO_MS_STR      string = "0.44704"
 )

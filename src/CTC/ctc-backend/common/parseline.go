@@ -36,6 +36,8 @@ func ParseLine(pathBlocks string, pathSwitches string) *Line {
 		length, _ := decimal.NewFromString(v[3])
 		grade, _ := decimal.NewFromString(v[4])
 		speed, _ := decimal.NewFromString(v[5])
+		speedconv, _ := decimal.NewFromString("3.6")
+		speed = speed.Div(speedconv)
 		dir := BLOCKDIRECTION_BIDIRECTIONAL
 		switch v[6] {
 		case "ASC":

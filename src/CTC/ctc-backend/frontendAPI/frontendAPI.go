@@ -11,6 +11,7 @@ import (
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/datastore"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/shopspring/decimal"
 )
 
 type FrontendAPI struct {
@@ -149,6 +150,28 @@ func (a *FrontendAPI) putBlockOpen(c *gin.Context) {
 	body, _ := io.ReadAll(c.Request.Body)
 	json.Unmarshal(body, &result)
 	a.datastore.Lines.SetBlockOpen(line, block, result)
+}
+
+// Handler for PUT /lines/:name/blocks/:block/authority
+func (a *FrontendAPI) putBlockAuthority(c *gin.Context) {
+	result := 0
+	line := c.Param("name")
+	blockStr := c.Param("block")
+	block, _ := strconv.Atoi(blockStr)
+	body, _ := io.ReadAll(c.Request.Body)
+	json.Unmarshal(body, &result)
+	a.datastore.Lines.SetBlockAuthority(line, block, result)
+}
+
+// Handler for PUT /lines/:name/blocks/:block/speed
+func (a *FrontendAPI) putBlockSpeed(c *gin.Context) {
+	result := decimal.NewFromInt(0)
+	line := c.Param("name")
+	blockStr := c.Param("block")
+	block, _ := strconv.Atoi(blockStr)
+	body, _ := io.ReadAll(c.Request.Body)
+	json.Unmarshal(body, &result)
+	a.datastore.Lines.SetBlockSpeedUI(line, block, result)
 }
 
 // Handler for PUT /automode

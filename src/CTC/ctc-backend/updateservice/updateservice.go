@@ -137,7 +137,7 @@ func (s *UpdateService) updateSpeeds(routeMap map[int][]int) {
 }
 
 func (s *UpdateService) getDistanceToRouteEnd(line string, route []int) decimal.Decimal {
-	distance := decimal.Zero
+	distance := decimal.NewFromInt(0)
 	lineData := s.data.Lines.Get(line)
 	for i := range route {
 		distance.Add(lineData.Blocks.Get(route[i]).Length)
