@@ -122,6 +122,16 @@ func (s *UpdateService) updateAuthorities(routeMap map[int][]int, useMap map[int
 }
 
 func (s *UpdateService) updateSpeeds(routeMap map[int][]int) {
+	// Clear all speeds
+	lines := s.data.Lines.GetSlice()
+	for i := range lines {
+		line := lines[i].Name
+		blocks := s.data.Lines.Get(line).Blocks.GetSlice()
+		for j := range blocks {
+			s.data.Lines.SetBlockSpeed(line, blocks[j].Number, decimal.Zero)
+		}
+	}
+	// Add new speeds
 	for train, route := range routeMap {
 		line := s.data.Trains.Get(train).Line
 		for i := range route {

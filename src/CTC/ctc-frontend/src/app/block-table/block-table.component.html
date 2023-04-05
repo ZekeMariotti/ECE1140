@@ -10,6 +10,12 @@
     </div>
   </div>
   <button type="button" class="btn btn-outline-primary p-md-3" (click)="getBlocks()">Refresh Table</button>
+  <div class="container text-center p-md-3">
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="autoModeCheckSwitch" [(ngModel)]="this.automode" (click)="putAutoMode()">
+      <label class="form-check-label" for="autoModeCheckSwitch">Auto Mode</label>
+    </div>
+  </div>
 </div>
 <div class="container text-center">
   <table class="table table-striped">
@@ -34,8 +40,22 @@
         <td>{{block.length | number: '1.0-0'}}</td>
         <td>{{block.signal}}</td>
         <td>{{block.occupied}}</td>
-        <td>{{block.suggestedspeed}}</td>
-        <td>{{block.authority}}</td>
+        <td>
+          <div *ngIf="automode; else manualSpeed">
+            {{block.suggestedspeed}}
+          </div>
+          <ng-template #manualSpeed>
+            <input type="number" class="form-control" [(ngModel)]="block.suggestedspeed" (focusout)="putBlockSpeed(block.number, block.suggestedspeed)"/>
+          </ng-template>
+        </td>
+        <td>
+          <div *ngIf="automode; else manualAuthority">
+            {{block.authority}}
+          </div>
+          <ng-template #manualAuthority>
+            <input type="number" class="form-control" [(ngModel)]="block.authority" (focusout)="putBlockAuthority(block.number, block.authority)"/>
+          </ng-template>
+        </td>
         <td>
           <button type="button" class="btn btn-outline-primary" (click)="putBlockOpen(block.number, !block.open)">{{block.open}}</button>
         </td>

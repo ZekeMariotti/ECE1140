@@ -46,12 +46,28 @@ export class BackendService {
     return this.http.get<number>(`${environment.api_be}/api/frontend/simulationspeed`, {responseType: 'json'});
   }
 
+  getAutoMode(): Observable<boolean> {
+    return this.http.get<boolean>(`${environment.api_be}/api/frontend/automode`, {responseType: 'json'});
+  }
+
   putSimulationSpeed(speed: number): Observable<number> {
     return this.http.put<number>(`${environment.api_be}/api/frontend/simulationspeed`, speed, httpOptions);
   }
 
   putBlockOpen(line: string, block: number, open: boolean): Observable<Block[]> {
     return this.http.put<Block[]>(`${environment.api_be}/api/frontend/lines/${line}/blocks/${block}/open`, open, httpOptions);
+  }
+
+  putBlockSpeed(line: string, block: number, speed: number): Observable<number> {
+    return this.http.put<number>(`${environment.api_be}/api/frontend/lines/${line}/blocks/${block}/speed`, speed, httpOptions);
+  }
+
+  putBlockAuthority(line: string, block: number, authority: number): Observable<number> {
+    return this.http.put<number>(`${environment.api_be}/api/frontend/lines/${line}/blocks/${block}/authority`, authority, httpOptions);
+  }
+
+  putAutoMode(enabled: boolean): Observable<boolean> {
+    return this.http.put<boolean>(`${environment.api_be}/api/frontend/automode`, enabled, httpOptions);
   }
 
   postTrain(train: Train): Observable<Train> {

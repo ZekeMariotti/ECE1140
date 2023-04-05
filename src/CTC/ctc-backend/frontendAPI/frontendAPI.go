@@ -60,6 +60,8 @@ func (a *FrontendAPI) setupPaths() {
 	// PUT (Update) Commands
 	a.router.PUT("/api/frontend/simulationspeed", a.putSimulationSpeed)
 	a.router.PUT("/api/frontend/lines/:name/blocks/:block/open", a.putBlockOpen)
+	a.router.PUT("/api/frontend/lines/:name/blocks/:block/speed", a.putBlockSpeed)
+	a.router.PUT("/api/frontend/lines/:name/blocks/:block/authority", a.putBlockAuthority)
 	a.router.PUT("/api/frontend/automode", a.putAutoMode)
 }
 

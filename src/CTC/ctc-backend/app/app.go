@@ -46,6 +46,7 @@ func (a *App) AddWayside(address string) {
 // Starts running the app
 func (a *App) Start() {
 	a.TimeKeeper.StartSimulation()
+	a.UpdateService.Start()
 	go a.OutputAPI.Serve()
 	go a.FrontendAPI.Serve()
 }

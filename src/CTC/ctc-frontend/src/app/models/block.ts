@@ -8,7 +8,7 @@ export class Block {
     public length: string,
     public signal: string,
     public occupied: boolean,
-    public suggestedspeed: DecimalPipe,
+    public suggestedspeed: number,
     public authority: number,
     public open: boolean,
   ) {  }

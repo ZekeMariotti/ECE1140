@@ -12,6 +12,7 @@ export class BlockTableComponent {
   lines: string[] = ["Red", "Green"];
   line: string = this.lines[0];
   blocks: Block[] = [];
+  automode: boolean = false;
 
   constructor(
     private backend: BackendService
@@ -37,5 +38,27 @@ export class BlockTableComponent {
 
   getBlocks() {
     this.backend.getBlocks(this.line).subscribe(blocks => this.blocks = blocks);
+  }
+
+  getAutoMode() {
+    this.backend.getAutoMode().subscribe(enabled => this.automode = enabled);
+  }
+
+  putBlockAuthority(block: number, authority: number) {
+    this.backend.putBlockAuthority(this.line, block, authority).subscribe();
+
+    this.getBlocks();
+  }
+
+  putBlockSpeed(block: number, speed: number) {
+    this.backend.putBlockSpeed(this.line, block, speed).subscribe();
+
+    this.getBlocks();
+  }
+
+  putAutoMode() {
+    this.backend.putAutoMode(!this.automode).subscribe();
+
+    this.getAutoMode();
   }
 }
