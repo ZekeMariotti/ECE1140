@@ -91,7 +91,13 @@ class Wayside:
 
     def setSignalLights(self,logic,number):
             self.signalLights[number]=logic
+    
+    def setSuggestedSpeed(self,block,value):
+            self.suggestedSpeed[block]=value
 
+    def setSuggestedAuthority(self,block,value):
+            self.suggestedAuthority[block]=value
+            
     def convertTime(self):
             inputTime = stringRemove(self.time, 26)
             self.realTime = datetime.strptime(inputTime, "%Y-%m-%dT%H:%M:%S.%f%z") 
