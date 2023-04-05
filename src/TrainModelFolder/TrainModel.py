@@ -612,7 +612,7 @@ class TrainModel():
                 
                 # Cases for derailment
                 elif (self.trackData["currBlock"] == 77) | (self.trackData["currBlock"] == 100) | (self.trackData["currBlock"] == 150) | (self.trackData["currBlock"] == 1) | (self.trackData["currBlock"] == 0):
-                    print("Derailment")
+                    print("Derailment1")
                     return 333
                 
             # If the train is on a switch block and the switch state is 1
@@ -620,7 +620,7 @@ class TrainModel():
 
                 # Cases for derailment
                 if (self.trackData["currBlock"] == 76) | (self.trackData["currBlock"] == 85) | (self.trackData["currBlock"] == 13) | (self.trackData["currBlock"] == 29) | (self.trackData["currBlock"] == 62):
-                    print("Derailment")
+                    print("Derailment2")
                     return 333
                 
                 # Cases where the train would proceed normally
@@ -662,7 +662,7 @@ class TrainModel():
                 if (self.trackData["currBlock"] == 0) | (self.trackData["currBlock"] == 9) | (self.trackData["currBlock"] == 10) | (self.trackData["currBlock"] == 15) | (self.trackData["currBlock"] == 16) | (self.trackData["currBlock"] == 27) | (self.trackData["currBlock"] == 28) | (self.trackData["currBlock"] == 32) | (self.trackData["currBlock"] == 33) | (self.trackData["currBlock"] == 38) | (self.trackData["currBlock"] == 39) | (self.trackData["currBlock"] == 43) | (self.trackData["currBlock"] == 44) | (self.trackData["currBlock"] == 52) | (self.trackData["currBlock"] == 53):
                     match self.trackData["currBlock"]:
                         case 0:
-                            print("Derailment")
+                            print("Derailment3")
                             return 333
                         case 9:
                             self.trackData["trackSection"] = self.redSection10R
@@ -696,7 +696,7 @@ class TrainModel():
                     return self.trackData["trackSection"][0]
 
                 elif (self.trackData["currBlock"] == 1) | (self.trackData["currBlock"] == 66) | (self.trackData["currBlock"] == 67) | (self.trackData["currBlock"] == 71) | (self.trackData["currBlock"] == 72) | (self.trackData["currBlock"] == 76):
-                    print("Derailment")
+                    print("Derailment4")
                     return 333
             elif (self.trackData["switch"] == True) & (self.trackData["switchState"] == 1):
                 if (self.trackData["currBlock"] == 0) | (self.trackData["currBlock"] == 1) | (self.trackData["currBlock"] == 9)  | (self.trackData["currBlock"] == 16) | (self.trackData["currBlock"] == 27) | (self.trackData["currBlock"] == 33) | (self.trackData["currBlock"] == 38) | (self.trackData["currBlock"] == 44) | (self.trackData["currBlock"] == 52) | (self.trackData["currBlock"] == 66) | (self.trackData["currBlock"] == 67) | (self.trackData["currBlock"] == 71) | (self.trackData["currBlock"] == 72) | (self.trackData["currBlock"] == 76):
@@ -734,7 +734,7 @@ class TrainModel():
                     self.trackData["prevBlock"] = self.trackData["currBlock"]
                     return self.trackData["trackSection"][0]
                 elif (self.trackData["currBlock"] == 10) | (self.trackData["currBlock"] == 15) | (self.trackData["currBlock"] == 28) | (self.trackData["currBlock"] == 32) | (self.trackData["currBlock"] == 39) | (self.trackData["currBlock"] == 43) | (self.trackData["currBlock"] == 53):
-                    print("Derailment")
+                    print("Derailment5")
                     return 333
                         # Case where the train needs to just increase block by 1
             else:
