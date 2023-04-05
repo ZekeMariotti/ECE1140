@@ -190,7 +190,6 @@ class backEndCalculations():
                 TMTkMSignals.switchSignal.emit(id, 0)
                 TMTkMSignals.switchStateSignal.emit(id, bool(self.data["switchPos"].__getitem__(int(self.csvConstants["switchGreen"].__getitem__(currBlock - 1)) - 1)))
             elif (int(self.csvConstants["switchGreen"].__getitem__(currBlock - 1)) > 0):
-                print("SwitchB", str(self.data["switchPos"].__getitem__(int(self.csvConstants["switchGreen"].__getitem__(currBlock - 1)) - 1)), str(int(self.csvConstants["switchGreen"].__getitem__(currBlock - 1)) - 1))
                 TMTkMSignals.switchSignal.emit(id, 1)
                 TMTkMSignals.switchStateSignal.emit(id, bool(self.data["switchPos"].__getitem__(int(self.csvConstants["switchGreen"].__getitem__(currBlock - 1)) - 1)))
             else:
