@@ -28,7 +28,7 @@ class MainWindow(QMainWindow):
             super().__init__()
 
             # Enable Test UI
-            self.testUI = False 
+            self.testUI = True 
             
             # Initialize TrainControllerSW object
             self.TrainControllerSW = TrainControllerSW(trainId=id, commandedSpeed=0, currentSpeed=0, authority=10, inputTime="2023-02-20T21:52:48.3940347-05:00", 
