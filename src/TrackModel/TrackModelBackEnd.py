@@ -22,7 +22,7 @@ class backEndCalculations():
         "sigState" : DynamicArray(),         # States of signals on each block next to a switch
         "gatePos" : DynamicArray(),          # Position of crossing gates
         "temp" : 70.0,                       # Outdoor temperature
-        "numPassengers" : [0, 222, 0, 0, 0, 0,
+        "numPassengers" : [222, 222, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0],                   # number of passengers on each train
