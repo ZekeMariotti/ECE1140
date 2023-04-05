@@ -2,10 +2,14 @@ package main
 
 import (
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/app"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	app := app.NewApp()
+
+	// Set HTTP server mode to release
+	gin.SetMode(gin.ReleaseMode)
 
 	// Import lines
 	app.ImportLine("E:/Professional/ECE1140/src/CTC/redLineBlocks.csv", "E:/Professional/ECE1140/src/CTC/redLineSwitches.csv")

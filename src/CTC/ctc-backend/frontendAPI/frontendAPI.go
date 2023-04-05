@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/common"
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/datastore"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/shopspring/decimal"
 )
 
 type FrontendAPI struct {
@@ -49,11 +51,18 @@ func (a *FrontendAPI) setupPaths() {
 	a.router.GET("/api/frontend/lines/:name/blocks", a.getBlocks)
 	a.router.GET("/api/frontend/lines/:name/stations", a.getStations)
 	a.router.GET("/api/frontend/trains", a.getTrains)
+	a.router.GET("/api/frontend/nexttrainid", a.getNextTrainID)
 	a.router.GET("/api/frontend/time", a.getTime)
 	a.router.GET("/api/frontend/simulationspeed", a.getSimulationSpeed)
+	a.router.GET("/api/frontend/automode", a.getAutoMode)
 	// POST (Create) Commands
 	a.router.POST("/api/frontend/trains", a.postTrains)
+	// PUT (Update) Commands
 	a.router.PUT("/api/frontend/simulationspeed", a.putSimulationSpeed)
+	a.router.PUT("/api/frontend/lines/:name/blocks/:block/open", a.putBlockOpen)
+	a.router.PUT("/api/frontend/lines/:name/blocks/:block/speed", a.putBlockSpeed)
+	a.router.PUT("/api/frontend/lines/:name/blocks/:block/authority", a.putBlockAuthority)
+	a.router.PUT("/api/frontend/automode", a.putAutoMode)
 }
 
 // Handler for GET /lines
@@ -75,7 +84,7 @@ func (a *FrontendAPI) getLineByName(c *gin.Context) {
 func (a *FrontendAPI) getBlocks(c *gin.Context) {
 	name := c.Param("name")
 	if a.datastore.Lines.HasKey(name) {
-		c.IndentedJSON(http.StatusOK, a.datastore.Lines.GetBlocks(name))
+		c.IndentedJSON(http.StatusOK, a.datastore.Lines.GetBlocksUI(name))
 		return
 	}
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("Line %s stations not found", name)})
@@ -93,7 +102,12 @@ func (a *FrontendAPI) getStations(c *gin.Context) {
 
 // Handler for GET /trains
 func (a *FrontendAPI) getTrains(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, a.datastore.Trains.GetSlice())
+	c.IndentedJSON(http.StatusOK, a.datastore.Trains.GetFrontendSlice())
+}
+
+// Handler for GET /nexttrainid
+func (a *FrontendAPI) getNextTrainID(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, a.datastore.GetNextTrainID())
 }
 
 // Handler for GET /time
@@ -107,12 +121,18 @@ func (a *FrontendAPI) getSimulationSpeed(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, speed)
 }
 
+// Handler for GET /automode
+func (a *FrontendAPI) getAutoMode(c *gin.Context) {
+	mode := a.datastore.AutoMode
+	c.IndentedJSON(http.StatusOK, mode)
+}
+
 // Handler for POST /trains
 func (a *FrontendAPI) postTrains(c *gin.Context) {
-	result := common.Train{}
+	result := common.TrainFrontend{}
 	body, _ := io.ReadAll(c.Request.Body)
 	json.Unmarshal(body, &result)
-	a.datastore.Trains.Set(result.ID, result)
+	a.datastore.Trains.Set(result.ID, a.datastore.TrainFrontendToBackend(result))
 }
 
 // Handler for PUT /simulationSpeed
@@ -121,4 +141,45 @@ func (a *FrontendAPI) putSimulationSpeed(c *gin.Context) {
 	body, _ := io.ReadAll(c.Request.Body)
 	json.Unmarshal(body, &result)
 	a.datastore.TimeKeeper.SetSimulationSpeed(result)
+}
+
+// Handler for PUT /lines/:name/blocks/:block/open
+func (a *FrontendAPI) putBlockOpen(c *gin.Context) {
+	result := bool(true)
+	line := c.Param("name")
+	blockStr := c.Param("block")
+	block, _ := strconv.Atoi(blockStr)
+	body, _ := io.ReadAll(c.Request.Body)
+	json.Unmarshal(body, &result)
+	a.datastore.Lines.SetBlockOpen(line, block, result)
+}
+
+// Handler for PUT /lines/:name/blocks/:block/authority
+func (a *FrontendAPI) putBlockAuthority(c *gin.Context) {
+	result := 0
+	line := c.Param("name")
+	blockStr := c.Param("block")
+	block, _ := strconv.Atoi(blockStr)
+	body, _ := io.ReadAll(c.Request.Body)
+	json.Unmarshal(body, &result)
+	a.datastore.Lines.SetBlockAuthority(line, block, result)
+}
+
+// Handler for PUT /lines/:name/blocks/:block/speed
+func (a *FrontendAPI) putBlockSpeed(c *gin.Context) {
+	result := decimal.NewFromInt(0)
+	line := c.Param("name")
+	blockStr := c.Param("block")
+	block, _ := strconv.Atoi(blockStr)
+	body, _ := io.ReadAll(c.Request.Body)
+	json.Unmarshal(body, &result)
+	a.datastore.Lines.SetBlockSpeedUI(line, block, result)
+}
+
+// Handler for PUT /automode
+func (a *FrontendAPI) putAutoMode(c *gin.Context) {
+	result := bool(true)
+	body, _ := io.ReadAll(c.Request.Body)
+	json.Unmarshal(body, &result)
+	a.datastore.AutoMode = result
 }

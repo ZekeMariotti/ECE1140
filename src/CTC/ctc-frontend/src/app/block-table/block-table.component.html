@@ -9,6 +9,13 @@
       <button type="button" ngbDropdownItem *ngFor="let li of lines" (click)="setLine(li)">{{li}}</button>
     </div>
   </div>
+  <button type="button" class="btn btn-outline-primary p-md-3" (click)="getBlocks()">Refresh Table</button>
+  <div class="container text-center p-md-3">
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="autoModeCheckSwitch" [(ngModel)]="this.automode" (click)="putAutoMode()">
+      <label class="form-check-label" for="autoModeCheckSwitch">Auto Mode</label>
+    </div>
+  </div>
 </div>
 <div class="container text-center">
   <table class="table table-striped">
@@ -17,10 +24,10 @@
         <th scope="col">Number</th>
         <th scope="col">Line</th>
         <th scope="col">Section</th>
-        <th scope="col">Length</th>
+        <th scope="col">Length (ft)</th>
         <th scope="col">Signal</th>
         <th scope="col">Occupied</th>
-        <th scope="col">Suggested Speed</th>
+        <th scope="col">Suggested Speed (mph)</th>
         <th scope="col">Authority</th>
         <th scope="col">Open</th>
       </tr>
@@ -30,12 +37,28 @@
         <th scope="row">{{block.number}}</th>
         <td>{{block.line}}</td>
         <td>{{block.section}}</td>
-        <td>{{block.length}}</td>
+        <td>{{block.length | number: '1.0-0'}}</td>
         <td>{{block.signal}}</td>
         <td>{{block.occupied}}</td>
-        <td>{{block.suggestedspeed}}</td>
-        <td>{{block.authority}}</td>
-        <td>{{block.open}}</td>
+        <td>
+          <div *ngIf="automode; else manualSpeed">
+            {{block.suggestedspeed}}
+          </div>
+          <ng-template #manualSpeed>
+            <input type="number" class="form-control" [(ngModel)]="block.suggestedspeed" (focusout)="putBlockSpeed(block.number, block.suggestedspeed)"/>
+          </ng-template>
+        </td>
+        <td>
+          <div *ngIf="automode; else manualAuthority">
+            {{block.authority}}
+          </div>
+          <ng-template #manualAuthority>
+            <input type="number" class="form-control" [(ngModel)]="block.authority" (focusout)="putBlockAuthority(block.number, block.authority)"/>
+          </ng-template>
+        </td>
+        <td>
+          <button type="button" class="btn btn-outline-primary" (click)="putBlockOpen(block.number, !block.open)">{{block.open}}</button>
+        </td>
       </tr>
     </tbody>
   </table>

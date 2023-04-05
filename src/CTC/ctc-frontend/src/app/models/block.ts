@@ -5,10 +5,10 @@ export class Block {
     public number: number,
     public line: string,
     public section: string,
-    public length: DecimalPipe,
+    public length: string,
     public signal: string,
     public occupied: boolean,
-    public suggestedspeed: DecimalPipe,
+    public suggestedspeed: number,
     public authority: number,
     public open: boolean,
   ) {  }
