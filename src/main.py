@@ -14,6 +14,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "TrackModel"))
 from TrainModelFolder import TrainModelMainUI, TrainModelTestUI
 from TrainControllerSoftware import TrainControllerMainUI
 from TrackModel import TrackModelMainUI, TrackModelTestUI, IntegrationTestUI
+from Integration import sendJsonToArduinoClass, receiveJsonFromArduinoClass
 from Integration.TimeSignals import *
 from Integration.TMTCSignals import *
 
@@ -76,6 +77,15 @@ class MainWindow(QMainWindow):
             self.mainTimerSetup()
             self.HeaderLabelSetup()
 
+            # Sub Thread Setup
+            pool = QThreadPool.globalInstance()
+
+            sendJson = sendJsonToArduinoClass.jsonToArduino()
+            pool.start(sendJson)
+
+            fromArduino = receiveJsonFromArduinoClass.arduinoToJson()
+            pool.start(fromArduino)
+
             self.CTCLabelSetup()
             self.launchCTCSetup()
 
@@ -130,6 +140,7 @@ class MainWindow(QMainWindow):
             for i in range(2, 4):
                 self.trainDispatch(i)    
             self.HWTrainModel = TrainModelMainUI.TrainModelUI(1, "Green")
+            self.TkM.backEnd.newTrainMade(1, "Green")
             self.TMTestUI = TrainModelTestUI.TrainModelTestUI() # temporary TM test UI 
             #self.TkMTestUI = TrackModelTestUI.TrackModelTestUI()
             self.TESTUI = IntegrationTestUI.BasicTestUI()
@@ -352,8 +363,8 @@ app = QApplication(sys.argv)
 #exec(open("\Integration\\receiveJsonFromArduino.py").read())
 #exec(open(os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py")).read())
 #os.system("python" + os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py"))
-subprocess.Popen(['python', os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py")])
-subprocess.Popen(['python', os.path.join(sys.path[0], "Integration", "sendJsonToArduino.py")])
+#subprocess.Popen(['python', os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py")])
+#subprocess.Popen(['python', os.path.join(sys.path[0], "Integration", "sendJsonToArduino.py")])
 
 
 mainWindow = MainWindow()
