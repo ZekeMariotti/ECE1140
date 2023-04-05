@@ -700,6 +700,21 @@ class MainWindow(QMainWindow):
           #might add to ui
           #self.realTimeClock.setText(f'Time: {hour}:{minute}:{second}')
           
+          if self.WaysideControllerGreen.commandedSpeed!=self.WaysideControllerGreen.suggestedSpeed:
+            self.WaysideControllerGreen.setCommandedSpeed()
+          if self.WaysideControllerGreen.commandedSpeed!=self.WaysideControllerGreen.suggestedSpeed:
+            self.WaysideControllerGreen2.setCommandedSpeed()
+          if self.WaysideControllerGreen.authority!=self.WaysideControllerGreen.suggestedAuthority:
+            self.WaysideControllerGreen.setAuthority()
+          if self.WaysideControllerGreen2.authority!=self.WaysideControllerGreen.suggestedAuthority:
+            self.WaysideControllerGreen2.setAuthority()
+
+
+          if(self.maintenanceMode==False):                    
+            self.PLCMain.GloadValues1(self.File1)
+            self.PLCMain.GloadValues2(self.File2)
+            self.PLCMain.setswitches()
+    
           if (self.Switch1Out.text() == "1 to 13" and self.WaysideControllerGreen.switches[1] == False) or (self.Switch1Out.text() == "12 to 13" and self.WaysideControllerGreen.switches[1] == True):
             TkMWCSignals.switchStateSignal.emit(int(self.WaysideControllerGreen.switches[1]), 1, 12)
           if (self.Switch2Out.text() == "29 to 150" and self.WaysideControllerGreen.switches[2] == False) or (self.Switch2Out.text() == "29 to 30" and self.WaysideControllerGreen.switches[2] == True):
@@ -876,10 +891,7 @@ class MainWindow(QMainWindow):
                 self.Gate.setText("Block 19 Gate:  UP")
           else:
                   self.Gate.setText("Block 19 Gate:  DOWN")    
-          if(self.maintenanceMode==False):                    
-            self.PLCMain.GloadValues1(self.File1)
-            self.PLCMain.GloadValues2(self.File2)
-            self.PLCMain.setswitches()
+
 
     def mainEventLoop(self):
           self.updateVisualElements(self.active)
