@@ -4,6 +4,7 @@ import sys
 import os
 import requests
 import subprocess
+import json
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "Integration"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "TrainModel"))
@@ -144,8 +145,8 @@ class MainWindow(QMainWindow):
             activeSignals.activeSignal.emit()
 
             # Test TM and TC
-            for i in range(2, 4):
-                self.trainDispatch(i)    
+            #for i in range(2, 4):
+            #    self.trainDispatch(i)    
 
             #self.TkMTestUI = TrackModelTestUI.TrackModelTestUI()
             self.TESTUI = IntegrationTestUI.BasicTestUI()
@@ -358,12 +359,12 @@ class MainWindow(QMainWindow):
             
 
         # Test setups for testing TM and TC
-        def trainDispatch(self, trainId):
+        def trainDispatch(self, trainId, line):
             # trainId of 1 corresponds with train controller hardware
             if(trainId != 1):
                 self.TrainControllerList.append(TrainControllerMainUI.MainWindow(trainId))
-                self.TrainModelList.append(TrainModelMainUI.TrainModelUI(trainId, "Green"))
-                self.TkM.backEnd.newTrainMade(trainId, "Green")
+                self.TrainModelList.append(TrainModelMainUI.TrainModelUI(trainId, line))
+                self.TkM.backEnd.newTrainMade(trainId, line)
                 self.TrainControllerList[len(self.TrainControllerList)-1].move(800, 10)
                 self.TrainModelList[len(self.TrainModelList)-1].move(self.screen().availableGeometry().width()-1480, 
                                                                     self.screen().availableGeometry().height()-self.TrainModelList[len(self.TrainModelList)-1].frameGeometry().height()-40)
@@ -382,8 +383,8 @@ class MainWindow(QMainWindow):
                 fromArduino = receiveJsonFromArduinoClass.arduinoToJson()
                 pool.start(fromArduino)
 
-                self.TrainModelList.append(TrainModelMainUI.TrainModelUI(trainId, "Green"))
-                self.TkM.backEnd.newTrainMade(trainId, "Green")
+                self.TrainModelList.append(TrainModelMainUI.TrainModelUI(trainId, line))
+                self.TkM.backEnd.newTrainMade(trainId, line)
                 self.TrainModelList[len(self.TrainModelList)-1].move(self.screen().availableGeometry().width()-1480, 
                                                                     self.screen().availableGeometry().height()-self.TrainModelList[len(self.TrainModelList)-1].frameGeometry().height()-40)
                 self.selectTrainModel.addItems([str(trainId)])
@@ -393,9 +394,11 @@ class MainWindow(QMainWindow):
             test=1
             
         def trainDispatchCall(self):
-            test = requests.get('http://localhost:8090/api/dispatchedtrain').text.replace("\"", "")
-            if(test!=""):
-                print(test)
+            test = requests.get('http://localhost:8090/api/dispatchedtrain').text
+            if(test!="\"\""):
+                jsonTest = json.loads(test)
+                if(jsonTest["id"] != 1):
+                    self.trainDispatch(jsonTest["id"], jsonTest["line"])
 
 # Function to remove character from a string at nth position
 def stringRemove(string, n):  
