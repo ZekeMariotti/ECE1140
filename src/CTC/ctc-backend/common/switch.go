@@ -24,6 +24,10 @@ func (s *Switch) SetPosition(destination int) bool {
 	}
 }
 
+func (s *Switch) GetDestination() int {
+	return s.currentDest
+}
+
 func (s *Switch) GetNextBlocks(block int) []int {
 	if block == s.Source {
 		return []int{s.Destination1, s.Destination2}

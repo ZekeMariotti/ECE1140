@@ -207,12 +207,48 @@ func (s *UpdateService) updateTrainAssignments() {
 						switch swt.Side {
 						case common.BLOCKSIDE_ASCEND:
 							if isSource {
-								if 
+								if s.lastTrainBlockMap[line][swt.GetDestination()] != -1 {
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.GetDestination()]
+								} else if s.lastTrainBlockMap[line][block.Number-1] != -1 {
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number-1]
+								}
+							} else {
+								if s.lastTrainBlockMap[line][block.Number+1] != -1 {
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number+1]
+								} else {
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Source]
+								}
+							}
+						case common.BLOCKSIDE_DESCEND:
+							if isSource {
+								if s.lastTrainBlockMap[line][swt.GetDestination()] != -1 {
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.GetDestination()]
+								} else if s.lastTrainBlockMap[line][block.Number+1] != -1 {
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number+1]
+								}
+							} else {
+								if s.lastTrainBlockMap[line][block.Number-1] != -1 {
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number-1]
+								} else {
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Source]
+								}
 							}
 						}
-						
 					} else if block.Direction == common.BLOCKDIRECTION_DESCENDING {
-
+						switch swt.Side {
+						case common.BLOCKSIDE_ASCEND:
+							if isSource {
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.GetDestination()]
+							} else {
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number+1]
+							}
+						case common.BLOCKSIDE_DESCEND:
+							if isSource {
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number+1]
+							} else {
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.GetDestination()]
+							}
+						}
 					}
 				} else {
 					if block.Direction == common.BLOCKDIRECTION_ASCENDING {
@@ -254,4 +290,12 @@ func (s *UpdateService) updateTrainAssignments() {
 			}
 		}
 	}
+	// Update values and cache result
+	s.data.Trains.ResetTrainLocations()
+	for _, blocks := range newMap {
+		for blockID, trainID := range blocks {
+			s.data.Trains.AddTrainLocationBlock(trainID, blockID)
+		}
+	}
+	s.lastTrainBlockMap = newMap
 }
