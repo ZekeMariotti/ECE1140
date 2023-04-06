@@ -85,7 +85,8 @@ func (a *OutputAPI) getSimulation(c *gin.Context) {
 
 // HTTP GET handler for simulation time information
 func (a *OutputAPI) getSimulationTime(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, a.data.TimeKeeper.GetSimulationTime())
+	time := a.data.TimeKeeper.GetSimulationTime()
+	c.IndentedJSON(http.StatusOK, time.Format("2006-01-02T15:04:05.9999999Z"))
 }
 
 // HTTP GET handler for simulation speed information

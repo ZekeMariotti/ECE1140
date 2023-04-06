@@ -124,6 +124,7 @@ class jsonToArduino(QRunnable):
 
     def isBeaconSignalHandler(self, id, isBeacon):
         if (id == 1):
+            # if (self.trainModelToTrainController["isBeacon"] != isBeacon):
             self.trainModelToTrainController["isBeacon"] = isBeacon
 
     def externalLightsStateSignalHandler(self, id, eLights):
@@ -162,6 +163,10 @@ class jsonToArduino(QRunnable):
         if (id == 1):
             self.trainModelToTrainController["communicationsStatus"] = status
     ################################################################################
+    def beaconHold(self, sock):
+        if (self.trainModelToTrainController["isBeacon"]==1):
+            self.parseJson()
+            sock.sendto(udpMessage.encode('utf-8'), (self.ip, self.port))
 
     def run(self):
         while True:
@@ -175,9 +180,9 @@ class jsonToArduino(QRunnable):
             
             # print(trainModelToTrainController)
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            
+            self.beaconHold(sock)
             
 
             sock.sendto(udpMessage.encode('utf-8'), (self.ip, self.port))
             self.counter+=1
-            time.sleep(0.5)
+            time.sleep(0.05)
