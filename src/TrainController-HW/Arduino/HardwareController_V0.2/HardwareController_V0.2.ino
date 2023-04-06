@@ -79,8 +79,8 @@ void setup() {
   setupUDP();
   // Serial.println("End of setup");
 
-  Kp = 1;
-  Ki = 1;
+  Kp = 50000;
+  Ki = 5000;
   manualCommandedSpeed=0;
   isBeacon=false;
   firstBeaconPassed=false;
@@ -416,7 +416,7 @@ void drive(int dt){
       power=0;
       serviceBrakeCommand = tControl.calculateBrake(true);
     }
-    Serial.println(power);
+    // Serial.println(power);
   }else{
     manualCommandedSpeed = switchStateArray[8];
     autodrive(currentSpeed, manualCommandedSpeed, dt);
@@ -478,7 +478,7 @@ void setStationState(){
     firstBeaconPassed = false;
     secondBeaconPassed = false;
   }
-  Serial.println(isBeacon);       
+  // Serial.println(isBeacon);       
 }
 //=========================================
 
