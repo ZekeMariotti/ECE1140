@@ -183,7 +183,13 @@ class backEndCalculations():
                 self.runOnce = False
 
     # Hander for the current block from the Train Model
-    def currBlockHandler(self, id, currBlock, prevBlock, transition):
+    def currBlockHandler(self, id, currBlock, prevBlock, transition, backTrain):
+        if (backTrain):
+            self.data["nextBlock"] = 0
+        else:
+            self.data["nextBlock"] = 1
+
+
         if (transition):
             TMTkMSignals.blockLengthSignal.emit(id, float(self.csvConstants["lengthGreen"].__getitem__(currBlock - 1)))
             TMTkMSignals.elevationSignal.emit(id, float(self.csvConstants["elevationGreen"].__getitem__(currBlock - 1)))
@@ -209,7 +215,7 @@ class backEndCalculations():
                 index = 2
             if (index != 0):
                 self.getTrainBlockInputFunction(index, id - 1, 0)
-            self.data["nextBlock"] = 1
+            #self.data["nextBlock"] = 1
         elif self.data["nextBlock"] == 1:
             self.data["nextBlock"] = 0
             if (currBlock == self.data["moves"][id - 1][0]):
