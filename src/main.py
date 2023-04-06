@@ -318,10 +318,7 @@ class MainWindow(QMainWindow):
              print("CTC")
 
         def launchWaysideControllerOneClick(self):
-            self.wc = NewGreenLine.MainWindow()
             self.wc.setVisible(True)
-            self.wc.WaysideControllerGreenTestUI.show()
-            activeSignals.activeSignal.emit()
 
         def launchWaysideControllerTwoClick(self):
             print("Wayside Controller Two")
@@ -351,9 +348,11 @@ class MainWindow(QMainWindow):
                 while(len(rtcInput) != 33):
                     rtcInput = rtcInput[:-6] + '0' + rtcInput[-6:]
 
-            rtcSignals.rtcSignal.emit(rtcInput)
-            rtcInput = stringRemove(rtcInput, 26)
-            self.RTC = datetime.strptime(rtcInput, "%Y-%m-%dT%H:%M:%S.%f%z")   
+            # if no ".", don't emit signal
+            if("." in rtcInput):
+                rtcSignals.rtcSignal.emit(rtcInput)
+                rtcInput = stringRemove(rtcInput, 26)
+                self.RTC = datetime.strptime(rtcInput, "%Y-%m-%dT%H:%M:%S.%f%z")   
             
 
         # Test setups for testing TM and TC
