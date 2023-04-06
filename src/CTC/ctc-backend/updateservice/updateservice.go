@@ -186,6 +186,19 @@ func (s *UpdateService) updateTrainAssignments() {
 			lastTrain := s.lastTrainBlockMap[line][block.Number]
 			if block.Occupied && lastTrain == -1 {
 				// Train just entered block
+				if line == "Red" && block.Number == 9 {
+					trains := s.data.Trains.GetFrontendSlice()
+					if len(trains) > 0 && trains[len(trains)-1].Line == "Red" {
+						newMap[line][block.Number] = trains[len(trains)-1].ID
+						continue
+					}
+				} else if line == "Green" && block.Number == 63 {
+					trains := s.data.Trains.GetFrontendSlice()
+					if len(trains) > 0 && trains[len(trains)-1].Line == "Green" {
+						newMap[line][block.Number] = trains[len(trains)-1].ID
+						continue
+					}
+				}
 				isSwitch, swt := s.routeGen.IsSwitchBlock(block.Number, s.data.Lines.Get(line))
 				if isSwitch {
 					isSource := swt.Source == block.Number
