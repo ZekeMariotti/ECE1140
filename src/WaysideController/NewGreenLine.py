@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
         self.WaysideControllerGreen2.setdictionarysizes(self.blocks1,self.blocks2,6)
         self.WaysideControllerGreen2.setCommandedSpeed()
         self.WaysideControllerGreen2.setAuthority()        
-        self.TestUI = True
+        self.testUI = True
         self.active = False
         self.PLCMain = PLC(self.WaysideControllerGreen,self.WaysideControllerGreen2,"Green")
         activeSignals.activeSignal.connect(self.activeSignal)
@@ -122,7 +122,7 @@ class MainWindow(QMainWindow):
         self.maintenanceMode = False
         self.maintenanceButton = self.maintenanceButtonSetup()
         #Test UI
-        if self.TestUI :
+        if self.testUI :
               self.WaysideControllerGreenTestUI = TestWindow(self.WaysideControllerGreen,self.WaysideControllerGreen2)
         #widget setups
     def mainThreadSetup(self):
