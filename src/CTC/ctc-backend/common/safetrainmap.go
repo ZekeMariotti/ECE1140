@@ -70,3 +70,22 @@ func (m *SafeTrainMap) GetFrontendSlice() []TrainFrontend {
 	})
 	return trains
 }
+
+func (m *SafeTrainMap) ResetTrainLocations() {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	for id, train := range m.data {
+		train.Location = TrainLocation{}
+		m.data[id] = train
+	}
+}
+
+func (m *SafeTrainMap) AddTrainLocationBlock(id int, block int) {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	train := m.data[id]
+	train.Location.ExtendLocation(block)
+	m.data[id] = train
+}

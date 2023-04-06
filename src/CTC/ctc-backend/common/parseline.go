@@ -125,6 +125,7 @@ func ParseLine(pathBlocks string, pathSwitches string) *Line {
 		}
 
 		s := Switch{
+			ID:           i,
 			Source:       source,
 			Destination1: dest1,
 			Destination2: dest2,

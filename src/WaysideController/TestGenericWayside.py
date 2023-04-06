@@ -55,7 +55,7 @@ class Wayside:
         # simple error checking
     def setCommandedSpeed(self):
         for i in self.suggestedSpeed:
-            if self.suggestedSpeed[i]>70 | self.suggestedSpeed[i]<0:
+            if self.suggestedSpeed[i]>19.5 | self.suggestedSpeed[i]<0:
                 self.commandedSpeed[i]=0
             else:
                 self.commandedSpeed[i]=self.suggestedSpeed[i]
@@ -91,6 +91,12 @@ class Wayside:
 
     def setSignalLights(self,logic,number):
             self.signalLights[number]=logic
+    
+    def setSuggestedSpeed(self,block,value):
+            self.suggestedSpeed[block]=value
+
+    def setSuggestedAuthority(self,block,value):
+            self.suggestedAuthority[block]=value
 
     def convertTime(self):
             inputTime = stringRemove(self.time, 26)

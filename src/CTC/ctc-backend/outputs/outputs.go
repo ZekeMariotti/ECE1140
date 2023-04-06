@@ -1,10 +1,13 @@
 package outputs
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 
+	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/common"
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/datastore"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -46,6 +49,7 @@ func (a *OutputAPI) registerPaths() {
 	a.router.GET("/api/simulation", a.getSimulation)
 	a.router.GET("/api/simulation/time", a.getSimulationTime)
 	a.router.GET("/api/simulation/speed", a.getSimulationSpeed)
+	a.router.PUT("/api/wayside/:line", a.putWayside)
 }
 
 // HTTP GET handler for lines
@@ -87,4 +91,13 @@ func (a *OutputAPI) getSimulationTime(c *gin.Context) {
 // HTTP GET handler for simulation speed information
 func (a *OutputAPI) getSimulationSpeed(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, a.data.TimeKeeper.GetSimulationSpeed())
+}
+
+// HTTP PUT handler for wayside controllers
+func (a *OutputAPI) putWayside(c *gin.Context) {
+	result := common.WaysideToCTC{}
+	line := c.Param("line")
+	body, _ := io.ReadAll(c.Request.Body)
+	json.Unmarshal(body, &result)
+	a.data.Lines.UpdateWayside(line, result)
 }
