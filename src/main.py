@@ -82,11 +82,11 @@ class MainWindow(QMainWindow):
             # Sub Thread Setup
             pool = QThreadPool.globalInstance()
 
-            sendJson = sendJsonToArduinoClass.jsonToArduino()
-            pool.start(sendJson)
+            #sendJson = sendJsonToArduinoClass.jsonToArduino()
+            #pool.start(sendJson)
 
-            fromArduino = receiveJsonFromArduinoClass.arduinoToJson()
-            pool.start(fromArduino)
+            #fromArduino = receiveJsonFromArduinoClass.arduinoToJson()
+            #pool.start(fromArduino)
 
             self.CTCLabelSetup()
             self.launchCTCSetup()

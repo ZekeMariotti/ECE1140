@@ -28,6 +28,10 @@ class backEndCalculations():
     if x["cod"] != "404":
         y = x["main"]
         current_temperature = round((y["temp"] - 273.15) * 1.8 + 32, 2)
+        if current_temperature <= 32:
+            tHeater = 1
+        else:
+            tHeater = 0
 
     # Private data variable to store all the data needed for the back end
     data = {
@@ -57,7 +61,7 @@ class backEndCalculations():
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0],
-        "trackHeater" : 0,                   # State of track heater (on/off)
+        "trackHeater" : tHeater,             # State of track heater (on/off)
         "blockTrainNoRed" : DynamicArray(),  # Train number on each block   
         "blockTrainNoGreen" : DynamicArray(),             
         "stationOccupancy" : DynamicArray(), # Number of people at each station
@@ -69,6 +73,8 @@ class backEndCalculations():
         "railStatusRed" : DynamicArray(),        # Broken rail failure states
         "railStatusGreen" : DynamicArray(),
         "val" : 0,
+        "nextBlock" : 0,
+        "blockDel" : 0,
         "moves" : [[0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None],
                    [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None],
                    [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None],
@@ -202,7 +208,18 @@ class backEndCalculations():
             elif (currBlock == self.data["moves"][id - 1][2]):
                 index = 2
             if (index != 0):
-                self.getTrainBlockInputFunction(index, id - 1)
+                self.getTrainBlockInputFunction(index, id - 1, 0)
+            self.data["nextBlock"] = 1
+        elif self.data["nextBlock"] == 1:
+            self.data["nextBlock"] = 0
+            if (currBlock == self.data["moves"][id - 1][0]):
+                index = 0
+            elif (currBlock == self.data["moves"][id - 1][1]):
+                index = 1
+            elif (currBlock == self.data["moves"][id - 1][2]):
+                index = 2
+            if (index == 0):
+                self.getTrainBlockInputFunction(index, id - 1, 1)
         else:
             TMTkMSignals.beaconSignal.emit(id, "", 0, "", 0, -1, 0)
 
@@ -278,60 +295,63 @@ class backEndCalculations():
         trackSignals.updateSignal.emit()
 
     # Gets the Train Block from the UI
-    def getTrainBlockInputFunction(self, index, trainNo):
+    def getTrainBlockInputFunction(self, index, trainNo, state):
         # Update block train number
         # Sets last block train was at to 0
-        if self.data["trainLine"][trainNo] == 0 and self.data["moves"][trainNo][0] != 0:
-            self.data["blockTrainNoRed"].removeAt(self.data["moves"][trainNo][0] - 1)
-            self.data["blockTrainNoRed"].insertAt(0, self.data["moves"][trainNo][0] - 1)
-            TkMWCSignals.currBlockSignal.emit(0, False, self.data["moves"][trainNo][0])
-        elif self.data["trainLine"][trainNo] == 1 and self.data["moves"][trainNo][0] != 0:
-            self.data["blockTrainNoGreen"].removeAt(self.data["moves"][trainNo][0] - 1)
-            self.data["blockTrainNoGreen"].insertAt(0, self.data["moves"][trainNo][0] - 1)
-            TkMWCSignals.currBlockSignal.emit(1, False, self.data["moves"][trainNo][0])
+        if state == 1:
+            if self.data["trainLine"][trainNo] == 0 and self.data["blockDel"] != 0:
+                self.data["blockTrainNoRed"].removeAt(self.data["blockDel"] - 1)
+                self.data["blockTrainNoRed"].insertAt(0, self.data["blockDel"] - 1)
+                TkMWCSignals.currBlockSignal.emit(0, False, self.data["blockDel"])
+            elif self.data["trainLine"][trainNo] == 1 and self.data["blockDel"] != 0:
+                self.data["blockTrainNoGreen"].removeAt(self.data["blockDel"] - 1)
+                self.data["blockTrainNoGreen"].insertAt(0, self.data["blockDel"] - 1)
+                TkMWCSignals.currBlockSignal.emit(1, False, self.data["blockDel"])
 
         # Sets train number to new block
-        if self.data["trainLine"][trainNo] == 0 and self.data["moves"][trainNo][index] != 0:
-            self.data["blockTrainNoRed"].removeAt(self.data["moves"][trainNo][index] - 1)
-            self.data["blockTrainNoRed"].insertAt(trainNo + 1, self.data["moves"][trainNo][index] - 1)
-            TkMWCSignals.currBlockSignal.emit(1, True, self.data["moves"][trainNo][index])
-        elif self.data["trainLine"][trainNo] == 1 and self.data["moves"][trainNo][index] != 0:
-            self.data["blockTrainNoGreen"].removeAt(self.data["moves"][trainNo][index] - 1)
-            self.data["blockTrainNoGreen"].insertAt(trainNo + 1, self.data["moves"][trainNo][index] - 1)
-            TkMWCSignals.currBlockSignal.emit(1, True, self.data["moves"][trainNo][index])
+        if state == 0:
+            self.data["blockDel"] = self.data["moves"][trainNo][0]
+            if self.data["trainLine"][trainNo] == 0 and self.data["moves"][trainNo][index] != 0:
+                self.data["blockTrainNoRed"].removeAt(self.data["moves"][trainNo][index] - 1)
+                self.data["blockTrainNoRed"].insertAt(trainNo + 1, self.data["moves"][trainNo][index] - 1)
+                TkMWCSignals.currBlockSignal.emit(1, True, self.data["moves"][trainNo][index])
+            elif self.data["trainLine"][trainNo] == 1 and self.data["moves"][trainNo][index] != 0:
+                self.data["blockTrainNoGreen"].removeAt(self.data["moves"][trainNo][index] - 1)
+                self.data["blockTrainNoGreen"].insertAt(trainNo + 1, self.data["moves"][trainNo][index] - 1)
+                TkMWCSignals.currBlockSignal.emit(1, True, self.data["moves"][trainNo][index])
 
-        # Update Authority
-        if (self.data["authority"][trainNo] != 0):  
-            self.data["authority"][trainNo] -= 1
-        TMTkMSignals.authoritySignal.emit(trainNo + 1, self.data["authority"][trainNo])
+            # Update Authority
+            if (self.data["authority"][trainNo] != 0):  
+                self.data["authority"][trainNo] -= 1
+            TMTkMSignals.authoritySignal.emit(trainNo + 1, self.data["authority"][trainNo])
 
-        # Send Beacon
-        if self.data["trainLine"][trainNo] == 0:
-            if self.csvConstants["stationRed"].__getitem__(self.data["moves"][trainNo][index] - 1) > 0:
-                beaconArr = self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][0] - 1)
-                TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
-            elif self.csvConstants["stationRed"].__getitem__(self.data["moves"][trainNo][0] - 1) > 0:
-                beaconArr = self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][index] - 1)
-                TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
-            else:
-                TMTkMSignals.beaconSignal.emit(trainNo + 1, "", 0, "", 0, -1, 0)
-        elif self.data["trainLine"][trainNo] == 1:
-            if (int(self.data["moves"][trainNo][index] - 1) > 0) & (int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)) > 0):
-                beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)
-                TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
-            elif (int(self.data["moves"][trainNo][0] - 1) > 0):
-                if (int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)) > 0):
-                    beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)
+            # Send Beacon
+            if self.data["trainLine"][trainNo] == 0:
+                if self.csvConstants["stationRed"].__getitem__(self.data["moves"][trainNo][index] - 1) > 0:
+                    beaconArr = self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][0] - 1)
                     TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
-            else:
-                TMTkMSignals.beaconSignal.emit(trainNo + 1, "", 0, "", 0, -1, 0)
+                elif self.csvConstants["stationRed"].__getitem__(self.data["moves"][trainNo][0] - 1) > 0:
+                    beaconArr = self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][index] - 1)
+                    TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
+                else:
+                    TMTkMSignals.beaconSignal.emit(trainNo + 1, "", 0, "", 0, -1, 0)
+            elif self.data["trainLine"][trainNo] == 1:
+                if (int(self.data["moves"][trainNo][index] - 1) > 0) & (int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)) > 0):
+                    beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)
+                    TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
+                elif (int(self.data["moves"][trainNo][0] - 1) > 0):
+                    if (int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)) > 0):
+                        beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)
+                        TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), -1, 0)
+                else:
+                    TMTkMSignals.beaconSignal.emit(trainNo + 1, "", 0, "", 0, -1, 0)
 
-        # Update Block vector
-        self.data["moves"][trainNo][0] = self.data["moves"][trainNo][index]
-        self.updateVector(trainNo)
+            # Update Block vector
+            self.data["moves"][trainNo][0] = self.data["moves"][trainNo][index]
+            self.updateVector(trainNo)
         
-        # Update train block output
-        self.data["trainBlock"][trainNo] = self.data["moves"][trainNo][0]
+            # Update train block output
+            self.data["trainBlock"][trainNo] = self.data["moves"][trainNo][0]
 
         # Refresh Main UI
         trackSignals.updateSignal.emit()
