@@ -171,7 +171,7 @@ class jsonToArduino(QRunnable):
             self.parseJson()
             #print(udpMessage)
 
-            print(f'Sending \n{udpMessage} to {self.ip}:{self.port}    Counter:{self.counter}\n')
+            # print(f'Sending \n{udpMessage} to {self.ip}:{self.port}    Counter:{self.counter}\n')
             
             # print(trainModelToTrainController)
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
