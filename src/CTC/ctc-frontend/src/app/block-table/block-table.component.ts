@@ -20,6 +20,7 @@ export class BlockTableComponent {
 
   ngOnInit() {
     this.getBlocks();
+    this.getAutoMode();
 
     interval(30*1000).subscribe(() => this.getBlocks())
   }
