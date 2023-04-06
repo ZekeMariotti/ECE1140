@@ -450,7 +450,7 @@ class TrainModelUI(QWidget):
 
     def mainTimerSetup(self):     
         mainTimer = QTimer()
-        mainTimer.setInterval(1000)
+        mainTimer.setInterval(100)
         mainTimer.timeout.connect(self.updateOutputs)
         mainTimer.setParent(self)
         mainTimer.start()
