@@ -80,8 +80,8 @@ class arduinoToJson(QRunnable):
             #print(type(data))
             self.trainControllerToTrainModel = json.loads(self.data)
 
-            print("Recieve")
-            print(self.trainControllerToTrainModel)
+            # print("Recieve")
+            # print(self.trainControllerToTrainModel)
 
             #parseToJson()
             #self.trainControllerToTrainModel["emergencyBrakeCommand"] = 0

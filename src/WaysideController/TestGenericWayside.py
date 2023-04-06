@@ -55,7 +55,7 @@ class Wayside:
         # simple error checking
     def setCommandedSpeed(self):
         for i in self.suggestedSpeed:
-            if self.suggestedSpeed[i]>19.5 | self.suggestedSpeed[i]<0:
+            if ((self.suggestedSpeed[i]>19.5) | (self.suggestedSpeed[i]<0)):
                 self.commandedSpeed[i]=0
             else:
                 self.commandedSpeed[i]=self.suggestedSpeed[i]
@@ -63,7 +63,7 @@ class Wayside:
           self.commandedSpeed[block]=Value         
     def setAuthority(self):
         for i in self.suggestedAuthority:
-            if self.suggestedAuthority[i]>150 | self.suggestedAuthority[i]<0:
+            if ((self.suggestedAuthority[i]>150) | (self.suggestedAuthority[i]<0)):
                 self.authority[i]=0
             else:
                 self.authority[i]=self.suggestedAuthority[i]

@@ -82,11 +82,11 @@ class MainWindow(QMainWindow):
             # Sub Thread Setup
             pool = QThreadPool.globalInstance()
 
-            sendJson = sendJsonToArduinoClass.jsonToArduino()
-            pool.start(sendJson)
+            # sendJson = sendJsonToArduinoClass.jsonToArduino()
+            # pool.start(sendJson)
 
-            fromArduino = receiveJsonFromArduinoClass.arduinoToJson()
-            pool.start(fromArduino)
+            # fromArduino = receiveJsonFromArduinoClass.arduinoToJson()
+            # pool.start(fromArduino)
 
             self.CTCLabelSetup()
             self.launchCTCSetup()
@@ -138,14 +138,19 @@ class MainWindow(QMainWindow):
             # Instantiate the Track Model
             self.TkM = TrackModelMainUI.TrackModelMainUI()
 
+            # Instantiate Wayside Controllers
+            self.wc = NewGreenLine.MainWindow()
+            activeSignals.activeSignal.emit()
+
             # Instantiate the Track Model
             # self.wc = NewGreenLine.MainWindow()
 
             # Test TM and TC
+            self.trainDispatch(1)
             for i in range(2, 4):
                 self.trainDispatch(i)    
-            self.HWTrainModel = TrainModelMainUI.TrainModelUI(1, "Green")
-            self.TkM.backEnd.newTrainMade(1, "Green")
+            #self.HWTrainModel = TrainModelMainUI.TrainModelUI(1, "Green")
+            #self.TkM.backEnd.newTrainMade(1, "Green")
             self.TMTestUI = TrainModelTestUI.TrainModelTestUI() # temporary TM test UI 
             #self.TkMTestUI = TrackModelTestUI.TrackModelTestUI()
             self.TESTUI = IntegrationTestUI.BasicTestUI()
@@ -308,6 +313,8 @@ class MainWindow(QMainWindow):
                 TM.close()
 
             self.TMTestUI.close()
+            self.wc.close()
+            self.TkM.close()
 
         # Runs all functions during each time interval
         def mainEventLoop(self):
@@ -317,10 +324,8 @@ class MainWindow(QMainWindow):
              print("CTC")
 
         def launchWaysideControllerOneClick(self):
-            self.wc = NewGreenLine.MainWindow()
             self.wc.setVisible(True)
-            self.wc.WaysideControllerGreenTestUI.show()
-            activeSignals.activeSignal.emit()
+            
 
         def launchWaysideControllerTwoClick(self):
             print("Wayside Controller Two")
@@ -349,17 +354,35 @@ class MainWindow(QMainWindow):
 
         # Test setups for testing TM and TC
         def trainDispatch(self, trainId):
-            self.TrainControllerList.append(TrainControllerMainUI.MainWindow(trainId))
-            self.TrainModelList.append(TrainModelMainUI.TrainModelUI(trainId, "Green"))
-            self.TkM.backEnd.newTrainMade(trainId, "Green")
-            self.TrainControllerList[len(self.TrainControllerList)-1].move(800, 10)
-            self.TrainModelList[len(self.TrainModelList)-1].move(self.screen().availableGeometry().width()-1480, 
-                                                                 self.screen().availableGeometry().height()-self.TrainModelList[len(self.TrainModelList)-1].frameGeometry().height()-40)
+            # trainId of 1 corresponds with train controller hardware
+            if(trainId != 1):
+                self.TrainControllerList.append(TrainControllerMainUI.MainWindow(trainId))
+                self.TrainModelList.append(TrainModelMainUI.TrainModelUI(trainId, "Green"))
+                self.TkM.backEnd.newTrainMade(trainId, "Green")
+                self.TrainControllerList[len(self.TrainControllerList)-1].move(800, 10)
+                self.TrainModelList[len(self.TrainModelList)-1].move(self.screen().availableGeometry().width()-1480, 
+                                                                    self.screen().availableGeometry().height()-self.TrainModelList[len(self.TrainModelList)-1].frameGeometry().height()-40)
 
-            # Update TM and TC selectors
-            self.selectTrainModel.addItems([str(trainId)])
-            self.selectTrainController.addItems([str(trainId)])
+                # Update TM and TC selectors
+                self.selectTrainModel.addItems([str(trainId)])
+                self.selectTrainController.addItems([str(trainId)])
+            else:
+                # Sub Thread Setup
+                self.hwtcCreated = True
+                pool = QThreadPool.globalInstance()
 
+                # sendJson = sendJsonToArduinoClass.jsonToArduino()
+                # pool.start(sendJson)
+
+                # fromArduino = receiveJsonFromArduinoClass.arduinoToJson()
+                # pool.start(fromArduino)
+                
+                self.TrainModelList.append(TrainModelMainUI.TrainModelUI(trainId, "Green"))
+                self.TkM.backEnd.newTrainMade(trainId, "Green")
+                self.TrainModelList[len(self.TrainModelList)-1].move(self.screen().availableGeometry().width()-1480, 
+                                                                    self.screen().availableGeometry().height()-self.TrainModelList[len(self.TrainModelList)-1].frameGeometry().height()-40)
+                self.selectTrainModel.addItems([str(trainId)])
+                
         def rtcSignalHandler(self, rtc):
             #print(rtc)
             test=1
@@ -383,6 +406,5 @@ mainWindow.show()
 #mainWindow.TMTestUI.showMinimized()
 #mainWindow.TkMTestUI.showMinimized()
 mainWindow.TESTUI.show()
-mainWindow.HWTrainModel.show()
 
 app.exec() 
