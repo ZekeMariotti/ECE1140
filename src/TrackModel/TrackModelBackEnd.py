@@ -168,6 +168,8 @@ class backEndCalculations():
         if (line == "Green"):
             self.data["trainLine"][id - 1] = 1
             self.data["moves"][id - 1] = [0, 63, None]
+            TMTkMSignals.authoritySignal.emit(id, 1)
+            TMTkMSignals.commandedSpeedSignal.emit(id, 1)
         elif(line == "Red"):
             self.data["trainLine"][id - 1] = 0
             self.data["moves"][id - 1] = [0, 9, None]
