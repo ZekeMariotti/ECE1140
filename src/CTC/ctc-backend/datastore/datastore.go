@@ -13,8 +13,9 @@ type DataStore struct {
 
 func NewDataStore() *DataStore {
 	ds := DataStore{
-		Lines:  *common.NewSafeLineMap(),
-		Trains: *common.NewSafeTrainMap(),
+		Lines:    *common.NewSafeLineMap(),
+		Trains:   *common.NewSafeTrainMap(),
+		AutoMode: true,
 	}
 	return &ds
 }
