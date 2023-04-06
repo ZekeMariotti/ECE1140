@@ -142,16 +142,15 @@ class MainWindow(QMainWindow):
             self.wc = NewGreenLine.MainWindow()
             activeSignals.activeSignal.emit()
 
-            # Instantiate the Track Model
-            # self.wc = NewGreenLine.MainWindow()
-
             # Test TM and TC
             self.trainDispatch(1)
             for i in range(2, 4):
                 self.trainDispatch(i)    
             #self.HWTrainModel = TrainModelMainUI.TrainModelUI(1, "Green")
             #self.TkM.backEnd.newTrainMade(1, "Green")
-            self.TMTestUI = TrainModelTestUI.TrainModelTestUI() # temporary TM test UI 
+
+            # Test UIs
+            #self.TMTestUI = TrainModelTestUI.TrainModelTestUI() # temporary TM test UI 
             #self.TkMTestUI = TrackModelTestUI.TrackModelTestUI()
             self.TESTUI = IntegrationTestUI.BasicTestUI()
             #self.TESTUI = GreenLineTestUi.TestWindow()

@@ -316,8 +316,8 @@ class TrainModel():
         TMTCSignals.authoritySignal.emit(self.TrainID, self.passThroughData["authority"])
         TMTCSignals.undergroundSignal.emit(self.TrainID, self.data["underground"])
         TMTCSignals.temperatureSignal.emit(self.TrainID, self.data["currTemp"])
-        if (self.TrainID == 2) & (self.passThroughData["beacon"][3] == 1):
-            print(self.TrainID, self.passThroughData["beacon"])
+        #if (self.TrainID == 2) & (self.passThroughData["beacon"][3] == 1):
+            #print(self.TrainID, self.passThroughData["beacon"])
         if (self.passThroughData["beacon"][3] == 1):
             TMTCSignals.stationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][0])
             TMTCSignals.platformSideSignal.emit(self.TrainID, self.passThroughData["beacon"][1])
@@ -409,8 +409,8 @@ class TrainModel():
     # Beacons Input Handler
     def beaconSignalHandler(self, id, stationName, platformSide, nextStationName, isBeacon, blockCount, fromSwitch):
         if (id == self.TrainID):
-            if (isBeacon == 1):
-                print(id, stationName, platformSide, nextStationName, isBeacon, blockCount, fromSwitch)
+            #if (isBeacon == 1):
+                #print(id, stationName, platformSide, nextStationName, isBeacon, blockCount, fromSwitch)
             self.passThroughData["beacon"][0] = stationName
             self.passThroughData["beacon"][1] = platformSide
             self.passThroughData["beacon"][2] = nextStationName
