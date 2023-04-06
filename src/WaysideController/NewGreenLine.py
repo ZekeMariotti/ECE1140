@@ -276,8 +276,8 @@ class MainWindow(QMainWindow):
                   value="G"
                 else:
                   value="R"
-              
-                SignalLight.setItem(i,j,QTableWidgetItem((value)))
+                if((k==1)|(k==13)|(k==77)|(k==100)|(k==84)):              
+                  SignalLight.setItem(i,j,QTableWidgetItem((value)))
                 j=j+1
                 if j>9:
                  j=0
@@ -842,7 +842,8 @@ class MainWindow(QMainWindow):
                         TkMWCSignals.signalStateSignal.emit(0, 1, k - 1)
                   elif value == "R":
                         TkMWCSignals.signalStateSignal.emit(2, 1, k - 1)
-                self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
+                if((k==1)|(k==13)|(k==77)|(k==100)|(k==84)):
+                  self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
                  j=0
@@ -859,7 +860,8 @@ class MainWindow(QMainWindow):
                         #TkMWCSignals.signalStateSignal.emit(0, 1, k - 1)
                   #elif value == "R":
                         #TkMWCSignals.signalStateSignal.emit(2, 1, k - 1)
-                self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
+                if((k==1)|(k==13)|(k==77)|(k==100)|(k==84)):                        
+                  self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
                  j=0
