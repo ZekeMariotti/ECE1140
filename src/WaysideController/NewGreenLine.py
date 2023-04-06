@@ -890,8 +890,16 @@ class MainWindow(QMainWindow):
           if self.WaysideControllerGreen.gates[1]==True:
                 self.Gate.setText("Block 19 Gate:  UP")
           else:
-                  self.Gate.setText("Block 19 Gate:  DOWN")    
+                  self.Gate.setText("Block 19 Gate:  DOWN") 
 
+    def closeEvent(self, event):
+            if(self.testUI):
+                if (self.GreenLineTestUI):
+                    self.GreenLineTestUI.close()
+            if(__name__ == "__main__"):
+                self.close()
+            else:
+                self.setVisible(False)
 
     def mainEventLoop(self):
           self.updateVisualElements(self.active)
