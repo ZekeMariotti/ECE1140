@@ -190,6 +190,14 @@ func (m *SafeLineMap) UpdateWayside(line string, data WaysideToCTC) {
 		id, err := strconv.Atoi(key)
 		if err == nil {
 			l.Blocks.SetBlockOccupancy(id, val)
+			switch line {
+			case "Red":
+
+			case "Green":
+				if id == 63 {
+					l.Blocks.SetBlockOccupancy(0, val)
+				}
+			}
 		}
 		blocksUpdated[idx] = id
 		idx++
@@ -198,5 +206,14 @@ func (m *SafeLineMap) UpdateWayside(line string, data WaysideToCTC) {
 	//
 
 	// Push updates
+	m.data[line] = l
+}
+
+func (m *SafeLineMap) SetBlockOccupancy(line string, block int, occupied bool) {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	l := m.data[line]
+	l.Blocks.SetBlockOccupancy(block, occupied)
 	m.data[line] = l
 }
