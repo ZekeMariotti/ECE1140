@@ -466,6 +466,7 @@ void setStationState(){
   // # if isBeacon and stationState and !secondBeaconPassed, exiting station
   if(isBeacon && stationState && !secondBeaconPassed){
     secondBeaconPassed = true;
+    // firstBeaconPassed = false;
     Serial.println("Second Beacon Passed");
   }
       
