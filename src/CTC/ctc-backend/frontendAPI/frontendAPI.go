@@ -133,6 +133,7 @@ func (a *FrontendAPI) postTrains(c *gin.Context) {
 	body, _ := io.ReadAll(c.Request.Body)
 	json.Unmarshal(body, &result)
 	a.datastore.Trains.Set(result.ID, a.datastore.TrainFrontendToBackend(result))
+	a.datastore.Lines.SetBlockOccupancy(result.Line, 0, true)
 }
 
 // Handler for PUT /simulationSpeed
