@@ -48,6 +48,8 @@ func (s *UpdateService) updateLoop() {
 }
 
 func (s *UpdateService) doUpdate() {
+	// Update train locations
+	s.updateTrainAssignments()
 	// Check if auto mode
 	if s.data.AutoMode {
 		// In auto mode
