@@ -27,6 +27,7 @@ from datetime import *
 
 
 
+
 # Class for the main window
 class MainWindow(QMainWindow):
         TrainControllerList = []
@@ -36,7 +37,7 @@ class MainWindow(QMainWindow):
         def __init__(self):
             super().__init__()
 
-            
+            #subprocess.call(f'{sys.path[0]}')
 
             # Main clock and simulation speed
             self.RTC = datetime.now() # Temporarily set time manually
@@ -388,6 +389,10 @@ class MainWindow(QMainWindow):
 
         def rtcSignalHandler(self, rtc):
             #print(rtc)
+            test=1
+            
+        def trainDispatchCall():
+            #test = requests.get('http://localhost:8090/api/simulation/time').text.replace("\"", "")
             test=1
 
 # Function to remove character from a string at nth position

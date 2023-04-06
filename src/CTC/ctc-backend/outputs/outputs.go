@@ -14,17 +14,19 @@ import (
 )
 
 type OutputAPI struct {
-	port   int
-	data   *datastore.DataStore
-	router *gin.Engine
+	port           int
+	data           *datastore.DataStore
+	router         *gin.Engine
+	informedTrains []int
 }
 
 // Create a new output API and initialize it
 func NewOutputAPI(port int, data *datastore.DataStore) *OutputAPI {
 	api := OutputAPI{
-		port:   port,
-		data:   data,
-		router: gin.Default(),
+		port:           port,
+		data:           data,
+		router:         gin.Default(),
+		informedTrains: make([]int, 0),
 	}
 
 	api.router.Use(cors.Default())
@@ -42,6 +44,7 @@ func (a *OutputAPI) Serve() {
 
 // Initialize API endpoints
 func (a *OutputAPI) registerPaths() {
+	a.router.GET("/api/dispatchedtrain", a.getDispatched)
 	a.router.GET("/api/line", a.getLines)
 	a.router.GET("/api/line/:line", a.getLineByName)
 	a.router.GET("/api/line/:line/blocks", a.getBlocks)
@@ -50,6 +53,24 @@ func (a *OutputAPI) registerPaths() {
 	a.router.GET("/api/simulation/time", a.getSimulationTime)
 	a.router.GET("/api/simulation/speed", a.getSimulationSpeed)
 	a.router.PUT("/api/wayside/:line", a.putWayside)
+}
+
+// HTTP GET handler for the latest dispatched train (runs once per train)
+func (a *OutputAPI) getDispatched(c *gin.Context) {
+	// Check if latest train was informed
+	trains := a.data.Trains.GetFrontendSlice()
+	if len(trains) > 0 && len(a.informedTrains) > 0 {
+		if trains[len(trains)-1].ID != a.informedTrains[len(a.informedTrains)-1] {
+			train := trains[len(trains)-1]
+			c.IndentedJSON(http.StatusOK, common.TrainPython{
+				ID:   train.ID,
+				Line: train.Line,
+			})
+			a.informedTrains = append(a.informedTrains, train.ID)
+			return
+		}
+	}
+	c.IndentedJSON(http.StatusOK, "")
 }
 
 // HTTP GET handler for lines
