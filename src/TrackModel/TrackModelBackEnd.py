@@ -33,6 +33,9 @@ class backEndCalculations():
         else:
             tHeater = 0
 
+    greenAuthority = [0] * 150
+    greenCommandedSpeed = [0.0] * 150
+
     # Private data variable to store all the data needed for the back end
     data = {
         "line" : 0,                          # Selected line
@@ -190,7 +193,13 @@ class backEndCalculations():
             self.data["nextBlock"] = 0
         else:
             self.data["nextBlock"] = 1
-
+        
+        # Setting CMD Speed and Authority during real time operations
+        if (currBlock != 0):
+            self.data["authority"][id - 1] = self.greenAuthority[currBlock - 1]
+            self.data["commandedSpeed"][id - 1] = self.greenCommandedSpeed[currBlock - 1]
+            TMTkMSignals.authoritySignal.emit(id, self.data["authority"][id - 1])
+            TMTkMSignals.commandedSpeedSignal.emit(id, self.data["commandedSpeed"][id - 1])
 
         if (transition):
             TMTkMSignals.blockLengthSignal.emit(id, float(self.csvConstants["lengthGreen"].__getitem__(currBlock - 1)))
@@ -329,9 +338,9 @@ class backEndCalculations():
                 TkMWCSignals.currBlockSignal.emit(1, True, self.data["moves"][trainNo][index])
 
             # Update Authority
-            if (self.data["authority"][trainNo] != 0):  
-                self.data["authority"][trainNo] -= 1
-            TMTkMSignals.authoritySignal.emit(trainNo + 1, self.data["authority"][trainNo])
+            #if (self.data["authority"][trainNo] != 0):  
+            #    self.data["authority"][trainNo] -= 1
+            #TMTkMSignals.authoritySignal.emit(trainNo + 1, self.data["authority"][trainNo])
 
             # Send Beacon
             if self.data["trainLine"][trainNo] == 0:
@@ -550,14 +559,16 @@ class backEndCalculations():
         if line == 0:
             self.getAuthInput(auth, int(self.data["blockTrainNoRed"].__getitem__(blockNo - 1)))
         elif line == 1:
-            self.getAuthInput(auth, int(self.data["blockTrainNoGreen"].__getitem__(blockNo - 1)))
+            self.greenAuthority[blockNo - 1] = auth
+            #self.getAuthInput(auth, int(self.data["blockTrainNoGreen"].__getitem__(blockNo - 1)))
 
     # Wayside commanded speed handler
     def cSpeedHandler(self, blockNo, cSpeed, line):
         if line == 0:
             self.getCSpeedInput(cSpeed, int(self.data["blockTrainNoRed"].__getitem__(blockNo - 1)))
         elif line == 1:
-            self.getCSpeedInput(cSpeed, int(self.data["blockTrainNoGreen"].__getitem__(blockNo - 1)))
+            self.greenCommandedSpeed[blockNo - 1] = cSpeed
+            #self.getCSpeedInput(cSpeed, int(self.data["blockTrainNoGreen"].__getitem__(blockNo - 1)))
 
 
 import csv

@@ -149,7 +149,7 @@ class MainWindow(QMainWindow):
             #    self.trainDispatch(i)    
 
             #self.TkMTestUI = TrackModelTestUI.TrackModelTestUI()
-            self.TESTUI = IntegrationTestUI.BasicTestUI()
+            #self.TESTUI = IntegrationTestUI.BasicTestUI()
             #self.TESTUI = GreenLineTestUi.TestWindow()
         
         # Widget Setups
@@ -424,6 +424,6 @@ mainWindow.show()
 # Temporary
 #mainWindow.TMTestUI.showMinimized()
 #mainWindow.TkMTestUI.showMinimized()
-mainWindow.TESTUI.show()
+#mainWindow.TESTUI.show()
 
 app.exec() 
