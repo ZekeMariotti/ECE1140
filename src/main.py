@@ -314,6 +314,7 @@ class MainWindow(QMainWindow):
         # Runs all functions during each time interval
         def mainEventLoop(self):
             self.getRTC()
+            self.trainDispatchCall()
 
         def launchCTCClick(self):
              print("CTC")
@@ -391,9 +392,10 @@ class MainWindow(QMainWindow):
             #print(rtc)
             test=1
             
-        def trainDispatchCall():
-            #test = requests.get('http://localhost:8090/api/simulation/time').text.replace("\"", "")
-            test=1
+        def trainDispatchCall(self):
+            test = requests.get('http://localhost:8090/api/dispatchedtrain').text.replace("\"", "")
+            if(test!=""):
+                print(test)
 
 # Function to remove character from a string at nth position
 def stringRemove(string, n):  
