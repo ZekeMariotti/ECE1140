@@ -276,8 +276,8 @@ class MainWindow(QMainWindow):
                   value="G"
                 else:
                   value="R"
-                if((k==1)|(k==13)|(k==77)|(k==100)|(k==84)):              
-                  SignalLight.setItem(i,j,QTableWidgetItem((value)))
+                             
+                SignalLight.setItem(i,j,QTableWidgetItem((value)))
                 j=j+1
                 if j>9:
                  j=0
