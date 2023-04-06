@@ -116,7 +116,10 @@ class TrainControllerSW:
     # Signal handlers
     def rtcSignalHandler(self, rtcString):
         self.inputs.inputTime = rtcString
+        print("TCSW"+self.inputs.inputTime)
         self.convertTime()
+        print(self.inputs.inputTime)
+
 
     def commandedSpeedSignalHandler(self, id, cmdSpeed):
         if(self.trainId == id):

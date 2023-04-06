@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
         def __init__(self):
             super().__init__()
 
-            #print(requests.get('https://w3schools.com/python/demopage.htm').text)
+            
 
             # Main clock and simulation speed
             self.RTC = datetime.now() # Temporarily set time manually
@@ -311,7 +311,7 @@ class MainWindow(QMainWindow):
             for TM in self.TrainModelList:
                 TM.close()
 
-            self.TMTestUI.close()
+            #self.TMTestUI.close()
             self.wc.close()
             self.TkM.close()
 
@@ -348,8 +348,13 @@ class MainWindow(QMainWindow):
 
         # Get time from CTC module
         def getRTC(self):
-            self.RTC = self.RTC + timedelta(0, 0, 0, self.timerInterval*self.simulationSpeed) # Temporary increment time
-            rtcSignals.rtcSignal.emit(self.RTC.isoformat() + "0-05:00")
+            rtcInput = requests.get('http://localhost:8090/api/simulation/time').text.replace("\"", "")
+            print(f'main1:{rtcInput}\n')
+            rtcSignals.rtcSignal.emit(rtcInput)
+            rtcInput = stringRemove(rtcInput, 26)
+            print(f'main2:{rtcInput}\n')
+            self.RTC = datetime.strptime(rtcInput, "%Y-%m-%dT%H:%M:%S.%f%z")   
+            
 
         # Test setups for testing TM and TC
         def trainDispatch(self, trainId):
@@ -385,6 +390,12 @@ class MainWindow(QMainWindow):
         def rtcSignalHandler(self, rtc):
             #print(rtc)
             test=1
+
+# Function to remove character from a string at nth position
+def stringRemove(string, n):  
+    first = string[: n]   
+    last = string[n+1:]  
+    return first + last
             
 
 
