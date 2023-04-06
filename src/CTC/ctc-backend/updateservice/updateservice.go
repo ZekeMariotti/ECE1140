@@ -57,14 +57,16 @@ func (s *UpdateService) doUpdate() {
 		trainRouteMap := make(map[int][]int)
 		blockUseMap := make(map[int][]int)
 		for _, v := range s.data.Trains.GetSlice() {
-			// Get route
-			destinationBlock := s.data.Lines.Get(v.Line).Blocks.Get(v.Stops[0].Station.BlockID)
-			route := s.routeGen.CalculateRoute(v, destinationBlock)
-			trainRouteMap[v.ID] = route
-			for i := range route {
-				use := blockUseMap[route[i]]
-				use = append(use, v.ID)
-				blockUseMap[route[i]] = use
+			if len(v.Stops) > 0 {
+				// Get route
+				destinationBlock := s.data.Lines.Get(v.Line).Blocks.Get(v.Stops[0].Station.BlockID)
+				route := s.routeGen.CalculateRoute(v, destinationBlock)
+				trainRouteMap[v.ID] = route
+				for i := range route {
+					use := blockUseMap[route[i]]
+					use = append(use, v.ID)
+					blockUseMap[route[i]] = use
+				}
 			}
 		}
 		// Update authorities
@@ -178,6 +180,7 @@ func (s *UpdateService) updateTrainAssignments() {
 	newMap := make(map[string]map[int]int)
 	lines := s.data.Lines.GetLineNames()
 	for _, line := range lines {
+		newMap[line] = make(map[int]int)
 		blocks := s.data.Lines.Get(line).Blocks.GetSlice()
 		for _, block := range blocks {
 			lastTrain := s.lastTrainBlockMap[line][block.Number]
@@ -296,7 +299,9 @@ func (s *UpdateService) updateTrainAssignments() {
 	s.data.Trains.ResetTrainLocations()
 	for _, blocks := range newMap {
 		for blockID, trainID := range blocks {
-			s.data.Trains.AddTrainLocationBlock(trainID, blockID)
+			if trainID > 0 {
+				s.data.Trains.AddTrainLocationBlock(trainID, blockID)
+			}
 		}
 	}
 	s.lastTrainBlockMap = newMap
