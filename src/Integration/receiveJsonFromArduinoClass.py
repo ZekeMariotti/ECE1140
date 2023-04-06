@@ -87,5 +87,5 @@ class arduinoToJson(QRunnable):
             #self.trainControllerToTrainModel["emergencyBrakeCommand"] = 0
             #writeToJson()
             self.emitSignals()
-            time.sleep(0.1)
+            time.sleep(0.05)
             #print(f"received message: {data}")

@@ -82,6 +82,10 @@ void setup() {
   Kp = 1;
   Ki = 1;
   manualCommandedSpeed=0;
+  isBeacon=false;
+  firstBeaconPassed=false;
+  secondBeaconPassed=false;
+  stationState=false;
   
 }
 
@@ -120,7 +124,7 @@ void loop() {
   sendJSONDataUI(switchStateArray);
   
   // Serial.println("in loop");
-  delay(50);
+  // delay(50);
 
 }
 
@@ -306,8 +310,8 @@ void parseJSONData(int *switchStateArray){
   jsonDataOut["stationAnnouncement"] = jsonDataIn["stationName"];
   jsonDataOut["isAtStation"] = stationState;
   int x = jsonDataOut["power"];
-  Serial.print("JSON OUT:");
-  Serial.println(x);
+  // Serial.print("JSON OUT:");
+  // Serial.println(x);
   
 }
 ////////////////////////////////UDP Shit////////////////////////////////////
@@ -449,19 +453,20 @@ bool emergencyBrake(){
 
 //==============BEACON SHIT================
 void setStationState(){
+  isBeacon = jsonDataIn["isBeacon"];
   // # if isBeacon and !firstBeaconPassed, entering station
   if(isBeacon && !firstBeaconPassed){
     firstBeaconPassed = true;
-    // #print("First Beacon Passed")
+    Serial.println("First Beacon Passed");
   }else if(!isBeacon && firstBeaconPassed){
     stationState = true;
-      // #print("WE GOT TO A STATION")
+    Serial.println("WE GOT TO A STATION");
   }      
 
   // # if isBeacon and stationState and !secondBeaconPassed, exiting station
   if(isBeacon && stationState && !secondBeaconPassed){
     secondBeaconPassed = true;
-      // #print("Second Beacon Passed")
+    Serial.println("Second Beacon Passed");
   }
       
 
@@ -472,7 +477,7 @@ void setStationState(){
     firstBeaconPassed = false;
     secondBeaconPassed = false;
   }
-     
+  Serial.println(isBeacon);       
 }
 //=========================================
 
