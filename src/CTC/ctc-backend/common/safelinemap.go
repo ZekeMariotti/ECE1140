@@ -181,7 +181,7 @@ func (m *SafeLineMap) UpdateWayside(line string, data WaysideToCTC) {
 	for key, val := range data.Switches {
 		id, err := strconv.Atoi(key)
 		if err == nil {
-			l.Switches[id].UpdateDestinationFromWayside(val)
+			l.Switches[id-1].UpdateDestinationFromWayside(val)
 		}
 	}
 
