@@ -894,7 +894,6 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event):
             if(self.testUI):
-                if (self.GreenLineTestUi):
                     self.GreenLineTestUi.close()
             if(__name__ == "__main__"):
                 self.close()
