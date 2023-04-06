@@ -906,6 +906,8 @@ class MainWindow(QMainWindow):
           self.WaysideControllerGreen2.WaysideToTrackInfoG2()
           self.WaysideControllerGreen.WaysideToCTCInfoG1()
           self.WaysideControllerGreen2.WaysideToCTCInfoG2()
+          self.WaysideControllerGreen.getCTCBlocks()
+          self.WaysideControllerGreen2.getCTCBlocks()
           
 
 def main():
