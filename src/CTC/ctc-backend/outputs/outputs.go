@@ -67,10 +67,19 @@ func (a *OutputAPI) getDispatched(c *gin.Context) {
 				Line: train.Line,
 			})
 			a.informedTrains = append(a.informedTrains, train.ID)
-			return
+		} else {
+			c.IndentedJSON(http.StatusOK, "")
 		}
+	} else if len(trains) > 0 && len(a.informedTrains) == 0 {
+		train := trains[len(trains)-1]
+		c.IndentedJSON(http.StatusOK, common.TrainPython{
+			ID:   train.ID,
+			Line: train.Line,
+		})
+		a.informedTrains = append(a.informedTrains, train.ID)
+	} else {
+		c.IndentedJSON(http.StatusOK, "")
 	}
-	c.IndentedJSON(http.StatusOK, "")
 }
 
 // HTTP GET handler for lines
