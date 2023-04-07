@@ -215,12 +215,6 @@ class TrainControllerSW:
         # Set T value
         T = self.currentTime - self.previousTime
         self.T = T.total_seconds()
-        #print(self.T)
-        #print(f'prevTime: {self.previousTime.time()}')
-        #print(f'currTime: {self.currentTime.time()}\n')
-
-        # Temporary set T to fixed value
-        #self.T = timedelta(0, 0, 0, 100).total_seconds()
 
         # ek = velocity error
         if(self.manualMode == True):

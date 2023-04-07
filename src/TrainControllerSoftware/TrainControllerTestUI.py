@@ -11,6 +11,8 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from TrainControllerSW import TrainControllerSW
+from Integration.TMTCSignals import *
+from Integration.TimeSignals import *
 from Inputs import Inputs
 from Outputs import Outputs
 from datetime import *
@@ -34,9 +36,28 @@ class TestWindow(QMainWindow):
                                                        communicationsStatus=False, power=0, leftDoorCommand=False, rightDoorCommand=False, serviceBrakeCommand=False, 
                                                        emergencyBrakeCommand=False, externalLightCommand=False, internalLightCommand=False, stationAnnouncement="setupStationAnnouncement")    
 
-            # Update Inputs
-            self.TrainControllerSW.readInputs()      
-            self.connectIO = False         
+            self.TrainID = self.TrainControllerSW.trainId
+
+            # Used to automatically update main ui     
+            self.connectIO = False  
+
+            # Outputs from main
+            self.powerCommand = None
+            self.leftDoorCommand = None
+            self.rightDoorCommand = None
+            self.serviceBrakeCommand = None
+            self.emergencyBrakeCommand = None
+            self.externalLightCommand = None
+            self.internalLightCommand = None
+            self.stationAnnouncement = None
+            TMTCSignals.commandedPowerSignal.connect(self.commandedPowerSignalHandler)
+            TMTCSignals.leftDoorCommandSignal.connect(self.leftDoorCommandSignalHandler)
+            TMTCSignals.rightDoorCommandSignal.connect(self.rightDoorCommandSignalHandler)
+            TMTCSignals.serviceBrakeCommandSignal.connect(self.serviceBrakeCommandSignalHandler)
+            TMTCSignals.emergencyBrakeCommandSignal.connect(self.emergencyBrakeCommandSignalHandler)
+            TMTCSignals.externalLightCommandSignal.connect(self.externalLightCommandSignalHandler)
+            TMTCSignals.internalLightCommandSignal.connect(self.internalLightCommandSignalHandler)
+            TMTCSignals.stationAnnouncementSignal.connect(self.stationAnnouncementSignalHandler)       
 
             # Set window defaults
             self.setWindowTitle("Train Controller Test UI")
@@ -66,9 +87,6 @@ class TestWindow(QMainWindow):
 
             self.setEngineStatusLabel = self.setEngineStatusLabelSetup()
             self.setEngineStatus = self.setEngineStatusSetup()
-
-            self.setEngineStateLabel = self.setEngineStateLabelSetup()
-            self.setEngineState = self.setEngineStateSetup()
 
             self.setCommunicationsStatusLabel = self.setCommunicationsStatusLabelSetup()
             self.setCommunicationsStatus = self.setCommunicationsStatusSetup()
@@ -138,9 +156,6 @@ class TestWindow(QMainWindow):
 
             self.gridLayout.addWidget(self.setEngineStatusLabel, 2, 0)
             self.gridLayout.addWidget(self.setEngineStatus, 2, 1)
-
-            self.gridLayout.addWidget(self.setEngineStateLabel, 3, 0)
-            self.gridLayout.addWidget(self.setEngineState, 3, 1)
 
             self.gridLayout.addWidget(self.setCommunicationsStatusLabel, 4, 0)
             self.gridLayout.addWidget(self.setCommunicationsStatus, 4, 1)
@@ -253,22 +268,6 @@ class TestWindow(QMainWindow):
             setEngineStatus.activated.connect(self.engineStatusActivated)
             setEngineStatus.setParent(self)
             return setEngineStatus
-
-        def setEngineStateLabelSetup(self):
-            setEngineStateLabel = QLabel()
-            setEngineStateLabel.setFixedSize(QSize(round(self.labelWidth), round(self.labelHeight)))
-            setEngineStateLabel.setText("Engine State:")
-            setEngineStateLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            setEngineStateLabel.setParent(self)
-            return setEngineStateLabel
-        
-        def setEngineStateSetup(self):
-            setEngineState = QComboBox()
-            setEngineState.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
-            setEngineState.addItems(["Disabled", "Enabled"])
-            setEngineState.activated.connect(self.engineStateActivated)
-            setEngineState.setParent(self)
-            return setEngineState
 
         def setCommunicationsStatusLabelSetup(self):
             setCommunicationsStatusLabel = QLabel()
@@ -579,20 +578,6 @@ class TestWindow(QMainWindow):
             showAllOutputs.move(525, 135)
             showAllOutputs.setWordWrap(True)
 
-            with open(os.path.join(sys.path[0], "TrainControllerSWOutputs.json"), "r") as filename:
-                outputs = Outputs(**json.loads(filename.read()))
-
-            showAllOutputs.setText(
-                f'Power: {round(outputs.power, 1)}\n\n'
-                f'Left Door\nCommand: {outputs.leftDoorCommand}\n\n'
-                f'Right Door\nCommand: {outputs.rightDoorCommand}\n\n'
-                f'Service Brake\nCommand: {outputs.serviceBrakeCommand}\n\n'
-                f'Emergency Brake\nCommand: {outputs.emergencyBrakeCommand}\n\n'
-                f'External\nLight Command: {outputs.externalLightCommand}\n\n'
-                f'Internal\nLight Command: {outputs.internalLightCommand}\n\n'
-                f'Station\nAnnouncement: {outputs.stationAnnouncement}\n\n'
-            )
-
             showAllOutputs.setParent(self)
             return showAllOutputs
         
@@ -609,28 +594,25 @@ class TestWindow(QMainWindow):
             return mainTimer
             
         def mainEventLoop(self):
-            with open(os.path.join(sys.path[0], "TrainControllerSWOutputs.json"), "r") as filename:
-                outputs = Outputs(**json.loads(filename.read()))
 
             self.showAllOutputs.setText(
-                f'Power: {outputs.power}\n\n'
-                f'Left Door\nCommand: {outputs.leftDoorCommand}\n\n'
-                f'Right Door\nCommand: {outputs.rightDoorCommand}\n\n'
-                f'Service Brake\nCommand: {outputs.serviceBrakeCommand}\n\n'
-                f'Emergency Brake\nCommand: {outputs.emergencyBrakeCommand}\n\n'
-                f'External\nLight Command: {outputs.externalLightCommand}\n\n'
-                f'Internal\nLight Command: {outputs.internalLightCommand}\n\n'
-                f'Station\nAnnouncement:\n{outputs.stationAnnouncement}\n\n'
+                f'Power: {self.powerCommand}\n\n'
+                f'Left Door\nCommand: {self.leftDoorCommand}\n\n'
+                f'Right Door\nCommand: {self.rightDoorCommand}\n\n'
+                f'Service Brake\nCommand: {self.serviceBrakeCommand}\n\n'
+                f'Emergency Brake\nCommand: {self.emergencyBrakeCommand}\n\n'
+                f'External\nLight Command: {self.externalLightCommand}\n\n'
+                f'Internal\nLight Command: {self.internalLightCommand}\n\n'
+                f'Station\nAnnouncement:\n{self.stationAnnouncement}\n\n'
             )
 
             if(self.connectIO == True):
-                self.TrainControllerSW.inputs.emergencyBrakeState = outputs.emergencyBrakeCommand
-                self.TrainControllerSW.inputs.serviceBrakeState = outputs.serviceBrakeCommand
-                self.TrainControllerSW.inputs.internalLightsState = outputs.internalLightCommand
-                self.TrainControllerSW.inputs.externalLightsState = outputs.externalLightCommand
-                self.TrainControllerSW.inputs.leftDoorState = outputs.leftDoorCommand
-                self.TrainControllerSW.inputs.rightDoorState = outputs.rightDoorCommand
-                self.TrainControllerSW.writeInputs()
+                self.TrainControllerSW.inputs.emergencyBrakeState = self.emergencyBrakeCommand
+                self.TrainControllerSW.inputs.serviceBrakeState = self.serviceBrakeCommand
+                self.TrainControllerSW.inputs.internalLightsState = self.internalLightCommand
+                self.TrainControllerSW.inputs.externalLightsState = self.externalLightCommand
+                self.TrainControllerSW.inputs.leftDoorState = self.leftDoorCommand
+                self.TrainControllerSW.inputs.rightDoorState = self.rightDoorCommand
         
 
 
@@ -644,79 +626,76 @@ class TestWindow(QMainWindow):
                 millisecond = f'0{millisecond}'
 
             self.TrainControllerSW.inputs.inputTime = f'2023-02-22T{hour}:{minute}:{second}.{millisecond}0000-05:00'
-            self.TrainControllerSW.writeInputs()
+            rtcSignals.rtcSignal.emit(f'2023-02-22T{hour}:{minute}:{second}.{millisecond}0000-05:00')
 
         def engineStatusActivated(self):
             self.TrainControllerSW.inputs.engineStatus = (self.setEngineStatus.currentText() == "Enabled")
-            self.TrainControllerSW.writeInputs()
-
-        def engineStateActivated(self):
-            self.TrainControllerSW.inputs.engineState = (self.setEngineState.currentText() == "Enabled")
-            self.TrainControllerSW.writeInputs()
+            TMTCSignals.engineStatusSignal.emit(self.TrainControllerSW.trainId, self.setEngineStatus.currentText() == "Enabled")
 
         def setCommunicationsStatusActivated(self):
             self.TrainControllerSW.inputs.communicationsStatus = (self.setCommunicationsStatus.currentText() == "Enabled")
-            self.TrainControllerSW.writeInputs()
+            TMTCSignals.communicationsStatusSignal.emit(self.TrainControllerSW.trainId, self.setCommunicationsStatus.currentText() == "Enabled")
 
         def setStationNameTextChanged(self):
             self.TrainControllerSW.inputs.stationName = self.setStationName.text()
-            self.TrainControllerSW.writeInputs()
+            TMTCSignals.stationNameSignal.emit(self.TrainControllerSW.trainId, self.setStationName.text())
 
         def setStationStateActivated(self):
-            self.TrainControllerSW.inputs.stationState = (self.setStationState.currentText() == "Enabled")
-            self.TrainControllerSW.writeInputs()
+            #TMTCSignals.stationNameSignal.emit(self.TrainControllerSW.trainId, )
+            test=1
 
         def currentSpeedSliderRelease(self):
             self.TrainControllerSW.inputs.currentSpeed = self.currentSpeedSlider.value()
-            self.TrainControllerSW.writeInputs()
+            TMTCSignals.currentSpeedSignal.emit(self.TrainControllerSW.trainId, self.currentSpeedSlider.value())
 
         def setEmergencyBrakeStateActivated(self):
             self.TrainControllerSW.inputs.emergencyBrakeState = (self.setEmergencyBrakeState.currentText() == "Enabled")
-            self.TrainControllerSW.writeInputs()
+            TMTCSignals.emergencyBrakeStateSignal.emit(self.TrainControllerSW.trainId, self.setEmergencyBrakeState.currentText() == "Enabled")
 
         def setServiceBrakeStateActivated(self):
             self.TrainControllerSW.inputs.serviceBrakeState = (self.setServiceBrakeState.currentText() == "Enabled")
-            self.TrainControllerSW.writeInputs()
+            TMTCSignals.serviceBrakeStateSignal.emit(self.TrainControllerSW.trainId, self.setServiceBrakeState.currentText() == "Enabled")
 
         def setServiceBrakeStatusActivated(self):
             self.TrainControllerSW.inputs.serviceBrakeStatus = (self.setServiceBrakeStatus.currentText() == "Enabled")
-            self.TrainControllerSW.writeInputs()
+            TMTCSignals.serviceBrakeStatusSignal.emit(self.TrainControllerSW.trainId, self.setServiceBrakeStatus.currentText() == "Enabled")
 
         def commandedSpeedSliderRelease(self):
             self.TrainControllerSW.inputs.commandedSpeed = self.commandedSpeedSlider.value()
-            self.TrainControllerSW.writeInputs()
+            TMTCSignals.commandedSpeedSignal.emit(self.TrainControllerSW.trainId, self.commandedSpeedSlider.value())
 
         def setAuthorityTextChanged(self):
             self.TrainControllerSW.inputs.authority = int(self.setAuthority.text() if self.setAuthority.text() != "" else 0)
-            self.TrainControllerSW.writeInputs()
+            TMTCSignals.authoritySignal.emit(self.TrainControllerSW.trainId, int(self.setAuthority.text() if self.setAuthority.text() != "" else 0))
 
         def setSpeedLimitValueChanged(self):
-            self.TrainControllerSW.speedLimit = self.setSpeedLimit.value()
-            self.TrainControllerSW.writeInputs()
+            #self.TrainControllerSW.speedLimit = self.setSpeedLimit.value()
+            #TMTCSignals.asdf.emit(self.TrainControllerSW.trainId, )
+            test=1
 
         def setTemperatureValueChanged(self):
             self.TrainControllerSW.inputs.temperature = self.setTemperature.value()
-            self.TrainControllerSW.writeInputs()
+            TMTCSignals.temperatureSignal.emit(self.TrainControllerSW.trainId, self.setTemperature.value())
 
         def setInternalLightStateActivated(self):
             self.TrainControllerSW.inputs.internalLightsState = (self.setInternalLightState.currentText() == "Enabled")
-            self.TrainControllerSW.writeInputs()
+            TMTCSignals.internalLightsStateSignal.emit(self.TrainControllerSW.trainId, self.setInternalLightState.currentText() == "Enabled")
 
         def setExternalLightStateActivated(self):
             self.TrainControllerSW.inputs.externalLightsState = (self.setExternalLightState.currentText() == "Enabled")
-            self.TrainControllerSW.writeInputs()
+            TMTCSignals.externalLightsStateSignal.emit(self.TrainControllerSW.trainId, self.setExternalLightState.currentText() == "Enabled")
 
         def setLeftDoorStateActivated(self):
             self.TrainControllerSW.inputs.leftDoorState = (self.setLeftDoorState.currentText() == "Opened")
-            self.TrainControllerSW.writeInputs()
+            TMTCSignals.leftDoorStateSignal.emit(self.TrainControllerSW.trainId, self.setLeftDoorState.currentText() == "Opened")
 
         def setRightDoorStateActivated(self):
             self.TrainControllerSW.inputs.rightDoorState = (self.setRightDoorState.currentText() == "Opened")
-            self.TrainControllerSW.writeInputs()
+            TMTCSignals.rightDoorStateSignal.emit(self.TrainControllerSW.trainId, self.setRightDoorState.currentText() == "Opened")
 
         def setUndergroundStateActivated(self):
             self.TrainControllerSW.inputs.undergroundState = (self.setUndergroundState.currentText() == "True")
-            self.TrainControllerSW.writeInputs()
+            TMTCSignals.undergroundSignal.emit(self.TrainControllerSW.trainId, self.setUndergroundState.currentText() == "True")
 
         def setPlatformSideActivated(self):
             if(self.setPlatformSide.currentText() == "Left"):
@@ -728,13 +707,53 @@ class TestWindow(QMainWindow):
             else:
                 self.TrainControllerSW.inputs.platformSide = 0
 
-            self.TrainControllerSW.writeInputs()
+            TMTCSignals.platformSideSignal.emit(self.TrainControllerSW.trainId, self.TrainControllerSW.inputs.platformSide)
 
         def ioConnectionToggled(self):
             if (self.toggleOutputToInputConnection.isChecked()):
                 self.connectIO = True
             else:
                 self.connectIO = False
+
+        # Handlers
+        def commandedPowerSignalHandler(self, id, power):
+            if (id == self.TrainID):
+                self.powerCommand = power
+
+        # Left Door Command input handler
+        def leftDoorCommandSignalHandler(self, id, state):
+            if (id == self.TrainID):
+                self.leftDoorCommand = state
+
+        # Right Door Command input handler
+        def rightDoorCommandSignalHandler(self, id, state):
+            if (id == self.TrainID):
+                self.rightDoorCommand = state
+
+        # Service Brake Command input handler
+        def serviceBrakeCommandSignalHandler(self, id, state):
+            if (id == self.TrainID):
+                self.serviceBrakeCommand = state
+
+        # Emergency Brake Command (Train Controller) input handler
+        def emergencyBrakeCommandSignalHandler(self, id, state):
+            if (id == self.TrainID):
+                self.emergencyBrakeCommand = state
+
+        # External Light Command input handler
+        def externalLightCommandSignalHandler(self, id, state):
+            if (id == self.TrainID):
+                self.externalLightCommand = state
+
+        # Internal Light Command input handler
+        def internalLightCommandSignalHandler(self, id, state):
+            if (id == self.TrainID):
+                self.internalLightCommand = state
+
+        # Station Announcement input handler
+        def stationAnnouncementSignalHandler(self, id, station):
+            if (id == self.TrainID):
+                self.stationAnnouncement = station
 
 
 
