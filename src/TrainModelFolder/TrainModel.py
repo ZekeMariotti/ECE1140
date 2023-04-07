@@ -173,7 +173,8 @@ class TrainModel():
             "elevation"        : 0.0,            # Relative elevation increase of the block, provided by the Track Model
             "trainLine"        : "",             # Line the train is on
             "trackSection"     : [0, 0],         # Section of the track that the train is on
-            "overflow"         : False           # Overflow boolean used for current Block Calculations
+            "overflow"         : False,          # Overflow boolean used for current Block Calculations
+            "backTrain"        : False           # Whether the back of the train is in the previous block still or not
         }
 
         # Dictionary used for different eBrake States from train controller and user input
@@ -316,8 +317,8 @@ class TrainModel():
         TMTCSignals.authoritySignal.emit(self.TrainID, self.passThroughData["authority"])
         TMTCSignals.undergroundSignal.emit(self.TrainID, self.data["underground"])
         TMTCSignals.temperatureSignal.emit(self.TrainID, self.data["currTemp"])
-        if (self.TrainID == 2) & (self.passThroughData["beacon"][3] == 1):
-            print(self.TrainID, self.passThroughData["beacon"])
+        #if (self.TrainID == 2) & (self.passThroughData["beacon"][3] == 1):
+            #print(self.TrainID, self.passThroughData["beacon"])
         if (self.passThroughData["beacon"][3] == 1):
             TMTCSignals.stationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][0])
             TMTCSignals.platformSideSignal.emit(self.TrainID, self.passThroughData["beacon"][1])
@@ -381,7 +382,7 @@ class TrainModel():
 
     # Data Handler for Outputs to the Track Model
     def writeTMtoTkM(self):
-        TMTkMSignals.currBlockSignal.emit(self.TrainID, self.trackData["currBlock"], self.trackData["prevBlock"], self.trackData["overflow"])
+        TMTkMSignals.currBlockSignal.emit(self.TrainID, self.trackData["currBlock"], self.trackData["prevBlock"], self.trackData["overflow"], self.trackData["backTrain"])
 
     # Data Handlers for Inputs from the Track Model
     # Authority Input Handler
@@ -409,8 +410,8 @@ class TrainModel():
     # Beacons Input Handler
     def beaconSignalHandler(self, id, stationName, platformSide, nextStationName, isBeacon, blockCount, fromSwitch):
         if (id == self.TrainID):
-            if (isBeacon == 1):
-                print(id, stationName, platformSide, nextStationName, isBeacon, blockCount, fromSwitch)
+            #if (isBeacon == 1):
+                #print(id, stationName, platformSide, nextStationName, isBeacon, blockCount, fromSwitch)
             self.passThroughData["beacon"][0] = stationName
             self.passThroughData["beacon"][1] = platformSide
             self.passThroughData["beacon"][2] = nextStationName
@@ -581,7 +582,7 @@ class TrainModel():
             tempOverflow = 100 - self.trackData["remDistance"]
             self.trackData["remDistance"] = self.trackData["blockLength"] - tempOverflow
             self.trackData["overflow"] = False
-
+        
         # If the train is derailed (Block 333)
         if (self.trackData["currBlock"] == 333):
             return
@@ -589,12 +590,21 @@ class TrainModel():
         elif self.trackData["distance"] < self.trackData["remDistance"]:
             self.trackData["remDistance"] -= self.trackData["distance"]
             self.trackData["prevBlock"] = self.trackData["currBlock"]
+            if ((self.trackData["blockLength"] - self.trackData["remDistance"]) < (self.data["length"] / 2)):
+                self.trackData["backTrain"] = True
+            else:
+                self.trackData["backTrain"] = False
+
         # Case otherwise
         else:
             # Find total overflow distance into the next block
             tempDistance = self.trackData["distance"] - self.trackData["remDistance"]
             self.trackData["currBlock"] = self.findNextBlock()
             self.trackData["remDistance"] = 100 - tempDistance
+            if (tempDistance < (self.data["length"] / 2)):
+                self.trackData["backTrain"] = True
+            else:
+                self.trackData["backTrain"] = False
             self.trackData["overflow"] = True
             
     # Finds the next block in sequence based on a switch state saved internally

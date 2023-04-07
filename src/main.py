@@ -4,6 +4,7 @@ import sys
 import os
 import requests
 import subprocess
+import json
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "Integration"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "TrainModel"))
@@ -27,6 +28,7 @@ from datetime import *
 
 
 
+
 # Class for the main window
 class MainWindow(QMainWindow):
         TrainControllerList = []
@@ -36,7 +38,7 @@ class MainWindow(QMainWindow):
         def __init__(self):
             super().__init__()
 
-            #print(requests.get('https://w3schools.com/python/demopage.htm').text)
+            #subprocess.call(f'{sys.path[0]}')
 
             # Main clock and simulation speed
             self.RTC = datetime.now() # Temporarily set time manually
@@ -82,11 +84,11 @@ class MainWindow(QMainWindow):
             # Sub Thread Setup
             pool = QThreadPool.globalInstance()
 
-            sendJson = sendJsonToArduinoClass.jsonToArduino()
-            pool.start(sendJson)
+            # sendJson = sendJsonToArduinoClass.jsonToArduino()
+            # pool.start(sendJson)
 
-            fromArduino = receiveJsonFromArduinoClass.arduinoToJson()
-            pool.start(fromArduino)
+            # fromArduino = receiveJsonFromArduinoClass.arduinoToJson()
+            # pool.start(fromArduino)
 
             self.CTCLabelSetup()
             self.launchCTCSetup()
@@ -138,17 +140,16 @@ class MainWindow(QMainWindow):
             # Instantiate the Track Model
             self.TkM = TrackModelMainUI.TrackModelMainUI()
 
-            # Instantiate the Track Model
-            # self.wc = NewGreenLine.MainWindow()
+            # Instantiate Wayside Controllers
+            self.wc = NewGreenLine.MainWindow()
+            activeSignals.activeSignal.emit()
 
             # Test TM and TC
-            for i in range(2, 4):
-                self.trainDispatch(i)    
-            self.HWTrainModel = TrainModelMainUI.TrainModelUI(1, "Green")
-            self.TkM.backEnd.newTrainMade(1, "Green")
-            self.TMTestUI = TrainModelTestUI.TrainModelTestUI() # temporary TM test UI 
+            #for i in range(2, 4):
+            #    self.trainDispatch(i)    
+
             #self.TkMTestUI = TrackModelTestUI.TrackModelTestUI()
-            self.TESTUI = IntegrationTestUI.BasicTestUI()
+            #self.TESTUI = IntegrationTestUI.BasicTestUI()
             #self.TESTUI = GreenLineTestUi.TestWindow()
         
         # Widget Setups
@@ -307,20 +308,20 @@ class MainWindow(QMainWindow):
             for TM in self.TrainModelList:
                 TM.close()
 
-            self.TMTestUI.close()
+            #self.TMTestUI.close()
+            self.wc.close()
+            self.TkM.close()
 
         # Runs all functions during each time interval
         def mainEventLoop(self):
             self.getRTC()
+            self.trainDispatchCall()
 
         def launchCTCClick(self):
              print("CTC")
 
         def launchWaysideControllerOneClick(self):
-            self.wc = NewGreenLine.MainWindow()
             self.wc.setVisible(True)
-            self.wc.WaysideControllerGreenTestUI.show()
-            activeSignals.activeSignal.emit()
 
         def launchWaysideControllerTwoClick(self):
             print("Wayside Controller Two")
@@ -344,25 +345,66 @@ class MainWindow(QMainWindow):
 
         # Get time from CTC module
         def getRTC(self):
-            self.RTC = self.RTC + timedelta(0, 0, 0, self.timerInterval*self.simulationSpeed) # Temporary increment time
-            rtcSignals.rtcSignal.emit(self.RTC.isoformat() + "0-05:00")
+            rtcInput = requests.get('http://localhost:8090/api/simulation/time').text.replace("\"", "")
+            
+            if(len(rtcInput) < 33):
+                while(len(rtcInput) != 33):
+                    rtcInput = rtcInput[:-6] + '0' + rtcInput[-6:]
+
+            # if no ".", don't emit signal
+            if("." in rtcInput):
+                rtcSignals.rtcSignal.emit(rtcInput)
+                rtcInput = stringRemove(rtcInput, 26)
+                self.RTC = datetime.strptime(rtcInput, "%Y-%m-%dT%H:%M:%S.%f%z")   
+            
 
         # Test setups for testing TM and TC
-        def trainDispatch(self, trainId):
-            self.TrainControllerList.append(TrainControllerMainUI.MainWindow(trainId))
-            self.TrainModelList.append(TrainModelMainUI.TrainModelUI(trainId, "Green"))
-            self.TkM.backEnd.newTrainMade(trainId, "Green")
-            self.TrainControllerList[len(self.TrainControllerList)-1].move(800, 10)
-            self.TrainModelList[len(self.TrainModelList)-1].move(self.screen().availableGeometry().width()-1480, 
-                                                                 self.screen().availableGeometry().height()-self.TrainModelList[len(self.TrainModelList)-1].frameGeometry().height()-40)
+        def trainDispatch(self, trainId, line):
+            # trainId of 1 corresponds with train controller hardware
+            if(trainId != 1):
+                self.TrainControllerList.append(TrainControllerMainUI.MainWindow(trainId))
+                self.TrainModelList.append(TrainModelMainUI.TrainModelUI(trainId, line))
+                self.TkM.backEnd.newTrainMade(trainId, line)
+                self.TrainControllerList[len(self.TrainControllerList)-1].move(800, 10)
+                self.TrainModelList[len(self.TrainModelList)-1].move(self.screen().availableGeometry().width()-1480, 
+                                                                    self.screen().availableGeometry().height()-self.TrainModelList[len(self.TrainModelList)-1].frameGeometry().height()-40)
 
-            # Update TM and TC selectors
-            self.selectTrainModel.addItems([str(trainId)])
-            self.selectTrainController.addItems([str(trainId)])
+                # Update TM and TC selectors
+                self.selectTrainModel.addItems([str(trainId)])
+                self.selectTrainController.addItems([str(trainId)])
+            else:
+                # Sub Thread Setup
+                self.hwtcCreated = True
+                pool = QThreadPool.globalInstance()
+
+                sendJson = sendJsonToArduinoClass.jsonToArduino()
+                pool.start(sendJson)
+
+                fromArduino = receiveJsonFromArduinoClass.arduinoToJson()
+                pool.start(fromArduino)
+
+                self.TrainModelList.append(TrainModelMainUI.TrainModelUI(trainId, line))
+                self.TkM.backEnd.newTrainMade(trainId, line)
+                self.TrainModelList[len(self.TrainModelList)-1].move(self.screen().availableGeometry().width()-1480, 
+                                                                    self.screen().availableGeometry().height()-self.TrainModelList[len(self.TrainModelList)-1].frameGeometry().height()-40)
+                self.selectTrainModel.addItems([str(trainId)])
 
         def rtcSignalHandler(self, rtc):
             #print(rtc)
             test=1
+            
+        def trainDispatchCall(self):
+            test = requests.get('http://localhost:8090/api/dispatchedtrain').text
+            if(test!="\"\""):
+                jsonTest = json.loads(test)
+                if(jsonTest["id"] != 1):
+                    self.trainDispatch(jsonTest["id"], jsonTest["line"])
+
+# Function to remove character from a string at nth position
+def stringRemove(string, n):  
+    first = string[: n]   
+    last = string[n+1:]  
+    return first + last
             
 
 
@@ -382,7 +424,6 @@ mainWindow.show()
 # Temporary
 #mainWindow.TMTestUI.showMinimized()
 #mainWindow.TkMTestUI.showMinimized()
-mainWindow.TESTUI.show()
-mainWindow.HWTrainModel.show()
+#mainWindow.TESTUI.show()
 
 app.exec() 

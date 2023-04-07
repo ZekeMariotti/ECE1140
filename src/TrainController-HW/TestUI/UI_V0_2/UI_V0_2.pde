@@ -99,7 +99,7 @@ void ui(){
   drawTextBoxWithBackground(50, 50, 200, 60, fontSize, "Time: "+time, 167);
   //drawTextBoxWithBackground(50, 120, 200, 60, fontSize, "Engine State: "+((boolean(engineState)) ? "On" : "Off"), 167);
   drawTextBoxWithBackground(50, 120, 200, 60, fontSize, "Man Comd Spd: "+manualCommandedSpeed, 167);
-  drawTextBoxWithBackground(50, 190, 200, 60, fontSize, "Service Brake: "+serviceBrakeState, 167);
+  drawTextBoxWithBackground(50, 190, 200, 60, fontSize, "Service Brake: "+((boolean(serviceBrakeState)) ? "On" : "Off"), 167);
   drawTextBoxWithBackground(50, 260, 200, 60, fontSize, "Ext Lights: "+((boolean(externalLightState)) ? "On" : "Off"), 167);
   drawTextBoxWithBackground(50, 330, 200, 60, fontSize, "Int Lights: "+((boolean(internalLightState)) ? "On" : "Off"), 167);
 

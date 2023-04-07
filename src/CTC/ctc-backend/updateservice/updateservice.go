@@ -57,14 +57,16 @@ func (s *UpdateService) doUpdate() {
 		trainRouteMap := make(map[int][]int)
 		blockUseMap := make(map[int][]int)
 		for _, v := range s.data.Trains.GetSlice() {
-			// Get route
-			destinationBlock := s.data.Lines.Get(v.Line).Blocks.Get(v.Stops[0].Station.BlockID)
-			route := s.routeGen.CalculateRoute(v, destinationBlock)
-			trainRouteMap[v.ID] = route
-			for i := range route {
-				use := blockUseMap[route[i]]
-				use = append(use, v.ID)
-				blockUseMap[route[i]] = use
+			if len(v.Stops) > 0 {
+				// Get route
+				destinationBlock := s.data.Lines.Get(v.Line).Blocks.Get(v.Stops[0].Station.BlockID)
+				route := s.routeGen.CalculateRoute(v, destinationBlock)
+				trainRouteMap[v.ID] = route
+				for i := range route {
+					use := blockUseMap[route[i]]
+					use = append(use, v.ID)
+					blockUseMap[route[i]] = use
+				}
 			}
 		}
 		// Update authorities
@@ -178,11 +180,25 @@ func (s *UpdateService) updateTrainAssignments() {
 	newMap := make(map[string]map[int]int)
 	lines := s.data.Lines.GetLineNames()
 	for _, line := range lines {
+		newMap[line] = make(map[int]int)
 		blocks := s.data.Lines.Get(line).Blocks.GetSlice()
 		for _, block := range blocks {
 			lastTrain := s.lastTrainBlockMap[line][block.Number]
 			if block.Occupied && lastTrain == -1 {
 				// Train just entered block
+				if line == "Red" && block.Number == 9 {
+					trains := s.data.Trains.GetFrontendSlice()
+					if len(trains) > 0 && trains[len(trains)-1].Line == "Red" {
+						newMap[line][block.Number] = trains[len(trains)-1].ID
+						continue
+					}
+				} else if line == "Green" && block.Number == 63 {
+					trains := s.data.Trains.GetFrontendSlice()
+					if len(trains) > 0 && trains[len(trains)-1].Line == "Green" {
+						newMap[line][block.Number] = trains[len(trains)-1].ID
+						continue
+					}
+				}
 				isSwitch, swt := s.routeGen.IsSwitchBlock(block.Number, s.data.Lines.Get(line))
 				if isSwitch {
 					isSource := swt.Source == block.Number
@@ -296,7 +312,9 @@ func (s *UpdateService) updateTrainAssignments() {
 	s.data.Trains.ResetTrainLocations()
 	for _, blocks := range newMap {
 		for blockID, trainID := range blocks {
-			s.data.Trains.AddTrainLocationBlock(trainID, blockID)
+			if trainID > 0 {
+				s.data.Trains.AddTrainLocationBlock(trainID, blockID)
+			}
 		}
 	}
 	s.lastTrainBlockMap = newMap

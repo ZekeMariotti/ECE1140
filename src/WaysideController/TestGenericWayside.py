@@ -4,6 +4,7 @@ import sys
 import os
 import json
 from json import JSONEncoder
+import requests
 
 class Wayside:
     def __init__(self,simTime,maintenance):
@@ -55,7 +56,7 @@ class Wayside:
         # simple error checking
     def setCommandedSpeed(self):
         for i in self.suggestedSpeed:
-            if self.suggestedSpeed[i]>19.5 | self.suggestedSpeed[i]<0:
+            if ((self.suggestedSpeed[i]>19.5) | (self.suggestedSpeed[i]<0)):
                 self.commandedSpeed[i]=0
             else:
                 self.commandedSpeed[i]=self.suggestedSpeed[i]
@@ -63,7 +64,7 @@ class Wayside:
           self.commandedSpeed[block]=Value         
     def setAuthority(self):
         for i in self.suggestedAuthority:
-            if self.suggestedAuthority[i]>150 | self.suggestedAuthority[i]<0:
+            if ((self.suggestedAuthority[i]>150) | (self.suggestedAuthority[i]<0)):
                 self.authority[i]=0
             else:
                 self.authority[i]=self.suggestedAuthority[i]
@@ -119,9 +120,13 @@ class Wayside:
     def WaysideToCTCInfoG1(self):
         with open(os.path.join(sys.path[0], "Green1CTC.json"), "w") as filename:
             (json.dump(self.WaysideToCTC, filename, indent = 4))
+
+        requests.put("http://localhost:8090/api/wayside/Green", json.dumps(self.WaysideToCTC, indent = 4))
     def WaysideToCTCInfoG2(self):
         with open(os.path.join(sys.path[0], "Green2CTC.json"), "w") as filename:
-            (json.dump(self.WaysideToCTC, filename, indent = 4))          
+            (json.dump(self.WaysideToCTC, filename, indent = 4))       
+
+        requests.put("http://localhost:8090/api/wayside/Green", json.dumps(self.WaysideToCTC, indent = 4))   
     def WaysideToCTCInfoR1(self):
         with open(os.path.join(sys.path[0], "Red1CTC.json"), "w") as filename:
             (json.dump(self.WaysideToCTC, filename, indent = 4))
@@ -144,7 +149,14 @@ class Wayside:
         self.data["RTC"]=self.realTime
         self.data["authority"]=self.authority
 
-    
+    def getCTCBlocks(self):
+        blockArrayString = requests.get("http://localhost:8090/api/line/Green/blocks").text
+        blockArray = json.loads(blockArrayString)
+
+        for block in blockArray:
+            if (int(block["block"]) != 0):
+                self.setSuggestedAuthority(int(block["block"]), int(block["authority"]))
+                self.setSuggestedSpeed(int(block["block"]), float(block["suggested-speed"]))
 
 def stringRemove(string, n):  
         first = string[: n]   

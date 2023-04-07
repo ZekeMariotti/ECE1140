@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
         self.WaysideControllerGreen2.setdictionarysizes(self.blocks1,self.blocks2,6)
         self.WaysideControllerGreen2.setCommandedSpeed()
         self.WaysideControllerGreen2.setAuthority()        
-        self.TestUI = True
+        self.testUI = False
         self.active = False
         self.PLCMain = PLC(self.WaysideControllerGreen,self.WaysideControllerGreen2,"Green")
         activeSignals.activeSignal.connect(self.activeSignal)
@@ -122,7 +122,7 @@ class MainWindow(QMainWindow):
         self.maintenanceMode = False
         self.maintenanceButton = self.maintenanceButtonSetup()
         #Test UI
-        if self.TestUI :
+        if self.testUI :
               self.WaysideControllerGreenTestUI = TestWindow(self.WaysideControllerGreen,self.WaysideControllerGreen2)
         #widget setups
     def mainThreadSetup(self):
@@ -276,7 +276,7 @@ class MainWindow(QMainWindow):
                   value="G"
                 else:
                   value="R"
-              
+                             
                 SignalLight.setItem(i,j,QTableWidgetItem((value)))
                 j=j+1
                 if j>9:
@@ -786,7 +786,7 @@ class MainWindow(QMainWindow):
           j=1
           for k in range(1,self.blocks1):
                 value=self.WaysideControllerGreen.commandedSpeed[k]
-                if active and value != int(self.CommandedSpeed.item(i,j).text()):
+                if active and value != float(self.CommandedSpeed.item(i,j).text()):
                   TkMWCSignals.commandedSpeedSignal.emit(k, float(value), 1)
                 self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(round(value * 2.23695, 2))))
                 j=j+1
@@ -797,7 +797,7 @@ class MainWindow(QMainWindow):
           i=10
           for k in range(101,self.blocks2):
                 #value=self.WaysideControllerGreen2.commandedSpeed[k]
-                #if active and value != int(self.CommandedSpeed.item(i,j).text()):
+                #if active and value != float(self.CommandedSpeed.item(i,j).text()):
                   #TkMWCSignals.commandedSpeedSignal.emit(k, float(value), 1)
                 self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
@@ -842,7 +842,8 @@ class MainWindow(QMainWindow):
                         TkMWCSignals.signalStateSignal.emit(0, 1, k - 1)
                   elif value == "R":
                         TkMWCSignals.signalStateSignal.emit(2, 1, k - 1)
-                self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
+                if((k==1)|(k==13)|(k==77)|(k==100)|(k==84)):
+                  self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
                  j=0
@@ -859,7 +860,8 @@ class MainWindow(QMainWindow):
                         #TkMWCSignals.signalStateSignal.emit(0, 1, k - 1)
                   #elif value == "R":
                         #TkMWCSignals.signalStateSignal.emit(2, 1, k - 1)
-                self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
+                if((k==1)|(k==13)|(k==77)|(k==100)|(k==84)):                        
+                  self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
                  j=0
@@ -890,8 +892,15 @@ class MainWindow(QMainWindow):
           if self.WaysideControllerGreen.gates[1]==True:
                 self.Gate.setText("Block 19 Gate:  UP")
           else:
-                  self.Gate.setText("Block 19 Gate:  DOWN")    
+                  self.Gate.setText("Block 19 Gate:  DOWN") 
 
+    def closeEvent(self, event):
+            if(self.testUI):
+                    self.GreenLineTestUi.close()
+            if(__name__ == "__main__"):
+                self.close()
+            else:
+                self.setVisible(False)
 
     def mainEventLoop(self):
           self.updateVisualElements(self.active)
@@ -899,6 +908,8 @@ class MainWindow(QMainWindow):
           self.WaysideControllerGreen2.WaysideToTrackInfoG2()
           self.WaysideControllerGreen.WaysideToCTCInfoG1()
           self.WaysideControllerGreen2.WaysideToCTCInfoG2()
+          self.WaysideControllerGreen.getCTCBlocks()
+          self.WaysideControllerGreen2.getCTCBlocks()
           
 
 def main():

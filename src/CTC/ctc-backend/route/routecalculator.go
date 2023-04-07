@@ -18,6 +18,11 @@ func NewRouteCalculator(data *datastore.DataStore) *RouteCalculator {
 }
 
 func (r *RouteCalculator) CalculateRoute(train common.Train, destination common.Block) []int {
+	// Fix issue?
+	if len(train.Location.Blocks) < 1 {
+		return make([]int, 0)
+	}
+
 	// Ensure they are not the same block
 	if train.Location.Blocks[len(train.Location.Blocks)-1] == destination.Number {
 		return make([]int, 0)
@@ -28,7 +33,7 @@ func (r *RouteCalculator) CalculateRoute(train common.Train, destination common.
 	line := r.data.Lines.Get(train.Line)
 	startBlock := r.data.Lines.Get(train.Line).Blocks.Get(train.Location.Blocks[len(train.Location.Blocks)-1])
 	searchRoutes := make([][]int, 0)
-	searchRoutes = append(searchRoutes, make([]int, 0))
+	searchRoutes = append(searchRoutes, make([]int, 1))
 	searchRoutes[0][0] = startBlock.Number
 	successfulPathIndexes := make([]int, 0)
 	for !stop {

@@ -12,12 +12,18 @@ TControl::TControl(){
 unsigned long TControl::calculatePower(int currentSpeed, int commandedSpeed, float dt, int Kp, int Ki){
     //power calculation here
     int error = commandedSpeed - currentSpeed;
+    // Serial.println(error);
+    // Serial.println(Kp*error + Ki*(previousU + (dt/2)*(error-previousError)));
 
-    if(Kp*error + Ki*(previousU + (dt/2)*(error-previousError))>120000){
-      unsigned long power = Kp*error + Ki*(previousU + (dt/2)*(error-previousError));
+    if((Kp*error + Ki*(previousU + (dt/2)*(error-previousError)))<120000){
+      // unsigned long power = Kp*error + Ki*(previousU + (dt/2)*(error-previousError));
+      unsigned long power = Kp*error;
       previousU = (dt/2)*(error-previousError);
       previousError = error;    
       // Serial.println(power);
+      // Serial.println(Kp);
+      // Serial.println(Ki);
+      // Serial.println(error);
       return power;  
     }else{
       // Serial.println(120000);
