@@ -13,9 +13,6 @@ from PyQt6.QtCore import *
 
 class TrainModel():
 
-    TrainID = 0
-    goalTemp = 68
-
     # Green Line Track Sections
     greenSection0  = [0, 63]    # Yard to Block 63
     greenSection1  = [63, 76]   # Sections K, L, and M
@@ -549,7 +546,7 @@ class TrainModel():
         #if (time > 0):
         #    self.data["acceleration"] = tempAcceleration if tempAcceleration <= (force / self.data["mass"]) else (force / self.data["mass"])
 
-    # Finds the current velocity of a train given 7 inputs
+    # Finds the current velocity of a train
     def findCurrentVelocity(self, time = 1):
         currVelocity = self.data["prevVelocity"] + ((time / 2) * (self.data["acceleration"] + self.data["prevAcceleration"]))
         currVelocity = currVelocity if currVelocity >= 0 else 0.0
