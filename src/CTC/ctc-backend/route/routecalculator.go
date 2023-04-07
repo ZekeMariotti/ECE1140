@@ -1,6 +1,8 @@
 package route
 
 import (
+	"fmt"
+
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/common"
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/datastore"
 )
@@ -38,21 +40,40 @@ func (r *RouteCalculator) CalculateRoute(train common.Train, destination common.
 	successfulPathIndexes := make([]int, 0)
 	for !stop {
 		// Do search for each path we are currently searching
+		//fmt.Println(searchRoutes)
 		for i := 0; i < len(searchRoutes); i++ {
 			currentBlock := searchRoutes[i][len(searchRoutes[i])-1]
-			nextBlocks := r.getNextBlocks(line.Blocks.Get(currentBlock), train.Direction, line)
+			rawBlocks := r.getNextBlocks(line.Blocks.Get(currentBlock), train.Direction, line)
+			nextBlocks := make([]common.Block, 0)
+			for j := range rawBlocks {
+				good := true
+				for k := range searchRoutes[i] {
+					if searchRoutes[i][k] == rawBlocks[j].Number {
+						good = false
+					}
+				}
+				if good {
+					nextBlocks = append(nextBlocks, rawBlocks[j])
+				}
+			}
+			fmt.Print(i, ": ", currentBlock, ": ")
+			for i := range nextBlocks {
+				fmt.Print(nextBlocks[i].Number, ",")
+			}
+			fmt.Println()
 			if len(nextBlocks) > 1 {
 				for j := 1; j < len(nextBlocks); j++ {
 					// Make a branch from the current path
-					newRoute := make([]int, 0)
-					newRoute = append(newRoute, searchRoutes[i]...)
+					newRoute := make([]int, len(searchRoutes[i]))
+					copy(newRoute, searchRoutes[i])
 					newRoute = append(newRoute, nextBlocks[j].Number)
 					searchRoutes = append(searchRoutes, newRoute)
 				}
 			}
+			searchRoutes[i] = append(searchRoutes[i], nextBlocks[0].Number)
 
 			// Check if done
-			if searchRoutes[i][len(searchRoutes)-1] == destination.Number {
+			if searchRoutes[i][len(searchRoutes[i])-1] == destination.Number {
 				stop = true
 				successfulPathIndexes = append(successfulPathIndexes, i)
 			}

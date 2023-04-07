@@ -14,6 +14,7 @@ type App struct {
 	OutputAPI     *outputs.OutputAPI
 	DataStore     *datastore.DataStore
 	UpdateService *updateservice.UpdateService
+	stop          chan bool
 }
 
 // Returns a new instance of the application
@@ -21,6 +22,7 @@ func NewApp() *App {
 	app := App{
 		TimeKeeper: common.NewTimeKeeper(),
 		DataStore:  datastore.NewDataStore(),
+		stop:       make(chan bool),
 	}
 	app.FrontendAPI = frontendAPI.NewFrontendAPI(8080, app.DataStore)
 	app.OutputAPI = outputs.NewOutputAPI(8090, app.DataStore)
@@ -41,4 +43,9 @@ func (a *App) Start() {
 	a.UpdateService.Start()
 	go a.OutputAPI.Serve()
 	go a.FrontendAPI.Serve()
+}
+
+func (a *App) Stop() {
+	a.TimeKeeper.StopSimulation()
+	a.UpdateService.Stop()
 }
