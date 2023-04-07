@@ -23,15 +23,18 @@ class backEndCalculations():
     base_url = "http://api.openweathermap.org/data/2.5/weather?"
     city_name = "Pittsburgh"
     complete_url = base_url + "appid=" + api_key + "&q=" + city_name
-    response = requests.get(complete_url)
-    x = response.json()
-    if x["cod"] != "404":
-        y = x["main"]
-        current_temperature = round((y["temp"] - 273.15) * 1.8 + 32, 2)
-        if current_temperature <= 32:
-            tHeater = 1
-        else:
-            tHeater = 0
+    try :
+        response = requests.get(complete_url)
+        x = response.json()
+        if x["cod"] != "404":
+            y = x["main"]
+            current_temperature = round((y["temp"] - 273.15) * 1.8 + 32, 2)
+            if current_temperature <= 32:
+                tHeater = 1
+            else:
+                tHeater = 0
+    except:
+        tHeater = 0
 
     greenAuthority = [0] * 150
     greenCommandedSpeed = [0.0] * 150
