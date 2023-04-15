@@ -186,7 +186,7 @@ class TrainModel():
                     if (row[0] == "BlockNo"):
                         continue
                     else:
-                        self.blocks[int(row[0])] = blocks(int(row[0]), float(row[1]), float(row[5]), float(row[3]))
+                        self.blocks[int(row[0])] = blocks(int(row[0]), float(row[1]), float(row[5]), float(row[3]), bool(row[7]))
         elif self.trackData["trainLine"] == "Red":
             self.blocks = [0] * 77
             with open (os.path.join(sys.path[0], "..", "TrackModel", "RedLine.csv")) as csvfile:
@@ -195,7 +195,7 @@ class TrainModel():
                     if (row[0] == "BlockNo"):
                         continue
                     else:
-                        self.blocks[int(row[0])] = blocks(int(row[0]), float(row[1]), float(row[5]), float(row[3]))
+                        self.blocks[int(row[0])] = blocks(int(row[0]), float(row[1]), float(row[5]), float(row[3]), bool(row[7]))
 
     def realTimeHandler(self, rtc):
         self.data["rtc"] = rtc
@@ -376,10 +376,10 @@ class TrainModel():
             self.data["power"] = 0
 
         # Find the force of friction and the force of mass on the train
-        #frictionalForce = -(self.data["mass"] * self.constants["gravity"] * self.constants["friction"] * cos(asin(self.trackData["elevation"] / self.trackData["blockLength"])))
-        #gravitationalForce = -(self.data["mass"] * self.constants["gravity"] * (self.trackData["elevation"] / self.trackData["blockLength"]))
-        frictionalForce = -(self.data["mass"] * self.constants["gravity"] * self.constants["friction"] * cos(asin(self.blocks[self.trackData["currBlock"]].elevation / self.blocks[self.trackData["currBlock"]].blockLength)))
+        frictionalForce = -(self.data["mass"] * self.constants["gravity"] * self.constants["friction"] * cos(asin(self.trackData["elevation"] / self.trackData["blockLength"])))
         gravitationalForce = -(self.data["mass"] * self.constants["gravity"] * (self.trackData["elevation"] / self.trackData["blockLength"]))
+        #frictionalForce = -(self.data["mass"] * self.constants["gravity"] * self.constants["friction"] * cos(asin(self.blocks[self.trackData["currBlock"]].elevation / self.blocks[self.trackData["currBlock"]].blockLength)))
+        #gravitationalForce = -(self.data["mass"] * self.constants["gravity"] * (self.trackData["elevation"] / self.trackData["blockLength"]))
         powerForce = 0
         brakeForce = 0
 
