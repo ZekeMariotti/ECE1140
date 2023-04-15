@@ -575,10 +575,10 @@ class TrainModelUI(QWidget):
 
 def main():
     app = QApplication(argv)
-    UI = TrainModelUI(2, "Green")
+    UI = TrainModelUI(2, "Red")
     UI.show()
-    UI2 = TrainModelUI(3, "Green")
-    UI2.show()
+    #UI2 = TrainModelUI(3, "Green")
+    #UI2.show()
     app.exec()
 
 if (__name__ == "__main__"):
