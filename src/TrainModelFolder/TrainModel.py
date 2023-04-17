@@ -186,7 +186,7 @@ class TrainModel():
                     if (row[0] == "BlockNo"):
                         continue
                     else:
-                        self.blocks[int(row[0])] = blocks(int(row[0]), float(row[1]), float(row[5]), float(row[3]), bool(row[7]))
+                        self.blocks[int(row[0])] = blocks(int(row[0]), float(row[1]), float(row[5]), float(row[3]), bool(int(row[7])))
         elif self.trackData["trainLine"] == "Red":
             self.blocks = [0] * 77
             with open (os.path.join(sys.path[0], "..", "TrackModel", "RedLine.csv")) as csvfile:
@@ -213,8 +213,6 @@ class TrainModel():
         TMTCSignals.authoritySignal.emit(self.TrainID, self.passThroughData["authority"])
         TMTCSignals.undergroundSignal.emit(self.TrainID, self.data["underground"])
         TMTCSignals.temperatureSignal.emit(self.TrainID, self.data["currTemp"])
-        #if (self.TrainID == 2) & (self.passThroughData["beacon"][3] == 1):
-            #print(self.TrainID, self.passThroughData["beacon"])
         if (self.passThroughData["beacon"][3] == 1):
             TMTCSignals.stationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][0])
             TMTCSignals.platformSideSignal.emit(self.TrainID, self.passThroughData["beacon"][1])
@@ -294,7 +292,6 @@ class TrainModel():
     # Passengers Entering Input Handler
     def passengersEnteringSignalHandler(self, id, passengers):
         if (id == self.TrainID):
-            print("Passengers On: ", passengers)
             self.data["passengersOn"] = passengers
             self.passengersGettingOn()
 
@@ -306,8 +303,6 @@ class TrainModel():
     # Beacons Input Handler
     def beaconSignalHandler(self, id, stationName, platformSide, nextStationName, isBeacon, blockCount, fromSwitch):
         if (id == self.TrainID):
-            #if (isBeacon == 1):
-                #print(id, stationName, platformSide, nextStationName, isBeacon, blockCount, fromSwitch)
             self.passThroughData["beacon"][0] = stationName
             self.passThroughData["beacon"][1] = platformSide
             self.passThroughData["beacon"][2] = nextStationName
@@ -406,7 +401,6 @@ class TrainModel():
             brakeForce = self.constants["emergencyBrake"] * self.data["mass"]
 
         # Calculate the sum of the forces and current Acceleration
-        #print(f'ID: {self.TrainID}, powerForce: {powerForce}, brakeForce: {brakeForce}, frictionForce: {frictionalForce}, gravitationalForce: {gravitationalForce}')
         forces = powerForce + brakeForce + frictionalForce + gravitationalForce
         tempAcceleration = forces / self.data["mass"]
 
@@ -465,12 +459,7 @@ class TrainModel():
             return 1
         currTime = datetime.fromisoformat(self.data["rtc"])
         prevTime = datetime.fromisoformat(self.data["prevRTC"])
-        #if (self.TrainID == 2):
-        #    print("currTime: ", currTime)
-        #    print("prevTime: ", prevTime)
         newTime = currTime - prevTime
-        #if (self.TrainID == 2):
-        #    print(newTime.total_seconds())
         return float(newTime.total_seconds())
 
     # Finds the Block the train is on and the Block the train is exiting
@@ -499,6 +488,9 @@ class TrainModel():
             tempDistance = self.trackData["distance"] - self.trackData["remDistance"]
             self.trackData["currBlock"] = self.findNextBlock()
             self.trackData["remDistance"] = 100 - tempDistance
+            self.data["underground"] = self.blocks[self.trackData["currBlock"]].undergroundState
+            self.trackData["blockLength"] = self.blocks[self.trackData["currBlock"]].blockLength
+            self.trackData["elevation"] = self.blocks[self.trackData["currBlock"]].elevation
             if (tempDistance < (self.data["length"] / 2)):
                 self.trackData["backTrain"] = True
             else:
@@ -707,7 +699,7 @@ class TrainModel():
 
     # Determines how many passengers get off at each station
     def passengersGettingOff(self):
-        if ~self.data["runOnce"]:
+        if (~self.data["runOnce"]):
             self.data["passengersOff"] = randint(0, self.data["passengers"])
             self.data["passengers"] -= self.data["passengersOff"]
             self.data["runOnce"] = True

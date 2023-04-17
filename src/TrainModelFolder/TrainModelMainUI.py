@@ -468,11 +468,14 @@ class TrainModelUI(QWidget):
         self.TrainModel.findCurrentDistance(tempTimeDiff)
         self.TrainModel.findBlockExiting()
         self.TrainModel.airConditioningControl()
-        if (self.TrainModel.data["velocity"] == 0) & (self.TrainModel.data["lDoors"] | self.TrainModel.data["rDoors"]) & (~self.TrainModel.data["runOnce"]):
-        #if self.TrainModel.data["atStation"]:
+        if (~self.TrainModel.data["runOnce"]) & (self.TrainModel.data["atStation"]) & (self.TrainModel.data["velocity"] == 0) & (self.TrainModel.data["lDoors"] | self.TrainModel.data["rDoors"]):
             self.TrainModel.passengersGettingOff()
             TMTkMSignals.passengersExitingSignal.emit(self.TrainModel.TrainID, self.TrainModel.data["passengersOff"])
             self.TrainModel.data["passengersOff"] = 0
+        if (~self.TrainModel.data["atStation"]) & (self.TrainModel.data["velocity"] != 0):
+            self.TrainModel.data["runOnce"] = False
+        #elif (~self.TrainModel.data["atStation"]):
+        #    self.TrainModel.data["runOnce"] = False
         self.TrainModel.findCurrentMass()
         if tempTimeDiff != 0:
             self.TrainModel.moveToPrevious()
