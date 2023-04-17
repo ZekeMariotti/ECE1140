@@ -120,7 +120,8 @@ class TrainModel():
             "trainLine"        : "",             # Line the train is on
             "trackSection"     : [0, 0],         # Section of the track that the train is on
             "overflow"         : False,          # Overflow boolean used for current Block Calculations
-            "backTrain"        : False           # Whether the back of the train is in the previous block still or not
+            "backTrain"        : False,          # Whether the back of the train is in the previous block still or not
+            "polarity"         : False,          # Polarity of the current block (0 if even, 1 if odd)
         }
 
         # Dictionary used for different eBrake States from train controller and user input
@@ -133,7 +134,7 @@ class TrainModel():
         self.passThroughData = {
             "commandedSpeed"  : 0.0,                   # Commanded speed for the train in m/s
             "authority"       : 0,                     # Authority of the train in blocks
-            "beacon"          : ["", 0, "", False]     # Beacon Inputs from the most recent Beacon
+            "beacon"          : ["", 0, "", False, -1, 0]     # Beacon Inputs from the most recent Beacon
         }
 
         self.TrainID = trainId
@@ -217,6 +218,8 @@ class TrainModel():
             TMTCSignals.stationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][0])
             TMTCSignals.platformSideSignal.emit(self.TrainID, self.passThroughData["beacon"][1])
             TMTCSignals.nextStationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][2])
+            TMTCSignals.blockCountSignal.emit(self.TrainID, self.passThroughData["beacon"][4])
+            TMTCSignals.fromSwitchSignal.emit(self.TrainID, self.passThroughData["beacon"][5])
         TMTCSignals.isBeaconSignal.emit(self.TrainID, self.passThroughData["beacon"][3])
         TMTCSignals.externalLightsStateSignal.emit(self.TrainID, self.data["eLights"])
         TMTCSignals.internalLightsStateSignal.emit(self.TrainID, self.data["iLights"])
@@ -227,6 +230,7 @@ class TrainModel():
         TMTCSignals.serviceBrakeStatusSignal.emit(self.TrainID, self.data["brakeStatus"])
         TMTCSignals.engineStatusSignal.emit(self.TrainID, self.data["engineStatus"])
         TMTCSignals.communicationsStatusSignal.emit(self.TrainID, self.data["commStatus"])
+        TMTCSignals.polaritySignal.emit(self.TrainID, self.trackData["polarity"])
 
     # Data Handlers from Input from the Train Controller SW
     # Commanded Power input handler
@@ -307,8 +311,8 @@ class TrainModel():
             self.passThroughData["beacon"][1] = platformSide
             self.passThroughData["beacon"][2] = nextStationName
             self.passThroughData["beacon"][3] = isBeacon
-            a = blockCount + 1
-            b = fromSwitch
+            self.passThroughData["beacon"][4] = blockCount
+            self.passThroughData["beacon"][5] = fromSwitch
 
     # Switch Input Handler
     def switchSignalHandler(self, id, state):
@@ -489,6 +493,7 @@ class TrainModel():
             self.data["underground"] = self.blocks[self.trackData["currBlock"]].undergroundState
             self.trackData["blockLength"] = self.blocks[self.trackData["currBlock"]].blockLength
             self.trackData["elevation"] = self.blocks[self.trackData["currBlock"]].elevation
+            self.trackData["polarity"] = self.trackData["currBlock"] % 2
             if (tempDistance < (self.data["length"] / 2)):
                 self.trackData["backTrain"] = True
             else:
@@ -666,11 +671,12 @@ class TrainModel():
     # Air Conditioning System that changes based on user input
     def airConditioningControl(self, time = 1):
         if self.data["currTemp"] < self.data["goalTemp"]:
-            self.data["currTemp"] += round(0.5 * time, 2)
+            self.data["currTemp"] += (0.1 * time / 2)
         elif self.data["currTemp"] == self.data["goalTemp"]:
             self.data["currTemp"] += 0
         else:
-            self.data["currTemp"] -= round(0.5 * time, 2)
+            self.data["currTemp"] -= (0.1 * time / 2)
+        self.data["currTemp"] = round(self.data["currTemp"], 2)
 
     # Find the current mass of the entire train including passengers 
     def findCurrentMass(self):
@@ -717,7 +723,7 @@ class TrainModel():
         if self.data["commStatus"] == False:
             self.passThroughData["commandedSpeed"] = 0.0
             self.passThroughData["authority"] = 0
-            self.passThroughData["beacon"] = ["", 0, "", False]
+            self.passThroughData["beacon"] = ["", 0, "", False, -1, False]
         if self.data["engineStatus"] == False:
             self.data["power"] = 0.0
         if self.data["brakeStatus"] == False:

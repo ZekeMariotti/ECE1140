@@ -102,6 +102,8 @@ class TrainModelTestUI(QWidget):
         TMTCSignals.platformSideSignal.connect(self.catchPlatformSide)
         TMTCSignals.nextStationNameSignal.connect(self.catchNextStationName)
         TMTCSignals.isBeaconSignal.connect(self.catchIsBeacon)
+        TMTCSignals.blockCountSignal.connect(self.catchBlockCount)
+        TMTCSignals.fromSwitchSignal.connect(self.catchFromSwitch)
         TMTCSignals.externalLightsStateSignal.connect(self.catchExternalLights)
         TMTCSignals.internalLightsStateSignal.connect(self.catchInternalLights)
         TMTCSignals.leftDoorStateSignal.connect(self.catchLeftDoors)
@@ -111,6 +113,7 @@ class TrainModelTestUI(QWidget):
         TMTCSignals.serviceBrakeStatusSignal.connect(self.catchServiceBrakeStatus)
         TMTCSignals.engineStatusSignal.connect(self.catchEngineStatus)
         TMTCSignals.communicationsStatusSignal.connect(self.catchCommStatus)
+        TMTCSignals.polaritySignal.connect(self.catchPolarity)
 
         self.simulationSpeed = 1
         self.timerInterval = 100
@@ -412,16 +415,24 @@ class TrainModelTestUI(QWidget):
         layout.addWidget(isBeaconLabel, 13, 2)
         self.isBeaconOutput = QLineEdit()
         self.isBeaconOutput.setReadOnly(True)
-        self.nextStationOutput.setText("False")
+        self.isBeaconOutput.setText("False")
         layout.addWidget(self.isBeaconOutput, 13, 3)
 
         # Adding the polarityCounter Output
         polarityCountOutputLabel = QLabel("polarityCount")
         layout.addWidget(polarityCountOutputLabel, 14, 2)
+        self.polarityCountOutput = QLineEdit()
+        self.polarityCountOutput.setReadOnly(True)
+        self.polarityCountOutput.setText("-1")
+        layout.addWidget(self.polarityCountOutput, 14, 3)
 
         # Adding the positiveNegative Output
         positiveNegativeOutputLabel = QLabel("positiveNegative")
         layout.addWidget(positiveNegativeOutputLabel, 15, 2)
+        self.positiveNegativeOutput = QLineEdit()
+        self.positiveNegativeOutput.setReadOnly(True)
+        self.positiveNegativeOutput.setText("False")
+        layout.addWidget(self.positiveNegativeOutput, 15, 3)
 
         # Adding the External Light State
         externalLightLabel = QLabel("External Lights")
@@ -496,6 +507,10 @@ class TrainModelTestUI(QWidget):
         # Adding the Polarity Output
         polarityOutputLabel = QLabel("Polarity")
         layout.addWidget(polarityOutputLabel, 25, 2)
+        self.polarityOutput = QLineEdit()
+        self.polarityOutput.setReadOnly(True)
+        self.polarityOutput.setText("")
+        layout.addWidget(self.polarityOutput, 25, 3)
     
     # Emit Train Controller to Train Model Singals
     def emitTrainControllerSignals(self):
@@ -536,6 +551,12 @@ class TrainModelTestUI(QWidget):
     
     def catchIsBeacon(self, id, isBeacon):
         self.testDataOutputs["isBeacon"] = isBeacon
+    
+    def catchBlockCount(self, id, blockCount):
+        self.testDataOutputs["polarityCount"] = blockCount
+
+    def catchFromSwitch(self, id, fromSwitch):
+        self.testDataOutputs["positiveNegative"] = fromSwitch
 
     def catchExternalLights(self, id, offOn):
         self.testDataOutputs["externalLightsState"] = offOn
@@ -564,12 +585,15 @@ class TrainModelTestUI(QWidget):
     def catchCommStatus(self, id, status):
         self.testDataOutputs["communicationsStatus"] = status
 
+    def catchPolarity(self, id, polarity):
+        self.testDataOutputs["polarity"] = polarity
+
     # Emit Track Model to Train Model Signals
     def emitTrackModelSignals(self):
         TMTkMSignals.authoritySignal.emit(self.testDataInputs["id"], self.testDataInputs["authority"])
         TMTkMSignals.commandedSpeedSignal.emit(self.testDataInputs["id"], self.testDataInputs["commandedSpeed"])
         TMTkMSignals.passengersEnteringSignal.emit(self.testDataInputs["id"], self.testDataInputs["passengersEntering"])
-        TMTkMSignals.beaconSignal.emit(self.testDataInputs["id"], self.testDataInputs["beacon"][0], self.testDataInputs["beacon"][1], self.testDataInputs["beacon"][2], self.testDataInputs["beacon"][3], -1, False)
+        TMTkMSignals.beaconSignal.emit(self.testDataInputs["id"], self.testDataInputs["beacon"][0], self.testDataInputs["beacon"][1], self.testDataInputs["beacon"][2], self.testDataInputs["beacon"][3], self.testDataInputs["beacon"][4], self.testDataInputs["beacon"][5])
         TMTkMSignals.switchSignal.emit(self.testDataInputs["id"], self.testDataInputs["switch"])
         TMTkMSignals.switchStateSignal.emit(self.testDataInputs["id"], self.testDataInputs["switchState"])
 
@@ -653,15 +677,19 @@ class TrainModelTestUI(QWidget):
     def getIsBeaconInput(self, index):
         self.testDataInputs["beacon"][3] = bool(index)
 
+    # Gets the Simulation Speed Updated from the UI
     def simSpeedUpdate(self):
         self.simulationSpeed = int(self.simSpeedInput.text())
 
+    # Gets the At Station Input from the UI
     def getAtStationInput(self, index):
         self.testDataInputs["isAtStation"] = bool(index)
 
+    # Gets the Polarity Count Beacon input from the UI
     def getPolarityCountInput(self):
         self.testDataInputs["beacon"][4] = int(self.polarityCountInput.text())
 
+    # Gets the positive negative beacon input from the UI
     def getPositiveNegativeInput(self, index):
         self.testDataInputs["beacon"][5] = bool(index)
 
@@ -689,7 +717,8 @@ class TrainModelTestUI(QWidget):
         self.platformSideOutput.setText(str(self.testDataOutputs["platformSide"]))
         self.nextStationOutput.setText(self.testDataOutputs["nextStationName"])
         self.isBeaconOutput.setText(str(self.testDataOutputs["isBeacon"]))
-
+        self.polarityCountOutput.setText(str(self.testDataOutputs["polarityCount"]))
+        self.positiveNegativeOutput.setText(str(self.testDataOutputs["positiveNegative"]))
 
         outputText = "On" if (self.testDataOutputs["externalLightsState"] == 1) else "Off"
         self.externalLightOutput.setText(outputText)
@@ -712,6 +741,7 @@ class TrainModelTestUI(QWidget):
         self.brakeStatusOutput.setText(str(self.testDataOutputs["serviceBrakeStatus"]))
         self.engineStatusOutput.setText(str(self.testDataOutputs["engineStatus"]))
         self.commStatusOutput.setText(str(self.testDataOutputs["communicationsStatus"]))
+        self.polarityOutput.setText(str(self.testDataOutputs["polarity"]))
 
 def main():
     app = QApplication(argv)

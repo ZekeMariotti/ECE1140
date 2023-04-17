@@ -567,7 +567,7 @@ class TrainModelUI(QWidget):
             self.eLightsOutput.setStyleSheet("background-color: white")
 
         # Setting the temperature output as well as color
-        self.currentTemperatureOutput.setText(str(self.TrainModel.data["currTemp"]) + " F")
+        self.currentTemperatureOutput.setText(str(round(self.TrainModel.data["currTemp"], 1)) + " F")
         if (self.TrainModel.data["currTemp"] > 32.0):
             self.currentTemperatureOutput.setStyleSheet("background-color: rgb(220, 20, 60); border: rgb(220, 20, 60)")
         else:
