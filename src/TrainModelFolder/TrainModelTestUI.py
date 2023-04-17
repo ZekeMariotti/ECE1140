@@ -193,10 +193,17 @@ class TrainModelTestUI(QWidget):
         # polarityCounterInput
         polarityCountLabel = QLabel("PolarityCount")
         layout.addWidget(polarityCountLabel, 10, 0)
+        self.polarityCountInput = QLineEdit()
+        self.polarityCountInput.editingFinished.connect(self.getPolarityCountInput)
+        layout.addWidget(self.polarityCountInput, 10, 1)
 
         # positiveNegative Input
         positiveNegativeLabel = QLabel("PositiveNegative")
         layout.addWidget(positiveNegativeLabel, 11, 0)
+        self.positiveNegativeInput = QComboBox()
+        self.positiveNegativeInput.addItems(["Positive", "Negative"])
+        self.positiveNegativeInput.currentIndexChanged.connect(self.getPositiveNegativeInput)
+        layout.addWidget(self.positiveNegativeInput, 11, 1)
 
         # Add the Switch Input
         switchLabel = QLabel("Switch")
@@ -651,6 +658,12 @@ class TrainModelTestUI(QWidget):
 
     def getAtStationInput(self, index):
         self.testDataInputs["isAtStation"] = bool(index)
+
+    def getPolarityCountInput(self):
+        self.testDataInputs["beacon"][4] = int(self.polarityCountInput.text())
+
+    def getPositiveNegativeInput(self, index):
+        self.testDataInputs["beacon"][5] = bool(index)
 
     # Updates all functions when the button is pressed
     def updateOutputsBoth(self):

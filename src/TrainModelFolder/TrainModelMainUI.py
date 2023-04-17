@@ -474,13 +474,9 @@ class TrainModelUI(QWidget):
             self.TrainModel.data["passengersOff"] = 0
         if (~self.TrainModel.data["atStation"]) & (self.TrainModel.data["velocity"] != 0):
             self.TrainModel.data["runOnce"] = False
-        #elif (~self.TrainModel.data["atStation"]):
-        #    self.TrainModel.data["runOnce"] = False
         self.TrainModel.findCurrentMass()
         if tempTimeDiff != 0:
             self.TrainModel.moveToPrevious()
-        #self.TrainModel.writeTrainModelToTrackModel()
-        #self.TrainModel.writeTrainModelToTrainController()
         self.TrainModel.writeTMtoTkM()
         self.TrainModel.writeTMtoTC()
 
@@ -499,9 +495,13 @@ class TrainModelUI(QWidget):
         self.powerOutput.setText(str(round(self.TrainModel.data["power"], 2)) + " W")
         if (self.TrainModel.data["atStation"]):
             self.stationLabel.setText("Current Station")
+            self.stationOutput.setText(self.TrainModel.data["station"])
+            self.stationOutput.setStyleSheet("background-color: yellow; border: yellow")
+
         else:
             self.stationLabel.setText("Next Station")
-        self.stationOutput.setText(self.TrainModel.data["station"])
+            self.stationOutput.setText(self.TrainModel.data["station"])
+            self.stationOutput.setStyleSheet("background-color: white")
 
         # Setting communication status output and color
         self.communicationsOutput.setText(self.failureBoolean(self.TrainModel.data["commStatus"]))
