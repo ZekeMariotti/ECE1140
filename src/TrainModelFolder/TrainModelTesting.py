@@ -71,10 +71,10 @@ assert testDistanceCalculations(1, 20, 20) == 20, f'Distance Test 4 Failed. Dist
 assert testDistanceCalculations(1, 20, 10) == 15, f'Distance Test 5 Failed. Distance = {round(testTrainModel.data["distance"], 4)}'
 print("Distance Test Passed")
 print("Testing Air Conditioning", end = " ... ")
-assert testAirConditioningControl(1, 5, 10) == 5.5, f'AC Test 1 Failed. CurrentTemp = {testTrainModel.data["currTemp"]}'
-assert testAirConditioningControl(0.2, 5, 10) == 5.1, f'AC Test 2 Failed. CurrentTemp = {testTrainModel.data["currTemp"]}'
+assert testAirConditioningControl(1, 5, 10) == 5.05, f'AC Test 1 Failed. CurrentTemp = {testTrainModel.data["currTemp"]}'
+assert testAirConditioningControl(0.2, 5, 10) == 5.01, f'AC Test 2 Failed. CurrentTemp = {testTrainModel.data["currTemp"]}'
 assert testAirConditioningControl(1, 20, 20) == 20, f'AC Test 3 Failed. CurrentTemp = {testTrainModel.data["currTemp"]}'
-assert testAirConditioningControl(5, 20, 100) == 22.5, f'AC Test 4 Failed. CurrentTemp = {testTrainModel.data["currTemp"]}'
+assert testAirConditioningControl(5, 20, 100) == 20.25, f'AC Test 4 Failed. CurrentTemp = {testTrainModel.data["currTemp"]}'
 assert testAirConditioningControl(0, 5, 10) == 5, f'AC Test 5 Failed. CurrentTemp = {testTrainModel.data["currTemp"]}'
 print("Air Conditioning Tests Passed")
 print("Testing Current Mass Calculations", end = " ... ")

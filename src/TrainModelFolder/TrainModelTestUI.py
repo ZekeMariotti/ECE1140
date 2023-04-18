@@ -6,8 +6,6 @@ sys.path.append(__file__.replace("\TrainModelFolder\TrainModelTestUI.py", ""))
 
 from datetime import *
 from sys import argv
-import os
-import json
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
@@ -699,18 +697,12 @@ class TrainModelTestUI(QWidget):
             self.emitTrainControllerSignals()
 
         self.emitTrackModelSignals()
-        #trainSignals.updateOutputs.emit()
-        #self.readTrainModelToTrackModel() (WAS USING JSON, SCRAPPED)
-        #self.readTrainModelToTrainController() (WAS USING JSON, SCRAPPED)
 
         self.currBlockOutput.setText("Block " + str(self.testDataOutputs["currBlock"]))
-        #self.prevBlockOutput.setText("Block " + str(self.testDataOutputs["prevBlock"]))
         self.passengersExitingOutput.setText(str(self.testDataOutputs["passengersOff"]))
-        #self.idOutput.setText(str(self.testDataOutputs["id"]))
         self.commandedSpeedOutput.setText(str(self.testDataOutputs["commandedSpeed"]) + " m/s")
         self.velocityOutput.setText(str(round(self.testDataOutputs["currentSpeed"], 2)) + " m/s")
         self.authorityOutput.setText(str(self.testDataOutputs["authority"]) + " Blocks")
-        #self.realTimeClockOutput.setText(self.testDataOutputs["inputTime"])
         self.undergroundStateOutput.setText(str(bool(self.testDataOutputs["undergroundState"])))
         self.temperatureOutput.setText(str(self.testDataOutputs["temperature"]) + " F")
         self.beaconStationOutput.setText(self.testDataOutputs["stationName"])

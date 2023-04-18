@@ -78,7 +78,7 @@ class TrainModel():
             "rtc"              : "",             # Real Time Clock in ISO 8601 Format
             "prevRTC"          : "",             # Previous State RTC in ISO 8601 Format
             "simSpeed"         : 1,              # Simulation Speed of the system
-            "passengers"       : 222,            # Number of passengers on the train
+            "passengers"       : 0,              # Number of passengers on the train
             "passengersOn"     : 0,              # Number of passengers getting on the train
             "passengersOff"    : 0,              # Number of passengers getting off the train
             "crew"             : 1,              # Number of crew members on the train (Default of driver and conductor)
