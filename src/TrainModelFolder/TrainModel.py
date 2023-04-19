@@ -132,9 +132,9 @@ class TrainModel():
 
         # Dictionary for pass through data (Only data to be passed through the module and not used within)
         self.passThroughData = {
-            "commandedSpeed"  : 0.0,                   # Commanded speed for the train in m/s
-            "authority"       : 0,                     # Authority of the train in blocks
-            "beacon"          : ["", 0, "", False, -1, 0]     # Beacon Inputs from the most recent Beacon
+            "commandedSpeed"  : 0.0,                       # Commanded speed for the train in m/s
+            "authority"       : 0,                         # Authority of the train in blocks
+            "beacon"          : ["", 0, "", False, -1, 0]  # Beacon Inputs from the most recent Beacon
         }
 
         self.TrainID = trainId
