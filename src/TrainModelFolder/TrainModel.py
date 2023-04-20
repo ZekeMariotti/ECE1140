@@ -134,7 +134,7 @@ class TrainModel():
         self.passThroughData = {
             "commandedSpeed"  : 0.0,                       # Commanded speed for the train in m/s
             "authority"       : 0,                         # Authority of the train in blocks
-            "beacon"          : ["", 0, "", False, -1, 0]  # Beacon Inputs from the most recent Beacon
+            "beacon"          : ["", 0, "", False, -1, 0, 0]  # Beacon Inputs from the most recent Beacon
         }
 
         self.TrainID = trainId
@@ -220,6 +220,7 @@ class TrainModel():
             TMTCSignals.nextStationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][2])
             TMTCSignals.blockCountSignal.emit(self.TrainID, self.passThroughData["beacon"][4])
             TMTCSignals.fromSwitchSignal.emit(self.TrainID, self.passThroughData["beacon"][5])
+            TMTCSignals.switchBlockSignal.emit(self.TrainID, self.passThroughData["beacon"][6])
         TMTCSignals.isBeaconSignal.emit(self.TrainID, self.passThroughData["beacon"][3])
         TMTCSignals.externalLightsStateSignal.emit(self.TrainID, self.data["eLights"])
         TMTCSignals.internalLightsStateSignal.emit(self.TrainID, self.data["iLights"])
@@ -305,7 +306,7 @@ class TrainModel():
             self.data["underground"] = state
 
     # Beacons Input Handler
-    def beaconSignalHandler(self, id, stationName, platformSide, nextStationName, isBeacon, blockCount, fromSwitch):
+    def beaconSignalHandler(self, id, stationName, platformSide, nextStationName, isBeacon, blockCount, fromSwitch, switchBlock):
         if (id == self.TrainID):
             self.passThroughData["beacon"][0] = stationName
             self.passThroughData["beacon"][1] = platformSide
@@ -313,6 +314,7 @@ class TrainModel():
             self.passThroughData["beacon"][3] = isBeacon
             self.passThroughData["beacon"][4] = blockCount
             self.passThroughData["beacon"][5] = fromSwitch
+            self.passThroughData["beacon"][6] = switchBlock
 
     # Switch Input Handler
     def switchSignalHandler(self, id, state):

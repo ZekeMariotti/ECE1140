@@ -24,7 +24,7 @@ class TrainModelTestUI(QWidget):
         "authority"             : 0,
         "commandedSpeed"        : 0.0,
         "passengersEntering"    : 0,
-        "beacon"                : ["", 0, "", False, -1, 0],
+        "beacon"                : ["", 0, "", False, -1, 0, 0],
         "switch"                : False,
         "switchState"           : 0,
         "id"                    : 0,
@@ -53,6 +53,7 @@ class TrainModelTestUI(QWidget):
         "isBeacon"             : False,
         "polarityCount"        : -1,
         "positiveNegative"     : 0,
+        "switchBlock"          : 0,
         "externalLightsState"  : False,
         "internalLightsState"  : False,
         "leftDoorState"        : False,
@@ -154,161 +155,168 @@ class TrainModelTestUI(QWidget):
         self.passengersEnteringInput.editingFinished.connect(self.getPassengersEnteringInput)
         layout.addWidget(self.passengersEnteringInput, 3, 1)
 
-        # Add the Beacon Inputs [stationName, platformSide, nextStationName, isBeacon, polarityCount, positiveNegative]
-        beaconLabel = QLabel("Beacon Inputs")
-        layout.addWidget(beaconLabel, 4, 0, 2, 1)
-        beaconLabel2 = QLabel("[stationName, platformSide, nextStationName, isBeacon, polarityCount, positiveNegative]")
-        beaconLabel2.setWordWrap(True)
-        layout.addWidget(beaconLabel2, 4, 1, 2, 1)
-
-        # Add the Station Name Beacon Input
-        stationNameLabel = QLabel("Station Name")
-        layout.addWidget(stationNameLabel, 6, 0)
-        self.stationNameInput = QLineEdit()
-        self.stationNameInput.editingFinished.connect(self.getStationNameInput)
-        layout.addWidget(self.stationNameInput, 6, 1)
-
-        # Platform Side Beacon Selector
-        platformSideLabel = QLabel("Platform Side")
-        layout.addWidget(platformSideLabel, 7, 0)
-        self.platformSideInput = QComboBox()
-        self.platformSideInput.addItems(["Left", "Right", "Both"])
-        self.platformSideInput.currentIndexChanged.connect(self.getPlatformSideInput)
-        layout.addWidget(self.platformSideInput, 7, 1)
-
-        # Next Station Name Beacon Input
-        nextStationLabel = QLabel("Next Station Name")
-        layout.addWidget(nextStationLabel, 8, 0)
-        self.nextStationInput = QLineEdit()
-        self.nextStationInput.editingFinished.connect(self.getNextStationInput)
-        layout.addWidget(self.nextStationInput, 8, 1)
-
-        # is Beacon Input
-        isBeaconLabel = QLabel("isBeacon")
-        layout.addWidget(isBeaconLabel, 9, 0)
-        self.isBeaconInput = QComboBox()
-        self.isBeaconInput.addItems(["False", "True"])
-        self.isBeaconInput.currentIndexChanged.connect(self.getIsBeaconInput)
-        layout.addWidget(self.isBeaconInput, 9, 1)
-
-        # polarityCounterInput
-        polarityCountLabel = QLabel("PolarityCount")
-        layout.addWidget(polarityCountLabel, 10, 0)
-        self.polarityCountInput = QLineEdit()
-        self.polarityCountInput.editingFinished.connect(self.getPolarityCountInput)
-        layout.addWidget(self.polarityCountInput, 10, 1)
-
-        # positiveNegative Input
-        positiveNegativeLabel = QLabel("PositiveNegative")
-        layout.addWidget(positiveNegativeLabel, 11, 0)
-        self.positiveNegativeInput = QComboBox()
-        self.positiveNegativeInput.addItems(["Positive", "Negative"])
-        self.positiveNegativeInput.currentIndexChanged.connect(self.getPositiveNegativeInput)
-        layout.addWidget(self.positiveNegativeInput, 11, 1)
-
         # Add the Switch Input
         switchLabel = QLabel("Switch")
-        layout.addWidget(switchLabel, 12, 0)
+        layout.addWidget(switchLabel, 4, 0)
         self.switchInput = QComboBox()
         self.switchInput.addItems(["False", "True"])
         self.switchInput.currentIndexChanged.connect(self.getSwitchInput)
-        layout.addWidget(self.switchInput, 12, 1)
+        layout.addWidget(self.switchInput, 4, 1)
 
         # Add the Switch State Input
         switchStateLabel = QLabel("Switch State")
-        layout.addWidget(switchStateLabel, 13, 0)
+        layout.addWidget(switchStateLabel, 5, 0)
         self.switchStateInput = QComboBox()
         self.switchStateInput.addItems(["0", "1"])
         self.switchStateInput.currentIndexChanged.connect(self.getSwitchStateInput)
-        layout.addWidget(self.switchStateInput, 13, 1)
+        layout.addWidget(self.switchStateInput, 5, 1)
+
+        # Add the Beacon Inputs [stationName, platformSide, nextStationName, isBeacon, polarityCount, positiveNegative]
+        beaconLabel = QLabel("Beacon Inputs")
+        layout.addWidget(beaconLabel, 6, 0, 2, 1)
+        beaconLabel2 = QLabel("[stationName, platformSide, nextStationName, isBeacon, polarityCount, positiveNegative]")
+        beaconLabel2.setWordWrap(True)
+        layout.addWidget(beaconLabel2, 6, 1, 2, 1)
+
+        # Add the Station Name Beacon Input
+        stationNameLabel = QLabel("Station Name")
+        layout.addWidget(stationNameLabel, 8, 0)
+        self.stationNameInput = QLineEdit()
+        self.stationNameInput.editingFinished.connect(self.getStationNameInput)
+        layout.addWidget(self.stationNameInput, 8, 1)
+
+        # Platform Side Beacon Selector
+        platformSideLabel = QLabel("Platform Side")
+        layout.addWidget(platformSideLabel, 9, 0)
+        self.platformSideInput = QComboBox()
+        self.platformSideInput.addItems(["Left", "Right", "Both"])
+        self.platformSideInput.currentIndexChanged.connect(self.getPlatformSideInput)
+        layout.addWidget(self.platformSideInput, 9, 1)
+
+        # Next Station Name Beacon Input
+        nextStationLabel = QLabel("Next Station Name")
+        layout.addWidget(nextStationLabel, 10, 0)
+        self.nextStationInput = QLineEdit()
+        self.nextStationInput.editingFinished.connect(self.getNextStationInput)
+        layout.addWidget(self.nextStationInput, 10, 1)
+
+        # is Beacon Input
+        isBeaconLabel = QLabel("isBeacon")
+        layout.addWidget(isBeaconLabel, 11, 0)
+        self.isBeaconInput = QComboBox()
+        self.isBeaconInput.addItems(["False", "True"])
+        self.isBeaconInput.currentIndexChanged.connect(self.getIsBeaconInput)
+        layout.addWidget(self.isBeaconInput, 11, 1)
+
+        # polarityCounterInput
+        polarityCountLabel = QLabel("PolarityCount")
+        layout.addWidget(polarityCountLabel, 12, 0)
+        self.polarityCountInput = QLineEdit()
+        self.polarityCountInput.editingFinished.connect(self.getPolarityCountInput)
+        layout.addWidget(self.polarityCountInput, 12, 1)
+
+        # positiveNegative Input
+        positiveNegativeLabel = QLabel("PositiveNegative")
+        layout.addWidget(positiveNegativeLabel, 13, 0)
+        self.positiveNegativeInput = QComboBox()
+        self.positiveNegativeInput.addItems(["Positive", "Negative"])
+        self.positiveNegativeInput.currentIndexChanged.connect(self.getPositiveNegativeInput)
+        layout.addWidget(self.positiveNegativeInput, 13, 1)
+
+        # switchBlock Input
+        switchBlockLabel = QLabel("switchBlock")
+        layout.addWidget(switchBlockLabel, 14, 0)
+        self.switchBlockInput = QLineEdit()
+        self.switchBlockInput.editingFinished.connect(self.getSwitchBlock)
+        layout.addWidget(self.switchBlockInput, 14, 1)
 
         # Adding the Train Controller Label
         trainControllerLabel = QLabel("Train Controller Inputs")
-        layout.addWidget(trainControllerLabel, 14, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(trainControllerLabel, 15, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
 
         # Train ID Input
         idLabel = QLabel("Train ID")
-        layout.addWidget(idLabel, 15, 0)
+        layout.addWidget(idLabel, 16, 0)
         self.idLabelInput = QLineEdit()
         self.idLabelInput.editingFinished.connect(self.getIDLabelInput)
-        layout.addWidget(self.idLabelInput, 15, 1)
+        layout.addWidget(self.idLabelInput, 16, 1)
 
         # Add the Power Input
         powerLabel = QLabel("Commanded Power Input")
-        layout.addWidget(powerLabel, 16, 0)
+        layout.addWidget(powerLabel, 17, 0)
         self.powerInput = QLineEdit()
         self.powerInput.editingFinished.connect(self.getPowerInput)
-        layout.addWidget(self.powerInput, 16, 1)
+        layout.addWidget(self.powerInput, 17, 1)
 
         # Add the Left Door Switch
         leftDoorLabel = QLabel("Left Doors")
-        layout.addWidget(leftDoorLabel, 17, 0)
+        layout.addWidget(leftDoorLabel, 18, 0)
         self.leftDoorInput = QComboBox()
         self.leftDoorInput.addItems(["Closed", "Open"])
         self.leftDoorInput.currentIndexChanged.connect(self.getLeftDoorInput)
-        layout.addWidget(self.leftDoorInput, 17, 1)
+        layout.addWidget(self.leftDoorInput, 18, 1)
 
         # Add the Right Door Switch
         rightDoorLabel = QLabel("Right Doors")
-        layout.addWidget(rightDoorLabel, 18, 0)
+        layout.addWidget(rightDoorLabel, 19, 0)
         self.rightDoorInput = QComboBox()
         self.rightDoorInput.addItems(["Closed", "Open"])
         self.rightDoorInput.currentIndexChanged.connect(self.getRightDoorInput)
-        layout.addWidget(self.rightDoorInput, 18, 1)
+        layout.addWidget(self.rightDoorInput, 19, 1)
 
         # Add the Service Brake Switch
         serviceBrakeLabel = QLabel("Service Brake")
-        layout.addWidget(serviceBrakeLabel, 19, 0)
+        layout.addWidget(serviceBrakeLabel, 20, 0)
         self.serviceBrakeInput = QComboBox()
         self.serviceBrakeInput.addItems(["Disengaged", "Engaged"])
         self.serviceBrakeInput.currentIndexChanged.connect(self.getServiceBrakeInput)
-        layout.addWidget(self.serviceBrakeInput, 19, 1)
+        layout.addWidget(self.serviceBrakeInput, 20, 1)
 
         # Add the Emergency Brake Switch
         emergencyBrakeLabel = QLabel("Emergency Brake")
-        layout.addWidget(emergencyBrakeLabel, 20, 0)
+        layout.addWidget(emergencyBrakeLabel, 21, 0)
         self.emergencyBrakeInput = QComboBox()
         self.emergencyBrakeInput.addItems(["Disengaged", "Engaged"])
         self.emergencyBrakeInput.currentIndexChanged.connect(self.getEmergencyBrakeInput)
-        layout.addWidget(self.emergencyBrakeInput, 20, 1)
+        layout.addWidget(self.emergencyBrakeInput, 21, 1)
 
         # Add the External Lights Switch
         externalLightLabel = QLabel("External Lights")
-        layout.addWidget(externalLightLabel, 21, 0)
+        layout.addWidget(externalLightLabel, 22, 0)
         self.externalLightInput = QComboBox()
         self.externalLightInput.addItems(["Off", "On"])
         self.externalLightInput.currentIndexChanged.connect(self.getExternalLightInput)
-        layout.addWidget(self.externalLightInput, 21, 1)
+        layout.addWidget(self.externalLightInput, 22, 1)
 
         # Add the Internal Lights Switch
         internalLightLabel = QLabel("Internal Lights")
-        layout.addWidget(internalLightLabel, 22, 0)
+        layout.addWidget(internalLightLabel, 23, 0)
         self.internalLightInput = QComboBox()
         self.internalLightInput.addItems(["Off", "On"])
         self.internalLightInput.currentIndexChanged.connect(self.getInternalLightInput)
-        layout.addWidget(self.internalLightInput, 22, 1)
+        layout.addWidget(self.internalLightInput, 23, 1)
 
         # Add the Station Announcement Input
         stationLabel = QLabel("Station Announcement")
-        layout.addWidget(stationLabel, 23, 0)
+        layout.addWidget(stationLabel, 24, 0)
         self.stationInput = QLineEdit()
         self.stationInput.editingFinished.connect(self.getStationInput)
-        layout.addWidget(self.stationInput, 23, 1)
+        layout.addWidget(self.stationInput, 24, 1)
 
         # Add the isAtStation Input
         atStationLabel = QLabel("isAtStation")
-        layout.addWidget(atStationLabel, 24, 0)
+        layout.addWidget(atStationLabel, 25, 0)
         self.atStationInput = QComboBox()
         self.atStationInput.addItems(["False", "True"])
         self.atStationInput.currentIndexChanged.connect(self.getAtStationInput)
-        layout.addWidget(self.atStationInput, 24, 1)
+        layout.addWidget(self.atStationInput, 25, 1)
 
         # Simluation Speed Selector
         simSpeedLabel = QLabel("Simulation Speed")
-        layout.addWidget(simSpeedLabel, 25, 0)
+        layout.addWidget(simSpeedLabel, 26, 0)
         self.simSpeedInput = QLineEdit()
         self.simSpeedInput.editingFinished.connect(self.simSpeedUpdate)
-        layout.addWidget(self.simSpeedInput, 25, 1)
+        layout.addWidget(self.simSpeedInput, 26, 1)
 
         # Setting up all the outputs
 
@@ -432,83 +440,91 @@ class TrainModelTestUI(QWidget):
         self.positiveNegativeOutput.setText("False")
         layout.addWidget(self.positiveNegativeOutput, 15, 3)
 
+        # Adding the switchBlock Output
+        switchBlockOutputLabel = QLabel("switchBlock")
+        layout.addWidget(switchBlockOutputLabel, 16, 2)
+        self.switchBlockOutput = QLineEdit()
+        self.switchBlockOutput.setReadOnly(True)
+        self.switchBlockOutput.setText("0")
+        layout.addWidget(self.switchBlockOutput, 16, 3)
+
         # Adding the External Light State
         externalLightLabel = QLabel("External Lights")
-        layout.addWidget(externalLightLabel, 16, 2)
+        layout.addWidget(externalLightLabel, 17, 2)
         self.externalLightOutput = QLineEdit()
         self.externalLightOutput.setReadOnly(True)
         self.externalLightOutput.setText("Off")
-        layout.addWidget(self.externalLightOutput, 16, 3)
+        layout.addWidget(self.externalLightOutput, 17, 3)
 
         # Adding the Internal Light State
         internalLightLabel = QLabel("Internal Lights")
-        layout.addWidget(internalLightLabel, 17, 2)
+        layout.addWidget(internalLightLabel, 18, 2)
         self.internalLightOutput = QLineEdit()
         self.internalLightOutput.setReadOnly(True)
         self.internalLightOutput.setText("Off")
-        layout.addWidget(self.internalLightOutput, 17, 3)
+        layout.addWidget(self.internalLightOutput, 18, 3)
 
         # Adding the Left Door State
         leftDoorLabel = QLabel("Left Doors")
-        layout.addWidget(leftDoorLabel, 18, 2)
+        layout.addWidget(leftDoorLabel, 19, 2)
         self.leftDoorOutput = QLineEdit()
         self.leftDoorOutput.setReadOnly(True)
         self.leftDoorOutput.setText("Closed")
-        layout.addWidget(self.leftDoorOutput, 18, 3)
+        layout.addWidget(self.leftDoorOutput, 19, 3)
 
         # Adding the Right Door State
         rightDoorLabel = QLabel("Right Doors")
-        layout.addWidget(rightDoorLabel, 19, 2)
+        layout.addWidget(rightDoorLabel, 20, 2)
         self.rightDoorOutput = QLineEdit()
         self.rightDoorOutput.setReadOnly(True)
         self.rightDoorOutput.setText("Closed")
-        layout.addWidget(self.rightDoorOutput, 19, 3)
+        layout.addWidget(self.rightDoorOutput, 20, 3)
 
         # Adding the Service Brake State
         serviceBrakeLabel = QLabel("Service Brake")
-        layout.addWidget(serviceBrakeLabel, 20, 2)
+        layout.addWidget(serviceBrakeLabel, 21, 2)
         self.serviceBrakeOutput = QLineEdit()
         self.serviceBrakeOutput.setReadOnly(True)
         self.serviceBrakeOutput.setText("Disengaged")
-        layout.addWidget(self.serviceBrakeOutput, 20, 3)
+        layout.addWidget(self.serviceBrakeOutput, 21, 3)
 
         # Adding the Emergency Brake State
         emergencyBrakeLabel = QLabel("Emergency Brake")
-        layout.addWidget(emergencyBrakeLabel, 21, 2)
+        layout.addWidget(emergencyBrakeLabel, 22, 2)
         self.emergencyBrakeOutput = QLineEdit()
         self.emergencyBrakeOutput.setReadOnly(True)
         self.emergencyBrakeOutput.setText("Disengaged")
-        layout.addWidget(self.emergencyBrakeOutput, 21, 3)
+        layout.addWidget(self.emergencyBrakeOutput, 22, 3)
 
         # ADD FAILURE STATUS
         brakeStatusLabel = QLabel("Service Brake Status")
-        layout.addWidget(brakeStatusLabel, 22, 2)
+        layout.addWidget(brakeStatusLabel, 23, 2)
         self.brakeStatusOutput = QLineEdit()
         self.brakeStatusOutput.setReadOnly(True)
         self.brakeStatusOutput.setText("Functional")
-        layout.addWidget(self.brakeStatusOutput, 22, 3)
+        layout.addWidget(self.brakeStatusOutput, 23, 3)
 
         engineStatusLabel = QLabel("Engine Status")
-        layout.addWidget(engineStatusLabel, 23, 2)
+        layout.addWidget(engineStatusLabel, 24, 2)
         self.engineStatusOutput = QLineEdit()
         self.engineStatusOutput.setReadOnly(True)
         self.engineStatusOutput.setText("Functional")
-        layout.addWidget(self.engineStatusOutput, 23, 3)
+        layout.addWidget(self.engineStatusOutput, 24, 3)
 
         commStatusLabel = QLabel("Communications Status")
-        layout.addWidget(commStatusLabel, 24, 2)
+        layout.addWidget(commStatusLabel, 25, 2)
         self.commStatusOutput = QLineEdit()
         self.commStatusOutput.setReadOnly(True)
         self.commStatusOutput.setText("Functional")
-        layout.addWidget(self.commStatusOutput, 24, 3)
+        layout.addWidget(self.commStatusOutput, 25, 3)
 
         # Adding the Polarity Output
         polarityOutputLabel = QLabel("Polarity")
-        layout.addWidget(polarityOutputLabel, 25, 2)
+        layout.addWidget(polarityOutputLabel, 26, 2)
         self.polarityOutput = QLineEdit()
         self.polarityOutput.setReadOnly(True)
         self.polarityOutput.setText("")
-        layout.addWidget(self.polarityOutput, 25, 3)
+        layout.addWidget(self.polarityOutput, 26, 3)
     
     # Emit Train Controller to Train Model Singals
     def emitTrainControllerSignals(self):
@@ -555,6 +571,9 @@ class TrainModelTestUI(QWidget):
 
     def catchFromSwitch(self, id, fromSwitch):
         self.testDataOutputs["positiveNegative"] = fromSwitch
+    
+    def catchSwitchBlock(self, id, switchBlock):
+        self.testDataOutputs["switchBlock"] = switchBlock
 
     def catchExternalLights(self, id, offOn):
         self.testDataOutputs["externalLightsState"] = offOn
@@ -591,7 +610,7 @@ class TrainModelTestUI(QWidget):
         TMTkMSignals.authoritySignal.emit(self.testDataInputs["id"], self.testDataInputs["authority"])
         TMTkMSignals.commandedSpeedSignal.emit(self.testDataInputs["id"], self.testDataInputs["commandedSpeed"])
         TMTkMSignals.passengersEnteringSignal.emit(self.testDataInputs["id"], self.testDataInputs["passengersEntering"])
-        TMTkMSignals.beaconSignal.emit(self.testDataInputs["id"], self.testDataInputs["beacon"][0], self.testDataInputs["beacon"][1], self.testDataInputs["beacon"][2], self.testDataInputs["beacon"][3], self.testDataInputs["beacon"][4], self.testDataInputs["beacon"][5])
+        TMTkMSignals.beaconSignal.emit(self.testDataInputs["id"], self.testDataInputs["beacon"][0], self.testDataInputs["beacon"][1], self.testDataInputs["beacon"][2], self.testDataInputs["beacon"][3], self.testDataInputs["beacon"][4], self.testDataInputs["beacon"][5], self.testDataInputs["beacon"][6])
         TMTkMSignals.switchSignal.emit(self.testDataInputs["id"], self.testDataInputs["switch"])
         TMTkMSignals.switchStateSignal.emit(self.testDataInputs["id"], self.testDataInputs["switchState"])
 
@@ -691,6 +710,10 @@ class TrainModelTestUI(QWidget):
     def getPositiveNegativeInput(self, index):
         self.testDataInputs["beacon"][5] = bool(index)
 
+    # Gets the switch block input from the UI
+    def getSwitchBlock(self):
+        self.testDataInputs["beacon"][6] = int(self.switchBlockInput.text())
+
     # Updates all functions when the button is pressed
     def updateOutputsBoth(self):
         if (__name__ == "__main__"):
@@ -711,6 +734,7 @@ class TrainModelTestUI(QWidget):
         self.isBeaconOutput.setText(str(self.testDataOutputs["isBeacon"]))
         self.polarityCountOutput.setText(str(self.testDataOutputs["polarityCount"]))
         self.positiveNegativeOutput.setText(str(self.testDataOutputs["positiveNegative"]))
+        self.switchBlockOutput.setText(str(self.testDataOutputs["switchBlock"]))
 
         outputText = "On" if (self.testDataOutputs["externalLightsState"] == 1) else "Off"
         self.externalLightOutput.setText(outputText)
