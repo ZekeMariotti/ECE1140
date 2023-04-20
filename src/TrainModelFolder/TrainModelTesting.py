@@ -1,8 +1,12 @@
+# Train Model Test File
+# Used for testing changes to back end function
+# To test other functions, use the test UI File
+
 from TrainModel import TrainModel
 
 testTrainModel = TrainModel(2, "Green")
 
-# Tests the finding acceleration function   
+# Testing the acceleration calculations
 def testAccelerationCalculations(time, power, elevation, blockLength, prevVelocity):
     testTrainModel.data["power"] = power
     testTrainModel.trackData["elevation"] = elevation
@@ -11,6 +15,7 @@ def testAccelerationCalculations(time, power, elevation, blockLength, prevVeloci
     testTrainModel.findCurrentAcceleration(time)
     return round(testTrainModel.data["acceleration"], 4)
 
+# Testing the velocity calculations
 def testVelocityCalculations(time, prevVel, prevAccel, accel):
     testTrainModel.data["prevVelocity"] = prevVel
     testTrainModel.data["prevAcceleration"] = prevAccel
@@ -18,20 +23,30 @@ def testVelocityCalculations(time, prevVel, prevAccel, accel):
     testTrainModel.findCurrentVelocity(time)
     return round(testTrainModel.data["velocity"], 4)
 
+# Testing the difference calculations
 def testDistanceCalculations(time, prevVelocity, velocity):
     testTrainModel.data["prevVelocity"] = prevVelocity
     testTrainModel.data["velocity"] = velocity
     testTrainModel.findCurrentDistance(time)
     return round(testTrainModel.trackData["distance"], 4)
 
+# Testing finding time difference
 def testFindTimeDifference(time1, time2):
     testTrainModel.data["prevRTC"] = time1
     testTrainModel.data["rtc"] = time2
     return testTrainModel.findTimeDifference()
 
-# def testBlockExiting()
+# Testing the function to load blocks upon startup
+def testGetBlocksData(trainLine):
+    testTrainModel.trackData["trainLine"] = trainLine
+    testTrainModel.getBlocksData()
+    return len(testTrainModel.blocks)
 
-# def testNextBlock()
+# Testing the function to set the first section
+def testFirstSection(trainLine):
+    testTrainModel.trackData["trainLine"] = trainLine
+    testTrainModel.setFirstSection()
+    return testTrainModel.trackData["trackSection"]
 
 def testAirConditioningControl(time, currTemp, goalTemp):
     testTrainModel.data["currTemp"] = currTemp
@@ -92,3 +107,15 @@ assert testPassengersOn(0) == 10, f'Passengers On Test 1 Failed. Passengers = {t
 assert testPassengersOn(150) == 160, f'Passengers On Test 2 Failed. Passengers = {testTrainModel.data["passengers"]}'
 assert testPassengersOn(240) == 222, f'Passengers On Test 3 Failed. Passengers = {testTrainModel.data["passengers"]}'
 print("Passengers On Tests Passed")
+print("Testing Getting Blocks", end = " ... ")
+assert testGetBlocksData("Green") == 151, f'GetBlocksData Test 1 Failed. Size of Blocks = {len(testTrainModel.blocks)}'
+assert testGetBlocksData("Red") == 77, f'GetBlocksData Test 2 Failed. Size of Blocks = {len(testTrainModel.blocks)}'
+print("Getting Blocks Tests Passed")
+print("Testing Time Difference", end = " ... ")
+assert testFindTimeDifference("2023-02-22T11:00:00.0000000-05:00", "2023-02-22T11:00:00.1000000-05:00") == 0.1, f'Time Difference Test 1 Failed.'
+assert testFindTimeDifference("2023-02-22T11:00:00.0000000-05:00", "2023-02-22T11:00:10.0000000-05:00") == 10, f'Time Difference Test 2 Failed.'
+print("Time Difference Tests Passed")
+print("Testing First Section Function", end = " ... ")
+assert testFirstSection("Green") == [0, 63], f'First Section Test 1 Failed. Section = {testTrainModel.trackData["trackSection"]}'
+assert testFirstSection("Red") == [0, 9], f'First Section Test 2 Failed. Section = {testTrainModel.trackData["trackSection"]}'
+print("Track Section Tests Passed")

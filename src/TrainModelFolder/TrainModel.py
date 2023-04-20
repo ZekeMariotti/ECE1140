@@ -725,7 +725,7 @@ class TrainModel():
         if self.data["commStatus"] == False:
             self.passThroughData["commandedSpeed"] = 0.0
             self.passThroughData["authority"] = 0
-            self.passThroughData["beacon"] = ["", 0, "", False, -1, False]
+            self.passThroughData["beacon"] = ["", 0, "", False, -1, False, 0]
         if self.data["engineStatus"] == False:
             self.data["power"] = 0.0
         if self.data["brakeStatus"] == False:

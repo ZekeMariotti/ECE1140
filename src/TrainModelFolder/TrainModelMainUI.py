@@ -296,7 +296,7 @@ class TrainModelUI(QWidget):
         layout.addWidget(murphyLabel, 2, 5, self.alignCenter)
 
         # Communcations Label and Button
-        communicationsButton = QPushButton("Lose\nCommunications")
+        communicationsButton = QPushButton("Signal Pickup\nFailure")
         communicationsButton.setStyleSheet("background-color: orange")
         communicationsButton.setFont(self.timesNewRoman18)
         communicationsButton.pressed.connect(self.communicationsButtonPressed)
@@ -304,7 +304,7 @@ class TrainModelUI(QWidget):
         layout.addWidget(communicationsButton, 3, 4)
 
         # Engine Label and Button
-        engineButton = QPushButton("Disable\nEngine")
+        engineButton = QPushButton("Engine\nFailure")
         engineButton.setStyleSheet("background-color: orange")
         engineButton.pressed.connect(self.engineButtonPressed)
         engineButton.setFont(self.timesNewRoman18)
@@ -312,7 +312,7 @@ class TrainModelUI(QWidget):
         layout.addWidget(engineButton, 3, 5)
 
         # Service Brake Label and Button
-        brakeButton = QPushButton("Disable Service\nBrakes")
+        brakeButton = QPushButton("Service Brake\nFailure")
         brakeButton.setStyleSheet("background-color: orange")
         brakeButton.pressed.connect(self.brakeButtonPressed)
         brakeButton.setFont(self.timesNewRoman18)
@@ -320,8 +320,9 @@ class TrainModelUI(QWidget):
         layout.addWidget(brakeButton, 3, 6)
 
         # Communication State Label and Output
-        communicationsLabel = QLabel("Communication Status")
+        communicationsLabel = QLabel("Singal Pickup\nStatus")
         communicationsLabel.setFont(self.timesNewRoman12)
+        communicationsLabel.setAlignment(self.alignCenter)
         self.communicationsOutput = QLineEdit()
         self.communicationsOutput.setReadOnly(True)
         self.communicationsOutput.setFont(self.timesNewRoman18)
@@ -461,120 +462,121 @@ class TrainModelUI(QWidget):
 
         # Run back end function updating
         tempTimeDiff = self.TrainModel.findTimeDifference()
-        self.TrainModel.failureStates()
-        self.TrainModel.brakeCaclulator()
-        self.TrainModel.findCurrentAcceleration(tempTimeDiff)
-        self.TrainModel.findCurrentVelocity(tempTimeDiff)
-        self.TrainModel.findCurrentDistance(tempTimeDiff)
-        self.TrainModel.findBlockExiting()
-        self.TrainModel.airConditioningControl()
-        if (~self.TrainModel.data["runOnce"]) & (self.TrainModel.data["atStation"]) & (self.TrainModel.data["velocity"] == 0) & (self.TrainModel.data["lDoors"] | self.TrainModel.data["rDoors"]):
-            self.TrainModel.passengersGettingOff()
-            TMTkMSignals.passengersExitingSignal.emit(self.TrainModel.TrainID, self.TrainModel.data["passengersOff"])
-            self.TrainModel.data["passengersOff"] = 0
-        if (~self.TrainModel.data["atStation"]) & (self.TrainModel.data["velocity"] != 0):
-            self.TrainModel.data["runOnce"] = False
-        self.TrainModel.findCurrentMass()
-        if tempTimeDiff != 0:
+        if (tempTimeDiff != 0):
+            self.TrainModel.failureStates()
+            self.TrainModel.brakeCaclulator()
+            self.TrainModel.findCurrentAcceleration(tempTimeDiff)
+            self.TrainModel.findCurrentVelocity(tempTimeDiff)
+            self.TrainModel.findCurrentDistance(tempTimeDiff)
+            self.TrainModel.findBlockExiting()
+            self.TrainModel.airConditioningControl()
+            if (~self.TrainModel.data["runOnce"]) & (self.TrainModel.data["atStation"]) & (self.TrainModel.data["velocity"] == 0) & (self.TrainModel.data["lDoors"] | self.TrainModel.data["rDoors"]):
+                self.TrainModel.passengersGettingOff()
+                TMTkMSignals.passengersExitingSignal.emit(self.TrainModel.TrainID, self.TrainModel.data["passengersOff"])
+                self.TrainModel.data["passengersOff"] = 0
+            if (~self.TrainModel.data["atStation"]) & (self.TrainModel.data["velocity"] != 0):
+                self.TrainModel.data["runOnce"] = False
+            self.TrainModel.findCurrentMass()
+            if tempTimeDiff != 0:
+                self.TrainModel.moveToPrevious()
+            self.TrainModel.writeTMtoTkM()
+            self.TrainModel.writeTMtoTC()
+
+            # Update Left Column of data outputs
+            #-21 to -13
+            self.realTimeClockOutput.setText(str(ISO8601ToHumanTime(self.TrainModel.data["rtc"]))[-21:-13])
+            self.passengersOutput.setText(str(self.TrainModel.data["passengers"]))
+            self.crewOutput.setText(str(self.TrainModel.data["crew"]))
+            self.undergroundOutput.setText(str(self.TrainModel.data["underground"]))
+            self.lengthOutput.setText(str(metersToFeet(self.TrainModel.data["length"])) + " Feet")
+            self.massOutput.setText(str(kilogramsToTons(self.TrainModel.data["mass"])) + " Tons")
+        
+            # Update Middle Column of data outputs
+            self.velocityOutput.setText(str(metersPerSecondToMilesPerHour(self.TrainModel.data["velocity"])) + " mph")
+            self.accelerationOutput.setText(str(metersPerSecondSquaredToFeetPerSecondSquared(self.TrainModel.data["acceleration"])) + " ft/s^2")
+            self.powerOutput.setText(str(round(self.TrainModel.data["power"], 2)) + " W")
+            if (self.TrainModel.data["atStation"]):
+                self.stationLabel.setText("Current Station")
+                self.stationOutput.setText(self.TrainModel.data["station"])
+                self.stationOutput.setStyleSheet("background-color: yellow; border: yellow")
+
+            else:
+                self.stationLabel.setText("Next Station")
+                self.stationOutput.setText(self.TrainModel.data["station"])
+                self.stationOutput.setStyleSheet("background-color: white")
+
+            # Setting communication status output and color
+            self.communicationsOutput.setText(self.failureBoolean(self.TrainModel.data["commStatus"]))
+            if (self.TrainModel.data["commStatus"] == 1):
+                self.communicationsOutput.setStyleSheet("background-color: green; border: green")
+            else:
+                self.communicationsOutput.setStyleSheet("background-color: red; border: red")
+
+            # Setting the engine status output and color
+            self.engineOutput.setText(self.failureBoolean(self.TrainModel.data["engineStatus"]))
+            if (self.TrainModel.data["engineStatus"] == 1):
+                self.engineOutput.setStyleSheet("background-color: green; border: green")
+            else:
+                self.engineOutput.setStyleSheet("background-color: red; border: red")
+
+            # Setting the service brake status output and color
+            self.brakeOutput.setText(self.failureBoolean(self.TrainModel.data["brakeStatus"]))
+            if (self.TrainModel.data["brakeStatus"] == 1):
+                self.brakeOutput.setStyleSheet("background-color: green; border: green")
+            else:
+                self.brakeOutput.setStyleSheet("background-color: red; border: red")
+
+            # Setting emergency break output and color
+            self.emergencyBrakeStateOutput.setText(self.brakeState(self.TrainModel.data["eBrakeState"]))
+            if (self.TrainModel.data["eBrakeState"] == 1):
+                self.emergencyBrakeStateOutput.setStyleSheet("background-color: red; border: red")
+            else:
+                self.emergencyBrakeStateOutput.setStyleSheet("background-color: green; border: green")
+
+            # Setting service break output and color
+            self.serviceBrakeStateOutput.setText(self.brakeState(self.TrainModel.data["sBrakeState"]))
+            if (self.TrainModel.data["sBrakeState"] == 1):
+                self.serviceBrakeStateOutput.setStyleSheet("background-color: red; border: red")
+            else:
+                self.serviceBrakeStateOutput.setStyleSheet("background-color: green; border: green")
+
+            # Setting the left door output as well as color
+            self.lDoorsOutput.setText(self.doorState(self.TrainModel.data["lDoors"]))
+            if (self.TrainModel.data["lDoors"] == 0):
+                self.lDoorsOutput.setStyleSheet("color: white; background-color: black; border: black")
+            else:
+                self.lDoorsOutput.setStyleSheet("background-color: white")
+
+            # Setting the right door output as well as color
+            self.rDoorsOutput.setText(self.doorState(self.TrainModel.data["rDoors"]))
+            if (self.TrainModel.data["rDoors"] == 0):
+                self.rDoorsOutput.setStyleSheet("color: white; background-color: black; border: black")
+            else:
+                self.rDoorsOutput.setStyleSheet("background-color: white")
+
+            # Setting internal lights output as well as color
+            self.iLightsOutput.setText(self.lightState(self.TrainModel.data["iLights"]))
+            if (self.TrainModel.data["iLights"] == 1):
+                self.iLightsOutput.setStyleSheet("background-color: rgb(255, 215, 0); border: rgb(255, 215, 0)")
+            else:
+                self.iLightsOutput.setStyleSheet("background-color: white")
+
+            # Setting external lights output as well as color
+            self.eLightsOutput.setText(self.lightState(self.TrainModel.data["eLights"]))
+            if (self.TrainModel.data["eLights"] == 1):
+                self.eLightsOutput.setStyleSheet("background-color: rgb(255, 215, 0); border: rgb(255, 215, 0)")
+            else:
+                self.eLightsOutput.setStyleSheet("background-color: white")
+
+            # Setting the temperature output as well as color
+            self.currentTemperatureOutput.setText(str(round(self.TrainModel.data["currTemp"], 1)) + " F")
+            if (self.TrainModel.data["currTemp"] > 32.0):
+                self.currentTemperatureOutput.setStyleSheet("background-color: rgb(220, 20, 60); border: rgb(220, 20, 60)")
+            else:
+                self.currentTemperatureOutput.setStyleSheet("background-color: blue; border: blue")
+
+            # Move curr values to previous
             self.TrainModel.moveToPrevious()
-        self.TrainModel.writeTMtoTkM()
-        self.TrainModel.writeTMtoTC()
-
-        # Update Left Column of data outputs
-        #-21 to -13
-        self.realTimeClockOutput.setText(str(ISO8601ToHumanTime(self.TrainModel.data["rtc"]))[-21:-13])
-        self.passengersOutput.setText(str(self.TrainModel.data["passengers"]))
-        self.crewOutput.setText(str(self.TrainModel.data["crew"]))
-        self.undergroundOutput.setText(str(self.TrainModel.data["underground"]))
-        self.lengthOutput.setText(str(metersToFeet(self.TrainModel.data["length"])) + " Feet")
-        self.massOutput.setText(str(kilogramsToTons(self.TrainModel.data["mass"])) + " Tons")
-    
-        # Update Middle Column of data outputs
-        self.velocityOutput.setText(str(metersPerSecondToMilesPerHour(self.TrainModel.data["velocity"])) + " mph")
-        self.accelerationOutput.setText(str(metersPerSecondSquaredToFeetPerSecondSquared(self.TrainModel.data["acceleration"])) + " ft/s^2")
-        self.powerOutput.setText(str(round(self.TrainModel.data["power"], 2)) + " W")
-        if (self.TrainModel.data["atStation"]):
-            self.stationLabel.setText("Current Station")
-            self.stationOutput.setText(self.TrainModel.data["station"])
-            self.stationOutput.setStyleSheet("background-color: yellow; border: yellow")
-
-        else:
-            self.stationLabel.setText("Next Station")
-            self.stationOutput.setText(self.TrainModel.data["station"])
-            self.stationOutput.setStyleSheet("background-color: white")
-
-        # Setting communication status output and color
-        self.communicationsOutput.setText(self.failureBoolean(self.TrainModel.data["commStatus"]))
-        if (self.TrainModel.data["commStatus"] == 1):
-            self.communicationsOutput.setStyleSheet("background-color: green; border: green")
-        else:
-            self.communicationsOutput.setStyleSheet("background-color: red; border: red")
-
-        # Setting the engine status output and color
-        self.engineOutput.setText(self.failureBoolean(self.TrainModel.data["engineStatus"]))
-        if (self.TrainModel.data["engineStatus"] == 1):
-            self.engineOutput.setStyleSheet("background-color: green; border: green")
-        else:
-            self.engineOutput.setStyleSheet("background-color: red; border: red")
-
-        # Setting the service brake status output and color
-        self.brakeOutput.setText(self.failureBoolean(self.TrainModel.data["brakeStatus"]))
-        if (self.TrainModel.data["brakeStatus"] == 1):
-            self.brakeOutput.setStyleSheet("background-color: green; border: green")
-        else:
-            self.brakeOutput.setStyleSheet("background-color: red; border: red")
-
-        # Setting emergency break output and color
-        self.emergencyBrakeStateOutput.setText(self.brakeState(self.TrainModel.data["eBrakeState"]))
-        if (self.TrainModel.data["eBrakeState"] == 1):
-            self.emergencyBrakeStateOutput.setStyleSheet("background-color: red; border: red")
-        else:
-            self.emergencyBrakeStateOutput.setStyleSheet("background-color: green; border: green")
-
-        # Setting service break output and color
-        self.serviceBrakeStateOutput.setText(self.brakeState(self.TrainModel.data["sBrakeState"]))
-        if (self.TrainModel.data["sBrakeState"] == 1):
-            self.serviceBrakeStateOutput.setStyleSheet("background-color: red; border: red")
-        else:
-            self.serviceBrakeStateOutput.setStyleSheet("background-color: green; border: green")
-
-        # Setting the left door output as well as color
-        self.lDoorsOutput.setText(self.doorState(self.TrainModel.data["lDoors"]))
-        if (self.TrainModel.data["lDoors"] == 0):
-            self.lDoorsOutput.setStyleSheet("color: white; background-color: black; border: black")
-        else:
-            self.lDoorsOutput.setStyleSheet("background-color: white")
-
-        # Setting the right door output as well as color
-        self.rDoorsOutput.setText(self.doorState(self.TrainModel.data["rDoors"]))
-        if (self.TrainModel.data["rDoors"] == 0):
-            self.rDoorsOutput.setStyleSheet("color: white; background-color: black; border: black")
-        else:
-            self.rDoorsOutput.setStyleSheet("background-color: white")
-
-        # Setting internal lights output as well as color
-        self.iLightsOutput.setText(self.lightState(self.TrainModel.data["iLights"]))
-        if (self.TrainModel.data["iLights"] == 1):
-            self.iLightsOutput.setStyleSheet("background-color: rgb(255, 215, 0); border: rgb(255, 215, 0)")
-        else:
-            self.iLightsOutput.setStyleSheet("background-color: white")
-
-        # Setting external lights output as well as color
-        self.eLightsOutput.setText(self.lightState(self.TrainModel.data["eLights"]))
-        if (self.TrainModel.data["eLights"] == 1):
-            self.eLightsOutput.setStyleSheet("background-color: rgb(255, 215, 0); border: rgb(255, 215, 0)")
-        else:
-            self.eLightsOutput.setStyleSheet("background-color: white")
-
-        # Setting the temperature output as well as color
-        self.currentTemperatureOutput.setText(str(round(self.TrainModel.data["currTemp"], 1)) + " F")
-        if (self.TrainModel.data["currTemp"] > 32.0):
-            self.currentTemperatureOutput.setStyleSheet("background-color: rgb(220, 20, 60); border: rgb(220, 20, 60)")
-        else:
-            self.currentTemperatureOutput.setStyleSheet("background-color: blue; border: blue")
-
-        # Move curr values to previous
-        self.TrainModel.moveToPrevious()
 
 def main():
     app = QApplication(argv)

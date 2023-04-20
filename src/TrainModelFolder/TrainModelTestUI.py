@@ -27,7 +27,7 @@ class TrainModelTestUI(QWidget):
         "beacon"                : ["", 0, "", False, -1, 0, 0],
         "switch"                : False,
         "switchState"           : 0,
-        "id"                    : 0,
+        "id"                    : 2,
         "power"                 : 0.0,
         "leftDoorCommand"       : False,
         "rightDoorCommand"      : False,
@@ -723,6 +723,7 @@ class TrainModelTestUI(QWidget):
 
         self.currBlockOutput.setText("Block " + str(self.testDataOutputs["currBlock"]))
         self.passengersExitingOutput.setText(str(self.testDataOutputs["passengersOff"]))
+        self.idOutput.setText(str(self.testDataInputs["id"]))
         self.commandedSpeedOutput.setText(str(self.testDataOutputs["commandedSpeed"]) + " m/s")
         self.velocityOutput.setText(str(round(self.testDataOutputs["currentSpeed"], 2)) + " m/s")
         self.authorityOutput.setText(str(self.testDataOutputs["authority"]) + " Blocks")
