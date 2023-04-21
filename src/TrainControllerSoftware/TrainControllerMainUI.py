@@ -340,6 +340,7 @@ class MainWindow(QMainWindow):
             serviceBrakeDisable.setParent(self)
             return serviceBrakeDisable
 
+        # slider in km/hr because slider.setRange only takes integer (need max to be exactly 70km/hr), user sees it as mph
         def commandedSpeedSliderSetup(self):
             commandedSpeedSlider = QSlider(Qt.Orientation.Horizontal)
             commandedSpeedSlider.setFixedSize(QSize(round(self.labelWidth*0.9), round(self.labelHeight*0.5)))
