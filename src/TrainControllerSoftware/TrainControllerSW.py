@@ -118,7 +118,7 @@ class TrainControllerSW:
     def getBlocksData(self):
         if self.line == "Green":
             self.blocks = [0] * 151
-            with open (os.path.join(sys.path[0], "..", "TrackModel", "GreenLine.csv")) as csvfile:
+            with open (os.path.join(sys.path[0], "", "TrackModel", "GreenLine.csv")) as csvfile:
                 rows = csv.reader(csvfile, delimiter=',')
                 for row in rows:
                     if (row[0] == "BlockNo"):
@@ -127,7 +127,7 @@ class TrainControllerSW:
                         self.blocks[int(row[0])] = blocks(int(row[0]), float(row[1]), float(row[5]), float(row[3]), bool(int(row[7])))
         elif self.line == "Red":
             self.blocks = [0] * 77
-            with open (os.path.join(sys.path[0], "..", "TrackModel", "RedLine.csv")) as csvfile:
+            with open (os.path.join(sys.path[0], "", "TrackModel", "RedLine.csv")) as csvfile:
                 rows = csv.reader(csvfile, delimiter=',')
                 for row in rows:
                     if (row[0] == "BlockNo"):
