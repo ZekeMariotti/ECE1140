@@ -14,6 +14,7 @@ from Outputs import Outputs
 import Integration.Conversions as Conversions
 from Integration.TMTCSignals import *
 from Integration.TimeSignals import *
+from Integration.BlocksClass import *
 
 from json import JSONEncoder
 
