@@ -73,11 +73,18 @@ def testPassengersOn(passengersOn):
     return testTrainModel.data["passengers"]
 
 print("Testing Acceleration", end = " ... ")
-assert testAccelerationCalculations(1, 0, 0, 100, 10) == -.0589, f'Acceleration Test Failed. Acceleration = {round(testTrainModel.data["acceleration"], 4)}'
-print("Acceleration Test Passed")
+assert testAccelerationCalculations(1, 0, 0, 100, 10) == -.0589, f'Acceleration Test 1 Failed. Acceleration = {round(testTrainModel.data["acceleration"], 4)}'
+assert testAccelerationCalculations(1, 120000, 0, 100, 10) == 0.2345, f'Acceleration Test 2 Failed. Acceleration = {round(testTrainModel.data["acceleration"], 4)}'
+assert testAccelerationCalculations(1, 120000, 5, 100, 10) == -0.2559, f'Acceleration Test 3 Failed. Acceleration = {round(testTrainModel.data["acceleration"], 4)}'
+assert testAccelerationCalculations(1, 120000, -5, 100, 10) == 0.7251, f'Acceleration Test 4 Failed. Acceleration = {round(testTrainModel.data["acceleration"], 4)}'
+print("Acceleration Tests Passed")
 print("Testing Velocity", end = " ... ")
-assert testVelocityCalculations(1, 15, 3, 3) == 18.0, f'Velocity Test Failed. Velocity = {round(testTrainModel.data["velocity"], 4)}'
-print("Velocity Test Passed")
+assert testVelocityCalculations(1, 15, 3, 3) == 18.0, f'Velocity Test 1 Failed. Velocity = {round(testTrainModel.data["velocity"], 4)}'
+assert testVelocityCalculations(1, 15, -3, -3) == 12.0, f'Velocity Test 2 Failed. Velocity = {round(testTrainModel.data["velocity"], 4)}'
+assert testVelocityCalculations(1, 15, -3, 0) == 13.5, f'Velocity Test 3 Failed. Velocity = {round(testTrainModel.data["velocity"], 4)}'
+assert testVelocityCalculations(1, 15, 0, 0) == 15.0, f'Velocity Test 4 Failed. Velocity = {round(testTrainModel.data["velocity"], 4)}'
+assert testVelocityCalculations(1, 15, 1, 2) == 16.5, f'Velocity Test 5 Failed. Velocity = {round(testTrainModel.data["velocity"], 4)}'
+print("Velocity Tests Passed")
 print("Testing Distance", end = " ... ")
 assert testDistanceCalculations(2, 15, 20) == 35, f'Distance Test 1 Failed. Distance = {round(testTrainModel.data["distance"], 4)}'
 assert testDistanceCalculations(1, 15, 20) == 17.5, f'Distance Test 2 Failed. Distance = {round(testTrainModel.data["distance"], 4)}'
