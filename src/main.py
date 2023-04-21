@@ -362,7 +362,7 @@ class MainWindow(QMainWindow):
         def trainDispatch(self, trainId, line):
             # trainId of 1 corresponds with train controller hardware
             if(trainId != 1):
-                self.TrainControllerList.append(TrainControllerMainUI.MainWindow(trainId))
+                self.TrainControllerList.append(TrainControllerMainUI.MainWindow(trainId, line))
                 self.TrainModelList.append(TrainModelMainUI.TrainModelUI(trainId, line))
                 self.TkM.backEnd.newTrainMade(trainId, line)
                 self.TrainControllerList[len(self.TrainControllerList)-1].move(800, 10)

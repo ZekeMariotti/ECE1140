@@ -8,7 +8,7 @@ import os
 
 sys.path.append(__file__.replace("\TrainControllerSoftware\TrainControllerSW.py", ""))
 
-import json
+import csv
 from Inputs import Inputs
 from Outputs import Outputs
 import Integration.Conversions as Conversions
@@ -20,7 +20,7 @@ from json import JSONEncoder
 
 # Class for the TrainControllerSW
 class TrainControllerSW:
-    def __init__(self, trainId, commandedSpeed, currentSpeed, authority, inputTime, undergroundState, temperature, 
+    def __init__(self, trainId, line, commandedSpeed, currentSpeed, authority, inputTime, undergroundState, temperature, 
                  stationName, platformSide, nextStationName, isBeacon, externalLightsState, internalLightsState, leftDoorState, rightDoorState, 
                  serviceBrakeState, emergencyBrakeState, serviceBrakeStatus, engineStatus, communicationsStatus, power, leftDoorCommand, 
                  rightDoorCommand, serviceBrakeCommand, emergencyBrakeCommand, externalLightCommand, internalLightCommand, stationAnnouncement):
@@ -46,8 +46,9 @@ class TrainControllerSW:
         TMTCSignals.engineStatusSignal.connect(self.engineStatusSignalHandler)
         TMTCSignals.communicationsStatusSignal.connect(self.communicationsStatusSignalHandler)      
 
-        # Train id
+        # Train id and line
         self.trainId = trainId
+        self.line = line
 
         # Internal Variables
         self.stationState = False
@@ -113,6 +114,26 @@ class TrainControllerSW:
             TMTCSignals.stationAnnouncementSignal.emit(self.trainId, self.inputs.nextStationName)
 
         TMTCSignals.stationStateSignal.emit(self.trainId, self.stationState)
+
+    def getBlocksData(self):
+        if self.line == "Green":
+            self.blocks = [0] * 151
+            with open (os.path.join(sys.path[0], "..", "TrackModel", "GreenLine.csv")) as csvfile:
+                rows = csv.reader(csvfile, delimiter=',')
+                for row in rows:
+                    if (row[0] == "BlockNo"):
+                        continue
+                    else:
+                        self.blocks[int(row[0])] = blocks(int(row[0]), float(row[1]), float(row[5]), float(row[3]), bool(int(row[7])))
+        elif self.line == "Red":
+            self.blocks = [0] * 77
+            with open (os.path.join(sys.path[0], "..", "TrackModel", "RedLine.csv")) as csvfile:
+                rows = csv.reader(csvfile, delimiter=',')
+                for row in rows:
+                    if (row[0] == "BlockNo"):
+                        continue
+                    else:
+                        self.blocks[int(row[0])] = blocks(int(row[0]), float(row[1]), float(row[5]), float(row[3]), bool(int(row[7])))
 
     # Signal handlers
     def rtcSignalHandler(self, rtcString):
