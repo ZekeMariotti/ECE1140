@@ -35,6 +35,7 @@ class backEndCalculations():
                 tHeater = 0
     except:
         tHeater = 0
+        current_temperatre = 70
 
     # Private data variable to store all the data needed for the back end
     data = {
