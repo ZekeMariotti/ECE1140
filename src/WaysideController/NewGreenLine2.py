@@ -38,7 +38,6 @@ class MainWindow(QMainWindow):
 
         self.TestUI = True
         self.active = False
-        self.PLCMain = PLC(WaysideControllerGreen,WaysideControllerGreen2,"Green")
         activeSignals.activeSignal.connect(self.activeSignal)
         TkMWCSignals.failureSignal.connect(self.brokenRailHandler)
         TkMWCSignals.currBlockSignal.connect(self.currBlockHandler)
@@ -706,7 +705,7 @@ class MainWindow(QMainWindow):
             MLabel.setParent(self)
             return(MLabel)
     def updateVisualElements(self, active):
-          
+          self.PLCMain = PLC(WaysideControllerGreen,WaysideControllerGreen2,"Green")
           if (self.Switch1Out.text() == "1 to 13" and WaysideControllerGreen2.switches[1] == False) or (self.Switch1Out.text() == "12 to 13" and WaysideControllerGreen2.switches[1] == True):
             TkMWCSignals.switchStateSignal.emit(int(WaysideControllerGreen2.switches[1]), 1, 12)
           if (self.Switch2Out.text() == "29 to 150" and WaysideControllerGreen2.switches[2] == False) or (self.Switch2Out.text() == "29 to 30" and WaysideControllerGreen2.switches[2] == True):

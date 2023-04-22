@@ -44,7 +44,6 @@ class MainWindow(QMainWindow):
         self.File2 = os.path.join(sys.path[0], "WaysideController", "GreenLine2.txt")
         self.blocks1 =101
         self.blocks2 =151
-
         self.TestUI = True
         self.active = False
         self.PLCMain = PLC(WaysideControllerGreen,WaysideControllerGreen2,"Green")
@@ -803,13 +802,13 @@ class MainWindow(QMainWindow):
                   value="G"
                 else:
                   value="R"
-                if(k==1 | k==13 | k==77 | k==100 | k==84):
+                if((k==1) | (k==13) | (k==77) | (k==100) | (k==84)):
                   if active and value != self.SignalLight.item(i,j).text():
                         if value == "G":
                               TkMWCSignals.signalStateSignal.emit(0, 1, k - 1)
                         elif value == "R":
                               TkMWCSignals.signalStateSignal.emit(2, 1, k - 1)
-                if(k==1 | k==13 | k==77 | k==100 | k==84):
+                if((k==1) | (k==13) | (k==77) | (k==100) | (k==84)):
                   self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
@@ -836,7 +835,6 @@ class MainWindow(QMainWindow):
                   self.Gate.setText("Block 19 Gate:  DOWN")    
           if(self.maintenanceMode==False):                    
             self.PLCMain.GloadValues1(self.File1)
-            self.PLCMain.GloadValues2(self.File2)
             self.PLCMain.setswitches()
 
     def mainEventLoop(self):
