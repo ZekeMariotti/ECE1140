@@ -123,6 +123,7 @@ class TrainModel():
             "overflow"         : False,          # Overflow boolean used for current Block Calculations
             "backTrain"        : False,          # Whether the back of the train is in the previous block still or not
             "polarity"         : False,          # Polarity of the current block (0 if even, 1 if odd)
+            "lastStation"      : False,          # Boolean to store whether the train is at the last station before the yard
         }
 
         # Dictionary used for different eBrake States from train controller and user input
@@ -399,7 +400,6 @@ class TrainModel():
             powerForce = self.data["power"] / self.data["prevVelocity"]
             if(powerForce > 4000000):
                 powerForce = 120000
-        
 
         # If the Service Brake is pulled
         if (self.data["sBrakeState"]):
@@ -416,39 +416,6 @@ class TrainModel():
         # Limit the acceleration to follow F = ma
         if (time > 0):
             self.data["acceleration"] = tempAcceleration if tempAcceleration <= (forces / self.data["mass"]) else (forces / self.data["mass"])
-
-        # Limits the power of the engine
-        #if self.data["power"] > 120000:
-        #    self.data["power"] = 120000
-
-        # If Emergency or service brakes are enabled, do not change acceleration
-        #if (self.data["eBrakeState"] | self.data["sBrakeState"]):
-        #    return
-        
-        # If the train is not moving and has no power input
-        #if ((self.data["prevVelocity"] == 0.0) & (self.data["power"] == 0.0)):
-        #    force = 0.0
-
-        # If the train is not moving but has a power input
-        #elif (self.data["prevVelocity"] == 0.0):
-        #    force = self.data["mass"] * self.constants["mediumAcceleration"]
-
-        # All other cases
-        #else:
-        #    force = self.data["power"] / self.data["prevVelocity"]
-
-        # If the train is not on an incline or decline, use this calculation
-        #if (self.trackData["elevation"] == 0.0):
-        #    tempAcceleration = force / self.data["mass"]
-
-        # If the train is on an incline or decline, use this calculation
-        #else:
-            # Calculating the effect of mass * gravity when on an incline
-        #    tempAcceleration = (force - (self.data["mass"] * self.constants["gravity"] * (self.trackData["elevation"] / self.trackData["blockLength"]))) / self.data["mass"]
-
-        # Limit the acceleration to something that is possible for the train according to F = ma
-        #if (time > 0):
-        #    self.data["acceleration"] = tempAcceleration if tempAcceleration <= (force / self.data["mass"]) else (force / self.data["mass"])
 
     # Finds the current velocity of a train
     def findCurrentVelocity(self, time = 1):
@@ -496,6 +463,16 @@ class TrainModel():
             # Find total overflow distance into the next block
             tempDistance = self.trackData["distance"] - self.trackData["remDistance"]
             self.trackData["currBlock"] = self.findNextBlock()
+
+            # Check if train is on the last station before the yard
+            if (self.trackData["trainLine"] == "Green"):
+                if (self.trackData["currBlock"] == 57) & (self.trackData["prevBlock"] == 56):
+                    self.trackData["lastStation"] = True
+            elif (self.trackData["trainLine"] == "Red"):
+                if (self.trackData["currBlock"] == 7) & (self.trackData["prevBlock"] == 6):
+                    self.trackData["lastStation"] = True
+            
+            # Get the data from the blocks class for the new block that the train is entering
             self.trackData["remDistance"] = 100 - tempDistance
             self.data["underground"] = self.blocks[self.trackData["currBlock"]].undergroundState
             self.trackData["blockLength"] = self.blocks[self.trackData["currBlock"]].blockLength
@@ -704,9 +681,18 @@ class TrainModel():
     # Determines how many passengers get off at each station
     def passengersGettingOff(self):
         if (~self.data["runOnce"]):
-            self.data["passengersOff"] = randint(0, self.data["passengers"])
-            self.data["passengers"] -= self.data["passengersOff"]
-            self.data["runOnce"] = True
+            if (self.trackData["trainLine"] == "Green") & (self.trackData["lastStation"]):
+                self.data["passengersOff"] = self.data["passengers"]
+                self.data["passengers"] -= self.data["passengersOff"]
+                self.data["runOnce"] = True
+            elif (self.trackData["trainLine"] == "Red") & (self.trackData["lastStation"]):
+                self.data["passengersOff"] = self.data["passengers"]
+                self.data["passengers"] -= self.data["passengersOff"]
+                self.data["runOnce"] = True
+            else:
+                self.data["passengersOff"] = randint(0, self.data["passengers"])
+                self.data["passengers"] -= self.data["passengersOff"]
+                self.data["runOnce"] = True
 
     # Adds passengers getting on to total passengers
     def passengersGettingOn(self):
