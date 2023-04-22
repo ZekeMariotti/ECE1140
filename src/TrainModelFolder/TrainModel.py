@@ -105,6 +105,7 @@ class TrainModel():
             "goalTemp"         : 68.0,           # Temperature goal given by the user in degrees fahrenehit
             "numCars"          : 1,              # Length of the train based on number of cars attached to the train
             "runOnce"          : False,          # Boolean used for calculating passengers on and off at a station
+            "timeTemp"         : 0.0,            # Time since the last temperature goal chance
         }
 
         # Dictionary used for intercommunication between the track model and train model only
@@ -676,13 +677,9 @@ class TrainModel():
 
     # Air Conditioning System that changes based on user input
     def airConditioningControl(self, time = 1):
-        if self.data["currTemp"] < self.data["goalTemp"]:
-            self.data["currTemp"] += (0.5 * time / 2)
-        elif self.data["currTemp"] == self.data["goalTemp"]:
-            self.data["currTemp"] += 0
-        else:
-            self.data["currTemp"] -= (0.5 * time / 2)
-        self.data["currTemp"] = round(self.data["currTemp"], 2)
+        self.data["timeTemp"] += time
+        tempDiff = self.data["goalTemp"] - self.data["currTemp"]
+        self.data["currTemp"] += tempDiff * (1 - exp(-0.0001 * self.data["timeTemp"]))
 
     # Find the current mass of the entire train including passengers 
     def findCurrentMass(self):
@@ -700,8 +697,8 @@ class TrainModel():
     # Handle change in input from the user about temperature
     def tempChangeHandler(self, id, temp):
         if (id == self.TrainID):
+            self.data["timeTemp"] = 0.0
             self.data["goalTemp"] = temp
-            self.goalTemp = temp
 
 
     # Determines how many passengers get off at each station
