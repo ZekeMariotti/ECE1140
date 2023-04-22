@@ -1,6 +1,7 @@
 #PLC as a class
 from WaysideController.TestGenericWayside import Wayside
-from WaysideController.GreenLineTestUi import TestWindow
+
+#GreenLine
 Gswitch1True=[]
 Gswitch1False=[]
 Gswitch2True=[]
@@ -14,6 +15,13 @@ Gswitch5False=[]
 Gswitch6True=[]
 Gswitch6False=[]
 Ggate=[]
+#Signal lights Green line
+GLight1=[]
+GLight13=[]
+GLight77=[]
+GLight100=[]
+GLight84=[]
+#Red Line
 Rswitch1True=[]
 Rswitch1False=[]
 Rswitch2True=[]
@@ -103,6 +111,32 @@ class PLC():
                 line=line.strip()
                 logic=self.Wayside1.occupancy[int(line)]
                 Gswitch6False.append(logic)
+            #signal lights
+            if(line=="ocS1"):
+                line=file.readline()
+                line=line.strip()
+                logic=self.Wayside1.occupancy[int(line)]
+                GLight1.append(logic)
+            if(line=="ocS13"):
+                line=file.readline()
+                line=line.strip()
+                logic=self.Wayside1.occupancy[int(line)]
+                GLight13.append(logic)                            
+            if(line=="ocS77"):
+                line=file.readline()
+                line=line.strip()
+                logic=self.Wayside1.occupancy[int(line)]
+                GLight77.append(logic)
+            if(line=="ocS100"):
+                line=file.readline()
+                line=line.strip()
+                logic=self.Wayside1.occupancy[int(line)]
+                GLight100.append(logic)
+            if(line=="ocS84"):
+                line=file.readline()
+                line=line.strip()
+                logic=self.Wayside1.occupancy[int(line)]
+                GLight84.append(logic)                                
         file.close()
 
     def GloadValues2(self,File2):
@@ -177,51 +211,102 @@ class PLC():
     def setswitches(self):
         for i in Gswitch1True:
             if(Gswitch1True.pop()==True):
-                self.Wayside1.switches[1]=False
-                self.Wayside2.switches[1]=False
-        for i in Gswitch1False:
-            if(Gswitch1False.pop()==True):
                 self.Wayside1.switches[1]=True
                 self.Wayside2.switches[1]=True
 
+        for i in Gswitch1False:
+            if(Gswitch1False.pop()==True):
+                self.Wayside1.switches[1]=False
+                self.Wayside2.switches[1]=False
+                
         for i in Gswitch2True:
             if(Gswitch2True.pop()==True):
-                self.Wayside1.switches[2]=False
-                self.Wayside2.switches[2]=False
+                self.Wayside1.switches[2]=True
+                self.Wayside2.switches[1]=True
+
 
         for i in Gswitch2False:
             if(Gswitch2False.pop()==True):
-                self.Wayside1.switches[2]=True
-                self.Wayside2.switches[2]=True
+                self.Wayside1.switches[2]=False
+                self.Wayside2.switches[1]=False
 
-    #Always go to yard
+
+    #Always go to yard maybe change later
         self.Wayside1.switches[3]=True
         self.Wayside1.switches[4]=True
         self.Wayside2.switches[3]=True
         self.Wayside2.switches[4]=True
         for i in Gswitch5True:
             if(Gswitch5True.pop()==True):
-                self.Wayside1.switches[5]=False
-                self.Wayside2.switches[5]=False
+                self.Wayside1.switches[5]=True
+                self.Wayside2.switches[5]=True
+
         for i in Gswitch5False:
             if(Gswitch5False.pop()==True):
-                self.Wayside1.switches[5]=True
-                self.Wayside2.switches[6]=True
+                self.Wayside1.switches[5]=False
+                self.Wayside2.switches[6]=False
+
         for i in Gswitch6True:
             if(Gswitch6True.pop()==True):
-                self.Wayside1.switches[6]=False
-                self.Wayside2.switches[6]=False
+                self.Wayside1.switches[6]=True
+                self.Wayside2.switches[6]=True
+                
         for i in Gswitch6False:
             if(Gswitch6False.pop()==True):
-                self.Wayside1.switches[6]=True
-                self.Wayside1.switches[6]=True
+                self.Wayside1.switches[6]=False
+                self.Wayside1.switches[6]=False
+         #change later not important for it3    use break   
         if(self.Wayside1.occupancy[18]==True|self.Wayside1.occupancy[19]==True|self.Wayside1.occupancy[20]==True):
             self.Wayside1.gates[1]=False
             self.Wayside1.gates[1]=False
         else:
             self.Wayside1.gates[1]=True
             self.Wayside2.gates[1]=True
+                #set Lights
+        for i in GLight1:
+            if(GLight1.pop()==True):
+                self.Wayside1.signalLights[1]=False
+                break
+            else:
+                self.Wayside1.signalLights[1]=True
 
+        for i in GLight13:
+            if(GLight13.pop()==True):
+                self.Wayside1.signalLights[13]=False
+                break
+            else:
+                self.Wayside1.signalLights[13]=True
+        
+        for i in GLight77:
+            if(GLight77.pop()==True):
+                self.Wayside1.signalLights[77]=False
+                break
+            else:
+                self.Wayside1.signalLights[77]=True
+        
+        for i in GLight100:
+            if(GLight100.pop()==True):
+                self.Wayside1.signalLights=False
+                break
+            else:
+                self.Wayside1.signalLights[100]=True
+        Gswitch1True.clear()
+        Gswitch1False.clear()
+        Gswitch2True.clear()
+        Gswitch2False.clear()
+        Gswitch3True.clear()
+        Gswitch3False.clear()
+        Gswitch4True.clear()
+        Gswitch4False.clear()
+        Gswitch5True.clear()
+        Gswitch5False.clear()
+        Gswitch6True.clear()
+        Gswitch6False.clear()
+        GLight1.clear()
+        GLight13.clear()
+        GLight77.clear()
+        GLight84.clear()
+        GLight100.clear()
     def RloadValues1(self):
         file = open("C:\\Users\danek\Documents\RedLine.txt", "r")
         for i in range(0,100):
