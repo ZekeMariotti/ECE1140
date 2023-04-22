@@ -144,21 +144,13 @@ class MainWindow(QMainWindow):
                 #Commanded Speed Functions
     def activeSignal(self):
          self.active = True
-    def maintenanceLabelSetup(self):
-            MLabel = QLabel()
-            MLabel.setFont(self.labelFont)
-            if(self.maintenanceMode==True):                
-                  MLabel.setText("Maintenance ON")
-            else:
-                  MLabel.setText("Maintenance OFF")
-            MLabel.move(500,-200)
-            MLabel.setParent(self)
-            return(MLabel)            
+
     def CommandedSpeedLabelSetup(self):
             CommandedLabel = QLabel()
             CommandedLabel.setFont(self.titleFont)
             CommandedLabel.setText("Commanded Speed (MPH)")
-            CommandedLabel.move(450,-220)
+            CommandedLabel.setFixedSize(QSize(230,25))
+            CommandedLabel.move(450,0)
             CommandedLabel.setParent(self)
             return(CommandedLabel)
     
@@ -191,7 +183,8 @@ class MainWindow(QMainWindow):
           AuthorityLabel = QLabel()
           AuthorityLabel.setFont(self.titleFont)
           AuthorityLabel.setText("Authority (Blocks)")
-          AuthorityLabel.move(480,-100)
+          AuthorityLabel.setFixedSize(QSize(230,25))
+          AuthorityLabel.move(480,140)
           AuthorityLabel.setParent(self)
           return(AuthorityLabel)
     
@@ -224,7 +217,8 @@ class MainWindow(QMainWindow):
           RailLabel = QLabel()
           RailLabel.setFont(self.titleFont)
           RailLabel.setText("Broken Rail")
-          RailLabel.move(500,25)
+          RailLabel.setFixedSize(QSize(230,25))
+          RailLabel.move(500,250)
           RailLabel.setParent(self)
           return(RailLabel)
     
@@ -260,8 +254,9 @@ class MainWindow(QMainWindow):
           ColorLabel = QLabel()
           ColorLabel.setFont(self.titleFont)
           ColorLabel.setText("Signal Color (G/R)")
+          ColorLabel.setFixedSize(QSize(230,25))
           ColorLabel.setParent(self)
-          ColorLabel.move(470,155)
+          ColorLabel.move(470,380)
           return(ColorLabel)
     
     def SignalLightSetup(self):
@@ -297,7 +292,8 @@ class MainWindow(QMainWindow):
           OccupancyLabel = QLabel()
           OccupancyLabel.setFont(self.titleFont)
           OccupancyLabel.setText("Occupancy")
-          OccupancyLabel.move(500,275)
+          OccupancyLabel.setFixedSize(QSize(230,25))
+          OccupancyLabel.move(500,510)
           OccupancyLabel.setParent(self)
           return(OccupancyLabel)  
             
@@ -384,16 +380,18 @@ class MainWindow(QMainWindow):
           MainSwitchLabel = QLabel()
           MainSwitchLabel.setFont(self.titleFont)
           MainSwitchLabel.setText("Switches")
+          MainSwitchLabel.setFixedSize(QSize(80,20))
           MainSwitchLabel.setParent(self)
-          MainSwitchLabel.move(875,-200)
+          MainSwitchLabel.move(830,20)
           return(MainSwitchLabel)
     
     def SwitchLabels(self):
           Switch1Label = QLabel()
           Switch1Label.setFont(self.labelFont)
+          Switch1Label.setFixedSize(QSize(60,290))
           Switch1Label.setText("\nSwitch 1\n\n\nSwitch 2\n\n\nSwitch 3\n\n\nSwitch 4\n\n\nSwitch 5\n\n\nSwitch 6") 
           Switch1Label.setParent(self)
-          Switch1Label.move(int(round(0.62*self.windowWidth)),int(round(-0.05*self.windowHeight)))
+          Switch1Label.move(int(round(0.62*self.windowWidth)),60)
           return(Switch1Label)
       
     def Switch1ButtonL(self):
@@ -506,14 +504,14 @@ class MainWindow(QMainWindow):
     def Switch1OutSetup(self):
           Output1 = QLabel()
           Output1.setFont(self.labelFont)
-
+          Output1.setFixedSize(70,20)
           if WaysideControllerGreen.switches[1]==True:
                 Output1.setText("1 to 13")
           else:
                 Output1.setText("12 to 13")
 
           Output1.setParent(self)
-          Output1.move(1000,-165)
+          Output1.move(1000,60)
           return(Output1)
     
     def Switch2OutSetup(self):
@@ -524,9 +522,9 @@ class MainWindow(QMainWindow):
                 Output2.setText("29 to 150")
           else:
                 Output2.setText("29 to 30")
-
+          Output2.setFixedSize(QSize(70,20))
           Output2.setParent(self)
-          Output2.move(1000,-115)
+          Output2.move(1000,120)
           return(Output2)
 
     def Switch3OutSetup(self):
@@ -537,9 +535,9 @@ class MainWindow(QMainWindow):
                 Output3.setText("57 to Yard")
           else:
                 Output3.setText("57 to 58")
-
+          Output3.setFixedSize(QSize(70,20))  
           Output3.setParent(self)
-          Output3.move(1000,-60)
+          Output3.move(1000,180)
           return(Output3)
 
     def Switch4OutSetup(self):
@@ -550,9 +548,9 @@ class MainWindow(QMainWindow):
                 Output4.setText("Yard to 63")
           else:
                 Output4.setText("62 to 63")
-
+          Output4.setFixedSize(QSize(70,20))
           Output4.setParent(self)
-          Output4.move(1000,-5)
+          Output4.move(1000,240)
           return(Output4)
 
     def Switch5OutSetup(self):
@@ -563,29 +561,30 @@ class MainWindow(QMainWindow):
                 Output5.setText("77 to 101")
           else:
                 Output5.setText("76 to 77")
-
+          Output5.setFixedSize(QSize(70,20))
           Output5.setParent(self)
-          Output5.move(1000,50)
+          Output5.move(1000,300)
           return(Output5)
 
     def Switch6OutSetup(self):
-          Output5 = QLabel()
-          Output5.setFont(self.labelFont)
+          Output6 = QLabel()
+          Output6.setFont(self.labelFont)
 
           if WaysideControllerGreen.switches[5]==True:
-                Output5.setText("85 to 100")
+                Output6.setText("85 to 100")
           else:
-                Output5.setText("85 to 86")
-
-          Output5.setParent(self)
-          Output5.move(1000,105)
-          return(Output5)    
+                Output6.setText("85 to 86")
+          Output6.setFixedSize(QSize(70,20))
+          Output6.setParent(self)
+          Output6.move(1000,360)
+          return(Output6)    
 
     def PLCLabelSetup(self):
           PLCLabel = QLabel()
           PLCLabel.setFont(self.titleFont)
           PLCLabel.setText("Upload PLC")
-          PLCLabel.move(860,170)
+          PLCLabel.setFixedSize(QSize(110,40))
+          PLCLabel.move(860,400)
           PLCLabel.setParent(self)
           return(PLCLabel)
 
@@ -687,7 +686,18 @@ class MainWindow(QMainWindow):
             self.maintenanceMode=True
          else: 
             self.maintenanceMode=False
-          
+    def maintenanceLabelSetup(self):
+            MLabel = QLabel()
+            MLabel.setFont(self.labelFont)
+            if(self.maintenanceMode==True):                
+                  MLabel.setText("Maintenance ON")
+            else:
+                  MLabel.setText("Maintenance OFF")
+            MLabel.setWordWrap(True)
+            MLabel.setFixedSize(QSize(120,50))
+            MLabel.setParent(self)
+            return(MLabel)
+                
     def updateVisualElements(self, active):
           #hour = str(WaysideController.realTime.hour) if WaysideController.realTime.hour <=12 else str(WaysideController.realTime.hour - 12)   
           #if(int(hour)==0):
