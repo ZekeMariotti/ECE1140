@@ -48,7 +48,6 @@ class MainWindow(QMainWindow):
 
             # Set window defaults
             self.setWindowTitle(f'Train Controller {self.TrainControllerSW.trainId}')
-            #self.resize(QSize(1366, 768-31))
             self.setFixedSize(QSize(960, 540))
             self.setMinimumSize(1050, 550)
             self.move(100, 200)
@@ -555,28 +554,6 @@ class MainWindow(QMainWindow):
             
 
         # Event actions
-
-        # might use for resizing elements - adds 31 to height for some reason
-        # def resizeEvent(self, event):
-        #     self.windowWidth = self.frameGeometry().width()
-        #     self.windowHeight = self.frameGeometry().height()
-        #     self.buttonWidth = round(0.13*self.windowWidth)
-        #     self.buttonHeight = round(0.06*self.windowHeight)
-        #     self.labelWidth = self.buttonWidth*2
-        #     self.labelHeight = round(self.buttonHeight*1.3)
-            
-        #     emergencyBrakeState = self.emergencyBrakeState
-        #     emergencyBrakeState.move(round(self.frameGeometry().width()*0.05), round(self.frameGeometry().height()*0.25-emergencyBrakeState.frameGeometry().height()*0.6))
-        #     emergencyBrakeState.setFixedSize(QSize(self.labelWidth, self.labelHeight))
-
-        #     emergencyBrakeEnable = self.emergencyBrakeEnable
-        #     emergencyBrakeEnable.move(round(self.frameGeometry().width()*0.05), round(self.frameGeometry().height()*0.3-emergencyBrakeEnable.frameGeometry().height()*0.5))
-        #     emergencyBrakeEnable.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
-
-        #     emergencyBrakeDisable = self.emergencyBrakeDisable
-        #     emergencyBrakeDisable.move(round(self.frameGeometry().width()*0.05+emergencyBrakeDisable.frameGeometry().width()), round(self.frameGeometry().height()*0.3-emergencyBrakeDisable.frameGeometry().height()*0.5))
-        #     emergencyBrakeDisable.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
-        #     QMainWindow.resizeEvent(self, event)
         
         # Closes test UI if main window closes, minimizes if in main UI
         def closeEvent(self, event):
