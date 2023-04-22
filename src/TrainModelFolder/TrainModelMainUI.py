@@ -142,30 +142,6 @@ class TrainModelUI(QWidget):
         # Section III Widgets #
         #######################
 
-        # Communcations Label and Button
-        communicationsButton = QPushButton("Signal Pickup\nFailure")
-        communicationsButton.setStyleSheet("background-color: orange")
-        communicationsButton.setFont(self.timesNewRoman18)
-        communicationsButton.pressed.connect(self.communicationsButtonPressed)
-
-        layout.addWidget(communicationsButton, 2, 5)
-
-        # Engine Label and Button
-        engineButton = QPushButton("Engine\nFailure")
-        engineButton.setStyleSheet("background-color: orange")
-        engineButton.pressed.connect(self.engineButtonPressed)
-        engineButton.setFont(self.timesNewRoman18)
-
-        layout.addWidget(engineButton, 2, 6)
-
-        # Service Brake Label and Button
-        brakeButton = QPushButton("Service Brake\nFailure")
-        brakeButton.setStyleSheet("background-color: orange")
-        brakeButton.pressed.connect(self.brakeButtonPressed)
-        brakeButton.setFont(self.timesNewRoman18)
-
-        layout.addWidget(brakeButton, 2, 7)
-
         # Communication State Label and Output
         communicationsLabel = QLabel("Signal Pickup\nStatus")
         communicationsLabel.setFont(self.timesNewRoman12)
@@ -176,8 +152,8 @@ class TrainModelUI(QWidget):
         self.communicationsOutput.setAlignment(self.alignCenter)
         self.communicationsOutput.setWordWrap(True)
 
-        layout.addWidget(communicationsLabel, 3, 5, self.alignCenter)
-        layout.addWidget(self.communicationsOutput, 4, 5, self.alignCenter)
+        layout.addWidget(communicationsLabel, 2, 5, self.alignCenter)
+        layout.addWidget(self.communicationsOutput, 3, 5, self.alignCenter)
 
         # Engine State Label and Output
         engineLabel = QLabel("Engine Status")
@@ -189,8 +165,8 @@ class TrainModelUI(QWidget):
         self.engineOutput.setAlignment(self.alignCenter)
         self.engineOutput.setWordWrap(True)
 
-        layout.addWidget(engineLabel, 3, 6, self.alignCenter)
-        layout.addWidget(self.engineOutput, 4, 6, self.alignCenter)
+        layout.addWidget(engineLabel, 2, 6, self.alignCenter)
+        layout.addWidget(self.engineOutput, 3, 6, self.alignCenter)
 
         # Service Brake State Label and Output
         brakeLabel = QLabel("Service Brake\nStatus")
@@ -202,8 +178,32 @@ class TrainModelUI(QWidget):
         self.brakeOutput.setAlignment(self.alignCenter)
         self.brakeOutput.setWordWrap(True)
 
-        layout.addWidget(brakeLabel, 3, 7, self.alignCenter)
-        layout.addWidget(self.brakeOutput, 4, 7, self.alignCenter)
+        layout.addWidget(brakeLabel, 2, 7, self.alignCenter)
+        layout.addWidget(self.brakeOutput, 3, 7, self.alignCenter)
+
+        # Communcations Label and Button
+        self.communicationsButton = QPushButton("Signal Pickup\nFailure")
+        self.communicationsButton.setStyleSheet("background-color: orange")
+        self.communicationsButton.setFont(self.timesNewRoman18)
+        self.communicationsButton.pressed.connect(self.communicationsButtonPressed)
+
+        layout.addWidget(self.communicationsButton, 4, 5)
+
+        # Engine Label and Button
+        self.engineButton = QPushButton("Engine\nFailure")
+        self.engineButton.setStyleSheet("background-color: orange")
+        self.engineButton.pressed.connect(self.engineButtonPressed)
+        self.engineButton.setFont(self.timesNewRoman18)
+
+        layout.addWidget(self.engineButton, 4, 6)
+
+        # Service Brake Label and Button
+        self.brakeButton = QPushButton("Service Brake\nFailure")
+        self.brakeButton.setStyleSheet("background-color: orange")
+        self.brakeButton.pressed.connect(self.brakeButtonPressed)
+        self.brakeButton.setFont(self.timesNewRoman18)
+
+        layout.addWidget(self.brakeButton, 4, 7)
         
         # SPLITTING ROW 2
         splittingRow2 = QLabel("")
@@ -490,6 +490,13 @@ class TrainModelUI(QWidget):
             return "ON"
         else:
             return "Off"
+        
+    # Function to conver boolean to enable or disable string
+    def failureStates(self, value):
+        if (value == True):
+            return "Disable"
+        else:
+            return "Enable"
 
     def mainThreadSetup(self):
         self.timerThread = QThread()
@@ -552,6 +559,10 @@ class TrainModelUI(QWidget):
                 self.stationLabel.setAlignment(self.alignCenter)
                 self.stationOutput.setText(self.TrainModel.data["station"])
                 self.stationOutput.setStyleSheet("background-color: white")
+
+            self.communicationsButton.setText(self.failureStates(self.TrainModel.data["commStatus"]))
+            self.engineButton.setText(self.failureStates(self.TrainModel.data["engineStatus"]))
+            self.brakeButton.setText(self.failureStates(self.TrainModel.data["brakeStatus"]))
 
             # Setting communication status output and color
             self.communicationsOutput.setText(self.failureBoolean(self.TrainModel.data["commStatus"]))
