@@ -147,7 +147,7 @@ class MainWindow(QMainWindow):
     def maintenanceLabelSetup(self):
             MLabel = QLabel()
             MLabel.setFont(self.labelFont)
-            if(self.maintenancemode==True):                
+            if(self.maintenanceMode==True):                
                   MLabel.setText("Maintenance ON")
             else:
                   MLabel.setText("Maintenance OFF")
