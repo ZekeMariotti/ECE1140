@@ -718,7 +718,6 @@ class MainWindow(QMainWindow):
           if (self.Switch5Out.text() == "77 to 101" and WaysideControllerGreen2.switches[5] == False) or (self.Switch5Out.text() == "76 to 77" and WaysideControllerGreen2.switches[5] == True):
             TkMWCSignals.switchStateSignal.emit(int(WaysideControllerGreen2.switches[5]), 1, 76)
           if (self.Switch6Out.text() == "85 to 100" and WaysideControllerGreen2.switches[6] == False) or (self.Switch6Out.text() == "85 to 86" and WaysideControllerGreen2.switches[6] == True):
-            #print("emitSig")
             TkMWCSignals.switchStateSignal.emit(int(WaysideControllerGreen2.switches[6]), 1, 84)
           if(self.maintenanceMode==True):                
                   self.maintenanceLabel.setText("Maintenance ON")
@@ -758,8 +757,8 @@ class MainWindow(QMainWindow):
           j=1
           for k in range(101,self.blocks2):
                 value=WaysideControllerGreen2.authority[k]
-                #if active and value != int(self.Authority.item(i,j).text()):
-                  #TkMWCSignals.authoritySignal.emit(k, value, 1)
+                if active and value != int(self.Authority.item(i,j).text()):
+                    TkMWCSignals.authoritySignal.emit(k, value, 1)
                 self.Authority.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
@@ -770,8 +769,8 @@ class MainWindow(QMainWindow):
           i=0
           for k in range(101,self.blocks2):
                 value=WaysideControllerGreen2.commandedSpeed[k]
-                #if active and value != int(self.CommandedSpeed.item(i,j).text()):
-                  #TkMWCSignals.commandedSpeedSignal.emit(k, float(value), 1)
+                if active and value != int(self.CommandedSpeed.item(i,j).text()):
+                  TkMWCSignals.commandedSpeedSignal.emit(k, float(value), 1)
                 self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
@@ -800,11 +799,11 @@ class MainWindow(QMainWindow):
                   value="G"
                 else:
                   value="R"
-                #if active and value != self.SignalLight.item(i,j).text():
-                  #if value == "G":
-                        #TkMWCSignals.signalStateSignal.emit(0, 1, k - 1)
-                  #elif value == "R":
-                        #TkMWCSignals.signalStateSignal.emit(2, 1, k - 1)
+                if active and value != self.SignalLight.item(i,j).text():
+                  if value == "G":
+                        TkMWCSignals.signalStateSignal.emit(0, 1, k - 1)
+                  elif value == "R":
+                        TkMWCSignals.signalStateSignal.emit(2, 1, k - 1)
                 self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:

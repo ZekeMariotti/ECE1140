@@ -306,7 +306,7 @@ class MainWindow(QMainWindow):
         def launchWaysideControllerOneClick(self):
             self.wc = NewGreenLine.MainWindow()
             self.wc.setVisible(True)
-            #self.wc.WaysideControllerGreenTestUI.show()
+            self.wc.WaysideControllerGreenTestUI.show()
             activeSignals.activeSignal.emit()
 
         def launchWaysideControllerTwoClick(self):
