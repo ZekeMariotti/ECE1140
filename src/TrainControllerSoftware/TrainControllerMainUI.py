@@ -495,8 +495,7 @@ class MainWindow(QMainWindow):
             leftDoorState.move(x, y)
             leftDoorState.setParent(self)
             return leftDoorState
-            
-            
+             
         def leftDoorOpenSetup(self):
             leftDoorOpen = QPushButton("Open Doors")
             leftDoorOpen.setFont(self.buttonFont)
@@ -594,7 +593,6 @@ class MainWindow(QMainWindow):
             self.TrainControllerSW.currentTime = self.TrainControllerSW.realTime
             self.TrainControllerSW.calculatePower()     
             self.TrainControllerSW.failureMode()
-            #self.TrainControllerSW.setStationState()
 
             # Only run in automatic mode
             if(self.TrainControllerSW.manualMode == False):

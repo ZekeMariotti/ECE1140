@@ -46,6 +46,11 @@ class TrainControllerSW:
         TMTCSignals.serviceBrakeStatusSignal.connect(self.serviceBrakeStatusSignalHandler)
         TMTCSignals.engineStatusSignal.connect(self.engineStatusSignalHandler)
         TMTCSignals.communicationsStatusSignal.connect(self.communicationsStatusSignalHandler)      
+        TMTCSignals.blockCountSignal.connect(self.blockCountSignalHandler)
+        TMTCSignals.fromSwitchSignal.connect(self.fromSwitchSignal)
+        TMTCSignals.switchBlockSignal.connect(self.switchBlockSignal)
+        TMTCSignals.polaritySignal.connect(self.polaritySignal)
+
 
         # Train id and line
         self.trainId = trainId
@@ -59,7 +64,13 @@ class TrainControllerSW:
         self.speedLimit = 100
         self.commandedSpeedManual = 0
         self.manualMode = False
-        self.simulationSpeed = 1        
+        self.simulationSpeed = 1 
+
+        self.blockList = [0]
+        self.blockCount = 0
+        self.nextBlock = 0
+        self.countUp = True
+        self.polarity = False
 
         # Constants
         # Max Speed in km/hr
@@ -125,102 +136,23 @@ class TrainControllerSW:
             redPath = os.path.join(sys.path[0], "..", "TrackModel", "RedLine.csv")
 
         if self.line == "Green":
-            self.blocks = [0] * 151
-            with open (os.path.join(sys.path[0], "", "TrackModel", "GreenLine.csv")) as csvfile:
+            self.blockList = [0] * 151
+            with open (greenPath) as csvfile:
                 rows = csv.reader(csvfile, delimiter=',')
                 for row in rows:
                     if (row[0] == "BlockNo"):
                         continue
                     else:
-                        self.blocks[int(row[0])] = blocks(int(row[0]), float(row[1]), float(row[5]), float(row[3]), bool(int(row[7])))
+                        self.blockList[int(row[0])] = blocks(int(row[0]), float(row[1]), float(row[5]), float(row[3]), bool(int(row[7])))
         elif self.line == "Red":
-            self.blocks = [0] * 77
+            self.blockList = [0] * 77
             with open(redPath) as csvfile:
                 rows = csv.reader(csvfile, delimiter=',')
                 for row in rows:
                     if (row[0] == "BlockNo"):
                         continue
                     else:
-                        self.blocks[int(row[0])] = blocks(int(row[0]), float(row[1]), float(row[5]), float(row[3]), bool(int(row[7])))
-
-    # Signal handlers
-    def rtcSignalHandler(self, rtcString):
-        self.inputs.inputTime = rtcString
-        self.convertTime()
-
-
-    def commandedSpeedSignalHandler(self, id, cmdSpeed):
-        if(self.trainId == id):
-            self.inputs.commandedSpeed = cmdSpeed
-    
-    def currentSpeedSignalHandler(self, id, currSpeed):
-        if(self.trainId == id):
-            self.inputs.currentSpeed = currSpeed
-
-    def authoritySignalHandler(self, id, auth):
-        if(self.trainId == id):
-            self.inputs.authority = auth
-
-    def undergroundSignalHandler(self, id, undgnd):
-        if(self.trainId == id):
-            self.inputs.undergroundState = undgnd
-
-    def temperatureSignalHandler(self, id, temp):
-        if(self.trainId == id):
-            self.inputs.temperature = temp
-
-    def stationNameSignalHandler(self, id, statName):
-        if(self.trainId == id):
-            self.inputs.stationName = statName
-
-    def platformSideSignalHandler(self, id, platSide):
-        if(self.trainId == id):
-            self.inputs.platformSide = platSide
-
-    def nextStationNameSignalHandler(self, id, nxtStatName):
-        if(self.trainId == id):
-            self.inputs.nextStationName = nxtStatName
-
-    def isBeaconSignalHandler(self, id, isBeac):
-        if(self.trainId == id):
-            self.inputs.isBeacon = isBeac
-            self.setStationState()
-
-    def externalLightsStateSignalHandler(self, id, extLight):
-        if(self.trainId == id):
-            self.inputs.externalLightsState = extLight
-
-    def internalLightsStateSignalHandler(self, id, intLight):
-        if(self.trainId == id):
-            self.inputs.internalLightsState = intLight
-
-    def leftDoorStateSignalHandler(self, id, lftDoor):
-        if(self.trainId == id):
-            self.inputs.leftDoorState = lftDoor
-
-    def rightDoorStateSignalHandler(self, id, rghtDoor):
-        if(self.trainId == id):
-            self.inputs.rightDoorState = rghtDoor
-
-    def serviceBrakeStateSignalHandler(self, id, srvcBrk):
-        if(self.trainId == id):
-            self.inputs.serviceBrakeState = srvcBrk
-
-    def emergencyBrakeStateSignalHandler(self, id, emgBrk):
-        if(self.trainId == id):
-            self.inputs.emergencyBrakeState = emgBrk
-
-    def serviceBrakeStatusSignalHandler(self, id, srvcBrkStatus):
-        if(self.trainId == id):
-            self.inputs.serviceBrakeStatus = srvcBrkStatus
-
-    def engineStatusSignalHandler(self, id, engStatus):
-        if(self.trainId == id):
-            self.inputs.engineStatus = engStatus
-
-    def communicationsStatusSignalHandler(self, id, comStatus):
-        if(self.trainId == id):
-            self.inputs.communicationsStatus = comStatus
+                        self.blockList[int(row[0])] = blocks(int(row[0]), float(row[1]), float(row[5]), float(row[3]), bool(int(row[7])))    
 
     # Determines whether the train is at a station or not
     def setStationState(self):
@@ -422,6 +354,100 @@ class TrainControllerSW:
             return "OFF"
         else:
             return "ERROR: UNKNOWN STATE"
+        
+    # Signal handlers
+    def rtcSignalHandler(self, rtcString):
+        self.inputs.inputTime = rtcString
+        self.convertTime()
+
+    def commandedSpeedSignalHandler(self, id, cmdSpeed):
+        if(self.trainId == id):
+            self.inputs.commandedSpeed = cmdSpeed
+    
+    def currentSpeedSignalHandler(self, id, currSpeed):
+        if(self.trainId == id):
+            self.inputs.currentSpeed = currSpeed
+
+    def authoritySignalHandler(self, id, auth):
+        if(self.trainId == id):
+            self.inputs.authority = auth
+
+    def undergroundSignalHandler(self, id, undgnd):
+        if(self.trainId == id):
+            self.inputs.undergroundState = undgnd
+
+    def temperatureSignalHandler(self, id, temp):
+        if(self.trainId == id):
+            self.inputs.temperature = temp
+
+    def stationNameSignalHandler(self, id, statName):
+        if(self.trainId == id):
+            self.inputs.stationName = statName
+
+    def platformSideSignalHandler(self, id, platSide):
+        if(self.trainId == id):
+            self.inputs.platformSide = platSide
+
+    def nextStationNameSignalHandler(self, id, nxtStatName):
+        if(self.trainId == id):
+            self.inputs.nextStationName = nxtStatName
+
+    def isBeaconSignalHandler(self, id, isBeac):
+        if(self.trainId == id):
+            self.inputs.isBeacon = isBeac
+            self.setStationState()
+
+    def externalLightsStateSignalHandler(self, id, extLight):
+        if(self.trainId == id):
+            self.inputs.externalLightsState = extLight
+
+    def internalLightsStateSignalHandler(self, id, intLight):
+        if(self.trainId == id):
+            self.inputs.internalLightsState = intLight
+
+    def leftDoorStateSignalHandler(self, id, lftDoor):
+        if(self.trainId == id):
+            self.inputs.leftDoorState = lftDoor
+
+    def rightDoorStateSignalHandler(self, id, rghtDoor):
+        if(self.trainId == id):
+            self.inputs.rightDoorState = rghtDoor
+
+    def serviceBrakeStateSignalHandler(self, id, srvcBrk):
+        if(self.trainId == id):
+            self.inputs.serviceBrakeState = srvcBrk
+
+    def emergencyBrakeStateSignalHandler(self, id, emgBrk):
+        if(self.trainId == id):
+            self.inputs.emergencyBrakeState = emgBrk
+
+    def serviceBrakeStatusSignalHandler(self, id, srvcBrkStatus):
+        if(self.trainId == id):
+            self.inputs.serviceBrakeStatus = srvcBrkStatus
+
+    def engineStatusSignalHandler(self, id, engStatus):
+        if(self.trainId == id):
+            self.inputs.engineStatus = engStatus
+
+    def communicationsStatusSignalHandler(self, id, comStatus):
+        if(self.trainId == id):
+            self.inputs.communicationsStatus = comStatus
+
+    def blockCountSignalHandler(self, id, nxtBlk):
+        if(self.trainId == id):
+            self.nextBlock = nxtBlk
+        
+    def fromSwitchSignal(self, id, countUpOrDown):
+        if(self.trainId == id):
+            self.countUp = countUpOrDown
+
+    def switchBlockSignal(self, id, swtchBlk):
+        if(self.trainId == id):
+            self.nextBlock = swtchBlk
+        
+    def polaritySignal(self, id, plrty):
+        if(self.trainId == id):
+            self.polarity = plrty
         
 # Function to remove character from a string at nth position
 def stringRemove(string, n):  
