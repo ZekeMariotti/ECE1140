@@ -213,14 +213,12 @@ class PLC():
             if(Gswitch1True[i]==True):
                 self.Wayside1.setSwitchPositions(True,1)
                 self.Wayside2.setSwitchPositions(True,1)
-                print("Switch is now")
                 print(self.Wayside1.switches[1])
 
         for i in Gswitch1False:
             if(Gswitch1False[i]==True):
                 self.Wayside1.setSwitchPositions(False,1)
                 self.Wayside2.setSwitchPositions(False,1)
-                print("Switch is now")
                 print(self.Wayside1.switches[1])
                 
         for i in Gswitch2True:
@@ -279,8 +277,6 @@ class PLC():
         for i in range(0,len(GLight13)):
             if(GLight13[i]==True):
                 self.Wayside1.setSignalLights(False,13)
-                print("light is now red")
-                print(self.Wayside1.signalLights[13])
                 break
             else:
                 self.Wayside1.setSignalLights(True,13)
@@ -315,8 +311,8 @@ class PLC():
         GLight77.clear()
         GLight84.clear()
         GLight100.clear()
-    def RloadValues1(self):
-        file = open("C:\\Users\danek\Documents\RedLine.txt", "r")
+    def RloadValues1(self,file):
+        file = open(file, "r")
         for i in range(0,100):
             line=file.readline()
             line=line.strip()
@@ -394,8 +390,8 @@ class PLC():
                 Rswitch7False.append(logic)                
         file.close()
 
-    def RloadValues2(self):
-        file = open("C:\\Users\danek\Documents\RedLine2.txt", "r")
+    def RloadValues2(self,file):
+        file = open(file)
         for i in range(0,100):
             line=file.readline()
             line=line.strip()

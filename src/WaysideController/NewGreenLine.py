@@ -19,10 +19,10 @@ rowheaders2 =["0","1","2","3","4","5"]
 #Setup Green Waysides
 WaysideControllerGreen=Wayside(1,True)
 WaysideControllerGreen2=Wayside(1,True)
-WaysideControllerGreen.setdictionarysizes(1,101,7)
+WaysideControllerGreen.setdictionarysizes(1,101)
 WaysideControllerGreen.setCommandedSpeed()
 WaysideControllerGreen.setAuthority()
-WaysideControllerGreen2.setdictionarysizes(101,151,7)
+WaysideControllerGreen2.setdictionarysizes(101,151)
 WaysideControllerGreen2.setCommandedSpeed()
 WaysideControllerGreen2.setAuthority() 
 
