@@ -10,7 +10,7 @@ class Worker(QObject):
 class TestWindow(QMainWindow):
     def __init__(self,Wayside1,Wayside2):
 
-        super().__init__()
+        super().__init__()        
 
         #Intialize Wayside class
         self.WaysideControllerGreen = Wayside1
@@ -36,16 +36,16 @@ class TestWindow(QMainWindow):
 
         self.Switches = self.MainSwitchLabel()
         self.SwitchLabel = self.SwitchLabels()
-        self.Left1 = self.Switch1ButtonL()
-        self.Right1 =self.Switch1ButtonR()
-        self.Left2 = self.Switch2ButtonL()
-        self.Right2 =self.Switch2ButtonR()
-        self.Left3 = self.Switch3ButtonL()
-        self.Right3 =self.Switch3ButtonR()
-        self.Left4 = self.Switch4ButtonL()
-        self.Right4 = self.Switch4ButtonR()
-        self.Left5 = self.Switch5ButtonL()
-        self.Right5 = self.Switch5ButtonR()
+        #self.Left1 = self.Switch1ButtonL()
+        #self.Right1 =self.Switch1ButtonR()
+        #self.Left2 = self.Switch2ButtonL()
+        #self.Right2 =self.Switch2ButtonR()
+        #self.Left3 = self.Switch3ButtonL()
+        #self.Right3 =self.Switch3ButtonR()
+        #self.Left4 = self.Switch4ButtonL()
+        #self.Right4 = self.Switch4ButtonR()
+        #self.Left5 = self.Switch5ButtonL()
+        #self.Right5 = self.Switch5ButtonR()
         self.AuthorityLabel = self.AuthorityLabelSetup()
         self.Authority = self.AuthorityInput()
         self.CommandedSpeedLabel = self.CommandedSpeedLabelSetup()
@@ -55,8 +55,8 @@ class TestWindow(QMainWindow):
         self.Broken   = self.BrokenBoxSetup()
         self.LightColor = self.LightBoxSetup()
         self.GateLabel = self.GateLabelSetup()
-        self.Up = self.GateUp()
-        self.Down = self.GateDown()
+        #self.Up = self.GateUp()
+        #self.Down = self.GateDown()
         ## buttons to send data
         self.BrokenButton = self.BrokenButtonSetup()
         self.LightsButton = self.LightButtonSetup()
@@ -95,96 +95,6 @@ class TestWindow(QMainWindow):
           CSL.setParent(self)
           CSL.move(20,20)
           return(CSL)
-              
-    def Switch1ButtonL(self):
-          Push1L = QPushButton("12 to 13")
-          Push1L.setFont(self.labelFont) 
-          Push1L.setFixedSize(QSize(70,40)) 
-          Push1L.clicked.connect(self.Switch1ButtonLClick)
-          Push1L.setParent(self)
-          Push1L.move(400,105)
-          return(Push1L)
-    
-    def Switch1ButtonR(self):
-          Push1R = QPushButton("1 to 13")
-          Push1R.setFont(self.labelFont) 
-          Push1R.setFixedSize(QSize(70,40))  
-          Push1R.clicked.connect(self.Switch1ButtonRClick)
-          Push1R.setParent(self)
-          Push1R.move(500,105)
-          return(Push1R)
-    
-    def Switch2ButtonL(self):
-          Push2L = QPushButton("29 to 30")
-          Push2L.setFont(self.labelFont) 
-          Push2L.setFixedSize(QSize(70,40))  
-          Push2L.clicked.connect(self.Switch2ButtonLClick)
-          Push2L.setParent(self)
-          Push2L.move(400,160)
-          return(Push2L)
-    
-    def Switch2ButtonR(self):
-          Push2R = QPushButton("29 to 150")
-          Push2R.setFont(self.labelFont) 
-          Push2R.setFixedSize(QSize(70,40))  
-          Push2R.clicked.connect(self.Switch2ButtonRClick)
-          Push2R.setParent(self)
-          Push2R.move(500,160)
-          return(Push2R)
-    
-    def Switch3ButtonL(self):
-          Push3L = QPushButton("57 to Yard")
-          Push3L.setFont(self.labelFont) 
-          Push3L.setFixedSize(QSize(70,40))  
-          Push3L.clicked.connect(self.Switch3ButtonLClick)
-          Push3L.setParent(self)
-          Push3L.move(400,215)
-          return(Push3L)
-    
-    def Switch3ButtonR(self):
-          Push3R = QPushButton("57 to 58")
-          Push3R.setFont(self.labelFont) 
-          Push3R.setFixedSize(QSize(70,40))  
-          Push3R.clicked.connect(self.Switch3ButtonRClick)
-          Push3R.setParent(self)
-          Push3R.move(500,215)
-          return(Push3R)
-
-    def Switch4ButtonL(self):
-          Push4L = QPushButton("76 to 77")
-          Push4L.setFont(self.labelFont) 
-          Push4L.setFixedSize(QSize(70,40))  
-          Push4L.clicked.connect(self.Switch4ButtonLClick)
-          Push4L.setParent(self)
-          Push4L.move(400,270)
-          return(Push4L)
-    
-    def Switch4ButtonR(self):
-          Push4R = QPushButton("77 to 101")
-          Push4R.setFont(self.labelFont) 
-          Push4R.setFixedSize(QSize(70,40))  
-          Push4R.clicked.connect(self.Switch4ButtonRClick)
-          Push4R.setParent(self)
-          Push4R.move(500,270)
-          return(Push4R)
-    
-    def Switch5ButtonL(self):
-          Push5L = QPushButton("85 to 86")
-          Push5L.setFont(self.labelFont) 
-          Push5L.setFixedSize(QSize(70,40))  
-          Push5L.clicked.connect(self.Switch5ButtonLClick)
-          Push5L.setParent(self)
-          Push5L.move(400,325)
-          return(Push5L)
-    
-    def Switch5ButtonR(self):
-          Push5R = QPushButton("100 to 85")
-          Push5R.setFont(self.labelFont) 
-          Push5R.setFixedSize(QSize(70,40))  
-          Push5R.clicked.connect(self.Switch5ButtonRClick)
-          Push5R.setParent(self)
-          Push5R.move(500,325)
-          return(Push5R)
     
     def Switch1OutSetup(self):
           Output1 = QLabel()
@@ -259,14 +169,6 @@ class TestWindow(QMainWindow):
           GateLabel.move(70,-200)
           return(GateLabel)
 
-    def GateUp(self):
-          Up = QPushButton("Up")
-          Up.setFont(self.labelFont) 
-          Up.setFixedSize(QSize(70,40))  
-          Up.clicked.connect(self.UpClicked)
-          Up.setParent(self)
-          Up.move(50,100)
-          return(Up)
     
     def BrokenButtonSetup(self):
           BRail=QPushButton("Broken Rail")
@@ -312,15 +214,6 @@ class TestWindow(QMainWindow):
           Auth.setParent(self)
           Auth.move(190,450)
           return(Auth)
-                     
-    def GateDown(self):
-          Down = QPushButton("Down")
-          Down.setFont(self.labelFont) 
-          Down.setFixedSize(QSize(70,40))  
-          Down.clicked.connect(self.DownClicked)
-          Down.setParent(self)
-          Down.move(150,100)
-          return(Down)
 
     def AuthorityInput(self):
           AInput = QComboBox()
@@ -409,10 +302,12 @@ class TestWindow(QMainWindow):
           self.WaysideControllerGreen.setSwitchPositions(False,5)
     
     def UpClicked(self):
-          self.WaysideControllerGreen.setGatePositions(True)
+            self.WaysideControllerGreen.setGatePositions(True)
+            self.WaysideControllerGreen2.setGatePositions(True)
           
     def DownClicked(self):
           self.WaysideControllerGreen.setGatePositions(False)
+          self.WaysideControllerGreen2.setGatePositions(True)
 
     def setCommanded(self):
           self.storeCommandedSpeed = self.CommandedSpeed.currentText()
@@ -439,7 +334,7 @@ class TestWindow(QMainWindow):
                 x=False
           if int(self.storeBlock)<101:
                 self.WaysideControllerGreen.setOccupancy(x,int(self.storeBlock))
-          else:
+          elif (int(self.storeBlock)>100 & int(self.storeBlock)<150):
                 self.WaysideControllerGreen2.setOccupancy(x,int(self.storeBlock)) 
 
     def LightClick(self):
@@ -449,7 +344,7 @@ class TestWindow(QMainWindow):
                 x=False
           if int(self.storeBlock)<101:
                 self.WaysideControllerGreen.setSignalLights(x,int(self.storeBlock))
-          else:
+          elif (int(self.storeBlock)>100 & int(self.storeBlock)<150):
                 self.WaysideControllerGreen2.setSignalLights(x,int(self.storeBlock)) 
 
     def BrokenClick(self):
@@ -459,19 +354,19 @@ class TestWindow(QMainWindow):
                 x=True
           if int(self.storeBlock)<101:
                 self.WaysideControllerGreen.setBrokenRail(x,int(self.storeBlock))
-          else:
+          elif (int(self.storeBlock)>100 & int(self.storeBlock)<150):
                 self.WaysideControllerGreen2.setBrokenRail(x,int(self.storeBlock))  
 
     def CommandedClick(self):
           if int(self.storeBlock)<101:
                 self.WaysideControllerGreen.setACommandedSpeed(int(self.storeCommandedSpeed),int(self.storeBlock))
-          else:
+          elif (int(self.storeBlock)>100 & int(self.storeBlock)<150):
                 self.WaysideControllerGreen2.setACommandedSpeed(int(self.storeCommandedSpeed),int(self.storeBlock))
 
     def AuthorityClick(self):
           if int(self.storeBlock)<101:
                 self.WaysideControllerGreen.setAAuthority(int(self.storeAuthority),int(self.storeBlock))
-          else:
+          elif (int(self.storeBlock)>100 & int(self.storeBlock)<150):
                 self.WaysideControllerGreen2.setAAuthority(int(self.storeAuthority),int(self.storeBlock)) 
 
 if(__name__ == "__main__"):

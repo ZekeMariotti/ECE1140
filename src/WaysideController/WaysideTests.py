@@ -1,5 +1,5 @@
-from TestGenericWayside import Wayside
-from PLC import PLC
+from WaysideController.TestGenericWayside import Wayside
+from WaysideController.PLC import PLC
 import sys
 import os
 
