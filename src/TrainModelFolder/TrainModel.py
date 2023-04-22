@@ -677,11 +677,11 @@ class TrainModel():
     # Air Conditioning System that changes based on user input
     def airConditioningControl(self, time = 1):
         if self.data["currTemp"] < self.data["goalTemp"]:
-            self.data["currTemp"] += (0.1 * time / 2)
+            self.data["currTemp"] += (0.5 * time / 2)
         elif self.data["currTemp"] == self.data["goalTemp"]:
             self.data["currTemp"] += 0
         else:
-            self.data["currTemp"] -= (0.1 * time / 2)
+            self.data["currTemp"] -= (0.5 * time / 2)
         self.data["currTemp"] = round(self.data["currTemp"], 2)
 
     # Find the current mass of the entire train including passengers 
