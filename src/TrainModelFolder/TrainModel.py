@@ -126,8 +126,9 @@ class TrainModel():
 
         # Dictionary used for different eBrake States from train controller and user input
         self.eBrakes = {
-            "user"               : False,        # State of the emergency brake from the passenger
-            "trainController"    : False         # State of the emergency brake from the driver
+            "user"                : False,        # State of the emergency brake from the passenger
+            "trainController"     : False,        # State of the emergency brake from the driver
+            "trainControllerPrev" : False         # Previous State of the emergency brake from the driver
         }
 
         # Dictionary for pass through data (Only data to be passed through the module and not used within)
@@ -258,6 +259,8 @@ class TrainModel():
     def emergencyBrakeCommandSignalHandler(self, id, state):
         if (id == self.TrainID):
             self.eBrakes["trainController"] = state
+            if (self.eBrakes["trainControllerPrev"] == True) & (self.eBrakes["trainController"] == False):
+                self.eBrakes["user"] = False
 
     # External Light Command input handler
     def externalLightCommandSignalHandler(self, id, state):
@@ -364,6 +367,7 @@ class TrainModel():
         self.data["prevVelocity"] = self.data["velocity"]
         self.data["prevAcceleration"] = self.data["acceleration"]
         self.data["prevRTC"] = self.data["rtc"]
+        self.eBrakes["trainControllerPrev"] = self.eBrakes["trainController"]
 
     # Finds the current acceleration of a train
     def findCurrentAcceleration(self, time = 1) :
@@ -687,10 +691,7 @@ class TrainModel():
     # Handle Emergency Brake being pulled by the Passenger
     def emergencyBrakeDeceleration(self, id):
         if (id == self.TrainID):
-            if (self.eBrakes["user"] == False):
-                self.eBrakes["user"] = True
-            else:
-                self.eBrakes["user"] = False
+            self.eBrakes["user"] = True
 
     # Function to be called when updating the values to set the emergency brake state
     def brakeCaclulator(self):
