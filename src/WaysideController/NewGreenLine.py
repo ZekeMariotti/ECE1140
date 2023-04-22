@@ -711,7 +711,7 @@ class MainWindow(QMainWindow):
             #print("emitSig")
             TkMWCSignals.switchStateSignal.emit(int(WaysideControllerGreen.switches[6]), 1, 84)
 
-          if(self.maintenancemode==True):                
+          if(self.maintenanceMode==True):                
                   self.maintenanceLabel.setText("Maintenance ON")
           else:
                   self.maintenanceLabel.setText("Maintenance OFF")
