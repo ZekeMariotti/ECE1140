@@ -828,7 +828,6 @@ class MainWindow(QMainWindow):
           else:
                   self.Gate.setText("Block 19 Gate:  DOWN")    
           if(self.maintenanceMode==False):                    
-            self.PLCMain.GloadValues1(self.File1)
             self.PLCMain.GloadValues2(self.File2)
             self.PLCMain.setswitches()
 
