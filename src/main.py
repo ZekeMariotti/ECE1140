@@ -13,7 +13,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "TrackModel"))
 from TrainModelFolder import TrainModelMainUI, TrainModelTestUI
 from TrainControllerSoftware import TrainControllerMainUI
 from TrackModel import TrackModelMainUI, TrackModelTestUI, IntegrationTestUI
-from WaysideController import NewGreenLine,GreenLineTestUi
+from WaysideController import NewGreenLine,NewGreenLine2,GreenLineTestUi
 from Integration.TimeSignals import *
 from Integration.TMTCSignals import *
 from Integration.ActiveSignals import *
@@ -310,7 +310,9 @@ class MainWindow(QMainWindow):
             activeSignals.activeSignal.emit()
 
         def launchWaysideControllerTwoClick(self):
-            print("Wayside Controller Two")
+            self.wc2 = NewGreenLine2.MainWindow()
+            self.wc2.setVisible(True)
+            activeSignals.activeSignal.emit()
 
         def launchWaysideControllerThreeClick(self):
             print("Wayside Controller Three")
