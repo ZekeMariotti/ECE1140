@@ -38,7 +38,8 @@ class MainWindow(QMainWindow):
         def __init__(self):
             super().__init__()
 
-            #subprocess.call(f'{sys.path[0]}')
+            self.ctcBackendThread = QThread()
+            self.ctcBackendThread.started.connect(self.ctcBackend)
 
             # Main clock and simulation speed
             self.RTC = datetime.now() # Temporarily set time manually
@@ -147,6 +148,7 @@ class MainWindow(QMainWindow):
             # Test TM and TC
             #for i in range(2, 4):
             #    self.trainDispatch(i)    
+            self.trainDispatch(2, "Green")
 
             #self.TkMTestUI = TrackModelTestUI.TrackModelTestUI()
             #self.TESTUI = IntegrationTestUI.BasicTestUI()
@@ -156,6 +158,10 @@ class MainWindow(QMainWindow):
         def mainThreadSetup(self):
             self.timerThread = QThread()
             self.timerThread.started.connect(self.mainTimerSetup)
+
+        def ctcBackend(self):
+            print(f'{sys.path[0]}\CTC\ctc-backend\main\main.exe')
+            subprocess.call(f'{sys.path[0]}\CTC\ctc-backend\main\main.exe')
 
         def mainTimerSetup(self):     
             mainTimer = QTimer()
