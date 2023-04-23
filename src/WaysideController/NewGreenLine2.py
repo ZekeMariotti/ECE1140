@@ -21,7 +21,7 @@ class Worker(QObject):
       finished = pyqtSignal()
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self,name):
 
         super().__init__()
 
@@ -35,7 +35,7 @@ class MainWindow(QMainWindow):
         self.File2 = os.path.join(sys.path[0], "WaysideController", "GreenLine2.txt")
         self.blocks1 =101
         self.blocks2 =151
-
+        self.name = name
         self.TestUI = True
         self.active = False
         activeSignals.activeSignal.connect(self.activeSignal)
@@ -43,7 +43,7 @@ class MainWindow(QMainWindow):
         TkMWCSignals.currBlockSignal.connect(self.currBlockHandler)
         #Window
 
-        self.setWindowTitle("Green Line")
+        self.setWindowTitle(str(self.name))
         self.setMinimumSize(1100,650)
         self.move(0,0)
         self.windowWidth = self.frameGeometry().width()

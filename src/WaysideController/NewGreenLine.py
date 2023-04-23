@@ -30,7 +30,7 @@ class Worker(QObject):
       finished = pyqtSignal()
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self,name):
 
         super().__init__()
 
@@ -42,6 +42,7 @@ class MainWindow(QMainWindow):
         #self.File2 = "C:\\Systems and Progect Engineering\ECE1140-1\src\waysideController\GreenLine2.txt"
         self.File1 = os.path.join(sys.path[0], "WaysideController", "GreenLine.txt")
         self.File2 = os.path.join(sys.path[0], "WaysideController", "GreenLine2.txt")
+        self.name = name
         self.blocks1 =101
         self.blocks2 =151
         self.TestUI = True
@@ -52,7 +53,7 @@ class MainWindow(QMainWindow):
         TkMWCSignals.currBlockSignal.connect(self.currBlockHandler)
         #Window
 
-        self.setWindowTitle("Green Line")
+        self.setWindowTitle(str(self.name))
         self.setMinimumSize(1100,650)
         self.move(0,0)
         self.windowWidth = self.frameGeometry().width()
@@ -330,7 +331,8 @@ class MainWindow(QMainWindow):
           GateLabel = QLabel()
           GateLabel.setFont(self.titleFont)
           GateLabel.setText("Gate State")
-          GateLabel.move(int(round(0.85*self.windowWidth)),int(round(0.45*self.windowHeight)))
+          GateLabel.setFixedSize(QSize(100,20))
+          GateLabel.move(int(round(0.85*self.windowWidth)),560)
           GateLabel.setParent(self)
           return(GateLabel)  
     
