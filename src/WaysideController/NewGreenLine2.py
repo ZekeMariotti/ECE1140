@@ -599,7 +599,7 @@ class MainWindow(QMainWindow):
          PLCButton = QPushButton("PLC")
          PLCButton.setFont(self.labelFont) 
          PLCButton.setFixedSize(QSize(70,40))  
-         #PLCButton.clicked.connect()
+         PLCButton.clicked.connect(self.getfiles)
          PLCButton.setParent(self)
          PLCButton.move(870,450)
          return(PLCButton) 
@@ -704,6 +704,14 @@ class MainWindow(QMainWindow):
             MLabel.setFixedSize(QSize(120,50))
             MLabel.setParent(self)
             return(MLabel)
+    
+    def getfiles(self):
+            if self.maintenanceMode==True:
+                name = QFileDialog.getOpenFileName(self,'Open file','c:\\',"Text files (*.txt)")
+                stringname=(str(name[0]))            
+                self.File2=stringname
+                self.File2 = os.path.join(sys.path[0], "WaysideController", stringname)
+
     def updateVisualElements(self, active):
           self.PLCMain = PLC(WaysideControllerGreen,WaysideControllerGreen2,"Green")
           if (self.Switch1Out.text() == "1 to 13" and WaysideControllerGreen2.switches[1] == False) or (self.Switch1Out.text() == "12 to 13" and WaysideControllerGreen2.switches[1] == True):

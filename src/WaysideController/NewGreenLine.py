@@ -594,8 +594,8 @@ class MainWindow(QMainWindow):
     def PLCButton(self):
          PLCButton = QPushButton("PLC")
          PLCButton.setFont(self.labelFont) 
-         PLCButton.setFixedSize(QSize(70,40))  
-         #PLCButton.clicked.connect()
+         PLCButton.setFixedSize(QSize(70,40))
+         PLCButton.clicked.connect(self.getfiles)
          PLCButton.setParent(self)
          PLCButton.move(870,450)
          return(PLCButton) 
@@ -700,7 +700,15 @@ class MainWindow(QMainWindow):
             MLabel.setFixedSize(QSize(120,50))
             MLabel.setParent(self)
             return(MLabel)
-                
+    
+    def getfiles(self):
+            if self.maintenanceMode == True: 
+                  name = QFileDialog.getOpenFileName(self,'Open file','c:\\',"Text files (*.txt)")
+                  stringname=(str(name[0]))            
+                  self.File1=stringname
+                  self.File1 = os.path.join(sys.path[0], "WaysideController", stringname)
+
+
     def updateVisualElements(self, active):
           #hour = str(WaysideController.realTime.hour) if WaysideController.realTime.hour <=12 else str(WaysideController.realTime.hour - 12)   
           #if(int(hour)==0):

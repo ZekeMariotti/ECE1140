@@ -620,7 +620,7 @@ class MainWindowR(QMainWindow):
          PLCButton = QPushButton("PLC")
          PLCButton.setFont(self.labelFont) 
          PLCButton.setFixedSize(QSize(70,40))  
-         #PLCButton.clicked.connect()
+         PLCButton.clicked.connect(self.getfiles)
          PLCButton.setParent(self)
          PLCButton.move(870,480)
          return(PLCButton) 
@@ -723,7 +723,14 @@ class MainWindowR(QMainWindow):
             MLabel.setFixedSize(QSize(120,50))
             MLabel.setParent(self)
             return(MLabel)
-    
+
+    def getfiles(self):
+            if self.maintenanceMode == True: 
+                  name = QFileDialog.getOpenFileName(self,'Open file','c:\\',"Text files (*.txt)")
+                  stringname=(str(name[0]))            
+                  self.File1=stringname
+                  self.File1 = os.path.join(sys.path[0], "WaysideController", stringname)
+
     def updateVisualElements(self,active):
           if (self.Switch1Out.text() == "Yard to 9" and WaysideControllerRed.switches[1] == False) or (self.Switch1Out.text() == "9 to Yard" and WaysideControllerRed.switches[1] == True):
             TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[1]), 0, 9)
