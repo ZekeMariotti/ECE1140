@@ -719,7 +719,7 @@ class MainWindowR(QMainWindow):
                   self.File2=stringname
                   self.File2 = os.path.join(sys.path[0], "WaysideController", stringname)
 
-    def updateVisualElements(self):
+    def updateVisualElements(self,active):
           if (self.Switch1Out.text() == "Yard to 9" and WaysideControllerRed2.switches[1] == False) or (self.Switch1Out.text() == "9 to Yard" and WaysideControllerRed2.switches[1] == True):
             TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[1]), 0, 9)
           if (self.Switch2Out.text() == "1 to 16" and WaysideControllerRed2.switches[2] == False) or (self.Switch2Out.text() == "15 to 16" and WaysideControllerRed2.switches[2] == True):
@@ -780,6 +780,8 @@ class MainWindowR(QMainWindow):
           j=1
           for k in range(51,77):
                 value=WaysideControllerRed2.authority[k]
+                if active and value != int(self.Authority.item(i,j).text()):
+                  TkMWCSignals.authoritySignal.emit(k, value, 0)                
                 self.Authority.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
@@ -790,6 +792,8 @@ class MainWindowR(QMainWindow):
           j=1
           for k in range(51,77):
                 value=WaysideControllerRed2.commandedSpeed[k]
+                if active and value != int(self.Authority.item(i,j).text()):
+                  TkMWCSignals.commandedSpeedSignal.emit(k, value, 0)                
                 self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
