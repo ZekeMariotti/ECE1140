@@ -12,6 +12,8 @@
 ######################################
 #   VII     #   VIII    #     IX     #
 ######################################
+#                Ads                 #
+######################################
 
 # Imports needed for the UI
 from sys import argv
@@ -148,7 +150,7 @@ class TrainModelUI(QWidget):
 
         # Communication State Label and Output
         communicationsLabel = QLabel("Signal Pickup\nStatus")
-        communicationsLabel.setFont(self.timesNewRoman12)
+        communicationsLabel.setFont(self.timesNewRoman18)
         communicationsLabel.setAlignment(self.alignCenter)
         self.communicationsOutput = QLabel()
         self.communicationsOutput.setFixedSize(120, 55)
@@ -161,7 +163,7 @@ class TrainModelUI(QWidget):
 
         # Engine State Label and Output
         engineLabel = QLabel("Engine Status")
-        engineLabel.setFont(self.timesNewRoman12)
+        engineLabel.setFont(self.timesNewRoman18)
         engineLabel.setAlignment(self.alignCenter)
         self.engineOutput = QLabel()
         self.engineOutput.setFixedSize(120, 55)
@@ -174,7 +176,7 @@ class TrainModelUI(QWidget):
 
         # Service Brake State Label and Output
         brakeLabel = QLabel("Service Brake\nStatus")
-        brakeLabel.setFont(self.timesNewRoman12)
+        brakeLabel.setFont(self.timesNewRoman18)
         brakeLabel.setAlignment(self.alignCenter)
         self.brakeOutput = QLabel()
         self.brakeOutput.setFixedSize(120, 55)
@@ -533,7 +535,7 @@ class TrainModelUI(QWidget):
     # Rotate the advertisements
     def rotateAdvertisements(self, time):
         self.adTimer += time
-        if (self.adTimer > 50):
+        if (self.adTimer > 75):
             self.adCounter += 1
             if (self.adCounter == 3):
                 self.adCounter = 0
