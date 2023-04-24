@@ -710,13 +710,6 @@ class MainWindow(QMainWindow):
 
 
     def updateVisualElements(self, active):
-          #hour = str(WaysideController.realTime.hour) if WaysideController.realTime.hour <=12 else str(WaysideController.realTime.hour - 12)   
-          #if(int(hour)==0):
-           #     hour = "12"
-          #minute = str(.WaysideController.realTime.minute)
-          #second = str(WaysideController.realTime.second)
-          #might add to ui
-          #self.realTimeClock.setText(f'Time: {hour}:{minute}:{second}')
           
           if (self.Switch1Out.text() == "1 to 13" and WaysideControllerGreen.switches[1] == False) or (self.Switch1Out.text() == "12 to 13" and WaysideControllerGreen.switches[1] == True):
             TkMWCSignals.switchStateSignal.emit(int(WaysideControllerGreen.switches[1]), 1, 12)
@@ -838,7 +831,10 @@ class MainWindow(QMainWindow):
                 if j>9:
                   j=0
                   i=i+1
-
+          for k in range(1,self.blocks1):
+            if(WaysideControllerGreen.brokenRail[k]==True):
+                 for i in range(1,self.blocks1):
+                      WaysideControllerGreen.setAAuthority(0,i)
           if WaysideControllerGreen.gates[1]==True:
                 self.Gate.setText("Block 19 Gate:  UP")
           else:

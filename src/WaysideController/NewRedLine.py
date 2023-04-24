@@ -846,6 +846,11 @@ class MainWindowR(QMainWindow):
                         j=0
                         i=i+1  
 
+          for k in range(1,51):
+            if(WaysideControllerRed.brokenRail[k]==True):
+                 for i in range(1,51):
+                      WaysideControllerRed.setAAuthority(0,i)
+
           if WaysideControllerRed.gates[1]==True:
                 self.Gate.setText("Block 47 Gate:  UP")
           else:
