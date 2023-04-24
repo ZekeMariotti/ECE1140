@@ -8,6 +8,8 @@ from TrainControllerSW import TrainControllerSW
 from TrainControllerMainUI import MainWindow
 from Integration.TMTCSignals import *
 from Integration.TimeSignals import *
+from TrainModelFolder.TrainModelMainUI import *
+from TrainModelFolder.TrainModelTestUI import *
 import Integration.Conversions as Conversions
 
 from PyQt6.QtWidgets import *
@@ -388,8 +390,11 @@ def kpAndKiTest():
 
 
 if (__name__ == "__main__"):
+    # Used to test TrainModel communication
+    testTrainModelIntegration = True
+
     app = QApplication(sys.argv)
-    mainUI = MainWindow()
+    mainUI = MainWindow("Green", 2)
     mainUI.show()
 
     if (mainUI.testUI):
@@ -419,4 +424,12 @@ if (__name__ == "__main__"):
     kpAndKiTest()
     
     print(f'\nTotal Tests: {passed+failed}\nTests passed: {passed}\nTests Failed: {failed}')
+
+    if (testTrainModelIntegration == True):
+        trainModelUI = TrainModelUI(2, "Green")
+        trainModelUI.show()
+
+        trainModelTestUI = TrainModelTestUI()
+        trainModelTestUI.show()
+
     app.exec()

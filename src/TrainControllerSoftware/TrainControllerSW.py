@@ -129,7 +129,7 @@ class TrainControllerSW:
 
     def getBlocksData(self):
         if (__main__.__file__[-7:] == "main.py"):
-            greenPath = os.path.join(sys.path[0], "..", "TrackModel", "GreenLine.csv")
+            greenPath = os.path.join(sys.path[0], "TrackModel", "GreenLine.csv")
             redPath = os.path.join(sys.path[0], "TrackModel", "RedLine.csv")
         else:   
             greenPath = os.path.join(sys.path[0], "..", "TrackModel", "GreenLine.csv")
@@ -177,6 +177,15 @@ class TrainControllerSW:
         # Set T value
         T = self.currentTime - self.previousTime
         self.T = T.total_seconds()
+
+        # Set commanded speed based on low authority (3, 2, or 1 blocks)
+        match self.inputs.authority:
+            case 3:
+                self.inputs.commandedSpeed = Conversions.milesPerHourToMetersPerSecond(20)
+            case 2:
+                self.inputs.commandedSpeed = Conversions.milesPerHourToMetersPerSecond(15)
+            case 1:
+                self.inputs.commandedSpeed = Conversions.milesPerHourToMetersPerSecond(10)
 
         # ek = velocity error
         if(self.manualMode == True):

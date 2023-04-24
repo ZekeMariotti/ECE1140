@@ -181,7 +181,7 @@ class TrainModel():
 
     def getBlocksData(self):
         if (__main__.__file__[-7:] == "main.py"):
-            greenPath = os.path.join(sys.path[0], "..", "TrackModel", "GreenLine.csv")
+            greenPath = os.path.join(sys.path[0], "TrackModel", "GreenLine.csv")
             redPath = os.path.join(sys.path[0], "TrackModel", "RedLine.csv")
         else:   
             greenPath = os.path.join(sys.path[0], "..", "TrackModel", "GreenLine.csv")

@@ -17,6 +17,10 @@ def kilogramsToTons(number):
 def metersPerSecondToMilesPerHour(number):
     return round(number * 2.23695, 2)
 
+# Takes an input in Miles Per Hour and converts it to Meters Per Second
+def milesPerHourToMetersPerSecond(number):
+    return round(number * 0.44704, 2)
+
 # Takes an input in Meters Per Second ^2 and conerts it to Feet Per Second ^ 2
 def metersPerSecondSquaredToFeetPerSecondSquared(number):
     return round(number * 3.28084, 2)
