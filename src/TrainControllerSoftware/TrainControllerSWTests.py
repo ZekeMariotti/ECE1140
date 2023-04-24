@@ -272,10 +272,12 @@ def manualModeTest():
         mainUI.manualModeToggle.setChecked(False)
         mainUI.mainEventLoop()
         assert(mainUI.manualModeToggle.isChecked() == False), "manualModeTest Failed"
+        assert(mainUI.TrainControllerSW.manualMode == False), "manualModeTest Failed"
 
         mainUI.manualModeToggle.setChecked(True)
         mainUI.mainEventLoop()
         assert(mainUI.manualModeToggle.isChecked() == True), "manualModeTest Failed"
+        assert(mainUI.TrainControllerSW.manualMode == True), "manualModeTest Failed"
 
         print("manualModeTest Passed")
         global passed
