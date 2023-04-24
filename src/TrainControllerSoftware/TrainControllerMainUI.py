@@ -45,6 +45,7 @@ class MainWindow(QMainWindow):
             self.TrainControllerSW.writeOutputs()          
             self.TrainControllerSW.previousTime = self.TrainControllerSW.realTime
             self.TrainControllerSW.currentTime = self.TrainControllerSW.realTime
+            self.timeInterval = 100
 
             # Set window defaults
             self.setWindowTitle(f'Train Controller {self.TrainControllerSW.trainId}')
@@ -119,7 +120,7 @@ class MainWindow(QMainWindow):
 
         def mainTimerSetup(self):     
             mainTimer = QTimer()
-            mainTimer.setInterval(100)
+            mainTimer.setInterval(self.timeInterval)
             mainTimer.timeout.connect(self.mainEventLoop)
             mainTimer.setParent(self)
             mainTimer.start()
