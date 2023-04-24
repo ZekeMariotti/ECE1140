@@ -852,6 +852,8 @@ class MainWindowR(QMainWindow):
     def mainEventLoop(self):
           self.updateVisualElements()
           WaysideControllerRed2.WaysideToCTCInfoR2()
+          WaysideControllerRed2.getCTCBlocksRed()
+
 
 def main():
     app = QApplication(sys.argv)

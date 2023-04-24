@@ -846,6 +846,8 @@ class MainWindow(QMainWindow):
     def mainEventLoop(self):
           self.updateVisualElements(self.active)
           WaysideControllerGreen.WaysideToCTCInfoG1()
+          WaysideControllerGreen.getCTCBlocks()
+
           
 
 def main():

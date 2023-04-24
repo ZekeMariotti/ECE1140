@@ -167,3 +167,11 @@ class Wayside:
             if (int(block["block"]) != 0):
                 self.setSuggestedAuthority(int(block["block"]), int(block["authority"]))
                 self.setSuggestedSpeed(int(block["block"]), float(block["suggested-speed"]))
+
+    def getCTCBlocksRed(self):
+        blockArrayString = requests.get("http://localhost:8090/api/line/Red/blocks").text
+        blockArray = json.loads(blockArrayString)
+        for block in blockArray:
+            if (int(block["block"]) != 0):
+                self.setSuggestedAuthority(int(block["block"]), int(block["authority"]))
+                self.setSuggestedSpeed(int(block["block"]), float(block["suggested-speed"]))                
