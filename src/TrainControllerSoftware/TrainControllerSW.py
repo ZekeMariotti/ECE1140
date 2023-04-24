@@ -413,6 +413,9 @@ class TrainControllerSW:
 
     def commandedSpeedSignalHandler(self, id, cmdSpeed):
         if(self.trainId == id):
+            if (cmdSpeed < 0):
+                cmdSpeed = 0
+
             self.inputs.commandedSpeed = cmdSpeed
     
     def currentSpeedSignalHandler(self, id, currSpeed):
@@ -421,6 +424,9 @@ class TrainControllerSW:
 
     def authoritySignalHandler(self, id, auth):
         if(self.trainId == id):
+            if (auth < 0):
+                auth = 0
+                
             self.inputs.authority = auth
 
     def undergroundSignalHandler(self, id, undgnd):
