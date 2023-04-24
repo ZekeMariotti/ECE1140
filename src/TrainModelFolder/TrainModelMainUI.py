@@ -1,12 +1,19 @@
 # UI for the Train Model
 
-# QTimer for Simulation
+# UI Layout
 
-# TEMPERATURE INPUTS AND SIZES OF FONTS
-# STATION AND TRAIN ID TO TOP, POWER AS 2 COLUMNS INSTEAD OF ONE
-# REWORK SIGNALS IN THE TRAIN MODEL AS WELL AS THE MAIN
-# WORK ON JSON OUTPUTS AND INPUTS FOR THIS MODULE
-# ISO 8601 FORMAT FOR TIME
+# Sections are in Roman Numerals
+######################################
+#                 I                  #
+######################################
+#       II        #       III        #
+######################################
+#    IV     #     V     #     VI     #
+######################################
+#   VII     #   VIII    #     IX     #
+######################################
+#                Ads                 #
+######################################
 
 # Imports needed for the UI
 from sys import argv
@@ -42,6 +49,10 @@ class TrainModelUI(QWidget):
     # Initialization of the UI
     def __init__(self, id, line):
         
+        # Variables used for the advertisements
+        self.adTimer = 0
+        self.adCounter = 0
+
         # SIGNAL USED FOR TEST UI
         trainSignals.updateOutputs.connect(self.updateOutputs)
         self.TrainModel = TrainModel(id, line)
@@ -52,219 +63,275 @@ class TrainModelUI(QWidget):
         self.UIId = id
         self.TrainModel.setFirstSection()
         self.setWindowTitle("Train Model " + str(self.UIId))
+        self.setFixedSize(QSize(850, 750))
+        self.setMinimumSize(950, 850)
         layout = QGridLayout()
         self.setLayout(layout)
         self.setFont(QFont("Times New Roman"))
         orientation = self.frameGeometry()
         self.move(orientation.center())
 
+        #####################
+        # Section I Widgets #
+        #####################
+
         # Real Time Clock Label and Output
-        #realTimeClockLabel = QLabel("Real Time Clock")
-        #realTimeClockLabel.setFont(self.timesNewRoman18)
-        self.realTimeClockOutput = QLabel("")
-        #self.realTimeClockOutput = QLineEdit()
-        #self.realTimeClockOutput.setReadOnly(True)
-        self.realTimeClockOutput.setFont(self.timesNewRoman24)
+        self.realTimeClockOutput = QLabel("12:25:19")
+        self.realTimeClockOutput.setFont(self.timesNewRoman30)
         self.realTimeClockOutput.setAlignment(self.alignCenter)
-        #self.realTimeClockOutput.setFixedWidth(140)
-
-        #layout.addWidget(realTimeClockLabel, 0, 0, self.alignCenter)
-        layout.addWidget(self.realTimeClockOutput, 0, 0, 1, 2, self.alignCenter)
-
-        # Passengers Label and Output
-        passengersLabel = QLabel("Passengers")
-        passengersLabel.setFont(self.timesNewRoman18)
-        self.passengersOutput = QLineEdit()
-        self.passengersOutput.setStyleSheet("background-color: rgb(65, 105, 255); border: rgb(65, 105, 255)")
-        self.passengersOutput.setReadOnly(True)
-        self.passengersOutput.setFont(self.timesNewRoman18)
-        self.passengersOutput.setAlignment(self.alignCenter)
-        self.passengersOutput.setFixedWidth(140)
-
-        layout.addWidget(passengersLabel, 1, 0, self.alignCenter)
-        layout.addWidget(self.passengersOutput, 2, 0, self.alignCenter)
-
-        # Crew Label and Output
-        crewLabel = QLabel("Crew")
-        crewLabel.setFont(self.timesNewRoman18)
-        self.crewOutput = QLineEdit()
-        self.crewOutput.setStyleSheet("background-color: rgb(65, 105, 255); border: rgb(65, 105, 255)")
-        self.crewOutput.setReadOnly(True)
-        self.crewOutput.setFont(self.timesNewRoman18)
-        self.crewOutput.setAlignment(self.alignCenter)
-        self.crewOutput.setFixedWidth(140)
-
-        layout.addWidget(crewLabel, 1, 1, self.alignCenter)
-        layout.addWidget(self.crewOutput, 2, 1, self.alignCenter)
-
-        # Left Doors Label and Output
-        lDoorsLabel = QLabel("Left Doors")
-        lDoorsLabel.setFont(self.timesNewRoman18)
-        self.lDoorsOutput = QLineEdit()
-        self.lDoorsOutput.setReadOnly(True)
-        self.lDoorsOutput.setFont(self.timesNewRoman18)
-        self.lDoorsOutput.setAlignment(self.alignCenter)
-
-        layout.addWidget(lDoorsLabel, 3, 0, self.alignCenter)
-        layout.addWidget(self.lDoorsOutput, 4, 0, self.alignCenter)
-
-        # Right Doors Label and Output
-        rDoorsLabel = QLabel("Right Doors")
-        rDoorsLabel.setFont(self.timesNewRoman18)
-        self.rDoorsOutput = QLineEdit()
-        self.rDoorsOutput.setReadOnly(True)
-        self.rDoorsOutput.setFont(self.timesNewRoman18)
-        self.rDoorsOutput.setAlignment(self.alignCenter)
-
-        layout.addWidget(rDoorsLabel, 3, 1, self.alignCenter)
-        layout.addWidget(self.rDoorsOutput, 4, 1, self.alignCenter)
-
-        # Internal Lights Label and Output
-        iLightsLabel = QLabel("Internal Lights")
-        iLightsLabel.setFont(self.timesNewRoman18)
-        self.iLightsOutput = QLineEdit()
-        self.iLightsOutput.setReadOnly(True)
-        self.iLightsOutput.setFont(self.timesNewRoman18)
-        self.iLightsOutput.setAlignment(self.alignCenter)
-
-        layout.addWidget(iLightsLabel, 5, 0, self.alignCenter)
-        layout.addWidget(self.iLightsOutput, 6, 0, self.alignCenter)
-
-        # External Lights Label and Output
-        eLightsLabel = QLabel("External Lights")
-        eLightsLabel.setFont(self.timesNewRoman18)
-        self.eLightsOutput = QLineEdit()
-        self.eLightsOutput.setReadOnly(True)
-        self.eLightsOutput.setFont(self.timesNewRoman18)
-        self.eLightsOutput.setAlignment(self.alignCenter)
-
-        layout.addWidget(eLightsLabel, 5, 1, self.alignCenter)
-        layout.addWidget(self.eLightsOutput, 6, 1, self.alignCenter)
-
-        # Mass Label and Output
-        massLabel = QLabel("Mass")
-        massLabel.setFont(self.timesNewRoman24)
-        self.massOutput = QLineEdit()
-        self.massOutput.setStyleSheet("background-color: rgb(129, 133, 137); border: rgb(129, 133, 137)")
-        self.massOutput.setReadOnly(True)
-        self.massOutput.setFont(self.timesNewRoman24)
-        self.massOutput.setAlignment(self.alignCenter)
-        self.massOutput.setFixedWidth(200)
-
-        layout.addWidget(massLabel, 7, 0, self.alignCenter)
-        layout.addWidget(self.massOutput, 8, 0, self.alignCenter)
-
-        # Underground Label and Output
-        undergroundLabel = QLabel("Underground")
-        undergroundLabel.setFont(self.timesNewRoman24)
-        self.undergroundOutput = QLineEdit()
-        self.undergroundOutput.setReadOnly(True)
-        self.undergroundOutput.setFont(self.timesNewRoman24)
-        self.undergroundOutput.setAlignment(self.alignCenter)
-
-        layout.addWidget(undergroundLabel, 7, 1, self.alignCenter)
-        layout.addWidget(self.undergroundOutput, 8, 1, self.alignCenter)
-
-        # Velocity Label and Output
-        velocityLabel = QLabel("Velocity")
-        velocityLabel.setFont(self.timesNewRoman18)
-        self.velocityOutput = QLineEdit()
-        self.velocityOutput.setReadOnly(True)
-        self.velocityOutput.setAlignment(self.alignCenter)
-        self.velocityOutput.setFont(self.timesNewRoman36)
-        self.velocityOutput.setFixedWidth(280)
-
-        layout.addWidget(velocityLabel, 0, 2, self.alignCenter)
-        layout.addWidget(self.velocityOutput, 1, 2, self.alignCenter)
-
-        # Acceleration Label and Output
-        accelerationLabel = QLabel("Acceleration")
-        accelerationLabel.setFont(self.timesNewRoman18)
-        self.accelerationOutput = QLineEdit()
-        self.accelerationOutput.setReadOnly(True)
-        self.accelerationOutput.setFont(self.timesNewRoman36)
-        self.accelerationOutput.setAlignment(self.alignCenter)
-        self.accelerationOutput.setFixedWidth(250)
-
-        layout.addWidget(accelerationLabel, 0, 3, self.alignCenter)
-        layout.addWidget(self.accelerationOutput, 1, 3, self.alignCenter)
-
-        # Power Label and Output
-        powerLabel = QLabel("Power")
-        powerLabel.setFont(self.timesNewRoman18)
-        self.powerOutput = QLineEdit()
-        self.powerOutput.setReadOnly(True)
-        self.powerOutput.setFont(self.timesNewRoman36)
-        self.powerOutput.setAlignment(self.alignCenter)
-
-        layout.addWidget(powerLabel, 2, 2, self.alignCenter)
-        layout.addWidget(self.powerOutput, 3, 2, self.alignCenter)
+    
+        layout.addWidget(self.realTimeClockOutput, 0, 0, 1, 3, self.alignCenter)
 
         # Station Label and Output
-        self.stationLabel = QLabel("Station")
+        self.stationLabel = QLabel("Station:")
         self.stationLabel.setFont(self.timesNewRoman18)
+        self.stationLabel.setAlignment(self.alignCenter)
+        self.stationLabel.setFixedWidth(150)
         self.stationOutput = QLineEdit()
         self.stationOutput.setReadOnly(True)
         self.stationOutput.setFont(self.timesNewRoman24)
         self.stationOutput.setAlignment(self.alignCenter)
         self.stationOutput.setText("Shadyside")
+        self.stationOutput.setFixedHeight(40)
 
-        layout.addWidget(self.stationLabel, 2, 3, self.alignCenter)
-        layout.addWidget(self.stationOutput, 3, 3, self.alignCenter)
+        layout.addWidget(self.stationLabel, 0, 5, 1, 1, self.alignCenter)
+        layout.addWidget(self.stationOutput, 0, 6, 1, 2, self.alignCenter)
 
-        # Emergency Brake Label and Button
-        #emergencyBrakeLabel = QLabel("Emergency Brake")
-        #emergencyBrakeLabel.setFont(self.timesNewRoman24)
-        emergencyBrakeButton = QPushButton("Pull Emergency Brake")
-        emergencyBrakeButton.setStyleSheet("background-color: red")
-        #emergencyBrakeButton.setFixedSize(400, 100)
-        emergencyBrakeButton.setFixedHeight(100)
-        emergencyBrakeButton.setFont(self.timesNewRoman24)
-        emergencyBrakeButton.pressed.connect(self.emergencyBrakeButtonPressed)
+        # SPLITTING ROW 1
+        splittingRow1 = QLabel("")
+        splittingRow1.setFixedHeight(20)
+        layout.addWidget(splittingRow1, 1, 0)
 
-        #layout.addWidget(emergencyBrakeLabel, 6, 4, 1, 2, self.alignCenter)
-        layout.addWidget(emergencyBrakeButton, 5, 2, 2, 2)
+        ######################
+        # Section II Widgets #
+        ######################
+
+        # Velocity Label and Output
+        velocityLabel = QLabel("Velocity:")
+        velocityLabel.setFont(self.timesNewRoman18)
+        self.velocityOutput = QLineEdit()
+        self.velocityOutput.setReadOnly(True)
+        self.velocityOutput.setAlignment(self.alignCenter)
+        self.velocityOutput.setFont(self.timesNewRoman30)
+
+        layout.addWidget(velocityLabel, 2, 0, self.alignCenter)
+        layout.addWidget(self.velocityOutput, 2, 1, 1, 3, self.alignCenter)
+
+        # Acceleration Label and Output
+        accelerationLabel = QLabel("Acceleration:")
+        accelerationLabel.setFont(self.timesNewRoman18)
+        self.accelerationOutput = QLineEdit()
+        self.accelerationOutput.setReadOnly(True)
+        self.accelerationOutput.setFont(self.timesNewRoman30)
+        self.accelerationOutput.setAlignment(self.alignCenter)
+
+        layout.addWidget(accelerationLabel, 3, 0, self.alignCenter)
+        layout.addWidget(self.accelerationOutput, 3, 1, 1, 3, self.alignCenter)
+        
+        # Power Label and Output
+        powerLabel = QLabel("Power:")
+        powerLabel.setFont(self.timesNewRoman18)
+        self.powerOutput = QLineEdit()
+        self.powerOutput.setReadOnly(True)
+        self.powerOutput.setFont(self.timesNewRoman30)
+        self.powerOutput.setAlignment(self.alignCenter)
+
+        layout.addWidget(powerLabel, 4, 0, self.alignCenter)
+        layout.addWidget(self.powerOutput, 4, 1, 1, 3, self.alignCenter)
+
+        # SPLITTING COLUMN 1
+        splittingColumn1 = QLabel("")
+        splittingColumn1.setFixedWidth(20)
+        layout.addWidget(splittingColumn1, 0, 4)
+
+        #######################
+        # Section III Widgets #
+        #######################
+
+        # Communication State Label and Output
+        communicationsLabel = QLabel("Signal Pickup\nStatus")
+        communicationsLabel.setFont(self.timesNewRoman18)
+        communicationsLabel.setAlignment(self.alignCenter)
+        self.communicationsOutput = QLabel()
+        self.communicationsOutput.setFixedSize(120, 55)
+        self.communicationsOutput.setFont(self.timesNewRoman18)
+        self.communicationsOutput.setAlignment(self.alignCenter)
+        self.communicationsOutput.setWordWrap(True)
+
+        layout.addWidget(communicationsLabel, 2, 5, self.alignCenter)
+        layout.addWidget(self.communicationsOutput, 3, 5, self.alignCenter)
+
+        # Engine State Label and Output
+        engineLabel = QLabel("Engine Status")
+        engineLabel.setFont(self.timesNewRoman18)
+        engineLabel.setAlignment(self.alignCenter)
+        self.engineOutput = QLabel()
+        self.engineOutput.setFixedSize(120, 55)
+        self.engineOutput.setFont(self.timesNewRoman18)
+        self.engineOutput.setAlignment(self.alignCenter)
+        self.engineOutput.setWordWrap(True)
+
+        layout.addWidget(engineLabel, 2, 6, self.alignCenter)
+        layout.addWidget(self.engineOutput, 3, 6, self.alignCenter)
+
+        # Service Brake State Label and Output
+        brakeLabel = QLabel("Service Brake\nStatus")
+        brakeLabel.setFont(self.timesNewRoman18)
+        brakeLabel.setAlignment(self.alignCenter)
+        self.brakeOutput = QLabel()
+        self.brakeOutput.setFixedSize(120, 55)
+        self.brakeOutput.setFont(self.timesNewRoman18)
+        self.brakeOutput.setAlignment(self.alignCenter)
+        self.brakeOutput.setWordWrap(True)
+
+        layout.addWidget(brakeLabel, 2, 7, self.alignCenter)
+        layout.addWidget(self.brakeOutput, 3, 7, self.alignCenter)
+
+        # Communcations Label and Button
+        self.communicationsButton = QPushButton("Signal Pickup\nFailure")
+        self.communicationsButton.setStyleSheet("background-color: orange")
+        self.communicationsButton.setFont(self.timesNewRoman18)
+        self.communicationsButton.pressed.connect(self.communicationsButtonPressed)
+
+        layout.addWidget(self.communicationsButton, 4, 5)
+
+        # Engine Label and Button
+        self.engineButton = QPushButton("Engine\nFailure")
+        self.engineButton.setStyleSheet("background-color: orange")
+        self.engineButton.pressed.connect(self.engineButtonPressed)
+        self.engineButton.setFont(self.timesNewRoman18)
+
+        layout.addWidget(self.engineButton, 4, 6)
+
+        # Service Brake Label and Button
+        self.brakeButton = QPushButton("Service Brake\nFailure")
+        self.brakeButton.setStyleSheet("background-color: orange")
+        self.brakeButton.pressed.connect(self.brakeButtonPressed)
+        self.brakeButton.setFont(self.timesNewRoman18)
+
+        layout.addWidget(self.brakeButton, 4, 7)
+        
+        # SPLITTING ROW 2
+        splittingRow2 = QLabel("")
+        splittingRow2.setFixedHeight(20)
+        layout.addWidget(splittingRow2, 5, 0)
+
+        ######################
+        # Section IV Widgets #
+        ######################
+
+        # Left Doors Label and Output
+        lDoorsLabel = QLabel("Left Doors:")
+        lDoorsLabel.setFont(self.timesNewRoman18)
+        self.lDoorsOutput = QLineEdit()
+        self.lDoorsOutput.setReadOnly(True)
+        self.lDoorsOutput.setFont(self.timesNewRoman18)
+        self.lDoorsOutput.setAlignment(self.alignCenter)
+        self.lDoorsOutput.setFixedSize(120, 25)
+
+        layout.addWidget(lDoorsLabel, 6, 0, self.alignCenter)
+        layout.addWidget(self.lDoorsOutput, 6, 1, self.alignCenter)
+
+        # Right Doors Label and Output
+        rDoorsLabel = QLabel("Right Doors:")
+        rDoorsLabel.setFont(self.timesNewRoman18)
+        self.rDoorsOutput = QLineEdit()
+        self.rDoorsOutput.setReadOnly(True)
+        self.rDoorsOutput.setFont(self.timesNewRoman18)
+        self.rDoorsOutput.setAlignment(self.alignCenter)
+        self.rDoorsOutput.setFixedSize(120, 25)
+
+        layout.addWidget(rDoorsLabel, 7, 0, self.alignCenter)
+        layout.addWidget(self.rDoorsOutput, 7, 1, self.alignCenter)
+
+        # Internal Lights Label and Output
+        iLightsLabel = QLabel("Internal Lights:")
+        iLightsLabel.setFont(self.timesNewRoman18)
+        self.iLightsOutput = QLabel()
+        self.iLightsOutput.setFont(self.timesNewRoman18)
+        self.iLightsOutput.setAlignment(self.alignCenter)
+        self.iLightsOutput.setFixedSize(120, 25)
+
+        layout.addWidget(iLightsLabel, 8, 0, self.alignCenter)
+        layout.addWidget(self.iLightsOutput, 8, 1, self.alignCenter)
+
+        # External Lights Label and Output
+        eLightsLabel = QLabel("External Lights:")
+        eLightsLabel.setFont(self.timesNewRoman18)
+        self.eLightsOutput = QLabel()
+        self.eLightsOutput.setFont(self.timesNewRoman18)
+        self.eLightsOutput.setAlignment(self.alignCenter)
+        self.eLightsOutput.setFixedSize(120, 25)
+
+        layout.addWidget(eLightsLabel, 9, 0, self.alignCenter)
+        layout.addWidget(self.eLightsOutput, 9, 1, self.alignCenter)
+
+        # SPLITTING COLUMN 2
+        splittingColumn2 = QLabel("")
+        splittingColumn2.setFixedWidth(20)
+        layout.addWidget(splittingColumn2, 0, 2)
+
+        #####################
+        # Section V Widgets #
+        #####################
 
         # Emergency Brake State Label and Output
-        emergencyBrakeStateLabel = QLabel("Emergency Brake")
-        emergencyBrakeStateLabel.setFont(self.timesNewRoman24)
+        emergencyBrakeStateLabel = QLabel("Emergency Brake:")
+        emergencyBrakeStateLabel.setFont(self.timesNewRoman18)
         emergencyBrakeStateLabel.setAlignment(self.alignCenter)
         emergencyBrakeStateLabel.setWordWrap(True)
         self.emergencyBrakeStateOutput = QLineEdit()
         self.emergencyBrakeStateOutput.setReadOnly(True)
-        self.emergencyBrakeStateOutput.setFont(self.timesNewRoman24)
+        self.emergencyBrakeStateOutput.setFont(self.timesNewRoman18)
         self.emergencyBrakeStateOutput.setAlignment(self.alignCenter)
 
-        layout.addWidget(emergencyBrakeStateLabel, 7, 2)
-        layout.addWidget(self.emergencyBrakeStateOutput, 8, 2)
+        layout.addWidget(emergencyBrakeStateLabel, 6, 3, 1, 3)
+        layout.addWidget(self.emergencyBrakeStateOutput, 7, 3, 1, 3)
 
         # Service Brake State Label and Output
-        serviceBrakeStateLabel = QLabel("Service Brake")
-        serviceBrakeStateLabel.setFont(self.timesNewRoman24)
+        serviceBrakeStateLabel = QLabel("Service Brake:")
+        serviceBrakeStateLabel.setFont(self.timesNewRoman18)
         serviceBrakeStateLabel.setAlignment(self.alignCenter)
         serviceBrakeStateLabel.setWordWrap(True)
         self.serviceBrakeStateOutput = QLineEdit()
         self.serviceBrakeStateOutput.setReadOnly(True)
-        self.serviceBrakeStateOutput.setFont(self.timesNewRoman24)
+        self.serviceBrakeStateOutput.setFont(self.timesNewRoman18)
         self.serviceBrakeStateOutput.setAlignment(self.alignCenter)
 
-        layout.addWidget(serviceBrakeStateLabel, 7, 3)
-        layout.addWidget(self.serviceBrakeStateOutput, 8, 3)
+        layout.addWidget(serviceBrakeStateLabel, 8, 3, 1, 3)
+        layout.addWidget(self.serviceBrakeStateOutput, 9, 3, 1, 3)
+
+        ######################
+        # Section VI Widgets #
+        ######################
+
+        # Mass Label and Output
+        massLabel = QLabel("Mass:")
+        massLabel.setFont(self.timesNewRoman12)
+        self.massOutput = QLineEdit()
+        self.massOutput.setStyleSheet("background-color: rgb(129, 133, 137); border: rgb(129, 133, 137)")
+        self.massOutput.setReadOnly(True)
+        self.massOutput.setFont(self.timesNewRoman18)
+        self.massOutput.setAlignment(self.alignCenter)
+
+        layout.addWidget(massLabel, 6, 6, self.alignCenter)
+        layout.addWidget(self.massOutput, 6, 7, self.alignCenter)
 
         # Length Label and Output
-        lengthLabel = QLabel("Length")
+        lengthLabel = QLabel("Length:")
         lengthLabel.setFont(self.timesNewRoman12)
         self.lengthOutput = QLineEdit()
         self.lengthOutput.setStyleSheet("background-color: rgb(129, 133, 137); border: rgb(129, 133, 137)")
         self.lengthOutput.setReadOnly(True)
         self.lengthOutput.setFont(self.timesNewRoman18)
         self.lengthOutput.setAlignment(self.alignCenter)
+
         
-        layout.addWidget(lengthLabel, 0, 4, self.alignCenter)
-        layout.addWidget(self.lengthOutput, 1, 4, self.alignCenter)
+        layout.addWidget(lengthLabel, 7, 6, self.alignCenter)
+        layout.addWidget(self.lengthOutput, 7, 7, self.alignCenter)
 
         # Width Label and Output
-        widthLabel = QLabel("Width")
+        widthLabel = QLabel("Width:")
         widthLabel.setFont(self.timesNewRoman12)
         self.widthOutput = QLineEdit()
         self.widthOutput.setStyleSheet("background-color: rgb(129, 133, 137); border: rgb(129, 133, 137)")
@@ -273,11 +340,11 @@ class TrainModelUI(QWidget):
         self.widthOutput.setAlignment(self.alignCenter)
         self.widthOutput.setText("8.69 Feet")
 
-        layout.addWidget(widthLabel, 0, 5, self.alignCenter)
-        layout.addWidget(self.widthOutput, 1, 5, self.alignCenter)
+        layout.addWidget(widthLabel, 8, 6, self.alignCenter)
+        layout.addWidget(self.widthOutput, 8, 7, self.alignCenter)
 
         # Height Label and Output
-        heightLabel = QLabel("Height")
+        heightLabel = QLabel("Height:")
         heightLabel.setFont(self.timesNewRoman12)
         self.heightOutput = QLineEdit()
         self.heightOutput.setStyleSheet("background-color: rgb(129, 133, 137); border: rgb(129, 133, 137)")
@@ -286,103 +353,103 @@ class TrainModelUI(QWidget):
         self.heightOutput.setAlignment(self.alignCenter)
         self.heightOutput.setText("11.22 Feet")
 
-        layout.addWidget(heightLabel, 0, 6, self.alignCenter)
-        layout.addWidget(self.heightOutput, 1, 6, self.alignCenter)
+        layout.addWidget(heightLabel, 9, 6, self.alignCenter)
+        layout.addWidget(self.heightOutput, 9, 7, self.alignCenter)
 
-        # Murphy Label
-        murphyLabel = QLabel("Failure States")
-        murphyLabel.setFont(self.timesNewRoman24)
+        # SPLITTING ROW 3
+        splittingRow3 = QLabel("")
+        splittingRow3.setFixedHeight(20)
+        layout.addWidget(splittingRow3, 10, 0)
 
-        layout.addWidget(murphyLabel, 2, 5, self.alignCenter)
-
-        # Communcations Label and Button
-        communicationsButton = QPushButton("Signal Pickup\nFailure")
-        communicationsButton.setStyleSheet("background-color: orange")
-        communicationsButton.setFont(self.timesNewRoman18)
-        communicationsButton.pressed.connect(self.communicationsButtonPressed)
-
-        layout.addWidget(communicationsButton, 3, 4)
-
-        # Engine Label and Button
-        engineButton = QPushButton("Engine\nFailure")
-        engineButton.setStyleSheet("background-color: orange")
-        engineButton.pressed.connect(self.engineButtonPressed)
-        engineButton.setFont(self.timesNewRoman18)
-
-        layout.addWidget(engineButton, 3, 5)
-
-        # Service Brake Label and Button
-        brakeButton = QPushButton("Service Brake\nFailure")
-        brakeButton.setStyleSheet("background-color: orange")
-        brakeButton.pressed.connect(self.brakeButtonPressed)
-        brakeButton.setFont(self.timesNewRoman18)
-
-        layout.addWidget(brakeButton, 3, 6)
-
-        # Communication State Label and Output
-        communicationsLabel = QLabel("Singal Pickup\nStatus")
-        communicationsLabel.setFont(self.timesNewRoman12)
-        communicationsLabel.setAlignment(self.alignCenter)
-        self.communicationsOutput = QLineEdit()
-        self.communicationsOutput.setReadOnly(True)
-        self.communicationsOutput.setFont(self.timesNewRoman18)
-        self.communicationsOutput.setAlignment(self.alignCenter)
-
-        layout.addWidget(communicationsLabel, 5, 4, self.alignCenter)
-        layout.addWidget(self.communicationsOutput, 6, 4, self.alignCenter)
-
-        # Engine State Label and Output
-        engineLabel = QLabel("Engine Status")
-        engineLabel.setFont(self.timesNewRoman12)
-        self.engineOutput = QLineEdit()
-        self.engineOutput.setReadOnly(True)
-        self.engineOutput.setFont(self.timesNewRoman18)
-        self.engineOutput.setAlignment(self.alignCenter)
-
-        layout.addWidget(engineLabel, 5, 5, self.alignCenter)
-        layout.addWidget(self.engineOutput, 6, 5, self.alignCenter)
-
-        # Service Brake State Label and Output
-        brakeLabel = QLabel("Service Brake Status")
-        brakeLabel.setFont(self.timesNewRoman12)
-        self.brakeOutput = QLineEdit()
-        self.brakeOutput.setReadOnly(True)
-        self.brakeOutput.setFont(self.timesNewRoman18)
-        self.brakeOutput.setAlignment(self.alignCenter)
-        self.brakeOutput.setFixedWidth(170)
-
-        layout.addWidget(brakeLabel, 5, 6, self.alignCenter)
-        layout.addWidget(self.brakeOutput, 6, 6, self.alignCenter)
+        #######################
+        # Section VII Widgets #
+        #######################
 
         # Temperature Labels, Input, and Output
-        temperatureLabel = QLabel("Temperature Setpoint")
-        temperatureLabel.setFont(self.timesNewRoman24)
+        temperatureLabel = QLabel("Temperature Setpoint:")
+        temperatureLabel.setFont(self.timesNewRoman18)
         temperatureLabel.setWordWrap(True)
         self.temperatureInput = QLineEdit()
-        self.temperatureInput.setFont(self.timesNewRoman24)
+        self.temperatureInput.setFont(self.timesNewRoman18)
         self.temperatureInput.setAlignment(self.alignCenter)
         self.temperatureInput.editingFinished.connect(self.tempInputChanged)
-        #currentTemperatureLabel = QLabel("Current Temperature")
-        #currentTemperatureLabel.setFont(self.timesNewRoman24)
         self.currentTemperatureOutput = QLineEdit()
         self.currentTemperatureOutput.setReadOnly(True)
         self.currentTemperatureOutput.setFont(self.timesNewRoman24)
         self.currentTemperatureOutput.setAlignment(self.alignCenter)
-        self.currentTemperatureOutput.setFixedHeight(100)
 
-        layout.addWidget(temperatureLabel, 7, 4, 1, 2, self.alignCenter)
-        layout.addWidget(self.temperatureInput, 8, 4, 1, 2)
-        #layout.addWidget(currentTemperatureLabel, 8, 4, 1, 2, self.alignCenter)
-        layout.addWidget(self.currentTemperatureOutput, 7, 6, 2, 1, self.alignCenter)
+        layout.addWidget(temperatureLabel, 11, 0, 1, 2, self.alignCenter)
+        layout.addWidget(self.temperatureInput, 12, 0, 1, 2)
+        layout.addWidget(self.currentTemperatureOutput, 13, 0, 1, 2, self.alignCenter)
+
+        ########################
+        # Section VIII Widgets #
+        ########################
+
+        # Emergency Brake Label and Button
+        emergencyBrakeButton = QPushButton("Pull Emergency Brake")
+        emergencyBrakeButton.setStyleSheet("background-color: red")
+        emergencyBrakeButton.setFixedHeight(120)
+        emergencyBrakeButton.setFont(self.timesNewRoman18)
+        emergencyBrakeButton.pressed.connect(self.emergencyBrakeButtonPressed)
+
+        layout.addWidget(emergencyBrakeButton, 11, 3, 3, 3)
+
+        ######################
+        # Section IX Widgets #
+        ######################
+
+        # Underground Label and Output
+        undergroundLabel = QLabel("Underground:")
+        undergroundLabel.setFont(self.timesNewRoman12)
+        self.undergroundOutput = QLineEdit()
+        self.undergroundOutput.setReadOnly(True)
+        self.undergroundOutput.setFont(self.timesNewRoman18)
+        self.undergroundOutput.setAlignment(self.alignCenter)
+
+        layout.addWidget(undergroundLabel, 11, 6, self.alignCenter)
+        layout.addWidget(self.undergroundOutput, 11, 7, self.alignCenter)
+
+        # Passengers Label and Output
+        passengersLabel = QLabel("Passengers:")
+        passengersLabel.setFont(self.timesNewRoman12)
+        self.passengersOutput = QLineEdit()
+        self.passengersOutput.setStyleSheet("background-color: rgb(65, 105, 255); border: rgb(65, 105, 255)")
+        self.passengersOutput.setReadOnly(True)
+        self.passengersOutput.setFont(self.timesNewRoman18)
+        self.passengersOutput.setAlignment(self.alignCenter)
+
+        layout.addWidget(passengersLabel, 12, 6, self.alignCenter)
+        layout.addWidget(self.passengersOutput, 12, 7, self.alignCenter)
+
+        # Crew Label and Output
+        crewLabel = QLabel("Crew:")
+        crewLabel.setFont(self.timesNewRoman12)
+        self.crewOutput = QLineEdit()
+        self.crewOutput.setStyleSheet("background-color: rgb(65, 105, 255); border: rgb(65, 105, 255)")
+        self.crewOutput.setReadOnly(True)
+        self.crewOutput.setFont(self.timesNewRoman18)
+        self.crewOutput.setAlignment(self.alignCenter)
+
+        layout.addWidget(crewLabel, 13, 6, self.alignCenter)
+        layout.addWidget(self.crewOutput, 13, 7, self.alignCenter)
+
+        #########################
+        # Advertisements Labels #
+        #########################
+        self.adLabel = QLabel()
+        Mpixmap = QPixmap(sys.path[0] + "\MarlboroGoldAd.png")
+        Ppixmap = QPixmap(sys.path[0] + "\PlantersAd.png")
+        JDpixmap = QPixmap(sys.path[0] + "\JackDanielsAd.png")
+        self.pixMaps = [Mpixmap, Ppixmap, JDpixmap]
+
+        self.adLabel.setPixmap(Mpixmap)
+        self.adLabel.setFixedSize(925, 150)
+        self.adLabel.setScaledContents(True)
+        
+        layout.addWidget(self.adLabel, 14, 0, 3, 8)
 
         self.updateOutputs()
-
-        if __name__ == "__main__":
-            # UPDATE BUTTON FOR TESTING TO BE REMOVED
-            updateButton = QPushButton("Update Values")
-            updateButton.setFont(self.timesNewRoman24)
-            updateButton.pressed.connect(self.updateOutputs)
-            layout.addWidget(updateButton, 9, 2, 1, 2, self.alignCenter)
 
     def closeEvent(self, event):
         if __name__ == "__main__":
@@ -444,7 +511,15 @@ class TrainModelUI(QWidget):
             return "ON"
         else:
             return "Off"
+        
+    # Function to conver boolean to enable or disable string
+    def failureStates(self, value):
+        if (value == True):
+            return "Disable"
+        else:
+            return "Enable"
 
+    # Timer used to update the UI
     def mainThreadSetup(self):
         self.timerThread = QThread()
         self.timerThread.started.connect(self.mainTimerSetup)
@@ -456,6 +531,16 @@ class TrainModelUI(QWidget):
         mainTimer.setParent(self)
         mainTimer.start()
         return mainTimer
+    
+    # Rotate the advertisements
+    def rotateAdvertisements(self, time):
+        self.adTimer += time
+        if (self.adTimer > 75):
+            self.adCounter += 1
+            if (self.adCounter == 3):
+                self.adCounter = 0
+            self.adLabel.setPixmap(self.pixMaps[self.adCounter])
+            self.adTimer = 0
 
     # Updates outputs every time period
     def updateOutputs(self):
@@ -469,7 +554,7 @@ class TrainModelUI(QWidget):
             self.TrainModel.findCurrentVelocity(tempTimeDiff)
             self.TrainModel.findCurrentDistance(tempTimeDiff)
             self.TrainModel.findBlockExiting()
-            self.TrainModel.airConditioningControl()
+            self.TrainModel.airConditioningControl(tempTimeDiff)
             if (~self.TrainModel.data["runOnce"]) & (self.TrainModel.data["atStation"]) & (self.TrainModel.data["velocity"] == 0) & (self.TrainModel.data["lDoors"] | self.TrainModel.data["rDoors"]):
                 self.TrainModel.passengersGettingOff()
                 TMTkMSignals.passengersExitingSignal.emit(self.TrainModel.TrainID, self.TrainModel.data["passengersOff"])
@@ -496,14 +581,20 @@ class TrainModelUI(QWidget):
             self.accelerationOutput.setText(str(metersPerSecondSquaredToFeetPerSecondSquared(self.TrainModel.data["acceleration"])) + " ft/s^2")
             self.powerOutput.setText(str(round(self.TrainModel.data["power"], 2)) + " W")
             if (self.TrainModel.data["atStation"]):
-                self.stationLabel.setText("Current Station")
+                self.stationLabel.setText("Current Station:")
+                self.stationLabel.setAlignment(self.alignCenter)
                 self.stationOutput.setText(self.TrainModel.data["station"])
                 self.stationOutput.setStyleSheet("background-color: yellow; border: yellow")
 
             else:
-                self.stationLabel.setText("Next Station")
+                self.stationLabel.setText("Next Station:")
+                self.stationLabel.setAlignment(self.alignCenter)
                 self.stationOutput.setText(self.TrainModel.data["station"])
                 self.stationOutput.setStyleSheet("background-color: white")
+
+            self.communicationsButton.setText(self.failureStates(self.TrainModel.data["commStatus"]))
+            self.engineButton.setText(self.failureStates(self.TrainModel.data["engineStatus"]))
+            self.brakeButton.setText(self.failureStates(self.TrainModel.data["brakeStatus"]))
 
             # Setting communication status output and color
             self.communicationsOutput.setText(self.failureBoolean(self.TrainModel.data["commStatus"]))
@@ -559,14 +650,14 @@ class TrainModelUI(QWidget):
             if (self.TrainModel.data["iLights"] == 1):
                 self.iLightsOutput.setStyleSheet("background-color: rgb(255, 215, 0); border: rgb(255, 215, 0)")
             else:
-                self.iLightsOutput.setStyleSheet("background-color: white")
+                self.iLightsOutput.setStyleSheet("color: white; background-color: black; border: black")
 
             # Setting external lights output as well as color
             self.eLightsOutput.setText(self.lightState(self.TrainModel.data["eLights"]))
             if (self.TrainModel.data["eLights"] == 1):
                 self.eLightsOutput.setStyleSheet("background-color: rgb(255, 215, 0); border: rgb(255, 215, 0)")
             else:
-                self.eLightsOutput.setStyleSheet("background-color: white")
+                self.eLightsOutput.setStyleSheet("color: white; background-color: black; border: black")
 
             # Setting the temperature output as well as color
             self.currentTemperatureOutput.setText(str(round(self.TrainModel.data["currTemp"], 1)) + " F")
@@ -574,6 +665,8 @@ class TrainModelUI(QWidget):
                 self.currentTemperatureOutput.setStyleSheet("background-color: rgb(220, 20, 60); border: rgb(220, 20, 60)")
             else:
                 self.currentTemperatureOutput.setStyleSheet("background-color: blue; border: blue")
+
+            self.rotateAdvertisements(1)
 
             # Move curr values to previous
             self.TrainModel.moveToPrevious()
