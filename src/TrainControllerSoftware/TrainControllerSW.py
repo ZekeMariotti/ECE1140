@@ -58,19 +58,24 @@ class TrainControllerSW:
 
         # Internal Variables
         self.stationState = False
+        self.atSwitchBlock = False
         self.firstBeaconPassed = False
         self.secondBeaconPassed = False
-        self.exitBeacon = False
+        self.firstSwitchBeaconPassed = False
+        self.secondSwitchBeaconPassed = False
         self.speedLimit = 100
         self.commandedSpeedManual = 0
         self.manualMode = False
         self.simulationSpeed = 1 
 
-        self.blockList = [0]
-        self.blockCount = 0
+        # Beacon data
+        self.blockList = [0]*2
+        self.blockCount = 1
         self.nextBlock = 0
-        self.countUp = True
+        self.switchBlock = 0
+        self.blockCountDirection = 1
         self.polarity = False
+        self.previousPolarity = False
 
         # Constants
         # Max Speed in km/hr
@@ -156,21 +161,56 @@ class TrainControllerSW:
 
     # Determines whether the train is at a station or not
     def setStationState(self):
-        # if isBeacon and !firstBeaconPassed, entering station
-        if(self.inputs.isBeacon == True and self.firstBeaconPassed == False):
-            self.firstBeaconPassed = True
-        elif(self.inputs.isBeacon == False and self.firstBeaconPassed == True):
-            self.stationState = True
+        # If self.inputs.stationName != "" beacon is at a station
+        if (self.inputs.stationName != ""):
+            # if isBeacon and !firstBeaconPassed, entering station
+            if(self.inputs.isBeacon == True and self.firstBeaconPassed == False):
+                self.firstBeaconPassed = True
+            elif(self.inputs.isBeacon == False and self.firstBeaconPassed == True):
+                self.stationState = True
 
-        # if isBeacon and stationState and !secondBeaconPassed, exiting station
-        if(self.inputs.isBeacon == True and self.stationState == True and self.secondBeaconPassed == False):
-            self.secondBeaconPassed = True
+            # if isBeacon and stationState and !secondBeaconPassed, exiting station
+            if(self.inputs.isBeacon == True and self.stationState == True and self.secondBeaconPassed == False):
+                self.secondBeaconPassed = True
 
-        # if !isBeacon and secondBeaconPassed, reset stationState and beaconPassed variables (left the station)
-        if(self.inputs.isBeacon == False and self.secondBeaconPassed == True):
-            self.stationState = False
-            self.firstBeaconPassed = False
-            self.secondBeaconPassed = False
+            # if !isBeacon and secondBeaconPassed, reset stationState and beaconPassed variables (left the station)
+            if(self.inputs.isBeacon == False and self.secondBeaconPassed == True):
+                self.stationState = False
+                self.firstBeaconPassed = False
+                self.secondBeaconPassed = False
+
+    # Increments or decrements block count after a polarity change
+    def checkBlockPolarity(self):
+        if (self.polarity != self.previousPolarity):
+            self.blockCount += self.blockCountDirection
+            self.previousPolarity = self.polarity
+
+    # Decides what to set the current block to based on data from beacons and switch blocks 
+    def setCurrentBlock(self):
+        self.checkBlockPolarity()
+
+        # If self.switchBlock != -1, train is at a switch beacon
+        if (self.switchBlock != -1):
+            # if isBeacon and !firstSwitchBeaconPassed, entering station
+            if (self.inputs.isBeacon == True and self.firstSwitchBeaconPassed == False):
+                self.firstSwitchBeaconPassed
+            elif (self.inputs.isBeacon == False and self.firstSwitchBeaconPassed):
+                self.atSwitchBlock = True
+
+            # if isBeacon and atSwitchBlock and !secondSwitchBeaconPassed, exiting station
+            if(self.inputs.isBeacon == True and self.atSwitchBlock == True and self.secondSwitchBeaconPassed == False):
+                self.secondSwitchBeaconPassed = True
+
+            # if !isBeacon and secondSwitchBeaconPassed, reset atSwitchBlock and beaconPassed variables (left the switch)
+            if(self.inputs.isBeacon == False and self.secondSwitchBeaconPassed == True):
+                self.atSwitchBlock = False
+                self.firstSwitchBeaconPassed = False
+                self.secondSwitchBeaconPassed = False
+                self.blockCount = self.nextBlock
+
+        # Set current block
+        if (self.atSwitchBlock == True):
+            self.blockCount = self.switchBlock
 
     # Calculates the power to output to the train model 
     def calculatePower(self):
@@ -280,6 +320,8 @@ class TrainControllerSW:
 
     # Lowers commanded speed if it's higher than speed limit
     def stayBelowSpeedLimitAndMaxSpeed(self):
+        self.speedLimit = Conversions.kmPerHourToMetersPerSecond(self.blockList[self.blockCount].speedLimit)
+
         if(float(self.inputs.commandedSpeed) > float(self.speedLimit)):
             self.inputs.commandedSpeed = self.speedLimit
         elif(float(self.inputs.commandedSpeed) > Conversions.kmPerHourToMetersPerSecond(self.MAX_SPEED)):
@@ -390,7 +432,7 @@ class TrainControllerSW:
             self.inputs.temperature = temp
 
     def stationNameSignalHandler(self, id, statName):
-        if(self.trainId == id):
+        if(self.trainId == id and statName != ""):
             self.inputs.stationName = statName
 
     def platformSideSignalHandler(self, id, platSide):
@@ -398,13 +440,14 @@ class TrainControllerSW:
             self.inputs.platformSide = platSide
 
     def nextStationNameSignalHandler(self, id, nxtStatName):
-        if(self.trainId == id):
+        if(self.trainId == id and nxtStatName != ""):
             self.inputs.nextStationName = nxtStatName
 
     def isBeaconSignalHandler(self, id, isBeac):
         if(self.trainId == id):
             self.inputs.isBeacon = isBeac
             self.setStationState()
+            self.setCurrentBlock()
 
     def externalLightsStateSignalHandler(self, id, extLight):
         if(self.trainId == id):
@@ -448,15 +491,19 @@ class TrainControllerSW:
         
     def fromSwitchSignal(self, id, countUpOrDown):
         if(self.trainId == id):
-            self.countUp = countUpOrDown
+            if (countUpOrDown == True):
+                self.blockCountDirection = -1
+            else:
+                self.blockCountDirection = 1
 
     def switchBlockSignal(self, id, swtchBlk):
         if(self.trainId == id):
-            self.nextBlock = swtchBlk
+            self.switchBlock = swtchBlk
         
     def polaritySignal(self, id, plrty):
         if(self.trainId == id):
             self.polarity = plrty
+            self.checkBlockPolarity()
         
 # Function to remove character from a string at nth position
 def stringRemove(string, n):  
