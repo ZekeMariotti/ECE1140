@@ -159,3 +159,11 @@ class Wayside:
         with open(os.path.join(sys.path[0], "Red2CTC.json"), "w") as filename:
             (json.dump(self.WaysideToCTC, filename, indent = 4))
         requests.put("http://localhost:8090/api/wayside/Red")
+
+    def getCTCBlocks(self):
+        blockArrayString = requests.get("http://localhost:8090/api/line/Green/blocks").text
+        blockArray = json.loads(blockArrayString)
+        for block in blockArray:
+            if (int(block["block"]) != 0):
+                self.setSuggestedAuthority(int(block["block"]), int(block["authority"]))
+                self.setSuggestedSpeed(int(block["block"]), float(block["suggested-speed"]))
