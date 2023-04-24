@@ -40,7 +40,6 @@ class MainWindow(QMainWindow):
             
             # Get block list
             self.TrainControllerSW.getBlocksData()
-            print(self.TrainControllerSW.blockList[23].speedLimit)
 
             # Update Inputs, Outputs, and time
             self.TrainControllerSW.writeOutputs()          
