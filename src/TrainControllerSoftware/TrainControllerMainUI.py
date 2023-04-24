@@ -50,7 +50,6 @@ class MainWindow(QMainWindow):
             # Set window defaults
             self.setWindowTitle(f'Train Controller {self.TrainControllerSW.trainId}')
             self.setFixedSize(QSize(960, 540))
-            self.setMinimumSize(1050, 550)
             self.move(100, 200)
 
             # Set element defaults
