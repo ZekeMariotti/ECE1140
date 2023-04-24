@@ -789,8 +789,8 @@ class MainWindowR(QMainWindow):
                 self.Authority.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
-                 j=0
-                 i=i+1           
+                    j=0
+                    i=i+1           
           #self.CommandedSpeed
           i=0
           j=1
@@ -801,8 +801,8 @@ class MainWindowR(QMainWindow):
                 self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
-                        j=0
-                        i=i+1                          
+                    j=0
+                    i=i+1                          
           #self.BrokenRail 
           i=0
           j=1
@@ -810,7 +810,7 @@ class MainWindowR(QMainWindow):
                 value = WaysideControllerRed.brokenRail[k]        
                 if value == True:
                         self.BrokenRail.setItem(i,j,QTableWidgetItem(str("ERROR")))
-                        j=j+1
+                j=j+1
                 if j>9:
                  j=0
                  i=i+1            
@@ -826,9 +826,7 @@ class MainWindowR(QMainWindow):
                 j=j+1
                 if j>9:
                  j=0
-                 i=i+1
-          i=5
-          j=1            
+                 i=i+1         
          #self.Occupancy
           i=0
           j=1
@@ -836,7 +834,7 @@ class MainWindowR(QMainWindow):
                 value = WaysideControllerRed.occupancy[k]
                 if value == True:
                         self.Occupancy.setItem(i,j,QTableWidgetItem(str("X")))
-                        j=j+1
+                j=j+1
                 if j>9:
                         j=0
                         i=i+1  

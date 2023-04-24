@@ -13,8 +13,8 @@ class TestWindow(QMainWindow):
         super().__init__()        
 
         #Intialize Wayside class
-        self.WaysideControllerRed = Wayside1
-        self.WaysideControllerRed2 = Wayside2
+        self.WaysideControllerGreen = Wayside1
+        self.WaysideControllerGreen2 = Wayside2
         self.blocks=[]
         for i in range(0,151):
              self.blocks.append(str(i))        
@@ -351,7 +351,7 @@ class TestWindow(QMainWindow):
           if self.storeState == "Broken":
                 x=True
           else:
-                x=True
+                x=False
           if int(self.storeBlock)<101:
                 self.WaysideControllerGreen.setBrokenRail(x,int(self.storeBlock))
           elif (int(self.storeBlock)>100 & int(self.storeBlock)<150):

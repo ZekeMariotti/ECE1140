@@ -9,6 +9,7 @@ from WaysideController.PLC import PLC
 from Integration.TkMWCSignals import *
 from Integration.ActiveSignals import *
 from WaysideController.RedLineTestUI import TestWindow
+from WaysideController.NewRedLine import *
 
 
 #global variables
@@ -16,16 +17,6 @@ from WaysideController.RedLineTestUI import TestWindow
 rowheaders =["0","1","2","3","4","5","6","7"]
 rowheaders2 =["5","6","7"]
 colheaders =["0","1","2","3","4","5","6","7","8","9"]
-
-#setup Wayside Controllers
-WaysideControllerRed=Wayside(1,True)
-WaysideControllerRed2=Wayside(1,True)
-WaysideControllerRed.setdictionarysizes(1,51)
-WaysideControllerRed.setCommandedSpeed()
-WaysideControllerRed.setAuthority()
-WaysideControllerRed2.setdictionarysizes(51,77)
-WaysideControllerRed2.setCommandedSpeed()
-WaysideControllerRed2.setAuthority() 
 
 class Worker(QObject):
       finished = pyqtSignal()
@@ -155,7 +146,7 @@ class MainWindowR(QMainWindow):
             CommandedSpeed.setVerticalHeaderLabels(rowheaders2)
             CommandedSpeed.setHorizontalHeaderLabels(colheaders)
             CommandedSpeed.setItem(0,0,QTableWidgetItem("-"))
-            i=5
+            i=0
             j=1
             for k in range(51,77):
                   value=WaysideControllerRed2.commandedSpeed[k]
@@ -191,7 +182,7 @@ class MainWindowR(QMainWindow):
             Authority.setVerticalHeaderLabels(rowheaders2)
             Authority.setHorizontalHeaderLabels(colheaders)
             Authority.setItem(0,0,QTableWidgetItem("-"))
-            i=5
+            i=0
             j=1
             for k in range(51,77):
                 value=WaysideControllerRed2.authority[k]
@@ -227,7 +218,7 @@ class MainWindowR(QMainWindow):
             BrokenRail.setVerticalHeaderLabels(rowheaders2)
             BrokenRail.setHorizontalHeaderLabels(colheaders)
             BrokenRail.setItem(0,0,QTableWidgetItem("-"))
-            i=5
+            i=0
             j=1
             for k in range(51,77):
                 if WaysideControllerRed2.brokenRail[k] == True:
@@ -263,7 +254,7 @@ class MainWindowR(QMainWindow):
             SignalLight.setVerticalHeaderLabels(rowheaders2)
             SignalLight.setHorizontalHeaderLabels(colheaders)
             SignalLight.setItem(0,0,QTableWidgetItem("-"))
-            i=5
+            i=0
             j=1
             for k in range(51,77):
                 if WaysideControllerRed2.signalLights[k]==True:
@@ -302,7 +293,7 @@ class MainWindowR(QMainWindow):
             Occupancy.setVerticalHeaderLabels(rowheaders2)
             Occupancy.setHorizontalHeaderLabels(colheaders)
             Occupancy.setItem(0,0,QTableWidgetItem("-"))
-            i=5
+            i=0
             j=1
             for k in range(51,77):
                 if WaysideControllerRed2.brokenRail[k] == True:
@@ -330,7 +321,7 @@ class MainWindowR(QMainWindow):
             gate = QLabel()
             gate.setFont(self.labelFont)
             gate.setFixedSize(120,20)
-            if WaysideControllerRed.gates[1] == True:
+            if WaysideControllerRed2.gates[1] == True:
                 gate.setText("Block 47 Gate:  UP")
 
             else:
@@ -516,7 +507,7 @@ class MainWindowR(QMainWindow):
           Output1 = QLabel()
           Output1.setFont(self.labelFont)
           Output1.setFixedSize(70,20)
-          if WaysideControllerRed.switches[1]==True:
+          if WaysideControllerRed2.switches[1]==True:
                 Output1.setText("9 to Yard")
           else:
                 Output1.setText("Yard to 9")
@@ -529,7 +520,7 @@ class MainWindowR(QMainWindow):
           Output2 = QLabel()
           Output2.setFont(self.labelFont)
           Output2.setFixedSize(70,20)
-          if WaysideControllerRed.switches[2]==True:
+          if WaysideControllerRed2.switches[2]==True:
                 Output2.setText("15 to 16")
           else:
                 Output2.setText("1 to 15")
@@ -542,7 +533,7 @@ class MainWindowR(QMainWindow):
           Output3 = QLabel()
           Output3.setFont(self.labelFont)
           Output3.setFixedSize(70,20)
-          if WaysideControllerRed.switches[3]==True:
+          if WaysideControllerRed2.switches[3]==True:
                 Output3.setText("27 to 28")
           else:
                 Output3.setText("27 to 76")
@@ -555,7 +546,7 @@ class MainWindowR(QMainWindow):
           Output4 = QLabel()
           Output4.setFont(self.labelFont)
           Output4.setFixedSize(70,20)
-          if WaysideControllerRed.switches[4]==True:
+          if WaysideControllerRed2.switches[4]==True:
                 Output4.setText("32 to 33")
           else:
                 Output4.setText("33 to 72")
@@ -568,7 +559,7 @@ class MainWindowR(QMainWindow):
           Output5 = QLabel()
           Output5.setFont(self.labelFont)
           Output5.setFixedSize(70,20)
-          if WaysideControllerRed.switches[5]==True:
+          if WaysideControllerRed2.switches[5]==True:
                 Output5.setText("38 to 39")
           else:
                 Output5.setText("38 to 71")
@@ -581,7 +572,7 @@ class MainWindowR(QMainWindow):
           Output6 = QLabel()
           Output6.setFont(self.labelFont)
           Output6.setFixedSize(70,20)
-          if WaysideControllerRed.switches[6]==True:
+          if WaysideControllerRed2.switches[6]==True:
                 Output6.setText("43 to 44")
           else:
                 Output6.setText("44 to 67")
@@ -594,7 +585,7 @@ class MainWindowR(QMainWindow):
           Output7 = QLabel()
           Output7.setFont(self.labelFont)
           Output7.setFixedSize(70,20)
-          if WaysideControllerRed.switches[7]==True:
+          if WaysideControllerRed2.switches[7]==True:
                 Output7.setText("52 to 53")
           else:
                 Output7.setText("52 to 66")
@@ -665,12 +656,12 @@ class MainWindowR(QMainWindow):
     def Switch5ButtonLClick(self):
           if(self.maintenanceMode==True):
             WaysideControllerRed.setSwitchPositions(True,5)          
-            WaysideControllerRed.setSwitchPositions(True,5)
+            WaysideControllerRed2.setSwitchPositions(True,5)
 
     def Switch5ButtonRClick(self):
           if(self.maintenanceMode==True):
             WaysideControllerRed.setSwitchPositions(False,5)
-            WaysideControllerRed.setSwitchPositions(False,5)
+            WaysideControllerRed2.setSwitchPositions(False,5)
 
     def Switch6ButtonLClick(self):
           if(self.maintenanceMode==True):
@@ -685,7 +676,7 @@ class MainWindowR(QMainWindow):
     def Switch7ButtonLClick(self):
           if(self.maintenanceMode==True):
             WaysideControllerRed.setSwitchPositions(True,7)          
-            WaysideControllerRed.setSwitchPositions(True,7)
+            WaysideControllerRed2.setSwitchPositions(True,7)
 
     def Switch7ButtonRClick(self):
           if(self.maintenanceMode==True):
@@ -721,58 +712,73 @@ class MainWindowR(QMainWindow):
             return(MLabel)
     
     def updateVisualElements(self):
+          if (self.Switch1Out.text() == "Yard to 9" and WaysideControllerRed2.switches[1] == False) or (self.Switch1Out.text() == "9 to Yard" and WaysideControllerRed2.switches[1] == True):
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[1]), 0, 9)
+          if (self.Switch2Out.text() == "1 to 16" and WaysideControllerRed2.switches[2] == False) or (self.Switch2Out.text() == "15 to 16" and WaysideControllerRed2.switches[2] == True):
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[2]), 0, 16)
+          if (self.Switch3Out.text() == "27 to 76" and WaysideControllerRed2.switches[3] == False) or (self.Switch3Out.text() == "27 to 28" and WaysideControllerRed2.switches[3] == True):
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[3]), 0, 27)
+          if (self.Switch4Out.text() == "33 to 72" and WaysideControllerRed2.switches[4] == False) or (self.Switch4Out.text() == "32 to 33" and WaysideControllerRed2.switches[4] == True):
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[4]), 0, 33)
+          if (self.Switch5Out.text() == "38 to 71" and WaysideControllerRed2.switches[5] == False) or (self.Switch5Out.text() == "38 to 39" and WaysideControllerRed2.switches[5] == True):
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[5]), 0, 38)
+          if (self.Switch6Out.text() == "44 to 67" and WaysideControllerRed2.switches[6] == False) or (self.Switch6Out.text() == "43 to 44" and WaysideControllerRed2.switches[6] == True):
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[6]), 0, 44)
+          if (self.Switch7Out.text() == "52 to 66" and WaysideControllerRed2.switches[7] == False)  or (self.Switch7Out.text() == "52 to 53" and WaysideControllerRed2.switches[7] == True):
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[7]),0,52)
+
           if(self.maintenanceMode==True):                
                   self.maintenanceLabel.setText("Maintenance ON")
           else:
                   self.maintenanceLabel.setText("Maintenance OFF")  
                           
-          if WaysideControllerRed.switches[1]==True:
+          if WaysideControllerRed2.switches[1]==True:
                 self.Switch1Out.setText("9 to Yard")
           else:
                 self.Switch1Out.setText("Yard to 9")
 
-          if WaysideControllerRed.switches[2]==True:
+          if WaysideControllerRed2.switches[2]==True:
                 self.Switch2Out.setText("15 to 16")
           else:
                 self.Switch2Out.setText("1 to 16")    
 
-          if WaysideControllerRed.switches[3]==True:
+          if WaysideControllerRed2.switches[3]==True:
                 self.Switch3Out.setText("27 to 28")
           else:
                 self.Switch3Out.setText("27 to 76")
 
-          if WaysideControllerRed.switches[4]==True:
+          if WaysideControllerRed2.switches[4]==True:
                 self.Switch4Out.setText("32 to 33")
           else:
                 self.Switch4Out.setText("33 to 72")
 
-          if WaysideControllerRed.switches[5]==True:
+          if WaysideControllerRed2.switches[5]==True:
                 self.Switch5Out.setText("38 to 39")
           else:
                 self.Switch5Out.setText("38 to 71")
 
-          if WaysideControllerRed.switches[6]==True:
+          if WaysideControllerRed2.switches[6]==True:
                 self.Switch6Out.setText("43 to 44")
           else:
                 self.Switch6Out.setText("44 to 67")
 
-          if WaysideControllerRed.switches[7]==True:
+          if WaysideControllerRed2.switches[7]==True:
                 self.Switch7Out.setText("52 to 53")
           else:
                 self.Switch7Out.setText("52 to 66")
 
 #self.Authority
-          i=5
+          i=0
           j=1
           for k in range(51,77):
                 value=WaysideControllerRed2.authority[k]
                 self.Authority.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
-                 j=0
-                 i=i+1                 
+                    j=0
+                    i=i+1                 
           #self.CommandedSpeed
-          i=5
+          i=0
           j=1
           for k in range(51,77):
                 value=WaysideControllerRed2.commandedSpeed[k]
@@ -783,17 +789,18 @@ class MainWindowR(QMainWindow):
                         i=i+1                             
           #self.BrokenRail 
           j=1
-          i=5
+          i=0
           for k in range(51,77):
                 value = WaysideControllerRed2.brokenRail[k]             
                 if value == True:
+                        print("Rail is now broken")
                         self.BrokenRail.setItem(i,j,QTableWidgetItem(str("ERROR")))
-                        j=j+1
+                j=j+1
                 if j>9:
                  j=0
                  i=i+1                 
           #self.SignalLight 
-          i=5
+          i=0
           j=1
           for k in range(51,77):
                 if WaysideControllerRed2.signalLights[k]==True:
@@ -806,25 +813,25 @@ class MainWindowR(QMainWindow):
                  j=0
                  i=i+1                 
          #self.Occupancy
-          i=5
+          i=0
           j=1      
           for k in range(51,77):
                 value = WaysideControllerRed2.occupancy[k]
                 if value == True:
                         self.Occupancy.setItem(i,j,QTableWidgetItem(str("X")))
-                        j=j+1
+                j=j+1
                 if j>9:
                         j=0
                         i=i+1 
-          if WaysideControllerRed.gates[1]==True:
+          if WaysideControllerRed2.gates[1]==True:
                 self.Gate.setText("Block 47 Gate:  UP")
           else:
                 self.Gate.setText("Block 47 Gate:  DOWN")
           if(self.maintenanceMode==False):
-            self.PLCMain.RloadValues1(self.File1)
+            self.PLCMain.RloadValues2(self.File2)
             self.PLCMain.Rsetswitches()
-    def mainEventLoop(self):
 
+    def mainEventLoop(self):
           self.updateVisualElements()
           WaysideControllerRed2.WaysideToCTCInfoR2()
 
