@@ -8,6 +8,8 @@ from TrainControllerSW import TrainControllerSW
 from TrainControllerMainUI import MainWindow
 from Integration.TMTCSignals import *
 from Integration.TimeSignals import *
+from TrainModelFolder.TrainModelMainUI import *
+from TrainModelFolder.TrainModelTestUI import *
 import Integration.Conversions as Conversions
 
 from PyQt6.QtWidgets import *
@@ -307,13 +309,15 @@ def commandedSpeedSliderTest():
 # Test that commanded speed is received and shown correctly in automatic mode
 def commandedSpeedTest():
     try:
+        # Set authority to 5 and manual mode to false to prevent commanded speed from being set automatically
+        mainUI.TrainControllerSW.inputs.authority = 5
         mainUI.manualModeToggle.setChecked(False)
         mainUI.mainEventLoop()
 
-        mainUI.TrainControllerTestUI.commandedSpeedSlider.setValue(15)
+        mainUI.TrainControllerTestUI.commandedSpeedSlider.setValue(5)
         mainUI.TrainControllerTestUI.commandedSpeedSliderRelease()
         mainUI.mainEventLoop()
-        assert(str(Conversions.metersPerSecondToMilesPerHour(15)) in mainUI.commandedSpeed.text()), "commandedSpeedTest Failed"
+        assert(str(Conversions.metersPerSecondToMilesPerHour(5)) in mainUI.commandedSpeed.text()), "commandedSpeedTest Failed"
 
         print("commandedSpeedTest Passed")
         global passed
@@ -338,13 +342,13 @@ def authorityTest():
         print(str(exception))
         global failed
         failed = failed + 1
-
-# TODO: Fix speed limit 
+ 
 # Test that speed limit is set properly 
 def speedLimitTest():
     try:
-
-        assert(str(Conversions.metersPerSecondToMilesPerHour(15)) in mainUI.speedLimit.text()), "speedLimitTest Failed"
+        mainUI.TrainControllerSW.blockCount = 1
+        speedLimit = str(Conversions.metersPerSecondToMilesPerHour(Conversions.kmPerHourToMetersPerSecond(mainUI.TrainControllerSW.blockList[1].speedLimit)))
+        assert(speedLimit in mainUI.speedLimit.text()), "speedLimitTest Failed"
 
         print("speedLimitTest Passed")
         global passed
@@ -388,8 +392,11 @@ def kpAndKiTest():
 
 
 if (__name__ == "__main__"):
+    # Used to test TrainModel communication
+    testTrainModelIntegration = False
+
     app = QApplication(sys.argv)
-    mainUI = MainWindow()
+    mainUI = MainWindow("Green", 2)
     mainUI.show()
 
     if (mainUI.testUI):
@@ -414,9 +421,17 @@ if (__name__ == "__main__"):
     commandedSpeedSliderTest()
     commandedSpeedTest()
     authorityTest()
-    #speedLimitTest()
+    speedLimitTest()
     temperatureTest()
     kpAndKiTest()
     
     print(f'\nTotal Tests: {passed+failed}\nTests passed: {passed}\nTests Failed: {failed}')
+
+    if (testTrainModelIntegration == True):
+        trainModelUI = TrainModelUI(2, "Green")
+        trainModelUI.show()
+
+        trainModelTestUI = TrainModelTestUI()
+        trainModelTestUI.show()
+
     app.exec()

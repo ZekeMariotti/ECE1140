@@ -24,20 +24,23 @@ class Worker(QObject):
 class MainWindow(QMainWindow):
 
         # Constructor 
-        def __init__(self, id=2):
+        def __init__(self, trainLine , id=2):
             super().__init__()
 
             # Enable Test UI
             self.testUI = True 
             
             # Initialize TrainControllerSW object
-            self.TrainControllerSW = TrainControllerSW(trainId=id, commandedSpeed=0, currentSpeed=0, authority=10, inputTime="2023-02-20T21:52:48.3940347-05:00", 
+            self.TrainControllerSW = TrainControllerSW(trainId=id, line = trainLine, commandedSpeed=0, currentSpeed=0, authority=10, inputTime="2023-02-20T21:52:48.3940347-05:00", 
                                                        undergroundState=False, temperature=0, stationName="setupStationName", platformSide=0, 
                                                        nextStationName="station2", isBeacon=False, externalLightsState=False, internalLightsState=False, leftDoorState=False, 
                                                        rightDoorState=False, serviceBrakeState=False, emergencyBrakeState=False, serviceBrakeStatus=False, engineStatus=False, 
                                                        communicationsStatus=False, power=0, leftDoorCommand=False, rightDoorCommand=False, serviceBrakeCommand=False, 
                                                        emergencyBrakeCommand=False, externalLightCommand=False, internalLightCommand=False, stationAnnouncement="setupStationAnnouncement")
             
+            # Get block list
+            self.TrainControllerSW.getBlocksData()
+
             # Update Inputs, Outputs, and time
             self.TrainControllerSW.writeOutputs()          
             self.TrainControllerSW.previousTime = self.TrainControllerSW.realTime
@@ -491,8 +494,7 @@ class MainWindow(QMainWindow):
             leftDoorState.move(x, y)
             leftDoorState.setParent(self)
             return leftDoorState
-            
-            
+             
         def leftDoorOpenSetup(self):
             leftDoorOpen = QPushButton("Open Doors")
             leftDoorOpen.setFont(self.buttonFont)
@@ -568,7 +570,6 @@ class MainWindow(QMainWindow):
             self.TrainControllerSW.currentTime = self.TrainControllerSW.realTime
             self.TrainControllerSW.calculatePower()     
             self.TrainControllerSW.failureMode()
-            #self.TrainControllerSW.setStationState()
 
             # Only run in automatic mode
             if(self.TrainControllerSW.manualMode == False):
@@ -713,7 +714,7 @@ class Color(QWidget):
 
 if(__name__ == "__main__"):
     app = QApplication(sys.argv)
-    mainWindow = MainWindow()
+    mainWindow = MainWindow("Green", 2)
     mainWindow.show()
 
     if (mainWindow.testUI):

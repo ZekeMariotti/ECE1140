@@ -2,6 +2,7 @@
 import sys
 import csv
 import os
+import __main__
 sys.path.append(__file__.replace("\TrainModelFolder\TrainModel.py", ""))
 
 from random import randint
@@ -182,9 +183,16 @@ class TrainModel():
         self.data["length"] = self.constants["length"] * self.data["numCars"]
 
     def getBlocksData(self):
+        if (__main__.__file__[-7:] == "main.py"):
+            greenPath = os.path.join(sys.path[0], "TrackModel", "GreenLine.csv")
+            redPath = os.path.join(sys.path[0], "TrackModel", "RedLine.csv")
+        else:   
+            greenPath = os.path.join(sys.path[0], "..", "TrackModel", "GreenLine.csv")
+            redPath = os.path.join(sys.path[0], "..", "TrackModel", "RedLine.csv")
+
         if self.trackData["trainLine"] == "Green":
             self.blocks = [0] * 151
-            with open (os.path.join(sys.path[0], "..", "TrackModel", "GreenLine.csv")) as csvfile:
+            with open (greenPath) as csvfile:
                 rows = csv.reader(csvfile, delimiter=',')
                 for row in rows:
                     if (row[0] == "BlockNo"):
@@ -193,7 +201,7 @@ class TrainModel():
                         self.blocks[int(row[0])] = blocks(int(row[0]), float(row[1]), float(row[5]), float(row[3]), bool(int(row[7])))
         elif self.trackData["trainLine"] == "Red":
             self.blocks = [0] * 77
-            with open (os.path.join(sys.path[0], "..", "TrackModel", "RedLine.csv")) as csvfile:
+            with open (redPath) as csvfile:
                 rows = csv.reader(csvfile, delimiter=',')
                 for row in rows:
                     if (row[0] == "BlockNo"):
