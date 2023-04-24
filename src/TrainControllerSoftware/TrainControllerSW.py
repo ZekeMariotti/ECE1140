@@ -426,7 +426,7 @@ class TrainControllerSW:
         if(self.trainId == id):
             if (auth < 0):
                 auth = 0
-                
+
             self.inputs.authority = auth
 
     def undergroundSignalHandler(self, id, undgnd):
@@ -477,6 +477,9 @@ class TrainControllerSW:
 
     def emergencyBrakeStateSignalHandler(self, id, emgBrk):
         if(self.trainId == id):
+            if (emgBrk == True):
+                self.outputs.emergencyBrakeCommand = True
+                
             self.inputs.emergencyBrakeState = emgBrk
 
     def serviceBrakeStatusSignalHandler(self, id, srvcBrkStatus):

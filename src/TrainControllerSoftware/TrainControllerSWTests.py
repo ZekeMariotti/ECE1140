@@ -434,7 +434,7 @@ def powerCalculationTest():
 
 if (__name__ == "__main__"):
     # Used to test TrainModel communication
-    testTrainModelIntegration = False
+    testTrainModelIntegration = True
 
     app = QApplication(sys.argv)
     mainUI = MainWindow("Green", 2)
@@ -470,6 +470,14 @@ if (__name__ == "__main__"):
     print(f'\nTotal Tests: {passed+failed}\nTests passed: {passed}\nTests Failed: {failed}')
 
     if (testTrainModelIntegration == True):
+        mainUI.close()
+
+        mainUI = MainWindow("Green", 2)
+        mainUI.show()
+
+        if (mainUI.testUI):
+            mainUI.TrainControllerTestUI.show()
+            
         trainModelUI = TrainModelUI(2, "Green")
         trainModelUI.show()
 

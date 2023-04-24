@@ -147,6 +147,7 @@ class MainWindow(QMainWindow):
             y = round(self.frameGeometry().height()*0.85-Kp.frameGeometry().height()*0.5)
             Kp.move(x, y)
             Kp.setParent(self)
+            Kp.setText(str(self.TrainControllerSW.Kp))
             return Kp
         
         def KiLabelSetup(self):
@@ -170,6 +171,7 @@ class MainWindow(QMainWindow):
             y = round(self.frameGeometry().height()*0.85-Ki.frameGeometry().height()*0.5)
             Ki.move(x, y)
             Ki.setParent(self)
+            Ki.setText(str(self.TrainControllerSW.Ki))
             return Ki
 
         def stationSetup(self):
@@ -403,7 +405,7 @@ class MainWindow(QMainWindow):
         def temperatureSetup(self):
             temperature = QLabel()  
             temperature.setFont(self.labelFont)      
-            temperature.setText("Temperature:\n" + str(float(self.TrainControllerSW.inputs.temperature)) + " F")
+            temperature.setText("Temperature:\n" + str(round(float(self.TrainControllerSW.inputs.temperature), 1)) + " F")
             temperature.setFixedSize(QSize(self.labelWidth, self.labelHeight))
             temperature.setAlignment(Qt.AlignmentFlag.AlignCenter)
             temperature.setWordWrap(True)
@@ -637,7 +639,7 @@ class MainWindow(QMainWindow):
             
             self.authority.setText("Authority:\n" + str(self.TrainControllerSW.inputs.authority) + " Blocks")
             self.speedLimit.setText("Speed Limit:\n" + str(Conversions.metersPerSecondToMilesPerHour(float(self.TrainControllerSW.speedLimit))) + " MPH")
-            self.temperature.setText("Temperature:\n" + str(float(self.TrainControllerSW.inputs.temperature)) + " F")
+            self.temperature.setText("Temperature:\n" + str(round(float(self.TrainControllerSW.inputs.temperature), 1)) + " F")
             self.internalLightsState.setText("Internal Lights: " + self.TrainControllerSW.getInternalLightsState())
             self.externalLightsState.setText("External Lights: " + self.TrainControllerSW.getExternalLightsState())
             self.leftDoorState.setText("Left Door\n" + self.TrainControllerSW.getLeftDoorState())
