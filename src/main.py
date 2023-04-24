@@ -315,13 +315,13 @@ class MainWindow(QMainWindow):
             activeSignals.activeSignal.emit()
 
         def launchWaysideControllerThreeClick(self):
-            self.wc3 = NewRedLine.MainWindowR()
+            self.wc3 = NewRedLine.MainWindowR("RedLine 1")
             self.wc3.setVisible(True)
             self.wc3.WaysideControllerRedTestUI.show()
             activeSignals.activeSignal.emit()            
 
         def launchWaysideControllerFourClick(self):
-            self.wc4 = NewRedLine2.MainWindowR()
+            self.wc4 = NewRedLine2.MainWindowR("RedLine 2")
             self.wc4.setVisible(True)
             activeSignals.activeSignal.emit()
 

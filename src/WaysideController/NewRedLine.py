@@ -31,7 +31,7 @@ class Worker(QObject):
       finished = pyqtSignal()
 
 class MainWindowR(QMainWindow):
-    def __init__(self):
+    def __init__(self,name):
 
         super().__init__()
 
@@ -41,8 +41,8 @@ class MainWindowR(QMainWindow):
         self.active = False
         activeSignals.activeSignal.connect(self.activeSignal)
         #Window
-
-        self.setWindowTitle("Red Line")
+        self.name = name
+        self.setWindowTitle(str(self.name))
         self.setFixedSize(QSize(1000,600))
         self.setMinimumSize(1150,650)
         self.move(0,0)
@@ -52,7 +52,6 @@ class MainWindowR(QMainWindow):
         
         self.File1 = os.path.join(sys.path[0], "WaysideController", "RedLine.txt")
         self.File2 = os.path.join(sys.path[0], "WaysideController", "RedLine2.txt")
-
         self.mainTimer = self.mainTimerSetup()
         #Commanded Speed
         self.CommandedSpeedLabel = self.CommandedSpeedLabelSetup()
