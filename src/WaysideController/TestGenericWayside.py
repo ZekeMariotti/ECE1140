@@ -93,13 +93,7 @@ class Wayside:
 
     def setSignalLights(self,logic,number):
             self.signalLights[number]=logic
-
-    def convertTime(self):
-            inputTime = stringRemove(self.time, 26)
-            self.realTime = datetime.strptime(inputTime, "%Y-%m-%dT%H:%M:%S.%f%z") 
-            
-    def uploadPLC(self,file):
-            return()     
+                
     def WaysideToTrackInfoG1(self):
         with open(os.path.join(sys.path[0],"Green1Track.json"), "w") as filename:
             (json.dump(self.WaysideToTrack, filename, indent = 4))
