@@ -4,6 +4,7 @@ import sys
 import os
 import json
 from json import JSONEncoder
+import requests
 
 class Wayside:
     def __init__(self,simTime,maintenance):
@@ -139,9 +140,22 @@ class Wayside:
         self.data["RTC"]=self.realTime
         self.data["authority"]=self.authority
 
-    
+    def WaysideToCTCInfoG1(self):
+        with open(os.path.join(sys.path[0], "Green1CTC.json"), "w") as filename:
+            (json.dump(self.WaysideToCTC, filename, indent = 4))
+        requests.put("http://localhost:8090/api/wayside/Green", json.dumps(self.WaysideToCTC, indent = 4))
 
-def stringRemove(string, n):  
-        first = string[: n]   
-        last = string[n+1:]  
-        return first + last
+    def WaysideToCTCInfoG2(self):
+        with open(os.path.join(sys.path[0], "Green2CTC.json"), "w") as filename:
+            (json.dump(self.WaysideToCTC, filename, indent = 4))       
+        requests.put("http://localhost:8090/api/wayside/Green", json.dumps(self.WaysideToCTC, indent = 4))  
+
+    def WaysideToCTCInfoR1(self):
+        with open(os.path.join(sys.path[0], "Red1CTC.json"), "w") as filename:
+            (json.dump(self.WaysideToCTC, filename, indent = 4))
+        requests.put("http://localhost:8090/api/wayside/Red")
+
+    def WaysideToCTCInfoR2(self):
+        with open(os.path.join(sys.path[0], "Red2CTC.json"), "w") as filename:
+            (json.dump(self.WaysideToCTC, filename, indent = 4))
+        requests.put("http://localhost:8090/api/wayside/Red")
