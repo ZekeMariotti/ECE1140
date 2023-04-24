@@ -47,6 +47,10 @@ class TrainModelUI(QWidget):
     # Initialization of the UI
     def __init__(self, id, line):
         
+        # Variables used for the advertisements
+        self.adTimer = 0
+        self.adCounter = 0
+
         # SIGNAL USED FOR TEST UI
         trainSignals.updateOutputs.connect(self.updateOutputs)
         self.TrainModel = TrainModel(id, line)
@@ -57,8 +61,8 @@ class TrainModelUI(QWidget):
         self.UIId = id
         self.TrainModel.setFirstSection()
         self.setWindowTitle("Train Model " + str(self.UIId))
-        self.setFixedSize(QSize(750, 550))
-        self.setMinimumSize(850, 600)
+        self.setFixedSize(QSize(850, 750))
+        self.setMinimumSize(950, 850)
         layout = QGridLayout()
         self.setLayout(layout)
         self.setFont(QFont("Times New Roman"))
@@ -428,6 +432,21 @@ class TrainModelUI(QWidget):
         layout.addWidget(crewLabel, 13, 6, self.alignCenter)
         layout.addWidget(self.crewOutput, 13, 7, self.alignCenter)
 
+        #########################
+        # Advertisements Labels #
+        #########################
+        self.adLabel = QLabel()
+        Mpixmap = QPixmap(sys.path[0] + "\MarlboroGoldAd.png")
+        Ppixmap = QPixmap(sys.path[0] + "\PlantersAd.png")
+        JDpixmap = QPixmap(sys.path[0] + "\JackDanielsAd.png")
+        self.pixMaps = [Mpixmap, Ppixmap, JDpixmap]
+
+        self.adLabel.setPixmap(Mpixmap)
+        self.adLabel.setFixedSize(925, 150)
+        self.adLabel.setScaledContents(True)
+        
+        layout.addWidget(self.adLabel, 14, 0, 3, 8)
+
         self.updateOutputs()
 
     def closeEvent(self, event):
@@ -498,6 +517,7 @@ class TrainModelUI(QWidget):
         else:
             return "Enable"
 
+    # Timer used to update the UI
     def mainThreadSetup(self):
         self.timerThread = QThread()
         self.timerThread.started.connect(self.mainTimerSetup)
@@ -509,6 +529,16 @@ class TrainModelUI(QWidget):
         mainTimer.setParent(self)
         mainTimer.start()
         return mainTimer
+    
+    # Rotate the advertisements
+    def rotateAdvertisements(self, time):
+        self.adTimer += time
+        if (self.adTimer > 50):
+            self.adCounter += 1
+            if (self.adCounter == 3):
+                self.adCounter = 0
+            self.adLabel.setPixmap(self.pixMaps[self.adCounter])
+            self.adTimer = 0
 
     # Updates outputs every time period
     def updateOutputs(self):
@@ -633,6 +663,8 @@ class TrainModelUI(QWidget):
                 self.currentTemperatureOutput.setStyleSheet("background-color: rgb(220, 20, 60); border: rgb(220, 20, 60)")
             else:
                 self.currentTemperatureOutput.setStyleSheet("background-color: blue; border: blue")
+
+            self.rotateAdvertisements(1)
 
             # Move curr values to previous
             self.TrainModel.moveToPrevious()
