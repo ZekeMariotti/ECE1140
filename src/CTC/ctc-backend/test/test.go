@@ -45,7 +45,7 @@ func RunTests() {
 
 	// Test routing function for train
 	routeGen := route.NewRouteCalculator(a.DataStore)
-	result := routeGen.CalculateRoute(testTrain, a.DataStore.Lines.Get("Green").Blocks.Get(65))
+	result := routeGen.CalculateRoute(testTrain, a.DataStore.Lines.Get("Green").Blocks.Get(62))
 	correct := true
 	for i := range result {
 		if len(correctRoute) <= i {

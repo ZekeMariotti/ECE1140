@@ -27,7 +27,7 @@ Number,Section,Line,Length,Grade,Speed,Direction,Station,PlatformL,PlatformR,Cro
 26,F,Green,100,0,70,BOTH,,,,,,0,0.5
 27,F,Green,50,0,30,BOTH,,,,,,0,0.5
 28,F,Green,50,0,30,BOTH,,,,,,0,0.5
-29,G,Green,50,0,30,ASC,,,,,,0,0.5
+29,G,Green,50,0,30,BOTH,,,,,,0,0.5
 30,G,Green,50,0,30,ASC,,,,,,0,0.5
 31,G,Green,50,0,30,ASC,SOUTH BANK,TRUE,FALSE,,,0,0.5
 32,G,Green,50,0,30,ASC,,,,,,0,0.5
