@@ -38,14 +38,13 @@ class MainWindow(QMainWindow):
         def __init__(self):
             super().__init__()
 
-            self.ctcBackendThread = QThread()
-            self.ctcBackendThread.started.connect(self.ctcBackend)
+            #self.ctcBackendThread = QThread()
+            #self.ctcBackendThread.started.connect(self.ctcBackend)
 
             # Main clock and simulation speed
-            self.RTC = datetime.now() # Temporarily set time manually
+            self.RTC = datetime.now()
             self.simulationSpeed = 1
             self.timerInterval = 100  
-            rtcSignals.rtcSignal.connect(self.rtcSignalHandler) # Temporary for testing rtc
 
             # Set window defaults
             self.setWindowTitle(" ")
@@ -145,10 +144,8 @@ class MainWindow(QMainWindow):
             self.wc = NewGreenLine.MainWindow()
             activeSignals.activeSignal.emit()
 
-            # Test TM and TC
-            #for i in range(2, 4):
-            #    self.trainDispatch(i)    
-            self.trainDispatch(2, "Green")
+            # Test TM and TC    
+            #self.trainDispatch(2, "Green")
 
             #self.TkMTestUI = TrackModelTestUI.TrackModelTestUI()
             #self.TESTUI = IntegrationTestUI.BasicTestUI()
@@ -160,7 +157,6 @@ class MainWindow(QMainWindow):
             self.timerThread.started.connect(self.mainTimerSetup)
 
         def ctcBackend(self):
-            print(f'{sys.path[0]}\CTC\ctc-backend\main\main.exe')
             subprocess.call(f'{sys.path[0]}\CTC\ctc-backend\main\main.exe')
 
         def mainTimerSetup(self):     
@@ -394,10 +390,6 @@ class MainWindow(QMainWindow):
                 self.TrainModelList[len(self.TrainModelList)-1].move(self.screen().availableGeometry().width()-1480, 
                                                                     self.screen().availableGeometry().height()-self.TrainModelList[len(self.TrainModelList)-1].frameGeometry().height()-40)
                 self.selectTrainModel.addItems([str(trainId)])
-
-        def rtcSignalHandler(self, rtc):
-            #print(rtc)
-            test=1
             
         def trainDispatchCall(self):
             test = requests.get('http://localhost:8090/api/dispatchedtrain').text
