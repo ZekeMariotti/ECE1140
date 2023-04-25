@@ -91,9 +91,10 @@ func (s *UpdateService) updateAuthorities(routeMap map[int][]int, useMap map[int
 		}
 	}
 	// Set new authorities
-	for train, route := range routeMap {
+	for train := range routeMap {
+		route := routeMap[train]
 		// Check each block in route to see if another train wants it
-		for i := range route {
+		for i := 0; i < len(route); i++ {
 			usedTrains := useMap[route[i]]
 			hasAuthority := true
 			if len(usedTrains) > 1 {
