@@ -845,7 +845,7 @@ class MainWindow(QMainWindow):
                   j=0
                   i=i+1
           for k in range(1,self.blocks1):
-            if(WaysideControllerGreen.brokenRail[k]==True):
+            if(WaysideControllerGreen.error==True):
                  for i in range(1,self.blocks1):
                       WaysideControllerGreen.setAAuthority(0,i)
           if WaysideControllerGreen.gates[1]==True:

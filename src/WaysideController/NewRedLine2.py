@@ -868,7 +868,7 @@ class MainWindowR(QMainWindow):
                         i=i+1 
 
           for k in range(51,77):
-            if(WaysideControllerRed2.brokenRail[k]==True):
+            if(WaysideControllerRed2.error==True):
                  for i in range(51,77):
                       WaysideControllerRed2.setAAuthority(0,i)
 
