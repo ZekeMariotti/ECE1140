@@ -842,7 +842,7 @@ class MainWindow(QMainWindow):
           if(self.maintenanceMode==False):                    
             self.PLCMain.GloadValues1(self.File1)
             self.PLCMain.setswitches()
-
+            
     def mainEventLoop(self):
           self.updateVisualElements(self.active)
           WaysideControllerGreen.WaysideToCTCInfoG1()

@@ -861,6 +861,7 @@ class MainWindowR(QMainWindow):
 
           self.updateVisualElements(self.active)
           WaysideControllerRed.WaysideToCTCInfoR1()
+          WaysideControllerRed.getCTCBlocksRed()
 
 
 def main():
