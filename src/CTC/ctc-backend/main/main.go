@@ -1,22 +1,36 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/app"
+	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/test"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	app := app.NewApp()
+	// Get arguments
+	args := os.Args[1:]
 
 	// Set HTTP server mode to release
 	gin.SetMode(gin.ReleaseMode)
 
-	// Import lines
-	app.ImportLine("E:/Professional/ECE1140/src/CTC/redLineBlocks.csv", "E:/Professional/ECE1140/src/CTC/redLineSwitches.csv")
-	app.ImportLine("E:/Professional/ECE1140/src/CTC/greenLineBlocks.csv", "E:/Professional/ECE1140/src/CTC/greenLineSwitches.csv")
+	// Check if we are running test cases
+	if len(args) > 0 {
+		if args[0] == "test" {
+			fmt.Println("Running tests")
+			test.RunTests()
+			return
+		}
+	}
 
-	// Import wayside controllers
-	app.AddWayside("http://localhost:9080")
+	// Create a new application instance
+	app := app.NewApp()
+
+	// Import lines
+	app.ImportLine("./redLineBlocks.csv", "./redLineSwitches.csv")
+	app.ImportLine("./greenLineBlocks.csv", "./greenLineSwitches.csv")
 
 	app.Start()
 

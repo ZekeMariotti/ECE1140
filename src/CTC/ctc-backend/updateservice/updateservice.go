@@ -1,23 +1,26 @@
 package updateservice
 
 import (
+	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/common"
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/datastore"
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/route"
 	"github.com/shopspring/decimal"
 )
 
 type UpdateService struct {
-	data     *datastore.DataStore
-	routeGen *route.RouteCalculator
-	stop     chan bool
+	data              *datastore.DataStore
+	routeGen          *route.RouteCalculator
+	stop              chan bool
+	lastTrainBlockMap map[string]map[int]int
 }
 
 // New update service
 func NewUpdateService(data *datastore.DataStore) *UpdateService {
 	service := UpdateService{
-		data:     data,
-		routeGen: route.NewRouteCalculator(data),
-		stop:     make(chan bool),
+		data:              data,
+		routeGen:          route.NewRouteCalculator(data),
+		stop:              make(chan bool),
+		lastTrainBlockMap: make(map[string]map[int]int),
 	}
 
 	return &service
@@ -45,21 +48,26 @@ func (s *UpdateService) updateLoop() {
 }
 
 func (s *UpdateService) doUpdate() {
+	// Update train locations
+	s.updateTrainAssignments()
 	// Check if auto mode
 	if s.data.AutoMode {
 		// In auto mode
 		// Get all ideal routes for trains
 		trainRouteMap := make(map[int][]int)
 		blockUseMap := make(map[int][]int)
-		for _, v := range s.data.Trains.GetSlice() {
-			// Get route
-			destinationBlock := s.data.Lines.Get(v.Line).Blocks.Get(v.Stops[0].Station.BlockID)
-			route := s.routeGen.CalculateRoute(v, destinationBlock)
-			trainRouteMap[v.ID] = route
-			for i := range route {
-				use := blockUseMap[route[i]]
-				use = append(use, v.ID)
-				blockUseMap[route[i]] = use
+		trains := s.data.Trains.GetSlice()
+		for _, v := range trains {
+			if len(v.Stops) > 0 {
+				// Get route
+				destinationBlock := s.data.Lines.Get(v.Line).Blocks.Get(v.Stops[0].Station.BlockID)
+				route := s.routeGen.CalculateRoute(v, destinationBlock)
+				trainRouteMap[v.ID] = route
+				for i := range route {
+					use := blockUseMap[route[i]]
+					use = append(use, v.ID)
+					blockUseMap[route[i]] = use
+				}
 			}
 		}
 		// Update authorities
@@ -134,11 +142,16 @@ func (s *UpdateService) updateSpeeds(routeMap map[int][]int) {
 	// Add new speeds
 	for train, route := range routeMap {
 		line := s.data.Trains.Get(train).Line
+		lineData := s.data.Lines.Get(line)
 		for i := range route {
 			// Calculate suggested speed
 			blocks := route[i:]
 			distance := s.getDistanceToRouteEnd(line, blocks)
 			speed := s.getMaxSpeedFromDistance(distance)
+			limit := lineData.Blocks.Get(route[i]).SpeedLimit
+			if speed.Cmp(limit) > 0 {
+				speed = limit
+			}
 			// Set suggested speed
 			s.data.Lines.SetBlockSpeed(line, route[i], speed)
 		}
@@ -162,4 +175,148 @@ func (s *UpdateService) getMaxSpeedFromDistance(distance decimal.Decimal) decima
 	half, _ := decimal.NewFromString("0.5")
 	speed = speed.Pow(half)
 	return speed
+}
+
+func (s *UpdateService) updateTrainAssignments() {
+	newMap := make(map[string]map[int]int)
+	lines := s.data.Lines.GetLineNames()
+	for _, line := range lines {
+		newMap[line] = make(map[int]int)
+		blocks := s.data.Lines.Get(line).Blocks.GetSlice()
+		for _, block := range blocks {
+			lastTrain := s.lastTrainBlockMap[line][block.Number]
+			if block.Occupied && lastTrain == -1 {
+				// Train just entered block
+				if line == "Red" && block.Number == 9 {
+					trains := s.data.Trains.GetFrontendSlice()
+					if len(trains) > 0 && trains[len(trains)-1].Line == "Red" {
+						newMap[line][block.Number] = trains[len(trains)-1].ID
+						continue
+					}
+				} else if line == "Green" && block.Number == 63 {
+					trains := s.data.Trains.GetFrontendSlice()
+					if len(trains) > 0 && trains[len(trains)-1].Line == "Green" {
+						newMap[line][block.Number] = trains[len(trains)-1].ID
+						continue
+					}
+				}
+				isSwitch, swt := s.routeGen.IsSwitchBlock(block.Number, s.data.Lines.Get(line))
+				if isSwitch {
+					isSource := swt.Source == block.Number
+					if block.Direction == common.BLOCKDIRECTION_ASCENDING {
+						switch swt.Side {
+						case common.BLOCKSIDE_ASCEND:
+							if isSource {
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number-1]
+							} else {
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Source]
+							}
+						case common.BLOCKSIDE_DESCEND:
+							if isSource {
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Source+1]
+							} else {
+								if s.lastTrainBlockMap[line][swt.Destination1] != -1 {
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination1]
+								} else {
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2]
+								}
+							}
+						}
+					} else if block.Direction == common.BLOCKDIRECTION_BIDIRECTIONAL {
+						switch swt.Side {
+						case common.BLOCKSIDE_ASCEND:
+							if isSource {
+								if s.lastTrainBlockMap[line][swt.GetDestination()] != -1 {
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.GetDestination()]
+								} else if s.lastTrainBlockMap[line][block.Number-1] != -1 {
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number-1]
+								}
+							} else {
+								if s.lastTrainBlockMap[line][block.Number+1] != -1 {
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number+1]
+								} else {
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Source]
+								}
+							}
+						case common.BLOCKSIDE_DESCEND:
+							if isSource {
+								if s.lastTrainBlockMap[line][swt.GetDestination()] != -1 {
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.GetDestination()]
+								} else if s.lastTrainBlockMap[line][block.Number+1] != -1 {
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number+1]
+								}
+							} else {
+								if s.lastTrainBlockMap[line][block.Number-1] != -1 {
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number-1]
+								} else {
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Source]
+								}
+							}
+						}
+					} else if block.Direction == common.BLOCKDIRECTION_DESCENDING {
+						switch swt.Side {
+						case common.BLOCKSIDE_ASCEND:
+							if isSource {
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.GetDestination()]
+							} else {
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number+1]
+							}
+						case common.BLOCKSIDE_DESCEND:
+							if isSource {
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number+1]
+							} else {
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.GetDestination()]
+							}
+						}
+					}
+				} else {
+					if block.Direction == common.BLOCKDIRECTION_ASCENDING {
+						if block.Number == 0 {
+							// Is starting block
+							newMap[line][block.Number] = s.data.Trains.Get(s.data.GetNextTrainID() - 1).ID
+						} else {
+							newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number-1]
+						}
+					} else if block.Direction == common.BLOCKDIRECTION_BIDIRECTIONAL {
+						if block.Number == 0 {
+							// Is starting block
+							newMap[line][block.Number] = s.data.Trains.Get(s.data.GetNextTrainID() - 1).ID
+						} else {
+							if s.lastTrainBlockMap[line][block.Number-1] != -1 {
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number-1]
+							} else if s.lastTrainBlockMap[line][block.Number+1] != -1 {
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number+1]
+							} else {
+								// No trains on adacent blocks, something went wrong!
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number]
+							}
+						}
+					} else if block.Direction == common.BLOCKDIRECTION_DESCENDING {
+						if block.Number == 0 {
+							// Is starting block
+							newMap[line][block.Number] = s.data.Trains.Get(s.data.GetNextTrainID() - 1).ID
+						} else {
+							newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number+1]
+						}
+					}
+				}
+			} else if !block.Occupied && lastTrain != -1 {
+				// Train just left block
+				newMap[line][block.Number] = -1
+			} else {
+				// No change occured
+				newMap[line][block.Number] = lastTrain
+			}
+		}
+	}
+	// Update values and cache result
+	s.data.Trains.ResetTrainLocations()
+	for _, blocks := range newMap {
+		for blockID, trainID := range blocks {
+			if trainID > 0 {
+				s.data.Trains.AddTrainLocationBlock(trainID, blockID)
+			}
+		}
+	}
+	s.lastTrainBlockMap = newMap
 }

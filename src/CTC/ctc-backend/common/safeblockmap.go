@@ -126,3 +126,12 @@ func (m *SafeBlockMap) SetBlockSpeed(key int, speed decimal.Decimal) {
 	block.SuggestedSpeed = speed
 	m.data[key] = block
 }
+
+func (m *SafeBlockMap) SetBlockOccupancy(key int, occupancy bool) {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	block := m.data[key]
+	block.Occupied = occupancy
+	m.data[key] = block
+}

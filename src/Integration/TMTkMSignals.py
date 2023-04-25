@@ -3,7 +3,7 @@ from PyQt6.QtCore import QObject, pyqtSignal
 class trainModelTrackModelSignals(QObject):
     # Train Model to Track Model Signals
     passengersExitingSignal  = pyqtSignal(int, int)
-    currBlockSignal          = pyqtSignal(int, int, int, bool)
+    currBlockSignal          = pyqtSignal(int, int, int, bool, bool)
     prevBlockSignal          = pyqtSignal(int, int)
     
     # Track Model to Train Model Signals
@@ -11,7 +11,7 @@ class trainModelTrackModelSignals(QObject):
     commandedSpeedSignal     = pyqtSignal(int, float)
     passengersEnteringSignal = pyqtSignal(int, int)
     undergroundStateSignal   = pyqtSignal(int, bool)
-    beaconSignal             = pyqtSignal(int, str, int, str, bool, int, bool)
+    beaconSignal             = pyqtSignal(int, str, int, str, bool, int, bool, int)
     switchSignal             = pyqtSignal(int, bool)
     switchStateSignal        = pyqtSignal(int, bool)
     blockLengthSignal        = pyqtSignal(int, float)

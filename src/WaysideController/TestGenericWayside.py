@@ -69,7 +69,7 @@ class Wayside:
                 
     def setAuthority(self):
         for i in self.suggestedAuthority:
-            if self.suggestedAuthority[i]>150 | self.suggestedAuthority[i]<0:
+            if ((self.suggestedAuthority[i]>150) | (self.suggestedAuthority[i]<0)):
                 self.authority[i]=0
             else:
                 self.authority[i]=self.suggestedAuthority[i]
@@ -97,13 +97,13 @@ class Wayside:
 
     def setSignalLights(self,logic,number):
             self.signalLights[number]=logic
-                
+            
     def setSuggestedSpeed(self,block,value):
             self.suggestedSpeed[block]=value
 
     def setSuggestedAuthority(self,block,value):
             self.suggestedAuthority[block]=value
-                
+           
     def readCTCToWayside(self):
         with open(os.path.join(sys.path[0],".json"),"r") as filename:
             self.CTCToWayside = json.loads(filename.read())
@@ -138,6 +138,7 @@ class Wayside:
     def getCTCBlocks(self):
         blockArrayString = requests.get("http://localhost:8090/api/line/Green/blocks").text
         blockArray = json.loads(blockArrayString)
+
         for block in blockArray:
             if (int(block["block"]) != 0):
                 self.setSuggestedAuthority(int(block["block"]), int(block["authority"]))
