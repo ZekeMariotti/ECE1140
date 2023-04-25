@@ -713,6 +713,13 @@ class MainWindow(QMainWindow):
                 self.File2 = os.path.join(sys.path[0], "WaysideController", stringname)
 
     def updateVisualElements(self, active):
+          
+          if WaysideControllerGreen2.commandedSpeed!=WaysideControllerGreen2.suggestedSpeed:
+            WaysideControllerGreen2.setCommandedSpeed()
+            
+          if WaysideControllerGreen2.authority!=WaysideControllerGreen2.suggestedAuthority:
+            WaysideControllerGreen.setAuthority()
+
           self.PLCMain = PLC(WaysideControllerGreen,WaysideControllerGreen2,"Green")
           if (self.Switch1Out.text() == "1 to 13" and WaysideControllerGreen2.switches[1] == False) or (self.Switch1Out.text() == "12 to 13" and WaysideControllerGreen2.switches[1] == True):
             TkMWCSignals.switchStateSignal.emit(int(WaysideControllerGreen2.switches[1]), 1, 12)

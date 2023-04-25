@@ -711,6 +711,12 @@ class MainWindow(QMainWindow):
 
     def updateVisualElements(self, active):
           
+          if WaysideControllerGreen.commandedSpeed!=WaysideControllerGreen.suggestedSpeed:
+            WaysideControllerGreen.setCommandedSpeed()
+
+          if WaysideControllerGreen.authority!=WaysideControllerGreen.suggestedAuthority:
+            WaysideControllerGreen.setAuthority()
+
           if (self.Switch1Out.text() == "1 to 13" and WaysideControllerGreen.switches[1] == False) or (self.Switch1Out.text() == "12 to 13" and WaysideControllerGreen.switches[1] == True):
             TkMWCSignals.switchStateSignal.emit(int(WaysideControllerGreen.switches[1]), 1, 12)
           if (self.Switch2Out.text() == "29 to 150" and WaysideControllerGreen.switches[2] == False) or (self.Switch2Out.text() == "29 to 30" and WaysideControllerGreen.switches[2] == True):

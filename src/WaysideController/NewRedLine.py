@@ -731,6 +731,14 @@ class MainWindowR(QMainWindow):
                   self.File1 = os.path.join(sys.path[0], "WaysideController", stringname)
 
     def updateVisualElements(self,active):
+          
+          if WaysideControllerRed.commandedSpeed!=WaysideControllerRed.suggestedSpeed:
+            WaysideControllerRed.setCommandedSpeed()
+
+          if WaysideControllerRed.authority!=WaysideControllerRed.suggestedAuthority:
+            WaysideControllerRed.setAuthority()
+
+
           if (self.Switch1Out.text() == "Yard to 9" and WaysideControllerRed.switches[1] == False) or (self.Switch1Out.text() == "9 to Yard" and WaysideControllerRed.switches[1] == True):
             TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[1]), 0, 9)
           if (self.Switch2Out.text() == "1 to 16" and WaysideControllerRed.switches[2] == False) or (self.Switch2Out.text() == "15 to 16" and WaysideControllerRed.switches[2] == True):
