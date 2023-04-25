@@ -324,7 +324,7 @@ class TrainControllerSW:
             self.speedLimit = Conversions.kmPerHourToMetersPerSecond(self.blockList[self.blockCount].speedLimit)
         except:
             self.getBlocksData()
-            
+
         if(float(self.inputs.commandedSpeed) > float(self.speedLimit)):
             self.inputs.commandedSpeed = self.speedLimit
         elif(float(self.inputs.commandedSpeed) > Conversions.kmPerHourToMetersPerSecond(self.MAX_SPEED)):
@@ -474,6 +474,9 @@ class TrainControllerSW:
 
     def emergencyBrakeStateSignalHandler(self, id, emgBrk):
         if(self.trainId == id):
+            if (emgBrk == True):
+                self.outputs.emergencyBrakeCommand = True
+                
             self.inputs.emergencyBrakeState = emgBrk
 
     def serviceBrakeStatusSignalHandler(self, id, srvcBrkStatus):

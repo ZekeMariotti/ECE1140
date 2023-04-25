@@ -199,6 +199,7 @@ class backEndCalculations():
 
     # Hander for the current block from the Train Model
     def currBlockHandler(self, id, currBlock, prevBlock, transition, backTrain):
+        print(id, currBlock, prevBlock, transition, backTrain)
         if (backTrain):
             self.data["nextBlock"] = 0
         else:
@@ -207,20 +208,17 @@ class backEndCalculations():
         # Setting CMD Speed and Authority during real time operations
         if (currBlock != 0):
             if self.data["trainLine"][id - 1] == 0:
-                self.data["authority"][id - 1] = int(self.data["redAuthority"].__getitem(currBlock - 1))
-                self.data["commandedSpeed"][id - 1] = float(self.data["redCommandedSpeed"].__getitem(currBlock - 1))
+                self.data["authority"][id - 1] = int(self.data["redAuthority"].__getitem__(currBlock - 1))
+                self.data["commandedSpeed"][id - 1] = float(self.data["redCommandedSpeed"].__getitem__(currBlock - 1))
                 TMTkMSignals.authoritySignal.emit(id, self.data["authority"][id - 1])
                 TMTkMSignals.commandedSpeedSignal.emit(id, self.data["commandedSpeed"][id - 1])
             elif self.data["trainLine"][id - 1] == 1:
-                self.data["authority"][id - 1] = int(self.data["greenAuthority"].__getitem(currBlock - 1))
-                self.data["commandedSpeed"][id - 1] = float(self.data["greenCommandedSpeed"].__getitem(currBlock - 1))
+                self.data["authority"][id - 1] = int(self.data["greenAuthority"].__getitem__(currBlock - 1))
+                self.data["commandedSpeed"][id - 1] = float(self.data["greenCommandedSpeed"].__getitem__(currBlock - 1))
                 TMTkMSignals.authoritySignal.emit(id, self.data["authority"][id - 1])
                 TMTkMSignals.commandedSpeedSignal.emit(id, self.data["commandedSpeed"][id - 1])
 
         if self.data["trainLine"][id - 1] == 0 and transition:
-            TMTkMSignals.blockLengthSignal.emit(id, float(self.csvConstants["lengthRed"].__getitem__(currBlock - 1)))
-            TMTkMSignals.elevationSignal.emit(id, float(self.csvConstants["elevationRed"].__getitem__(currBlock - 1)))
-            TMTkMSignals.undergroundStateSignal.emit(id, bool(int(self.csvConstants["undergroundRed"].__getitem__(currBlock - 1))))
             if (prevBlock == 0):
                 TMTkMSignals.switchSignal.emit(id, 0)
                 TMTkMSignals.switchStateSignal.emit(id, 1)
@@ -233,18 +231,18 @@ class backEndCalculations():
             else:
                 TMTkMSignals.switchSignal.emit(id, 0)
                 TMTkMSignals.switchStateSignal.emit(id, 0)
+            
             if (currBlock == self.data["moves"][id - 1][0]):
                 index = 0
             elif (currBlock == self.data["moves"][id - 1][1]):
                 index = 1
             elif (currBlock == self.data["moves"][id - 1][2]):
                 index = 2
+            else:
+                index = 0
             if (index != 0):
                 self.getTrainBlockInputFunction(index, id - 1, 0)
         elif self.data["trainLine"][id - 1] == 1 and transition:
-            TMTkMSignals.blockLengthSignal.emit(id, float(self.csvConstants["lengthGreen"].__getitem__(currBlock - 1)))
-            TMTkMSignals.elevationSignal.emit(id, float(self.csvConstants["elevationGreen"].__getitem__(currBlock - 1)))
-            TMTkMSignals.undergroundStateSignal.emit(id, bool(int(self.csvConstants["undergroundGreen"].__getitem__(currBlock - 1))))
             if (prevBlock == 0):
                 TMTkMSignals.switchSignal.emit(id, 0)
                 TMTkMSignals.switchStateSignal.emit(id, 1)
@@ -263,6 +261,8 @@ class backEndCalculations():
                 index = 1
             elif (currBlock == self.data["moves"][id - 1][2]):
                 index = 2
+            else:
+                index = 0
             if (index != 0):
                 self.getTrainBlockInputFunction(index, id - 1, 0)
             #self.data["nextBlock"] = 1
@@ -274,6 +274,8 @@ class backEndCalculations():
                 index = 1
             elif (currBlock == self.data["moves"][id - 1][2]):
                 index = 2
+            else:
+                index = 0
             if (index == 0):
                 self.getTrainBlockInputFunction(index, id - 1, 1)
         else:
