@@ -262,7 +262,10 @@ class MainWindowR(QMainWindow):
                   value="G"
                 else:
                   value="R"
-                SignalLight.setItem(i,j,QTableWidgetItem((value)))
+                if(k==52 or k==53 or k==66 or k==67 or k==71 or k==72 or k==76):
+                  SignalLight.setItem(i,j,QTableWidgetItem((value)))
+                else:
+                  SignalLight.setItem(i,j,QTableWidgetItem((" ")))
                 j=j+1
                 if j>9:
                  j=0
@@ -827,7 +830,8 @@ class MainWindowR(QMainWindow):
                      value="G"
                 else:
                      value="R"
-                self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
+                if(k==52 or k==53 or k==66 or k==67 or k==71 or k==72 or k==76):                     
+                  self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
                  j=0
@@ -858,7 +862,7 @@ class MainWindowR(QMainWindow):
             self.PLCMain.Rsetswitches()
 
     def mainEventLoop(self):
-          self.updateVisualElements()
+          self.updateVisualElements(self.active)
           WaysideControllerRed2.WaysideToCTCInfoR2()
           WaysideControllerRed2.getCTCBlocksRed()
 
