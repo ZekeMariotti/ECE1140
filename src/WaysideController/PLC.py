@@ -1,6 +1,6 @@
 #PLC as a class
 from WaysideController.TestGenericWayside import Wayside
-
+from WaysideController.NewGreenLine import *
 #GreenLine
 Gswitch1True=[]
 Gswitch1False=[]
@@ -45,7 +45,6 @@ class PLC():
     
     def GloadValues1(self,filename):
         file = open(filename, "r")
-        #file = open(txtfile,"r")
         for i in range(0,100):
             line=file.readline()
             line=line.strip()
@@ -209,87 +208,92 @@ class PLC():
         file.close()
 
     def setswitches(self):
+        
         for i in Gswitch1True:
-            if(Gswitch1True.pop()==True):
-                self.Wayside1.switches[1]=True
-                self.Wayside2.switches[1]=True
+            if(Gswitch1True[i]==True):
+                self.Wayside1.setSwitchPositions(True,1)
+                self.Wayside2.setSwitchPositions(True,1)
+
 
         for i in Gswitch1False:
-            if(Gswitch1False.pop()==True):
-                self.Wayside1.switches[1]=False
-                self.Wayside2.switches[1]=False
+            if(Gswitch1False[i]==True):
+                self.Wayside1.setSwitchPositions(False,1)
+                self.Wayside2.setSwitchPositions(False,1)
+
                 
         for i in Gswitch2True:
-            if(Gswitch2True.pop()==True):
-                self.Wayside1.switches[2]=True
-                self.Wayside2.switches[1]=True
-
+            if(Gswitch2True[i]==True):
+                self.Wayside1.setSwitchPositions(True,2)
+                self.Wayside2.setSwitchPositions(True,2)
 
         for i in Gswitch2False:
-            if(Gswitch2False.pop()==True):
-                self.Wayside1.switches[2]=False
-                self.Wayside2.switches[1]=False
-
+            if(Gswitch2False[i]==True):
+                self.Wayside1.setSwitchPositions(False,1)
+                self.Wayside2.setSwitchPositions(False,1)
 
     #Always go to yard maybe change later
-        self.Wayside1.switches[3]=True
-        self.Wayside1.switches[4]=True
-        self.Wayside2.switches[3]=True
-        self.Wayside2.switches[4]=True
+        self.Wayside1.setSwitchPositions(True,3)
+        self.Wayside1.setSwitchPositions(False,4)
+        self.Wayside2.setSwitchPositions(True,3)
+        self.Wayside2.setSwitchPositions(False,4)
+
         for i in Gswitch5True:
-            if(Gswitch5True.pop()==True):
-                self.Wayside1.switches[5]=True
-                self.Wayside2.switches[5]=True
+            if(Gswitch5True[i]==True):
+                self.Wayside1.setSwitchPositions(True,5)
+                self.Wayside2.setSwitchPositions(True,5)
 
         for i in Gswitch5False:
-            if(Gswitch5False.pop()==True):
-                self.Wayside1.switches[5]=False
-                self.Wayside2.switches[6]=False
+            if(Gswitch5False[i]==True):
+                self.Wayside1.setSwitchPositions(False,5)
+                self.Wayside2.setSwitchPositions(False,5)
 
         for i in Gswitch6True:
-            if(Gswitch6True.pop()==True):
-                self.Wayside1.switches[6]=True
-                self.Wayside2.switches[6]=True
+            if(Gswitch6True[i]==True):
+                self.Wayside1.setSwitchPositions(True,6)
+                self.Wayside2.setSwitchPositions(True,6)
                 
         for i in Gswitch6False:
-            if(Gswitch6False.pop()==True):
-                self.Wayside1.switches[6]=False
-                self.Wayside1.switches[6]=False
-         #change later not important for it3    use break   
-        if(self.Wayside1.occupancy[18]==True|self.Wayside1.occupancy[19]==True|self.Wayside1.occupancy[20]==True):
-            self.Wayside1.gates[1]=False
-            self.Wayside1.gates[1]=False
-        else:
-            self.Wayside1.gates[1]=True
-            self.Wayside2.gates[1]=True
+            if(Gswitch6False[i]==True):
+                self.WaysideControllerGreen1.setSwitchPositions(False,6)
+                self.Wayside2.setSwitchPositions(False,6)
+ 
+        for i in Ggate:
+            if(Ggate[i]==True): 
+                self.Wayside1.setGatePositions(False)
+                self.Wayside2.setGatePositions(False)
+                break
+            else:
+                self.Wayside1.setGatePositions(True)
+                self.Wayside2.setGatePositions(True)
                 #set Lights
-        for i in GLight1:
-            if(GLight1.pop()==True):
-                self.Wayside1.signalLights[1]=False
-                break
-            else:
-                self.Wayside1.signalLights[1]=True
 
-        for i in GLight13:
-            if(GLight13.pop()==True):
-                self.Wayside1.signalLights[13]=False
+        for i in GLight1:
+            if(GLight1[i]==True):
+                self.Wayside1.setSignalLights(False,1)
                 break
             else:
-                self.Wayside1.signalLights[13]=True
+                self.Wayside1.setSignalLights(True,1)
+
+        for i in range(0,len(GLight13)):
+            if(GLight13[i]==True):
+                self.Wayside1.setSignalLights(False,13)
+                break
+            else:
+                self.Wayside1.setSignalLights(True,13)
         
         for i in GLight77:
-            if(GLight77.pop()==True):
-                self.Wayside1.signalLights[77]=False
+            if(GLight77[i]==True):
+                self.Wayside1.setSignalLights(False,77)
                 break
             else:
-                self.Wayside1.signalLights[77]=True
+                self.Wayside1.setSignalLights(True,77)
         
         for i in GLight100:
-            if(GLight100.pop()==True):
-                self.Wayside1.signalLights=False
+            if(GLight100[i]==True):
+                self.Wayside1.setSignalLights(False,100)
                 break
             else:
-                self.Wayside1.signalLights[100]=True
+                self.Wayside1.setSignalLights(True,100)
         Gswitch1True.clear()
         Gswitch1False.clear()
         Gswitch2True.clear()
@@ -307,8 +311,8 @@ class PLC():
         GLight77.clear()
         GLight84.clear()
         GLight100.clear()
-    def RloadValues1(self):
-        file = open("C:\\Users\danek\Documents\RedLine.txt", "r")
+    def RloadValues1(self,file):
+        file = open(file, "r")
         for i in range(0,100):
             line=file.readline()
             line=line.strip()
@@ -386,8 +390,8 @@ class PLC():
                 Rswitch7False.append(logic)                
         file.close()
 
-    def RloadValues2(self):
-        file = open("C:\\Users\danek\Documents\RedLine2.txt", "r")
+    def RloadValues2(self,file):
+        file = open(file)
         for i in range(0,100):
             line=file.readline()
             line=line.strip()
@@ -467,51 +471,51 @@ class PLC():
 
     def Rsetswitches(self):
         for i in Rswitch1True:
-            if(Rswitch1True.pop()==False):
+            if(Rswitch1True[i]==False):
                 self.Wayside1.switches[1]=True
                 self.Wayside2.switches[1]=True
         for i in Rswitch1False:
-            if(Rswitch1False.pop()==False):
+            if(Rswitch1False[i]==False):
                 self.Wayside1.switches[1]=False
                 self.Wayside2.switches[1]=False
         for i in Rswitch2True:
-            if(Rswitch2True.pop()==False):
+            if(Rswitch2True[i]==False):
                 self.Wayside1.switches[2]=True
                 self.Wayside2.switches[2]=True
         for i in Rswitch2False:
-            if(Rswitch2False.pop()==False):
+            if(Rswitch2False[i]==False):
                 self.Wayside1.switches[2]=False
                 self.Wayside2.switches[2]=False
         for i in Rswitch3True:
-            if(Rswitch3True.pop()==False):
+            if(Rswitch3True[i]==False):
                 self.Wayside1.switches[3]=True
                 self.Wayside2.switches[3]=True
         for i in Rswitch3False:
-            if(Rswitch3False.pop()==False):
+            if(Rswitch3False[i]==False):
                 self.Wayside1.switches[3]=False
                 self.Wayside2.switches[3]=False
         for i in Rswitch4True:
-            if(Rswitch4True.pop()==False):
+            if(Rswitch4True[i]==False):
                 self.Wayside1.switches[4]=True
                 self.Wayside2.switches[4]=True
         for i in Rswitch4False:
-            if(Rswitch4False.pop()==False):
+            if(Rswitch4False[i]==False):
                 self.Wayside1.switches[4]=False
                 self.Wayside2.switches[4]=False
         for i in Rswitch5True:
-            if(Rswitch5True.pop()==False):
+            if(Rswitch5True[i]==False):
                 self.Wayside1.switches[5]=True
                 self.Wayside2.switches[5]=True
         for i in Rswitch5False:
-            if(Rswitch5False.pop()==False):
+            if(Rswitch5False[i]==False):
                 self.Wayside1.switches[5]=False
                 self.Wayside2.switches[6]=False
         for i in Rswitch6True:
-            if(Rswitch6True.pop()==False):
+            if(Rswitch6True[i]==False):
                 self.Wayside1.switches[6]=True
                 self.Wayside2.switches[6]=True
         for i in Rswitch6False:
-            if(Rswitch6False.pop()==False):
+            if(Rswitch6False[i]==False):
                 self.Wayside1.switches[6]=False
                 self.Wayside2.switches[6]=False
         self.Wayside1.switches[7]=True

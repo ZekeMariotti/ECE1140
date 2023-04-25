@@ -15,8 +15,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "TrackModel"))
 from TrainModelFolder import TrainModelMainUI, TrainModelTestUI
 from TrainControllerSoftware import TrainControllerMainUI
 from TrackModel import TrackModelMainUI, TrackModelTestUI, IntegrationTestUI
+from WaysideController import NewGreenLine,NewGreenLine2,GreenLineTestUi,NewRedLine,NewRedLine2,RedLineTestUI
 from Integration import sendJsonToArduinoClass, receiveJsonFromArduinoClass
-from WaysideController import NewGreenLine,GreenLineTestUi
 from Integration.TimeSignals import *
 from Integration.TMTCSignals import *
 from Integration.ActiveSignals import *
@@ -323,16 +323,26 @@ class MainWindow(QMainWindow):
              print("CTC")
 
         def launchWaysideControllerOneClick(self):
+            self.wc = NewGreenLine.MainWindow("GreenLine 1")
             self.wc.setVisible(True)
+            #self.wc.WaysideControllerGreenTestUI.show()
+            activeSignals.activeSignal.emit()
 
         def launchWaysideControllerTwoClick(self):
-            print("Wayside Controller Two")
+            self.wc2 = NewGreenLine2.MainWindow("GreenLine 2")
+            self.wc2.setVisible(True)
+            activeSignals.activeSignal.emit()
 
         def launchWaysideControllerThreeClick(self):
-            print("Wayside Controller Three")
+            self.wc3 = NewRedLine.MainWindowR("RedLine 1")
+            self.wc3.setVisible(True)
+            #self.wc3.WaysideControllerRedTestUI.show()
+            activeSignals.activeSignal.emit()            
 
         def launchWaysideControllerFourClick(self):
-            print("Wayside Controller Four")
+            self.wc4 = NewRedLine2.MainWindowR("RedLine 2")
+            self.wc4.setVisible(True)
+            activeSignals.activeSignal.emit()
 
         def launchTrackModelClick(self):
             self.TkM.setVisible(True)
