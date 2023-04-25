@@ -1,12 +1,11 @@
 {
     "Switches": {
-        "1": false,
-        "2": false,
+        "1": true,
+        "2": true,
         "3": true,
         "4": false,
-        "5": false,
-        "6": false,
-        "7": true
+        "5": true,
+        "6": false
     },
     "Lights": {
         "1": true,
@@ -315,6 +314,6 @@
         "100": false
     },
     "Gates": {
-        "1": true
+        "1": false
     }
 }

@@ -23,9 +23,11 @@ WaysideControllerRed2=Wayside(1,True)
 WaysideControllerRed.setdictionarysizes(1,51)
 WaysideControllerRed.setCommandedSpeed()
 WaysideControllerRed.setAuthority()
+WaysideControllerRed.setSwitchPositions(True,7)
 WaysideControllerRed2.setdictionarysizes(51,77)
 WaysideControllerRed2.setCommandedSpeed()
-WaysideControllerRed2.setAuthority() 
+WaysideControllerRed2.setAuthority()
+WaysideControllerRed2.setSwitchPositions(True,7) 
 
 class Worker(QObject):
       finished = pyqtSignal()

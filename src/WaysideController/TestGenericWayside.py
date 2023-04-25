@@ -47,7 +47,6 @@ class Wayside:
           self.switches[4] = True
           self.switches[5] = False
           self.switches[6] = False
-          self.switches[7] = True
           for i in range(start,blocks):
                 self.occupancy[i] = False
           for i in range(start,blocks):
