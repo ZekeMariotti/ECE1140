@@ -742,19 +742,19 @@ class MainWindowR(QMainWindow):
             WaysideControllerRed.setAuthority()
 
           if (self.Switch1Out.text() == "Yard to 9" and WaysideControllerRed.switches[1] == False) or (self.Switch1Out.text() == "9 to Yard" and WaysideControllerRed.switches[1] == True):
-            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[1]), 0, 9)
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[1]), 0, 8)
           if (self.Switch2Out.text() == "1 to 16" and WaysideControllerRed.switches[2] == False) or (self.Switch2Out.text() == "15 to 16" and WaysideControllerRed.switches[2] == True):
-            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[2]), 0, 16)
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[2]), 0, 15)
           if (self.Switch3Out.text() == "27 to 76" and WaysideControllerRed.switches[3] == False) or (self.Switch3Out.text() == "27 to 28" and WaysideControllerRed.switches[3] == True):
-            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[3]), 0, 27)
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[3]), 0, 26)
           if (self.Switch4Out.text() == "33 to 72" and WaysideControllerRed.switches[4] == False) or (self.Switch4Out.text() == "32 to 33" and WaysideControllerRed.switches[4] == True):
-            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[4]), 0, 33)
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[4]), 0, 32)
           if (self.Switch5Out.text() == "38 to 71" and WaysideControllerRed.switches[5] == False) or (self.Switch5Out.text() == "38 to 39" and WaysideControllerRed.switches[5] == True):
-            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[5]), 0, 38)
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[5]), 0, 37)
           if (self.Switch6Out.text() == "44 to 67" and WaysideControllerRed.switches[6] == False) or (self.Switch6Out.text() == "43 to 44" and WaysideControllerRed.switches[6] == True):
-            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[6]), 0, 44)
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[6]), 0, 43)
           if (self.Switch7Out.text() == "52 to 66" and WaysideControllerRed.switches[7] == False)  or (self.Switch7Out.text() == "52 to 53" and WaysideControllerRed.switches[7] == True):
-            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[7]),0,52)
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[7]),0,51)
           if(self.maintenanceMode==True):                
                   self.maintenanceLabel.setText("Maintenance ON")
           else:
