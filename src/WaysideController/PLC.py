@@ -211,25 +211,25 @@ class PLC():
         
         for i in Gswitch1True:
             if(Gswitch1True[i]==True):
-                self.Wayside1.setSwitchPositions(True,1)
-                self.Wayside2.setSwitchPositions(True,1)
+                self.Wayside1.setSwitchPositions(False,1)
+                self.Wayside2.setSwitchPositions(False,1)
 
 
         for i in Gswitch1False:
             if(Gswitch1False[i]==True):
-                self.Wayside1.setSwitchPositions(False,1)
-                self.Wayside2.setSwitchPositions(False,1)
+                self.Wayside1.setSwitchPositions(True,1)
+                self.Wayside2.setSwitchPositions(True,1)
 
                 
         for i in Gswitch2True:
             if(Gswitch2True[i]==True):
-                self.Wayside1.setSwitchPositions(True,2)
-                self.Wayside2.setSwitchPositions(True,2)
+                self.Wayside1.setSwitchPositions(False,2)
+                self.Wayside2.setSwitchPositions(False,2)
 
         for i in Gswitch2False:
             if(Gswitch2False[i]==True):
-                self.Wayside1.setSwitchPositions(False,1)
-                self.Wayside2.setSwitchPositions(False,1)
+                self.Wayside1.setSwitchPositions(True,1)
+                self.Wayside2.setSwitchPositions(True,1)
 
     #Always go to yard maybe change later
         self.Wayside1.setSwitchPositions(True,3)
@@ -239,23 +239,23 @@ class PLC():
 
         for i in Gswitch5True:
             if(Gswitch5True[i]==True):
-                self.Wayside1.setSwitchPositions(True,5)
-                self.Wayside2.setSwitchPositions(True,5)
-
-        for i in Gswitch5False:
-            if(Gswitch5False[i]==True):
                 self.Wayside1.setSwitchPositions(False,5)
                 self.Wayside2.setSwitchPositions(False,5)
 
+        for i in Gswitch5False:
+            if(Gswitch5False[i]==True):
+                self.Wayside1.setSwitchPositions(True,5)
+                self.Wayside2.setSwitchPositions(True,5)
+
         for i in Gswitch6True:
             if(Gswitch6True[i]==True):
-                self.Wayside1.setSwitchPositions(True,6)
-                self.Wayside2.setSwitchPositions(True,6)
+                self.Wayside1.setSwitchPositions(False,6)
+                self.Wayside2.setSwitchPositions(False,6)
                 
         for i in Gswitch6False:
             if(Gswitch6False[i]==True):
-                self.WaysideControllerGreen1.setSwitchPositions(False,6)
-                self.Wayside2.setSwitchPositions(False,6)
+                self.WaysideControllerGreen1.setSwitchPositions(True,6)
+                self.Wayside2.setSwitchPositions(True,6)
  
         for i in Ggate:
             if(Ggate[i]==True): 
@@ -472,52 +472,52 @@ class PLC():
     def Rsetswitches(self):
         for i in Rswitch1True:
             if(Rswitch1True[i]==False):
-                self.Wayside1.switches[1]=True
-                self.Wayside2.switches[1]=True
-        for i in Rswitch1False:
-            if(Rswitch1False[i]==False):
                 self.Wayside1.switches[1]=False
                 self.Wayside2.switches[1]=False
+        for i in Rswitch1False:
+            if(Rswitch1False[i]==False):
+                self.Wayside1.switches[1]=True
+                self.Wayside2.switches[1]=True
         for i in Rswitch2True:
             if(Rswitch2True[i]==False):
-                self.Wayside1.switches[2]=True
-                self.Wayside2.switches[2]=True
-        for i in Rswitch2False:
-            if(Rswitch2False[i]==False):
                 self.Wayside1.switches[2]=False
                 self.Wayside2.switches[2]=False
+        for i in Rswitch2False:
+            if(Rswitch2False[i]==False):
+                self.Wayside1.switches[2]=True
+                self.Wayside2.switches[2]=True
         for i in Rswitch3True:
             if(Rswitch3True[i]==False):
-                self.Wayside1.switches[3]=True
-                self.Wayside2.switches[3]=True
-        for i in Rswitch3False:
-            if(Rswitch3False[i]==False):
                 self.Wayside1.switches[3]=False
                 self.Wayside2.switches[3]=False
+        for i in Rswitch3False:
+            if(Rswitch3False[i]==False):
+                self.Wayside1.switches[3]=True
+                self.Wayside2.switches[3]=True
         for i in Rswitch4True:
             if(Rswitch4True[i]==False):
-                self.Wayside1.switches[4]=True
-                self.Wayside2.switches[4]=True
-        for i in Rswitch4False:
-            if(Rswitch4False[i]==False):
                 self.Wayside1.switches[4]=False
                 self.Wayside2.switches[4]=False
+        for i in Rswitch4False:
+            if(Rswitch4False[i]==False):
+                self.Wayside1.switches[4]=True
+                self.Wayside2.switches[4]=True
         for i in Rswitch5True:
             if(Rswitch5True[i]==False):
-                self.Wayside1.switches[5]=True
-                self.Wayside2.switches[5]=True
+                self.Wayside1.switches[5]=False
+                self.Wayside2.switches[5]=False
         for i in Rswitch5False:
             if(Rswitch5False[i]==False):
-                self.Wayside1.switches[5]=False
-                self.Wayside2.switches[6]=False
+                self.Wayside1.switches[5]=True
+                self.Wayside2.switches[6]=True
         for i in Rswitch6True:
             if(Rswitch6True[i]==False):
-                self.Wayside1.switches[6]=True
-                self.Wayside2.switches[6]=True
-        for i in Rswitch6False:
-            if(Rswitch6False[i]==False):
                 self.Wayside1.switches[6]=False
                 self.Wayside2.switches[6]=False
+        for i in Rswitch6False:
+            if(Rswitch6False[i]==False):
+                self.Wayside1.switches[6]=True
+                self.Wayside2.switches[6]=True
         self.Wayside1.switches[7]=True
         self.Wayside2.switches[7]=True
         if(self.Wayside1.occupancy[46]==True|self.Wayside1.occupancy[48]==True|self.Wayside1.occupancy[49]==True):
@@ -526,3 +526,17 @@ class PLC():
         else:
             self.Wayside1.gates[1]=True
             self.Wayside2.gates[1]=True
+        Rswitch1True.clear()    
+        Rswitch1False.clear()
+        Rswitch2True.clear()
+        Rswitch2False.clear()
+        Rswitch3True.clear()
+        Rswitch3False.clear()
+        Rswitch4True.clear()
+        Rswitch4False.clear()
+        Rswitch5True.clear()
+        Rswitch5False.clear()
+        Rswitch6True.clear()
+        Rswitch6False.clear()
+        Rswitch7True.clear()
+        Rswitch7False.clear()        
