@@ -123,6 +123,7 @@ class MainWindowR(QMainWindow):
 
         activeSignals.activeSignal.connect(self.activeSignal)
         TkMWCSignals.failureSignal.connect(self.brokenRailHandler)
+        TkMWCSignals.stopSignal.connect(self.error)
         TkMWCSignals.currBlockSignal.connect(self.currBlockHandler)       
 
     def brokenRailHandler(self, line, logic, blockNo):
@@ -136,6 +137,10 @@ class MainWindowR(QMainWindow):
             WaysideControllerRed.setOccupancy(logic, blockNo)
          elif line == 0 and blockNo > 50:
             WaysideControllerRed2.setOccupancy(logic, blockNo)
+
+    def errorHandler(status):
+         WaysideControllerRed.setError(status)
+         WaysideControllerRed2.setError(status)
 
     def activeSignal(self):
          self.active = True
