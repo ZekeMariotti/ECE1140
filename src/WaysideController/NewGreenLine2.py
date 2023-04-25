@@ -847,7 +847,7 @@ class MainWindow(QMainWindow):
                  i=i+1
 
           for k in range(self.blocks1,self.blocks2):
-            if(WaysideControllerGreen2.error==True):
+            if(WaysideControllerGreen2.err==True):
                  for i in range(self.blocks1,self.blocks2):
                       WaysideControllerGreen2.setAAuthority(0,i)                 
 
@@ -855,11 +855,11 @@ class MainWindow(QMainWindow):
           if WaysideControllerGreen2.gates[1]==True:
                 self.Gate.setText("Block 19 Gate:  UP")
                 if active and val != "Block 19 Gate:  UP":
-                    TkMWCSignals.gateStateInput.emit(1, 1, 18)
+                    TkMWCSignals.gateStateInput.emit(0, 1, 18)
           else:
                   self.Gate.setText("Block 19 Gate:  DOWN")
                   if active and val != "Block 19 Gate:  DOWN":
-                    TkMWCSignals.gateStateInput.emit(0, 1, 18)
+                    TkMWCSignals.gateStateInput.emit(1, 1, 18)
 
           if(self.maintenanceMode==False):                    
             self.PLCMain.GloadValues2(self.File2)

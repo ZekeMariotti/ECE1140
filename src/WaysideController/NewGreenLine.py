@@ -845,7 +845,7 @@ class MainWindow(QMainWindow):
                   j=0
                   i=i+1
           for k in range(1,self.blocks1):
-            if(WaysideControllerGreen.error==True):
+            if(WaysideControllerGreen.err==True):
                  for i in range(1,self.blocks1):
                       WaysideControllerGreen.setAAuthority(0,i)
 
@@ -853,11 +853,11 @@ class MainWindow(QMainWindow):
           if WaysideControllerGreen.gates[1]==True:
                 self.Gate.setText("Block 19 Gate:  UP")
                 if active and val != "Block 19 Gate:  UP":
-                    TkMWCSignals.gateStateInput.emit(1, 1, 18)
+                    TkMWCSignals.gateStateInput.emit(0, 1, 18)
           else:
                   self.Gate.setText("Block 19 Gate:  DOWN")
                   if active and val != "Block 19 Gate:  DOWN":
-                    TkMWCSignals.gateStateInput.emit(0, 1, 18)
+                    TkMWCSignals.gateStateInput.emit(1, 1, 18)
 
 
           if(self.maintenanceMode==False):                    

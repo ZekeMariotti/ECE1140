@@ -32,7 +32,7 @@ class MainWindowR(QMainWindow):
         self.active = False
         activeSignals.activeSignal.connect(self.activeSignal)
         TkMWCSignals.failureSignal.connect(self.brokenRailHandler)
-        TkMWCSignals.stopSignal.connect(self.error)
+        TkMWCSignals.stopSignal.connect(self.errorHandler)
         TkMWCSignals.currBlockSignal.connect(self.currBlockHandler) 
         #Window
         self.name = name
@@ -868,7 +868,7 @@ class MainWindowR(QMainWindow):
                         i=i+1 
 
           for k in range(51,77):
-            if(WaysideControllerRed2.error==True):
+            if(WaysideControllerRed2.err==True):
                  for i in range(51,77):
                       WaysideControllerRed2.setAAuthority(0,i)
 
@@ -876,11 +876,11 @@ class MainWindowR(QMainWindow):
           if WaysideControllerRed2.gates[1]==True:
                 self.Gate.setText("Block 47 Gate:  UP")
                 if active and val != "Block 47 Gate:  UP":
-                    TkMWCSignals.gateStateInput.emit(1, 0, 46)
+                    TkMWCSignals.gateStateInput.emit(0, 0, 46)
           else:
                   self.Gate.setText("Block 47 Gate:  DOWN")
                   if active and val != "Block 47 Gate:  DOWN":
-                    TkMWCSignals.gateStateInput.emit(0, 0, 46)
+                    TkMWCSignals.gateStateInput.emit(1, 0, 46)
 
           if(self.maintenanceMode==False):
             self.PLCMain.RloadValues2(self.File2)
