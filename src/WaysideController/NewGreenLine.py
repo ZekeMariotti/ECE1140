@@ -784,7 +784,7 @@ class MainWindow(QMainWindow):
                 value=round(value*2.23694,2)
                 if active and value != float(self.CommandedSpeed.item(i,j).text()):
                   TkMWCSignals.commandedSpeedSignal.emit(k, float(value), 1)
-                self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
+                self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(round(value * 2.23695, 2))))
                 j=j+1
                 if j>9:
                         j=0
@@ -821,7 +821,7 @@ class MainWindow(QMainWindow):
                 if((k==1) | (k==13) | (k==77) | (k==100) | (k==84)):
                   self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
                 else:
-                  self.SignalLight.setItem(i,j,QTableWidgetItem((" ")))                  
+                  self.SignalLight.setItem(i,j,QTableWidgetItem((" ")))                
                 j=j+1
                 if j>9:
                  j=0

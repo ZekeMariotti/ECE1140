@@ -3,8 +3,12 @@ import time
 import os
 import sys
 import json
-# from datetime import *
+#from datetime import *
 # import datetime
+sys.path.append(__file__.replace("\Integration\sendJsonToArduino.py", ""))
+from Integration.TimeSignals import *
+from Integration.TMTCSignals import *
+
 
 ip = "192.168.1.101"
 port = 27000
@@ -13,7 +17,7 @@ counter = 0
 
 # Dictionary for outputs to the Train Controller
 trainModelToTrainController = {
-    "id"                    : 0,                                   # ID number for the train
+    # "id"                    : 0,                                   # ID number for the train
     "commandedSpeed"        : 0.0,                                 # Commanded Speed in m/s
     "currentSpeed"          : 0.0,                                 # Current Speed in m/s
     "authority"             : 0,                                   # Authority in Blocks
@@ -58,10 +62,108 @@ def findTimeInSeconds():
             clock = datetime.fromisoformat(trainModelToTrainController["inputTime"])
             print (float(clock.seconds))
 
+################################################################################
+# FROM Traim Model
+def catchRealTimeClock(rtc):
+    trainModelToTrainController["inputTime"] = rtc
+
+def commandedSpeedSignalHandler(id, cmdSpeed):
+    if (id == 1):
+        trainModelToTrainController["commandedSpeed"] = cmdSpeed
+     
+def currentSpeedSignalHandler(id, currSpeed):
+    if (id == 1):
+        trainModelToTrainController["currentSpeed"] = currSpeed
+     
+def authoritySignalHandler(id, authority):
+    if (id == 1):
+        trainModelToTrainController["authority"] = authority
+
+def undergroundSignalHandler(id, underground):
+    if (id == 1):
+        trainModelToTrainController["undergroundState"] = underground
+
+def temperatureSignalHandler(id, temp):
+    if (id == 1):
+        trainModelToTrainController["temperature"] = temp 
+
+def stationNameSignalHandler(id, station):
+    if (id == 1):
+        trainModelToTrainController["stationName"] = station
+
+def platformSideSignalHandler(id, platform):
+    if (id == 1):
+        trainModelToTrainController["platformSide"] = platform
+
+def nextStationNameSignalHandler(id, nextStation):
+    if (id == 1):
+        trainModelToTrainController["nextStationName"] = nextStation
+
+def isBeaconSignalHandler(id, isBeacon):
+    if (id == 1):
+        trainModelToTrainController["isBeacon"] = isBeacon
+
+def externalLightsStateSignalHandler(id, eLights):
+    if (id == 1):
+        trainModelToTrainController["externalLightsState"] = eLights
+
+def internalLightsStateSignalHandler(id, iLights):
+    if (id == 1):
+        trainModelToTrainController["internalLightsState"] = iLights
+
+def leftDoorStateSignalHandler(id, lDoors):
+    if (id == 1):
+        trainModelToTrainController["leftDoorState"] = lDoors
+     
+def rightDoorStateSignalHandler(id, rDoors):
+    if (id == 1):
+        trainModelToTrainController["rightDoorState"] = rDoors
+     
+def serviceBrakeStateSignalHandler(id, state):
+    if (id == 1):
+        trainModelToTrainController["serviceBrakeState"] = state
+     
+def emergencyBrakeStateSignalHandler(id, state):
+    if (id == 1):
+        print("Hello There!")
+        trainModelToTrainController["emergencyBrakeState"] = state
+     
+def serviceBrakeStatusSignalHandler(id, status):
+    if (id == 1):
+        trainModelToTrainController["serviceBrakeStatus"] = status
+     
+def engineStatusSignalHandler(id, status):
+    if (id == 1):
+        trainModelToTrainController["engineStatus"] = status
+     
+def communicationsStatusSignalHandler(id, status):
+    if (id == 1):
+        trainModelToTrainController["communicationsStatus"] = status
+
+rtcSignals.rtcSignal.connect(catchRealTimeClock)
+TMTCSignals.commandedSpeedSignal.connect(commandedSpeedSignalHandler)
+TMTCSignals.currentSpeedSignal.connect(currentSpeedSignalHandler)
+TMTCSignals.authoritySignal.connect(authoritySignalHandler)
+TMTCSignals.undergroundSignal.connect(undergroundSignalHandler)
+TMTCSignals.temperatureSignal.connect(temperatureSignalHandler)
+TMTCSignals.stationNameSignal.connect(stationNameSignalHandler)
+TMTCSignals.platformSideSignal.connect(platformSideSignalHandler)
+TMTCSignals.nextStationNameSignal.connect(nextStationNameSignalHandler)
+TMTCSignals.isBeaconSignal.connect(isBeaconSignalHandler)
+TMTCSignals.externalLightCommandSignal.connect(externalLightsStateSignalHandler)
+TMTCSignals.internalLightCommandSignal.connect(internalLightsStateSignalHandler)
+TMTCSignals.leftDoorStateSignal.connect(leftDoorStateSignalHandler)
+TMTCSignals.rightDoorStateSignal.connect(rightDoorStateSignalHandler)
+TMTCSignals.serviceBrakeStateSignal.connect(serviceBrakeStateSignalHandler)
+TMTCSignals.emergencyBrakeStateSignal.connect(emergencyBrakeStateSignalHandler)
+TMTCSignals.serviceBrakeStatusSignal.connect(serviceBrakeStatusSignalHandler)
+TMTCSignals.engineStatusSignal.connect(engineStatusSignalHandler)
+TMTCSignals.communicationsStatusSignal.connect(communicationsStatusSignalHandler)
+################################################################################
 
 
 while True:
-    readJsonFromFile()
+    #readJsonFromFile()
     # print(trainModelToTrainController)
     # findTimeInSeconds();
     parseJson()
