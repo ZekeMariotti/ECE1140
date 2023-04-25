@@ -17,10 +17,12 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 
 	// Check if we are running test cases
-	if args[0] == "test" {
-		fmt.Println("Running tests")
-		test.RunTests()
-		return
+	if len(args) > 0 {
+		if args[0] == "test" {
+			fmt.Println("Running tests")
+			test.RunTests()
+			return
+		}
 	}
 
 	// Create a new application instance

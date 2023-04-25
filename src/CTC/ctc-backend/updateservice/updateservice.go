@@ -56,7 +56,8 @@ func (s *UpdateService) doUpdate() {
 		// Get all ideal routes for trains
 		trainRouteMap := make(map[int][]int)
 		blockUseMap := make(map[int][]int)
-		for _, v := range s.data.Trains.GetSlice() {
+		trains := s.data.Trains.GetSlice()
+		for _, v := range trains {
 			if len(v.Stops) > 0 {
 				// Get route
 				destinationBlock := s.data.Lines.Get(v.Line).Blocks.Get(v.Stops[0].Station.BlockID)
