@@ -9,6 +9,7 @@ import requests
 class Wayside:
     def __init__(self,simTime,maintenance):
             self.simTime=simTime
+            self.realtime=0
             self.maintenance=maintenance
             self.gates={}
             self.suggestedAuthority={}
@@ -100,26 +101,6 @@ class Wayside:
     def setSuggestedAuthority(self,block,value):
             self.suggestedAuthority[block]=value
                 
-    def WaysideToCTCInfoG1(self):
-        with open(os.path.join(sys.path[0], "Green1CTC.json"), "w") as filename:
-            (json.dump(self.WaysideToCTC, filename, indent = 4))
-
-    def WaysideToCTCInfoG2(self):
-        with open(os.path.join(sys.path[0], "Green2CTC.json"), "w") as filename:
-            (json.dump(self.WaysideToCTC, filename, indent = 4))  
-        
-    def WaysideToCTCInfoR1(self):
-        with open(os.path.join(sys.path[0], "Red1CTC.json"), "w") as filename:
-            (json.dump(self.WaysideToCTC, filename, indent = 4))
-
-    def WaysideToCTCInfoR2(self):
-        with open(os.path.join(sys.path[0], "Red2CTC.json"), "w") as filename:
-            (json.dump(self.WaysideToCTC, filename, indent = 4))
-
-        # Loading internal inputs data variable
-        self.data["occupancy"]                 = self.occupancy
-        self.data["brokenRail"]               = self.brokenRail
-
     def readCTCToWayside(self):
         with open(os.path.join(sys.path[0],".json"),"r") as filename:
             self.CTCToWayside = json.loads(filename.read())
@@ -132,20 +113,23 @@ class Wayside:
             (json.dump(self.WaysideToCTC, filename, indent = 4))
 
         requests.put("http://localhost:8090/api/wayside/Green", json.dumps(self.WaysideToCTC, indent = 4))
+
     def WaysideToCTCInfoG2(self):
         with open(os.path.join(sys.path[0], "Green2CTC.json"), "w") as filename:
             (json.dump(self.WaysideToCTC, filename, indent = 4))       
 
-        requests.put("http://localhost:8090/api/wayside/Green", json.dumps(self.WaysideToCTC, indent = 4))  
+        requests.put("http://localhost:8090/api/wayside/Green", json.dumps(self.WaysideToCTC, indent = 4))
 
     def WaysideToCTCInfoR1(self):
         with open(os.path.join(sys.path[0], "Red1CTC.json"), "w") as filename:
             (json.dump(self.WaysideToCTC, filename, indent = 4))
+
         requests.put("http://localhost:8090/api/wayside/Red", json.dumps(self.WaysideToCTC, indent = 4))
 
     def WaysideToCTCInfoR2(self):
         with open(os.path.join(sys.path[0], "Red2CTC.json"), "w") as filename:
             (json.dump(self.WaysideToCTC, filename, indent = 4))
+            
         requests.put("http://localhost:8090/api/wayside/Red", json.dumps(self.WaysideToCTC,indent = 4))
 
     def getCTCBlocks(self):
