@@ -283,9 +283,11 @@ class backEndCalculations():
     def getSwitchPositionInput(self, index, line, blockNo):
         if line == 0:
             self.data["switchPos"].removeAt(int(self.csvConstants["switchRed"].__getitem__(blockNo)) - 1)
+            print(int(self.csvConstants["switchRed"].__getitem__(blockNo)) - 1, int(self.csvConstants["switchRed"].__getitem__(blockNo - 1)) - 1, blockNo, 1)
             self.data["switchPos"].insertAt(index, int(self.csvConstants["switchRed"].__getitem__(blockNo)) - 1)
         elif line == 1:
             self.data["switchPos"].removeAt(int(self.csvConstants["switchGreen"].__getitem__(blockNo)) - 1)
+            print(int(self.csvConstants["switchGreen"].__getitem__(blockNo)) - 1, 2)
             self.data["switchPos"].insertAt(index, int(self.csvConstants["switchGreen"].__getitem__(blockNo)) - 1)
 
         for i in range(35):
@@ -298,9 +300,11 @@ class backEndCalculations():
     def getGatePositionInput(self, index, line, blockNo):
         if line == 0:
             self.data["gatePos"].removeAt(int(self.csvConstants["crossingRed"].__getitem__(blockNo)) - 1)
+            print(int(self.csvConstants["crossingRed"].__getitem__(blockNo)) - 1, 3)
             self.data["gatePos"].insertAt(index, int(self.csvConstants["crossingRed"].__getitem__(blockNo)) - 1)
         elif line == 1:
             self.data["gatePos"].removeAt(int(self.csvConstants["crossingGreen"].__getitem__(blockNo)) - 1)
+            print(int(self.csvConstants["crossingGreen"].__getitem__(blockNo)) - 1, 4)
             self.data["gatePos"].insertAt(index, int(self.csvConstants["crossingGreen"].__getitem__(blockNo)) - 1)
 
         # Refresh Main UI
@@ -310,9 +314,11 @@ class backEndCalculations():
     def getSignalStateInput(self, index, line, blockNo):
         if line == 0 and blockNo != -1:
             self.data["sigState"].removeAt(int(self.csvConstants["signalRed"].__getitem__(blockNo)) - 1)
+            print(int(self.csvConstants["signalRed"].__getitem__(blockNo)) - 1, 5)
             self.data["sigState"].insertAt(index, int(self.csvConstants["signalRed"].__getitem__(blockNo)) - 1)
         elif line == 1 and blockNo != -1:
             self.data["sigState"].removeAt(int(self.csvConstants["signalGreen"].__getitem__(blockNo)) - 1)
+            print(int(self.csvConstants["signalGreen"].__getitem__(blockNo)) - 1, blockNo, 6)
             self.data["sigState"].insertAt(index, int(self.csvConstants["signalGreen"].__getitem__(blockNo)) - 1)
 
         # Refresh Main UI
@@ -341,6 +347,7 @@ class backEndCalculations():
     # Gets the Station Occupancy from the UI
     def getStationOccInput(self, occ):
         self.data["stationOccupancy"].removeAt(self.data["stationName"])
+        print(self.data["stationName"], 7)
         self.data["stationOccupancy"].insertAt(occ, self.data["stationName"])
         if self.data["stationOccupancy"].__getitem__(self.data["stationName"]) == 1:
             self.occOutput.setText("1 person")
@@ -357,10 +364,12 @@ class backEndCalculations():
         if state == 1:
             if self.data["trainLine"][trainNo] == 0 and self.data["blockDel"] != 0:
                 self.data["blockTrainNoRed"].removeAt(self.data["blockDel"] - 1)
+                print(self.data["blockDel"] - 1, 8)
                 self.data["blockTrainNoRed"].insertAt(0, self.data["blockDel"] - 1)
                 TkMWCSignals.currBlockSignal.emit(0, False, self.data["blockDel"])
             elif self.data["trainLine"][trainNo] == 1 and self.data["blockDel"] != 0:
                 self.data["blockTrainNoGreen"].removeAt(self.data["blockDel"] - 1)
+                print(self.data["blockDel"] - 1, 9)
                 self.data["blockTrainNoGreen"].insertAt(0, self.data["blockDel"] - 1)
                 TkMWCSignals.currBlockSignal.emit(1, False, self.data["blockDel"])
 
@@ -369,10 +378,12 @@ class backEndCalculations():
             self.data["blockDel"] = self.data["moves"][trainNo][0]
             if self.data["trainLine"][trainNo] == 0 and self.data["moves"][trainNo][index] != 0:
                 self.data["blockTrainNoRed"].removeAt(self.data["moves"][trainNo][index] - 1)
+                print(self.data["moves"][trainNo][index] - 1, 10)
                 self.data["blockTrainNoRed"].insertAt(trainNo + 1, self.data["moves"][trainNo][index] - 1)
                 TkMWCSignals.currBlockSignal.emit(1, True, self.data["moves"][trainNo][index])
             elif self.data["trainLine"][trainNo] == 1 and self.data["moves"][trainNo][index] != 0:
                 self.data["blockTrainNoGreen"].removeAt(self.data["moves"][trainNo][index] - 1)
+                print(self.data["moves"][trainNo][index] - 1, 11)
                 self.data["blockTrainNoGreen"].insertAt(trainNo + 1, self.data["moves"][trainNo][index] - 1)
                 TkMWCSignals.currBlockSignal.emit(1, True, self.data["moves"][trainNo][index])
 
@@ -451,6 +462,7 @@ class backEndCalculations():
                     self.data["numPassengers"][self.data["blockTrainNoRed"].__getitem__(i) - 1] += passengers
                     currOcc = self.data["stationOccupancy"].__getitem__(sName)
                     self.data["stationOccupancy"].removeAt(sName)
+                    print(sName, 12)
                     self.data["stationOccupancy"].insertAt(currOcc - passengers, sName)
         elif self.csvConstants["stationLine"].__getitem__(sName) == 1:
             for i in range(self.data["blockTrainNoGreen"].__len__()):
@@ -458,6 +470,7 @@ class backEndCalculations():
                     self.data["numPassengers"][self.data["blockTrainNoGreen"].__getitem__(i) - 1] += passengers
                     currOcc = self.data["stationOccupancy"].__getitem__(sName)
                     self.data["stationOccupancy"].removeAt(sName)
+                    print(sName, 13)
                     self.data["stationOccupancy"].insertAt(currOcc - passengers, sName)
 
         # Refresh Main UI
@@ -600,6 +613,7 @@ class backEndCalculations():
     def generatePassengers(self, stationID):
         currOcc = self.data["stationOccupancy"].__getitem__(stationID)
         self.data["stationOccupancy"].removeAt(stationID)
+        print(stationID, 14)
         self.data["stationOccupancy"].insertAt(currOcc + randint(0, 5), stationID)
 
         trackSignals.updateSignal.emit()
@@ -607,10 +621,12 @@ class backEndCalculations():
     # Wayside authority handler
     def authHandler(self, blockNo, auth, line):
         if line == 0:
-            self.data["redAuthority"].removeAt(blockNo - 1) 
+            self.data["redAuthority"].removeAt(blockNo - 1)
+            print(blockNo - 1, 15)
             self.data["redAuthority"].insertAt(auth, blockNo - 1)
         elif line == 1:
             self.data["greenAuthority"].removeAt(blockNo - 1) 
+            print(blockNo - 1, 16)
             self.data["greenAuthority"].insertAt(auth, blockNo - 1)
 
     # Wayside commanded speed handler
