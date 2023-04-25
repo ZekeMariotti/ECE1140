@@ -306,7 +306,7 @@ class MainWindow(QMainWindow):
         def launchWaysideControllerOneClick(self):
             self.wc = NewGreenLine.MainWindow("GreenLine 1")
             self.wc.setVisible(True)
-            self.wc.WaysideControllerGreenTestUI.show()
+            #self.wc.WaysideControllerGreenTestUI.show()
             activeSignals.activeSignal.emit()
 
         def launchWaysideControllerTwoClick(self):
@@ -317,7 +317,7 @@ class MainWindow(QMainWindow):
         def launchWaysideControllerThreeClick(self):
             self.wc3 = NewRedLine.MainWindowR("RedLine 1")
             self.wc3.setVisible(True)
-            self.wc3.WaysideControllerRedTestUI.show()
+            #self.wc3.WaysideControllerRedTestUI.show()
             activeSignals.activeSignal.emit()            
 
         def launchWaysideControllerFourClick(self):
