@@ -24,7 +24,7 @@ class Worker(QObject):
 class MainWindow(QMainWindow):
 
         # Constructor 
-        def __init__(self, trainLine , id=2):
+        def __init__(self, trainLine, id=2):
             super().__init__()
 
             # Enable Test UI
