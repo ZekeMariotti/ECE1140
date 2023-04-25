@@ -24,20 +24,23 @@ class Worker(QObject):
 class MainWindow(QMainWindow):
 
         # Constructor 
-        def __init__(self, id=2):
+        def __init__(self, trainLine , id=2):
             super().__init__()
 
             # Enable Test UI
             self.testUI = True 
             
             # Initialize TrainControllerSW object
-            self.TrainControllerSW = TrainControllerSW(trainId=id, commandedSpeed=0, currentSpeed=0, authority=10, inputTime="2023-02-20T21:52:48.3940347-05:00", 
+            self.TrainControllerSW = TrainControllerSW(trainId=id, line = trainLine, commandedSpeed=0, currentSpeed=0, authority=10, inputTime="2023-02-20T21:52:48.3940347-05:00", 
                                                        undergroundState=False, temperature=0, stationName="setupStationName", platformSide=0, 
                                                        nextStationName="station2", isBeacon=False, externalLightsState=False, internalLightsState=False, leftDoorState=False, 
                                                        rightDoorState=False, serviceBrakeState=False, emergencyBrakeState=False, serviceBrakeStatus=False, engineStatus=False, 
                                                        communicationsStatus=False, power=0, leftDoorCommand=False, rightDoorCommand=False, serviceBrakeCommand=False, 
                                                        emergencyBrakeCommand=False, externalLightCommand=False, internalLightCommand=False, stationAnnouncement="setupStationAnnouncement")
             
+            # Get block list
+            self.TrainControllerSW.getBlocksData()
+
             # Update Inputs, Outputs, and time
             self.TrainControllerSW.writeOutputs()          
             self.TrainControllerSW.previousTime = self.TrainControllerSW.realTime
@@ -45,7 +48,6 @@ class MainWindow(QMainWindow):
 
             # Set window defaults
             self.setWindowTitle(f'Train Controller {self.TrainControllerSW.trainId}')
-            #self.resize(QSize(1366, 768-31))
             self.setFixedSize(QSize(960, 540))
             self.setMinimumSize(1050, 550)
             self.move(100, 200)
@@ -340,6 +342,7 @@ class MainWindow(QMainWindow):
             serviceBrakeDisable.setParent(self)
             return serviceBrakeDisable
 
+        # slider in km/hr because slider.setRange only takes integer (need max to be exactly 70km/hr), user sees it as mph
         def commandedSpeedSliderSetup(self):
             commandedSpeedSlider = QSlider(Qt.Orientation.Horizontal)
             commandedSpeedSlider.setFixedSize(QSize(round(self.labelWidth*0.9), round(self.labelHeight*0.5)))
@@ -491,8 +494,7 @@ class MainWindow(QMainWindow):
             leftDoorState.move(x, y)
             leftDoorState.setParent(self)
             return leftDoorState
-            
-            
+             
         def leftDoorOpenSetup(self):
             leftDoorOpen = QPushButton("Open Doors")
             leftDoorOpen.setFont(self.buttonFont)
@@ -552,28 +554,6 @@ class MainWindow(QMainWindow):
             
 
         # Event actions
-
-        # might use for resizing elements - adds 31 to height for some reason
-        # def resizeEvent(self, event):
-        #     self.windowWidth = self.frameGeometry().width()
-        #     self.windowHeight = self.frameGeometry().height()
-        #     self.buttonWidth = round(0.13*self.windowWidth)
-        #     self.buttonHeight = round(0.06*self.windowHeight)
-        #     self.labelWidth = self.buttonWidth*2
-        #     self.labelHeight = round(self.buttonHeight*1.3)
-            
-        #     emergencyBrakeState = self.emergencyBrakeState
-        #     emergencyBrakeState.move(round(self.frameGeometry().width()*0.05), round(self.frameGeometry().height()*0.25-emergencyBrakeState.frameGeometry().height()*0.6))
-        #     emergencyBrakeState.setFixedSize(QSize(self.labelWidth, self.labelHeight))
-
-        #     emergencyBrakeEnable = self.emergencyBrakeEnable
-        #     emergencyBrakeEnable.move(round(self.frameGeometry().width()*0.05), round(self.frameGeometry().height()*0.3-emergencyBrakeEnable.frameGeometry().height()*0.5))
-        #     emergencyBrakeEnable.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
-
-        #     emergencyBrakeDisable = self.emergencyBrakeDisable
-        #     emergencyBrakeDisable.move(round(self.frameGeometry().width()*0.05+emergencyBrakeDisable.frameGeometry().width()), round(self.frameGeometry().height()*0.3-emergencyBrakeDisable.frameGeometry().height()*0.5))
-        #     emergencyBrakeDisable.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
-        #     QMainWindow.resizeEvent(self, event)
         
         # Closes test UI if main window closes, minimizes if in main UI
         def closeEvent(self, event):
@@ -590,7 +570,6 @@ class MainWindow(QMainWindow):
             self.TrainControllerSW.currentTime = self.TrainControllerSW.realTime
             self.TrainControllerSW.calculatePower()     
             self.TrainControllerSW.failureMode()
-            #self.TrainControllerSW.setStationState()
 
             # Only run in automatic mode
             if(self.TrainControllerSW.manualMode == False):
@@ -735,7 +714,7 @@ class Color(QWidget):
 
 if(__name__ == "__main__"):
     app = QApplication(sys.argv)
-    mainWindow = MainWindow()
+    mainWindow = MainWindow("Green", 2)
     mainWindow.show()
 
     if (mainWindow.testUI):
