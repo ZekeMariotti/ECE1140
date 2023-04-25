@@ -57,8 +57,8 @@ class Wayside:
         # simple error checking
     def setCommandedSpeed(self):
         for i in self.suggestedSpeed:
-            if self.suggestedSpeed[i]>70 | self.suggestedSpeed[i]<0:
-                self.commandedSpeed[i]=0
+            if float(self.suggestedSpeed[i])>19.444 or float(self.suggestedSpeed[i])<0.0:
+                self.commandedSpeed[i]=0.0
             else:
                 self.commandedSpeed[i]=self.suggestedSpeed[i]
     def setACommandedSpeed(self,Value,block):

@@ -157,6 +157,7 @@ class MainWindow(QMainWindow):
             j=1
             for k in range(self.blocks1,self.blocks2):
                 value=WaysideControllerGreen2.commandedSpeed[k]
+                value=round(value*2.23694,2)
                 CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
@@ -202,8 +203,8 @@ class MainWindow(QMainWindow):
             j=1
             #value=WaysideControllerGreen2.authority[150]
             Authority.setItem(15,0,QTableWidgetItem(str(value)))
-            for k in range(151,161):
-                Authority.setItem(15,j,QTableWidgetItem("-"))
+            for k in range(151,160):
+                Authority.setItem(6,j,QTableWidgetItem("-"))
                 j=j+1            
             Authority.setParent(self)
             Authority.move(0,170)
@@ -718,7 +719,7 @@ class MainWindow(QMainWindow):
             WaysideControllerGreen2.setCommandedSpeed()
             
           if WaysideControllerGreen2.authority!=WaysideControllerGreen2.suggestedAuthority:
-            WaysideControllerGreen.setAuthority()
+            WaysideControllerGreen2.setAuthority()
 
           self.PLCMain = PLC(WaysideControllerGreen,WaysideControllerGreen2,"Green")
           if (self.Switch1Out.text() == "1 to 13" and WaysideControllerGreen2.switches[1] == False) or (self.Switch1Out.text() == "12 to 13" and WaysideControllerGreen2.switches[1] == True):
@@ -783,7 +784,7 @@ class MainWindow(QMainWindow):
           i=0
           for k in range(101,self.blocks2):
                 value=WaysideControllerGreen2.commandedSpeed[k]
-                if active and value != int(self.CommandedSpeed.item(i,j).text()):
+                if active and value != float(self.CommandedSpeed.item(i,j).text()):
                   TkMWCSignals.commandedSpeedSignal.emit(k, float(value), 1)
                 self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
