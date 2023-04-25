@@ -135,7 +135,11 @@ class PLC():
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside1.occupancy[int(line)]
-                GLight84.append(logic)                                
+                GLight84.append(logic)  
+            if(line=="gate"):
+                line=file.readline()
+                logic=self.Wayside1.occupancy[int(line)]
+                Ggate.append(logic)                              
         file.close()
 
     def GloadValues2(self,File2):
@@ -205,6 +209,10 @@ class PLC():
                 line=line.strip()
                 logic=self.Wayside2.occupancy[int(line)]
                 Gswitch6False.append(logic)
+            if(line=="gate"):
+                line=file.readline()
+                logic=self.Wayside2.occupancy[int(line)]
+                Ggate.append(logic)   
         file.close()
 
     def setswitches(self):
@@ -520,12 +528,15 @@ class PLC():
                 self.Wayside2.switches[6]=True
         self.Wayside1.switches[7]=True
         self.Wayside2.switches[7]=True
-        if(self.Wayside1.occupancy[46]==True|self.Wayside1.occupancy[48]==True|self.Wayside1.occupancy[49]==True):
-            self.Wayside1.gates[1]=False
-            self.Wayside1.gates[1]=False
-        else:
-            self.Wayside1.gates[1]=True
-            self.Wayside2.gates[1]=True
+        for i in range(0, len(Rgate)):
+            if(Rgate[i]==True): 
+                self.Wayside1.setGatePositions(False)
+                self.Wayside2.setGatePositions(False)
+                break
+            else:
+                self.Wayside1.setGatePositions(True)
+                self.Wayside2.setGatePositions(True)
+                #set Lights
         Rswitch1True.clear()    
         Rswitch1False.clear()
         Rswitch2True.clear()
@@ -539,4 +550,5 @@ class PLC():
         Rswitch6True.clear()
         Rswitch6False.clear()
         Rswitch7True.clear()
-        Rswitch7False.clear()        
+        Rswitch7False.clear()
+        Rgate.clear()        

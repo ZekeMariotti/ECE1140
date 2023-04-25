@@ -10,3 +10,13 @@ auT6
 16
 auF6
 1
+gate
+47
+gate
+46
+gate
+45
+gate
+48
+gate
+49
