@@ -851,10 +851,16 @@ class MainWindow(QMainWindow):
                  for i in range(self.blocks1,self.blocks2):
                       WaysideControllerGreen2.setAAuthority(0,i)                 
 
+          val = self.Gate.text()
           if WaysideControllerGreen2.gates[1]==True:
                 self.Gate.setText("Block 19 Gate:  UP")
+                if active and val != "Block 19 Gate:  UP":
+                    TkMWCSignals.gateStateInput.emit(1, 1, 18)
           else:
-                  self.Gate.setText("Block 19 Gate:  DOWN")    
+                  self.Gate.setText("Block 19 Gate:  DOWN")
+                  if active and val != "Block 19 Gate:  DOWN":
+                    TkMWCSignals.gateStateInput.emit(0, 1, 18)
+
           if(self.maintenanceMode==False):                    
             self.PLCMain.GloadValues2(self.File2)
             self.PLCMain.setswitches()
