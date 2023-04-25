@@ -99,35 +99,22 @@ class Wayside:
 
     def setSuggestedAuthority(self,block,value):
             self.suggestedAuthority[block]=value
-
-    def WaysideToTrackInfoG1(self):
-        with open(os.path.join(sys.path[0],"Green1Track.json"), "w") as filename:
-            (json.dump(self.WaysideToTrack, filename, indent = 4))
-    def WaysideToTrackInfoG2(self):
-        with open(os.path.join(sys.path[0],"Green2Track.json"), "w") as filename:
-            (json.dump(self.WaysideToTrack, filename, indent = 4))
-    def WaysideToTrackInfoR1(self):
-        with open(os.path.join(sys.path[0],"Red1Track.json"), "w") as filename:
-            (json.dump(self.WaysideToTrack, filename, indent = 4))
-    def WaysideToTrackInfoR2(self):
-        with open(os.path.join(sys.path[0],"Red2Track.json"), "w") as filename:
-            (json.dump(self.WaysideToTrack, filename, indent = 4))                
+                
     def WaysideToCTCInfoG1(self):
         with open(os.path.join(sys.path[0], "Green1CTC.json"), "w") as filename:
             (json.dump(self.WaysideToCTC, filename, indent = 4))
+
     def WaysideToCTCInfoG2(self):
         with open(os.path.join(sys.path[0], "Green2CTC.json"), "w") as filename:
-            (json.dump(self.WaysideToCTC, filename, indent = 4))          
+            (json.dump(self.WaysideToCTC, filename, indent = 4))  
+        
     def WaysideToCTCInfoR1(self):
         with open(os.path.join(sys.path[0], "Red1CTC.json"), "w") as filename:
             (json.dump(self.WaysideToCTC, filename, indent = 4))
+
     def WaysideToCTCInfoR2(self):
         with open(os.path.join(sys.path[0], "Red2CTC.json"), "w") as filename:
             (json.dump(self.WaysideToCTC, filename, indent = 4))
-
-    def readTrackModelToWayside(self):
-        with open(os.path.join(sys.path[0], ".json"), "r") as filename:
-            self.TrackToWayside = json.loads(filename.read())
 
         # Loading internal inputs data variable
         self.data["occupancy"]                 = self.occupancy
