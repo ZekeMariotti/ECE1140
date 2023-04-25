@@ -29,7 +29,7 @@ class TestWindow(QMainWindow):
             super().__init__()    
 
             # TrainControllerSW Object for Test UI
-            self.TrainControllerSW = TrainControllerSW(trainId=2, commandedSpeed=0, currentSpeed=0, authority=0, inputTime="2023-02-20T21:52:48.3940347-05:00", 
+            self.TrainControllerSW = TrainControllerSW(trainId=2, line="Green", commandedSpeed=0, currentSpeed=0, authority=0, inputTime="2023-02-20T21:52:48.3940347-05:00", 
                                                        undergroundState=False, temperature=0, stationName="setupStationName", platformSide=0, 
                                                        nextStationName="station2", isBeacon=False, externalLightsState=False, internalLightsState=False, leftDoorState=False, 
                                                        rightDoorState=False, serviceBrakeState=False, emergencyBrakeState=False, serviceBrakeStatus=False, engineStatus=False, 
@@ -50,6 +50,7 @@ class TestWindow(QMainWindow):
             self.externalLightCommand = None
             self.internalLightCommand = None
             self.stationAnnouncement = None
+            self.stationState = None
             TMTCSignals.commandedPowerSignal.connect(self.commandedPowerSignalHandler)
             TMTCSignals.leftDoorCommandSignal.connect(self.leftDoorCommandSignalHandler)
             TMTCSignals.rightDoorCommandSignal.connect(self.rightDoorCommandSignalHandler)
@@ -57,7 +58,8 @@ class TestWindow(QMainWindow):
             TMTCSignals.emergencyBrakeCommandSignal.connect(self.emergencyBrakeCommandSignalHandler)
             TMTCSignals.externalLightCommandSignal.connect(self.externalLightCommandSignalHandler)
             TMTCSignals.internalLightCommandSignal.connect(self.internalLightCommandSignalHandler)
-            TMTCSignals.stationAnnouncementSignal.connect(self.stationAnnouncementSignalHandler)       
+            TMTCSignals.stationAnnouncementSignal.connect(self.stationAnnouncementSignalHandler)   
+            TMTCSignals.stationStateSignal.connect(self.stationStateSignalHandler)    
 
             # Set window defaults
             self.setWindowTitle("Train Controller Test UI")
@@ -84,6 +86,9 @@ class TestWindow(QMainWindow):
 
             self.setRealTimeLabel = self.setRealTimeLabelSetup()
             self.setRealTime = self.setRealTimeSetup()
+
+            self.setIsBeaconLabel = self.setIsBeaconLabelSetup()
+            self.setIsBeacon = self.setIsBeaconSetup()
 
             self.setEngineStatusLabel = self.setEngineStatusLabelSetup()
             self.setEngineStatus = self.setEngineStatusSetup()
@@ -154,8 +159,11 @@ class TestWindow(QMainWindow):
             self.gridLayout.addWidget(self.setRealTimeLabel, 1, 0)
             self.gridLayout.addWidget(self.setRealTime, 1, 1)
 
-            self.gridLayout.addWidget(self.setEngineStatusLabel, 2, 0)
-            self.gridLayout.addWidget(self.setEngineStatus, 2, 1)
+            self.gridLayout.addWidget(self.setIsBeaconLabel, 2, 0)
+            self.gridLayout.addWidget(self.setIsBeacon, 2, 1)
+
+            self.gridLayout.addWidget(self.setEngineStatusLabel, 3, 0)
+            self.gridLayout.addWidget(self.setEngineStatus, 3, 1)
 
             self.gridLayout.addWidget(self.setCommunicationsStatusLabel, 4, 0)
             self.gridLayout.addWidget(self.setCommunicationsStatus, 4, 1)
@@ -252,6 +260,22 @@ class TestWindow(QMainWindow):
             setRealTime.timeChanged.connect(self.realTimeChanged)
             setRealTime.setParent(self)
             return setRealTime
+        
+        def setIsBeaconLabelSetup(self):
+            setIsBeaconLabel = QLabel()
+            setIsBeaconLabel.setFixedSize(QSize(round(self.labelWidth), round(self.labelHeight)))
+            setIsBeaconLabel.setText("IsBeacon: ")
+            setIsBeaconLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            setIsBeaconLabel.setParent(self)
+            return setIsBeaconLabel
+        
+        def setIsBeaconSetup(self):
+            setIsBeacon = QComboBox()
+            setIsBeacon.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
+            setIsBeacon.addItems(["Disabled", "Enabled"])
+            setIsBeacon.activated.connect(self.setIsBeaconActivated)
+            setIsBeacon.setParent(self)
+            return setIsBeacon
 
         def setEngineStatusLabelSetup(self):
             setEngineStatusLabel = QLabel()
@@ -391,11 +415,12 @@ class TestWindow(QMainWindow):
             commandedSpeedSliderLabel.setParent(self)
             return commandedSpeedSliderLabel
 
+        # In meters/s
         def commandedSpeedSliderSetup(self):
             commandedSpeedSlider = QSlider(Qt.Orientation.Horizontal)
             commandedSpeedSlider.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonWidth*0.3)))
             commandedSpeedSlider.valueChanged.connect(self.commandedSpeedSliderRelease)
-            commandedSpeedSlider.setRange(0, self.TrainControllerSW.MAX_SPEED*2)
+            commandedSpeedSlider.setRange(0, 25)
             commandedSpeedSlider.setSingleStep(1)
             commandedSpeedSlider.setParent(self)
             return commandedSpeedSlider
@@ -444,7 +469,7 @@ class TestWindow(QMainWindow):
             setTemperature = QSlider(Qt.Orientation.Horizontal)
             setTemperature.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
             setTemperature.valueChanged.connect(self.setTemperatureValueChanged)
-            setTemperature.setRange(-50, 50)
+            setTemperature.setRange(-100, 100)
             setTemperature.setSingleStep(1)
             setTemperature.setParent(self)
             return setTemperature
@@ -607,12 +632,15 @@ class TestWindow(QMainWindow):
             )
 
             if(self.connectIO == True):
-                self.TrainControllerSW.inputs.emergencyBrakeState = self.emergencyBrakeCommand
-                self.TrainControllerSW.inputs.serviceBrakeState = self.serviceBrakeCommand
-                self.TrainControllerSW.inputs.internalLightsState = self.internalLightCommand
-                self.TrainControllerSW.inputs.externalLightsState = self.externalLightCommand
-                self.TrainControllerSW.inputs.leftDoorState = self.leftDoorCommand
-                self.TrainControllerSW.inputs.rightDoorState = self.rightDoorCommand
+                self.writeInputs()
+
+        def writeInputs(self):   
+            TMTCSignals.externalLightsStateSignal.emit(self.TrainID, self.externalLightCommand)
+            TMTCSignals.internalLightsStateSignal.emit(self.TrainID, self.internalLightCommand)
+            TMTCSignals.leftDoorStateSignal.emit(self.TrainID, self.leftDoorCommand)
+            TMTCSignals.rightDoorStateSignal.emit(self.TrainID, self.rightDoorCommand)
+            TMTCSignals.serviceBrakeStateSignal.emit(self.TrainID, self.serviceBrakeCommand)
+            TMTCSignals.emergencyBrakeStateSignal.emit(self.TrainID, self.emergencyBrakeCommand)
         
 
 
@@ -627,6 +655,10 @@ class TestWindow(QMainWindow):
 
             self.TrainControllerSW.inputs.inputTime = f'2023-02-22T{hour}:{minute}:{second}.{millisecond}0000-05:00'
             rtcSignals.rtcSignal.emit(f'2023-02-22T{hour}:{minute}:{second}.{millisecond}0000-05:00')
+        
+        def setIsBeaconActivated(self):
+            self.TrainControllerSW.inputs.isBeacon = (self.setIsBeacon.currentText() == "Enabled")
+            TMTCSignals.isBeaconSignal.emit(self.TrainControllerSW.trainId, self.setIsBeacon.currentText() == "Enabled")
 
         def engineStatusActivated(self):
             self.TrainControllerSW.inputs.engineStatus = (self.setEngineStatus.currentText() == "Enabled")
@@ -637,8 +669,12 @@ class TestWindow(QMainWindow):
             TMTCSignals.communicationsStatusSignal.emit(self.TrainControllerSW.trainId, self.setCommunicationsStatus.currentText() == "Enabled")
 
         def setStationNameTextChanged(self):
-            self.TrainControllerSW.inputs.stationName = self.setStationName.text()
-            TMTCSignals.stationNameSignal.emit(self.TrainControllerSW.trainId, self.setStationName.text())
+            if (self.stationState == True):
+                self.TrainControllerSW.inputs.stationName = self.setStationName.text()
+                TMTCSignals.stationNameSignal.emit(self.TrainControllerSW.trainId, self.setStationName.text())
+            else:
+                self.TrainControllerSW.inputs.nextStationName = self.setStationName.text()
+                TMTCSignals.nextStationNameSignal.emit(self.TrainControllerSW.trainId, self.setStationName.text())
 
         def setStationStateActivated(self):
             #TMTCSignals.stationNameSignal.emit(self.TrainControllerSW.trainId, )
@@ -754,6 +790,11 @@ class TestWindow(QMainWindow):
         def stationAnnouncementSignalHandler(self, id, station):
             if (id == self.TrainID):
                 self.stationAnnouncement = station
+
+        # Station State input handler
+        def stationStateSignalHandler(self, id, atStation):
+            if (id == self.TrainID):
+                self.stationState = atStation
 
 
 

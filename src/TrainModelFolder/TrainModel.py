@@ -1,5 +1,8 @@
 # Train Model Back End
 import sys
+import csv
+import os
+import __main__
 sys.path.append(__file__.replace("\TrainModelFolder\TrainModel.py", ""))
 
 from random import randint
@@ -9,12 +12,10 @@ from TrainModelFolder.TrainModelSignals import *
 from Integration.TMTkMSignals import *
 from Integration.TMTCSignals import *
 from Integration.TimeSignals import *
+from Integration.BlocksClass import *
 from PyQt6.QtCore import *
 
 class TrainModel():
-
-    TrainID = 0
-    goalTemp = 68
 
     # Green Line Track Sections
     greenSection0  = [0, 63]    # Yard to Block 63
@@ -68,63 +69,9 @@ class TrainModel():
         "friction"           : 0.006         # Coefficient of friction used for both static and dynamic friction
     }
 
-    # Dictionary for inputs from the Train Controller JSON File (WAS USING JSON, SCRAPPED)
-    #trainControllerToTrainModel = {
-    #    "power"                 : 0.0,       # Power input from the Train Controller
-    #    "leftDoorCommand"       : False,     # Left Door Command from the Train Controller, False if closed, True if open
-    #    "rightDoorCommand"      : False,     # Right Door Command from the Train Controller, False if closed, True if open
-    #    "serviceBrakeCommand"   : False,     # Service Brake Command from the Train Controller, True if engaged, False is disengaged
-    #    "emergencyBrakeCommand" : False,     # Emergency Brake Command from the Train Controller, True if engaged, False is isengaged
-    #    "externalLightCommand"  : False,     # External Light Command from the Train Controller, True if on, False if off
-    #    "InternalLightCommand"  : False,     # External Light Command from the Train Controller, True if on, False if off
-    #    "stationAnnouncement"   : "The Yard" # Station Announcement from the Train Controller
-    #}
-
-    # Dictionary for outputs to the Train Controller (WAS USING JSON, SCRAPPED)
-    #trainModelToTrainController = {
-    #    "commandedSpeed"        : 0.0,                                 # Commanded Speed in m/s
-    #    "currentSpeed"          : 0.0,                                 # Current Speed in m/s
-    #    "authority"             : 0,                                   # Authority in Blocks
-    #    "inputTime"             : "2023-02-22T11:00:00.0000000-05:00", # RTC Clock in ISO 8601
-    #    "undergroundState"      : False,                               # Underground State
-    #    "temperature"           : 0.0,                                 # Temperature inside the Train in degrees Fahrenheit
-    #    "stationName"           : "The Yard",                          # Station Name, from the beacon
-    #    "platformSide"          : 0,                                   # Platform Side, 0 if left, 1 if right, 2 if both, from the beacon
-    #    "nextStationName"       : "",                                  # Name of the next station, from the beacon
-    #    "isBeacon"              : False,                               # Whether or not a beacon is active
-    #    "externalLightsState"   : False,                               # State of the External Lights, True if on, False if off
-    #    "internalLightsState"   : False,                               # State of the Internal Lights, True if on, False if off
-    #    "leftDoorState"         : False,                               # State of the Left Doors, True if open, False if closed
-    #    "rightDoorState"        : False,                               # State of the Right Doors, True if open, False if closed
-    #    "serviceBrakeState"     : False,                               # State of the Service Brake, True if engaged, False if disengaged
-    #    "emergencyBrakeState"   : False,                               # State of the Emergency Brake, True if engaged, Flase if disengaged
-    #    "serviceBrakeStatus"    : True,                                # Status of the Service Brake, True if operational, False if offline
-    #    "engineStatus"          : True,                                # Status of the Engine, True if operational, False if offline
-    #    "communicationsStatus"  : True                                 # Status of the Communications with the Track, True if operational, False if offline
-    #}
-
-    # Dictionary for inputs from the Track Model (WAS USING JSON, SCRAPPED)
-    #trackModelToTrainModel = {
-    #    "rtc"                : "2023-02-22T11:00:00.0000000-05:00",    # Real Time Clock in ISO 8601 Format
-    #    "authority"          : 0,                                      # Authority of the train to be passed to the train controller in blocks
-    #    "commandedSpeed"     : 0.0,                                    # Commanded speed of the train in m/s
-    #    "passengersEntering" : 0,                                      # Number of passengers entering the train
-    #    "undergroundState"   : False,                                  # State of whether the train is underground or not
-    #    "beacon"             : ["", 0, "", False],                     # Array to store the beacon inputs [stationName, platformSide, nextStationName, isBeacon]
-    #    "switch"             : False,                                  # True if the block the train is currently on is a switch, false otherwise                      
-    #    "switchState"        : 0,                                      # 0 if the switch is in a default position, 1 otherwise
-    #    "blockLength"        : 0.0,                                    # Length of the current block that the train is on
-    #    "elevation"          : 0.0                                     # elevation different of the current block that the train is on
-    #}
-
-    # Dictionary for outputs to the Track Model (WAS USING JSON, SCRAPPED)
-    #trainModelToTrackModel = {
-    #    "currBlock"     : 0, # Current Block of the train
-    #    "prevBlock"     : 0, # Block the train is exiting
-    #    "passengersOff" : 0  # Passengers getting off of the train
-    #}
-
     def __init__(self, trainId, Line):
+        
+        self.blocks = []
 
         # data variable to store all the data needed for the back end
         self.data = {
@@ -132,7 +79,7 @@ class TrainModel():
             "rtc"              : "",             # Real Time Clock in ISO 8601 Format
             "prevRTC"          : "",             # Previous State RTC in ISO 8601 Format
             "simSpeed"         : 1,              # Simulation Speed of the system
-            "passengers"       : 222,            # Number of passengers on the train
+            "passengers"       : 0,              # Number of passengers on the train
             "passengersOn"     : 0,              # Number of passengers getting on the train
             "passengersOff"    : 0,              # Number of passengers getting off the train
             "crew"             : 1,              # Number of crew members on the train (Default of driver and conductor)
@@ -159,6 +106,7 @@ class TrainModel():
             "goalTemp"         : 68.0,           # Temperature goal given by the user in degrees fahrenehit
             "numCars"          : 1,              # Length of the train based on number of cars attached to the train
             "runOnce"          : False,          # Boolean used for calculating passengers on and off at a station
+            "timeTemp"         : 0.0,            # Time since the last temperature goal chance
         }
 
         # Dictionary used for intercommunication between the track model and train model only
@@ -174,24 +122,29 @@ class TrainModel():
             "trainLine"        : "",             # Line the train is on
             "trackSection"     : [0, 0],         # Section of the track that the train is on
             "overflow"         : False,          # Overflow boolean used for current Block Calculations
-            "backTrain"        : False           # Whether the back of the train is in the previous block still or not
+            "backTrain"        : False,          # Whether the back of the train is in the previous block still or not
+            "polarity"         : False,          # Polarity of the current block (0 if even, 1 if odd)
+            "lastStation"      : False,          # Boolean to store whether the train is at the last station before the yard
         }
 
         # Dictionary used for different eBrake States from train controller and user input
         self.eBrakes = {
-            "user"               : False,        # State of the emergency brake from the passenger
-            "trainController"    : False         # State of the emergency brake from the driver
+            "user"                : False,        # State of the emergency brake from the passenger
+            "trainController"     : False,        # State of the emergency brake from the driver
+            "trainControllerPrev" : False         # Previous State of the emergency brake from the driver
         }
 
         # Dictionary for pass through data (Only data to be passed through the module and not used within)
         self.passThroughData = {
-            "commandedSpeed"  : 0.0,                   # Commanded speed for the train in m/s
-            "authority"       : 0,                     # Authority of the train in blocks
-            "beacon"          : ["", 0, "", False]     # Beacon Inputs from the most recent Beacon
+            "commandedSpeed"  : 0.0,                          # Commanded speed for the train in m/s
+            "authority"       : 0,                            # Authority of the train in blocks
+            "beacon"          : ["", 0, "", False, -1, 0, 0]  # Beacon Inputs from the most recent Beacon
         }
 
         self.TrainID = trainId
         self.trackData["trainLine"] = Line
+
+        self.getBlocksData()
 
         # Signals from the Main UI
         trainSignals.commButtonPressedSignal.connect(self.communicationsFailure)
@@ -229,6 +182,33 @@ class TrainModel():
         self.data["prevRTC"] = datetime.now().isoformat() + "0-05:00"
         self.data["length"] = self.constants["length"] * self.data["numCars"]
 
+    def getBlocksData(self):
+        if (__main__.__file__[-7:] == "main.py"):
+            greenPath = os.path.join(sys.path[0], "TrackModel", "GreenLine.csv")
+            redPath = os.path.join(sys.path[0], "TrackModel", "RedLine.csv")
+        else:   
+            greenPath = os.path.join(sys.path[0], "..", "TrackModel", "GreenLine.csv")
+            redPath = os.path.join(sys.path[0], "..", "TrackModel", "RedLine.csv")
+
+        if self.trackData["trainLine"] == "Green":
+            self.blocks = [0] * 151
+            with open (greenPath) as csvfile:
+                rows = csv.reader(csvfile, delimiter=',')
+                for row in rows:
+                    if (row[0] == "BlockNo"):
+                        continue
+                    else:
+                        self.blocks[int(row[0])] = blocks(int(row[0]), float(row[1]), float(row[5]), float(row[3]), bool(int(row[7])))
+        elif self.trackData["trainLine"] == "Red":
+            self.blocks = [0] * 77
+            with open (redPath) as csvfile:
+                rows = csv.reader(csvfile, delimiter=',')
+                for row in rows:
+                    if (row[0] == "BlockNo"):
+                        continue
+                    else:
+                        self.blocks[int(row[0])] = blocks(int(row[0]), float(row[1]), float(row[5]), float(row[3]), bool(int(row[7])))
+
     def realTimeHandler(self, rtc):
         self.data["rtc"] = rtc
 
@@ -238,78 +218,6 @@ class TrainModel():
         elif self.trackData["trainLine"] == "Red":
             self.trackData["trackSection"] = self.redSection0
 
-    # JSON function to write outputs to a JSON file for the Train Controller (WAS USING JSON, SCRAPPED)
-    #def writeTrainModelToTrainController(self):
-    #
-    #    # Loading the output data dictionary
-    #    self.trainModelToTrainController["commandedSpeed"]       = self.passThroughData["commandedSpeed"]
-    #    self.trainModelToTrainController["currentSpeed"]         = self.data["velocity"]
-    #    self.trainModelToTrainController["authority"]            = self.passThroughData["authority"]
-    #    self.trainModelToTrainController["inputTime"]            = self.data["rtc"]
-    #    self.trainModelToTrainController["undergroundState"]     = self.data["underground"]
-    #    self.trainModelToTrainController["temperature"]          = self.data["currTemp"]
-    #    self.trainModelToTrainController["stationName"]          = self.passThroughData["beacon"][0]
-    #    self.trainModelToTrainController["platformSide"]         = self.passThroughData["beacon"][1]
-    #    self.trainModelToTrainController["nextStationName"]      = self.passThroughData["beacon"][2]
-    #    self.trainModelToTrainController["isBeacon"]             = self.passThroughData["beacon"][3]
-    #    self.trainModelToTrainController["externalLightsState"]  = self.data["eLights"]
-    #    self.trainModelToTrainController["internalLightsState"]  = self.data["iLights"]
-    #    self.trainModelToTrainController["leftDoorState"]        = self.data["lDoors"]
-    #    self.trainModelToTrainController["rightDoorState"]       = self.data["rDoors"]
-    #    self.trainModelToTrainController["serviceBrakeState"]    = self.data["sBrakeState"]
-    #    self.trainModelToTrainController["emergencyBrakeState"]  = self.data["eBrakeState"]
-    #    self.trainModelToTrainController["serviceBrakeStatus"]   = self.data["brakeStatus"]
-    #    self.trainModelToTrainController["engineStatus"]         = self.data["engineStatus"]
-    #    self.trainModelToTrainController["communicationsStatus"] = self.data["commStatus"]
-    #
-    #    with open(os.path.join(sys.path[0].replace("TrainModel", "Integration"), f'TMtoTC{self.TrainID}.json'), "w") as filename:
-    #        (json.dump(self.trainModelToTrainController, filename, indent = 4))
-
-    # JSON function to read inputs from a JSON file from the Train Controller (WAS USING JSON, SCRAPPED)
-    #def readTrainControllerToTrainModel(self):
-    #    with open(os.path.join(sys.path[0].replace("TrainModel", "Integration"), f'TCtoTM{self.TrainID}.json'), "r") as filename:
-    #        try:
-    #            self.trainControllerToTrainModel = json.loads(filename.read())
-    #        except json.decoder.JSONDecodeError:
-    #            self.trainControllerToTrainModel = self.trainControllerToTrainModel
-    #
-    #    # Loading internal inputs data variable
-    #    self.data["power"]              = self.trainControllerToTrainModel["power"]
-    #    self.data["lDoors"]             = self.trainControllerToTrainModel["leftDoorCommand"]
-    #    self.data["rDoors"]             = self.trainControllerToTrainModel["rightDoorCommand"]
-    #    self.data["sBrakeState"]        = self.trainControllerToTrainModel["serviceBrakeCommand"]
-    #    self.eBrakes["trainController"] = self.trainControllerToTrainModel["emergencyBrakeCommand"]
-    #    self.data["eLights"]            = self.trainControllerToTrainModel["externalLightCommand"]
-    #    self.data["iLights"]            = self.trainControllerToTrainModel["internalLightCommand"]
-    #    self.data["station"]            = self.trainControllerToTrainModel["stationAnnouncement"]
-
-    # JSON function to write outputs to a JSON file for the Track Model (WAS USING JSON, SCRAPPED)
-    #def writeTrainModelToTrackModel(self):
-    #
-    #    self.trainModelToTrackModel["currBlock"]     = self.trackData["currBlock"]
-    #    self.trainModelToTrackModel["prevBlock"]     = self.trackData["prevBlock"]
-    #    self.trainModelToTrackModel["passengersOff"] = self.data["passengersOff"]
-    #
-    #    with open(os.path.join(sys.path[0], "TrainModelToTrackModel.json"), "w") as filename:
-    #        (json.dump(self.trainModelToTrackModel, filename, indent = 4))
-    #
-    # JSON function to read inputs from a JSON file from the Track Model (WAS USING JSON, SCRAPPED)
-    #def readTrackModelToTrainModel(self):
-    #    with open(os.path.join(sys.path[0], "TrackModelToTrainModel.json"), "r") as filename:
-    #        self.trackModelToTrainModel = json.loads(filename.read())
-    #
-    #    self.data["rtc"]                       = self.trackModelToTrainModel["rtc"]
-    #    self.passThroughData["authority"]      = self.trackModelToTrainModel["authority"]
-    #    self.passThroughData["commandedSpeed"] = self.trackModelToTrainModel["commandedSpeed"]
-    #    self.data["passengersOn"]              = self.trackModelToTrainModel["passengersEntering"]
-    #    self.data["underground"]               = self.trackModelToTrainModel["undergroundState"]
-    #    self.passThroughData["beacon"]         = self.trackModelToTrainModel["beacon"]
-    #    self.data["atStation"]                 = self.trackModelToTrainModel["beacon"][3]
-    #    self.trackData["switch"]               = self.trackModelToTrainModel["switch"]
-    #    self.trackData["switchState"]          = self.trackModelToTrainModel["switchState"]
-    #    self.trackData["blockLength"]          = self.trackModelToTrainModel["blockLength"]
-    #    self.trackData["elevation"]            = self.trackModelToTrainModel["elevation"]
-
     # Data Handler for Outputs to the Train Controller
     def writeTMtoTC(self):
         TMTCSignals.commandedSpeedSignal.emit(self.TrainID, self.passThroughData["commandedSpeed"])
@@ -317,12 +225,13 @@ class TrainModel():
         TMTCSignals.authoritySignal.emit(self.TrainID, self.passThroughData["authority"])
         TMTCSignals.undergroundSignal.emit(self.TrainID, self.data["underground"])
         TMTCSignals.temperatureSignal.emit(self.TrainID, self.data["currTemp"])
-        #if (self.TrainID == 2) & (self.passThroughData["beacon"][3] == 1):
-            #print(self.TrainID, self.passThroughData["beacon"])
         if (self.passThroughData["beacon"][3] == 1):
             TMTCSignals.stationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][0])
             TMTCSignals.platformSideSignal.emit(self.TrainID, self.passThroughData["beacon"][1])
             TMTCSignals.nextStationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][2])
+            TMTCSignals.blockCountSignal.emit(self.TrainID, self.passThroughData["beacon"][4])
+            TMTCSignals.fromSwitchSignal.emit(self.TrainID, self.passThroughData["beacon"][5])
+            TMTCSignals.switchBlockSignal.emit(self.TrainID, self.passThroughData["beacon"][6])
         TMTCSignals.isBeaconSignal.emit(self.TrainID, self.passThroughData["beacon"][3])
         TMTCSignals.externalLightsStateSignal.emit(self.TrainID, self.data["eLights"])
         TMTCSignals.internalLightsStateSignal.emit(self.TrainID, self.data["iLights"])
@@ -333,6 +242,7 @@ class TrainModel():
         TMTCSignals.serviceBrakeStatusSignal.emit(self.TrainID, self.data["brakeStatus"])
         TMTCSignals.engineStatusSignal.emit(self.TrainID, self.data["engineStatus"])
         TMTCSignals.communicationsStatusSignal.emit(self.TrainID, self.data["commStatus"])
+        TMTCSignals.polaritySignal.emit(self.TrainID, self.trackData["polarity"])
 
     # Data Handlers from Input from the Train Controller SW
     # Commanded Power input handler
@@ -359,6 +269,8 @@ class TrainModel():
     def emergencyBrakeCommandSignalHandler(self, id, state):
         if (id == self.TrainID):
             self.eBrakes["trainController"] = state
+            if (self.eBrakes["trainControllerPrev"] == True) & (self.eBrakes["trainController"] == False):
+                self.eBrakes["user"] = False
 
     # External Light Command input handler
     def externalLightCommandSignalHandler(self, id, state):
@@ -398,7 +310,6 @@ class TrainModel():
     # Passengers Entering Input Handler
     def passengersEnteringSignalHandler(self, id, passengers):
         if (id == self.TrainID):
-            print("Passengers On: ", passengers)
             self.data["passengersOn"] = passengers
             self.passengersGettingOn()
 
@@ -408,16 +319,15 @@ class TrainModel():
             self.data["underground"] = state
 
     # Beacons Input Handler
-    def beaconSignalHandler(self, id, stationName, platformSide, nextStationName, isBeacon, blockCount, fromSwitch):
+    def beaconSignalHandler(self, id, stationName, platformSide, nextStationName, isBeacon, blockCount, fromSwitch, switchBlock):
         if (id == self.TrainID):
-            #if (isBeacon == 1):
-                #print(id, stationName, platformSide, nextStationName, isBeacon, blockCount, fromSwitch)
             self.passThroughData["beacon"][0] = stationName
             self.passThroughData["beacon"][1] = platformSide
             self.passThroughData["beacon"][2] = nextStationName
             self.passThroughData["beacon"][3] = isBeacon
-            a = blockCount + 1
-            b = fromSwitch
+            self.passThroughData["beacon"][4] = blockCount
+            self.passThroughData["beacon"][5] = fromSwitch
+            self.passThroughData["beacon"][6] = switchBlock
 
     # Switch Input Handler
     def switchSignalHandler(self, id, state):
@@ -467,6 +377,7 @@ class TrainModel():
         self.data["prevVelocity"] = self.data["velocity"]
         self.data["prevAcceleration"] = self.data["acceleration"]
         self.data["prevRTC"] = self.data["rtc"]
+        self.eBrakes["trainControllerPrev"] = self.eBrakes["trainController"]
 
     # Finds the current acceleration of a train
     def findCurrentAcceleration(self, time = 1) :
@@ -497,7 +408,6 @@ class TrainModel():
             powerForce = self.data["power"] / self.data["prevVelocity"]
             if(powerForce > 4000000):
                 powerForce = 120000
-        
 
         # If the Service Brake is pulled
         if (self.data["sBrakeState"]):
@@ -508,7 +418,6 @@ class TrainModel():
             brakeForce = self.constants["emergencyBrake"] * self.data["mass"]
 
         # Calculate the sum of the forces and current Acceleration
-        #print(f'ID: {self.TrainID}, powerForce: {powerForce}, brakeForce: {brakeForce}, frictionForce: {frictionalForce}, gravitationalForce: {gravitationalForce}')
         forces = powerForce + brakeForce + frictionalForce + gravitationalForce
         tempAcceleration = forces / self.data["mass"]
 
@@ -516,40 +425,7 @@ class TrainModel():
         if (time > 0):
             self.data["acceleration"] = tempAcceleration if tempAcceleration <= (forces / self.data["mass"]) else (forces / self.data["mass"])
 
-        # Limits the power of the engine
-        #if self.data["power"] > 120000:
-        #    self.data["power"] = 120000
-
-        # If Emergency or service brakes are enabled, do not change acceleration
-        #if (self.data["eBrakeState"] | self.data["sBrakeState"]):
-        #    return
-        
-        # If the train is not moving and has no power input
-        #if ((self.data["prevVelocity"] == 0.0) & (self.data["power"] == 0.0)):
-        #    force = 0.0
-
-        # If the train is not moving but has a power input
-        #elif (self.data["prevVelocity"] == 0.0):
-        #    force = self.data["mass"] * self.constants["mediumAcceleration"]
-
-        # All other cases
-        #else:
-        #    force = self.data["power"] / self.data["prevVelocity"]
-
-        # If the train is not on an incline or decline, use this calculation
-        #if (self.trackData["elevation"] == 0.0):
-        #    tempAcceleration = force / self.data["mass"]
-
-        # If the train is on an incline or decline, use this calculation
-        #else:
-            # Calculating the effect of mass * gravity when on an incline
-        #    tempAcceleration = (force - (self.data["mass"] * self.constants["gravity"] * (self.trackData["elevation"] / self.trackData["blockLength"]))) / self.data["mass"]
-
-        # Limit the acceleration to something that is possible for the train according to F = ma
-        #if (time > 0):
-        #    self.data["acceleration"] = tempAcceleration if tempAcceleration <= (force / self.data["mass"]) else (force / self.data["mass"])
-
-    # Finds the current velocity of a train given 7 inputs
+    # Finds the current velocity of a train
     def findCurrentVelocity(self, time = 1):
         currVelocity = self.data["prevVelocity"] + ((time / 2) * (self.data["acceleration"] + self.data["prevAcceleration"]))
         currVelocity = currVelocity if currVelocity >= 0 else 0.0
@@ -567,12 +443,7 @@ class TrainModel():
             return 1
         currTime = datetime.fromisoformat(self.data["rtc"])
         prevTime = datetime.fromisoformat(self.data["prevRTC"])
-        #if (self.TrainID == 2):
-        #    print("currTime: ", currTime)
-        #    print("prevTime: ", prevTime)
         newTime = currTime - prevTime
-        #if (self.TrainID == 2):
-        #    print(newTime.total_seconds())
         return float(newTime.total_seconds())
 
     # Finds the Block the train is on and the Block the train is exiting
@@ -600,7 +471,21 @@ class TrainModel():
             # Find total overflow distance into the next block
             tempDistance = self.trackData["distance"] - self.trackData["remDistance"]
             self.trackData["currBlock"] = self.findNextBlock()
+
+            # Check if train is on the last station before the yard
+            if (self.trackData["trainLine"] == "Green"):
+                if (self.trackData["currBlock"] == 57) & (self.trackData["prevBlock"] == 56):
+                    self.trackData["lastStation"] = True
+            elif (self.trackData["trainLine"] == "Red"):
+                if (self.trackData["currBlock"] == 7) & (self.trackData["prevBlock"] == 6):
+                    self.trackData["lastStation"] = True
+            
+            # Get the data from the blocks class for the new block that the train is entering
             self.trackData["remDistance"] = 100 - tempDistance
+            self.data["underground"] = self.blocks[self.trackData["currBlock"]].undergroundState
+            self.trackData["blockLength"] = self.blocks[self.trackData["currBlock"]].blockLength
+            self.trackData["elevation"] = self.blocks[self.trackData["currBlock"]].elevation
+            self.trackData["polarity"] = self.trackData["currBlock"] % 2
             if (tempDistance < (self.data["length"] / 2)):
                 self.trackData["backTrain"] = True
             else:
@@ -777,12 +662,9 @@ class TrainModel():
 
     # Air Conditioning System that changes based on user input
     def airConditioningControl(self, time = 1):
-        if self.data["currTemp"] < self.data["goalTemp"]:
-            self.data["currTemp"] += round(0.5 * time, 2)
-        elif self.data["currTemp"] == self.data["goalTemp"]:
-            self.data["currTemp"] += 0
-        else:
-            self.data["currTemp"] -= round(0.5 * time, 2)
+        self.data["timeTemp"] += time
+        tempDiff = self.data["goalTemp"] - self.data["currTemp"]
+        self.data["currTemp"] += tempDiff * (1 - exp(-0.0001 * self.data["timeTemp"]))
 
     # Find the current mass of the entire train including passengers 
     def findCurrentMass(self):
@@ -791,10 +673,7 @@ class TrainModel():
     # Handle Emergency Brake being pulled by the Passenger
     def emergencyBrakeDeceleration(self, id):
         if (id == self.TrainID):
-            if (self.eBrakes["user"] == False):
-                self.eBrakes["user"] = True
-            else:
-                self.eBrakes["user"] = False
+            self.eBrakes["user"] = True
 
     # Function to be called when updating the values to set the emergency brake state
     def brakeCaclulator(self):
@@ -803,16 +682,25 @@ class TrainModel():
     # Handle change in input from the user about temperature
     def tempChangeHandler(self, id, temp):
         if (id == self.TrainID):
+            self.data["timeTemp"] = 0.0
             self.data["goalTemp"] = temp
-            self.goalTemp = temp
 
 
     # Determines how many passengers get off at each station
     def passengersGettingOff(self):
-        if ~self.data["runOnce"]:
-            self.data["passengersOff"] = randint(0, self.data["passengers"])
-            self.data["passengers"] -= self.data["passengersOff"]
-            self.data["runOnce"] = True
+        if (~self.data["runOnce"]):
+            if (self.trackData["trainLine"] == "Green") & (self.trackData["lastStation"]):
+                self.data["passengersOff"] = self.data["passengers"]
+                self.data["passengers"] -= self.data["passengersOff"]
+                self.data["runOnce"] = True
+            elif (self.trackData["trainLine"] == "Red") & (self.trackData["lastStation"]):
+                self.data["passengersOff"] = self.data["passengers"]
+                self.data["passengers"] -= self.data["passengersOff"]
+                self.data["runOnce"] = True
+            else:
+                self.data["passengersOff"] = randint(0, self.data["passengers"])
+                self.data["passengers"] -= self.data["passengersOff"]
+                self.data["runOnce"] = True
 
     # Adds passengers getting on to total passengers
     def passengersGettingOn(self):
@@ -829,7 +717,7 @@ class TrainModel():
         if self.data["commStatus"] == False:
             self.passThroughData["commandedSpeed"] = 0.0
             self.passThroughData["authority"] = 0
-            self.passThroughData["beacon"] = ["", 0, "", False]
+            self.passThroughData["beacon"] = ["", 0, "", False, -1, False, 0]
         if self.data["engineStatus"] == False:
             self.data["power"] = 0.0
         if self.data["brakeStatus"] == False:

@@ -38,13 +38,13 @@ class MainWindow(QMainWindow):
         def __init__(self):
             super().__init__()
 
-            #subprocess.call(f'{sys.path[0]}')
+            #self.ctcBackendThread = QThread()
+            #self.ctcBackendThread.started.connect(self.ctcBackend)
 
             # Main clock and simulation speed
-            self.RTC = datetime.now() # Temporarily set time manually
+            self.RTC = datetime.now()
             self.simulationSpeed = 1
             self.timerInterval = 100  
-            rtcSignals.rtcSignal.connect(self.rtcSignalHandler) # Temporary for testing rtc
 
             # Set window defaults
             self.setWindowTitle(" ")
@@ -144,9 +144,8 @@ class MainWindow(QMainWindow):
             self.wc = NewGreenLine.MainWindow()
             activeSignals.activeSignal.emit()
 
-            # Test TM and TC
-            #for i in range(2, 4):
-            #    self.trainDispatch(i)    
+            # Test TM and TC    
+            #self.trainDispatch(2, "Green")
 
             #self.TkMTestUI = TrackModelTestUI.TrackModelTestUI()
             #self.TESTUI = IntegrationTestUI.BasicTestUI()
@@ -156,6 +155,9 @@ class MainWindow(QMainWindow):
         def mainThreadSetup(self):
             self.timerThread = QThread()
             self.timerThread.started.connect(self.mainTimerSetup)
+
+        def ctcBackend(self):
+            subprocess.call(f'{sys.path[0]}\CTC\ctc-backend\main\main.exe')
 
         def mainTimerSetup(self):     
             mainTimer = QTimer()
@@ -362,7 +364,7 @@ class MainWindow(QMainWindow):
         def trainDispatch(self, trainId, line):
             # trainId of 1 corresponds with train controller hardware
             if(trainId != 1):
-                self.TrainControllerList.append(TrainControllerMainUI.MainWindow(trainId))
+                self.TrainControllerList.append(TrainControllerMainUI.MainWindow(trainId, line))
                 self.TrainModelList.append(TrainModelMainUI.TrainModelUI(trainId, line))
                 self.TkM.backEnd.newTrainMade(trainId, line)
                 self.TrainControllerList[len(self.TrainControllerList)-1].move(800, 10)
@@ -388,10 +390,6 @@ class MainWindow(QMainWindow):
                 self.TrainModelList[len(self.TrainModelList)-1].move(self.screen().availableGeometry().width()-1480, 
                                                                     self.screen().availableGeometry().height()-self.TrainModelList[len(self.TrainModelList)-1].frameGeometry().height()-40)
                 self.selectTrainModel.addItems([str(trainId)])
-
-        def rtcSignalHandler(self, rtc):
-            #print(rtc)
-            test=1
             
         def trainDispatchCall(self):
             test = requests.get('http://localhost:8090/api/dispatchedtrain').text
