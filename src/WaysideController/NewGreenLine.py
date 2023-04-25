@@ -50,6 +50,7 @@ class MainWindow(QMainWindow):
         self.PLCMain = PLC(WaysideControllerGreen,WaysideControllerGreen2,"Green")
         activeSignals.activeSignal.connect(self.activeSignal)
         TkMWCSignals.failureSignal.connect(self.brokenRailHandler)
+        TkMWCSignals.stopSignal.connect(self.errorHandler)
         TkMWCSignals.currBlockSignal.connect(self.currBlockHandler)
         #Window
 
@@ -612,6 +613,9 @@ class MainWindow(QMainWindow):
          elif line == 1 and blockNo > 100:
             WaysideControllerGreen2.setOccupancy(logic, blockNo)
          
+    def errorHandler(status):
+         WaysideControllerGreen.setError(status)
+         WaysideControllerGreen2.setError(status)
          
             
     #Clicking stuff

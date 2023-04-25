@@ -31,6 +31,9 @@ class MainWindowR(QMainWindow):
         self.TestUI = True
         self.active = False
         activeSignals.activeSignal.connect(self.activeSignal)
+        TkMWCSignals.failureSignal.connect(self.brokenRailHandler)
+        TkMWCSignals.stopSignal.connect(self.error)
+        TkMWCSignals.currBlockSignal.connect(self.currBlockHandler) 
         #Window
         self.name = name
         self.setWindowTitle(str(self.name))
@@ -110,7 +113,23 @@ class MainWindowR(QMainWindow):
         self.maintenanceLabel = self.maintenanceLabelSetup()          
         self.PLCMain = PLC(WaysideControllerRed,WaysideControllerRed2,"Red")
         if self.TestUI :
-              self.WaysideControllerRedTestUI = TestWindow(WaysideControllerRed,WaysideControllerRed2)        
+              self.WaysideControllerRedTestUI = TestWindow(WaysideControllerRed,WaysideControllerRed2)             
+
+    def brokenRailHandler(self, line, logic, blockNo):
+         if line == 0 and blockNo <= 50:
+            WaysideControllerRed.setBrokenRail(bool(logic), blockNo)
+         elif line == 0 and blockNo > 50:
+            WaysideControllerRed2.setBrokenRail(bool(logic), blockNo)
+
+    def currBlockHandler(self, line, logic, blockNo):
+         if line == 0 and blockNo <= 50:
+            WaysideControllerRed.setOccupancy(logic, blockNo)
+         elif line == 0 and blockNo > 50:
+            WaysideControllerRed2.setOccupancy(logic, blockNo)
+
+    def errorHandler(status):
+         WaysideControllerRed.setError(status)
+         WaysideControllerRed2.setError(status) 
        
     def activeSignal(self):
          self.active = True

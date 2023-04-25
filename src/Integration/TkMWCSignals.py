@@ -10,6 +10,7 @@ class trackModelWaysideControllerSignals(QObject):
 
     # Track Model to Wayide
     failureSignal = pyqtSignal(int, int, int)
+    stopSignal = pyqtSignal(bool)
     currBlockSignal = pyqtSignal(int, bool, int)
 
 TkMWCSignals = trackModelWaysideControllerSignals()
