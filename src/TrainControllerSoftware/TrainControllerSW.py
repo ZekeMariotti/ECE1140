@@ -320,10 +320,7 @@ class TrainControllerSW:
 
     # Lowers commanded speed if it's higher than speed limit
     def stayBelowSpeedLimitAndMaxSpeed(self):
-        try:
-            self.speedLimit = Conversions.kmPerHourToMetersPerSecond(self.blockList[self.blockCount].speedLimit)
-        except:
-            self.getBlocksData()
+        self.speedLimit = Conversions.kmPerHourToMetersPerSecond(self.blockList[self.blockCount].speedLimit)
 
         if(float(self.inputs.commandedSpeed) > float(self.speedLimit)):
             self.inputs.commandedSpeed = self.speedLimit
