@@ -209,24 +209,24 @@ class PLC():
 
     def setswitches(self):
         
-        for i in Gswitch1True:
+        for i in range(0, len(Gswitch1True)):
             if(Gswitch1True[i]==True):
                 self.Wayside1.setSwitchPositions(False,1)
                 self.Wayside2.setSwitchPositions(False,1)
 
 
-        for i in Gswitch1False:
+        for i in range(0, len(Gswitch1False)):
             if(Gswitch1False[i]==True):
                 self.Wayside1.setSwitchPositions(True,1)
                 self.Wayside2.setSwitchPositions(True,1)
 
                 
-        for i in Gswitch2True:
+        for i in range(0, len(Gswitch2True)):
             if(Gswitch2True[i]==True):
                 self.Wayside1.setSwitchPositions(False,2)
                 self.Wayside2.setSwitchPositions(False,2)
 
-        for i in Gswitch2False:
+        for i in range(0, len(Gswitch2False)):
             if(Gswitch2False[i]==True):
                 self.Wayside1.setSwitchPositions(True,1)
                 self.Wayside2.setSwitchPositions(True,1)
@@ -237,27 +237,27 @@ class PLC():
         self.Wayside2.setSwitchPositions(True,3)
         self.Wayside2.setSwitchPositions(True,4)
 
-        for i in Gswitch5True:
+        for i in range(0, len(Gswitch5True)):
             if(Gswitch5True[i]==True):
                 self.Wayside1.setSwitchPositions(False,5)
                 self.Wayside2.setSwitchPositions(False,5)
 
-        for i in Gswitch5False:
+        for i in range(0, len(Gswitch5False)):
             if(Gswitch5False[i]==True):
                 self.Wayside1.setSwitchPositions(True,5)
                 self.Wayside2.setSwitchPositions(True,5)
 
-        for i in Gswitch6True:
+        for i in range(0, len(Gswitch6True)):
             if(Gswitch6True[i]==True):
                 self.Wayside1.setSwitchPositions(False,6)
                 self.Wayside2.setSwitchPositions(False,6)
                 
-        for i in Gswitch6False:
+        for i in range(0, len(Gswitch6False)):
             if(Gswitch6False[i]==True):
                 self.WaysideControllerGreen1.setSwitchPositions(True,6)
                 self.Wayside2.setSwitchPositions(True,6)
  
-        for i in Ggate:
+        for i in range(0, len(Ggate)):
             if(Ggate[i]==True): 
                 self.Wayside1.setGatePositions(False)
                 self.Wayside2.setGatePositions(False)
@@ -267,7 +267,7 @@ class PLC():
                 self.Wayside2.setGatePositions(True)
                 #set Lights
 
-        for i in GLight1:
+        for i in range(0, len(GLight1)):
             if(GLight1[i]==True):
                 self.Wayside1.setSignalLights(False,1)
                 break
@@ -281,14 +281,14 @@ class PLC():
             else:
                 self.Wayside1.setSignalLights(True,13)
         
-        for i in GLight77:
+        for i in range(0, len(GLight77)):
             if(GLight77[i]==True):
                 self.Wayside1.setSignalLights(False,77)
                 break
             else:
                 self.Wayside1.setSignalLights(True,77)
         
-        for i in GLight100:
+        for i in range(0, len(GLight100)):
             if(GLight100[i]==True):
                 self.Wayside1.setSignalLights(False,100)
                 break

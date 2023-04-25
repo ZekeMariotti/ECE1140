@@ -58,10 +58,11 @@ class Wayside:
 
     def setCommandedSpeed(self):
         for i in self.suggestedSpeed:
-            if float(self.suggestedSpeed[i])>19.444 or float(self.suggestedSpeed[i])<0.0:
-                self.commandedSpeed[i]=0.0
-            else:
-                self.commandedSpeed[i]=self.suggestedSpeed[i]
+            # if float(self.suggestedSpeed[i])>19.444 or float(self.suggestedSpeed[i])<0.0:
+            #     self.commandedSpeed[i]=0.0
+            # else:
+            #     self.commandedSpeed[i]=self.suggestedSpeed[i]
+            self.commandedSpeed[i]=self.suggestedSpeed[i]
 
     def setACommandedSpeed(self,Value,block):
           self.commandedSpeed[block]=Value   

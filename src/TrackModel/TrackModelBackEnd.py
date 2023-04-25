@@ -251,14 +251,12 @@ class backEndCalculations():
             else:
                 TMTkMSignals.switchSignal.emit(id, 0)
                 TMTkMSignals.switchStateSignal.emit(id, 0)
-            print("currBlock: ", currBlock, "moves 2: ", self.data["moves"][id - 1])
             if (currBlock == self.data["moves"][id - 1][0]):
                 index = 0
             elif (currBlock == self.data["moves"][id - 1][1]):
                 index = 1
             elif (currBlock == self.data["moves"][id - 1][2]):
                 index = 2
-            print("index 2: ", index)
             if (index != 0):
                 self.getTrainBlockInputFunction(index, id - 1, 0)
             #self.data["nextBlock"] = 1
@@ -613,10 +611,10 @@ class backEndCalculations():
     def cSpeedHandler(self, blockNo, cSpeed, line):
         if line == 0:
             self.data["redCommandedSpeed"].removeAt(blockNo - 1)
-            self.data["redCommandedSpeed"].removeAt(cSpeed, blockNo - 1)
+            self.data["redCommandedSpeed"].insertAt(cSpeed, blockNo - 1)
         elif line == 1:
             self.data["greenCommandedSpeed"].removeAt(blockNo - 1)
-            self.data["greenCommandedSpeed"].removeAt(cSpeed, blockNo - 1)
+            self.data["greenCommandedSpeed"].insertAt(cSpeed, blockNo - 1)
 
 
 import csv
