@@ -802,10 +802,10 @@ class MainWindowR(QMainWindow):
           j=1
           for k in range(51,77):
                 value=WaysideControllerRed2.commandedSpeed[k]
-                value=round(value*2.23694,2)                
+                value2=value*2.23694               
                 if active and value != float(self.CommandedSpeed.item(i,j).text()):
                   TkMWCSignals.commandedSpeedSignal.emit(k, value, 0)                
-                self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
+                self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(round(value2,2))))
                 j=j+1
                 if j>9:
                         j=0
