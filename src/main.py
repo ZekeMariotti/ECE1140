@@ -39,9 +39,9 @@ class MainWindow(QMainWindow):
         def __init__(self):
             super().__init__()
 
-            #self.ctcBackendThread = QThread()
-            #self.ctcBackendThread.started.connect(self.ctcBackend)
-            #self.ctcBackendThread.start()
+            self.ctcBackendThread = QThread()
+            self.ctcBackendThread.started.connect(self.ctcBackend)
+            self.ctcBackendThread.start()
 
             # Main clock and simulation speed
             self.RTC = datetime.now()
@@ -147,7 +147,7 @@ class MainWindow(QMainWindow):
             activeSignals.activeSignal.emit()
 
             # Test TM and TC    
-            self.trainDispatch(2, "Green")
+            #self.trainDispatch(2, "Green")
 
             #self.TkMTestUI = TrackModelTestUI.TrackModelTestUI()
             #self.TESTUI = IntegrationTestUI.BasicTestUI()
@@ -159,7 +159,14 @@ class MainWindow(QMainWindow):
             self.timerThread.started.connect(self.mainTimerSetup)
 
         def ctcBackend(self):
-            self.ctcBackendProcess = subprocess.Popen(f'{sys.path[0]}\..\executables\ctcbackend\main.exe', shell=False)
+            mainPath = os.getcwd()
+            #os.chdir(f'{sys.path[0]}\..\executables\ctcbackend')
+            subprocess.Popen(f'{sys.path[0]}\..\executables\ctcbackend\main.exe', shell=False)
+            #os.system("main.exe")
+            #subprocess.call(f'main.exe')
+            #subprocess.call(f'{sys.path[0]}\CTC\ctc-backend\main\main.exe')
+            print("test")
+            os.chdir(mainPath)
 
         def mainTimerSetup(self):     
             mainTimer = QTimer()
@@ -306,12 +313,6 @@ class MainWindow(QMainWindow):
 
         # Close all windows when closing main UI
         def closeEvent(self, event):
-            try:
-                self.ctcBackendProcess.terminate()
-                self.ctcBackendProcess.wait()
-            except Exception as ex:
-                print(ex)
-
             for TC in self.TrainControllerList:
                 TC.close()
 
@@ -321,8 +322,6 @@ class MainWindow(QMainWindow):
             #self.TMTestUI.close()
             self.wc.close()
             self.TkM.close()
-
-            sys.exit()
 
         # Runs all functions during each time interval
         def mainEventLoop(self):
@@ -374,7 +373,7 @@ class MainWindow(QMainWindow):
         def trainDispatch(self, trainId, line):
             # trainId of 1 corresponds with train controller hardware
             if(trainId != 1):
-                self.TrainControllerList.append(TrainControllerMainUI.MainWindow(line, trainId))
+                self.TrainControllerList.append(TrainControllerMainUI.MainWindow(trainId, line))
                 self.TrainModelList.append(TrainModelMainUI.TrainModelUI(trainId, line))
                 self.TkM.backEnd.newTrainMade(trainId, line)
                 self.TrainControllerList[len(self.TrainControllerList)-1].move(800, 10)
@@ -416,28 +415,22 @@ def stringRemove(string, n):
             
 
 
-def main():
-    # Start application
-    app = QApplication(sys.argv)
-    #exec(open("\Integration\\receiveJsonFromArduino.py").read())
-    #exec(open(os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py")).read())
-    #os.system("python" + os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py"))
-    #subprocess.Popen(['python', os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py")])
-    #subprocess.Popen(['python', os.path.join(sys.path[0], "Integration", "sendJsonToArduino.py")])
+
+# Start application
+app = QApplication(sys.argv)
+#exec(open("\Integration\\receiveJsonFromArduino.py").read())
+#exec(open(os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py")).read())
+#os.system("python" + os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py"))
+#subprocess.Popen(['python', os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py")])
+#subprocess.Popen(['python', os.path.join(sys.path[0], "Integration", "sendJsonToArduino.py")])
 
 
-    mainWindow = MainWindow()
-    mainWindow.show()
+mainWindow = MainWindow()
+mainWindow.show()
 
-    # Temporary
-    #mainWindow.TMTestUI.showMinimized()
-    #mainWindow.TkMTestUI.showMinimized()
-    #mainWindow.TESTUI.show()
+# Temporary
+#mainWindow.TMTestUI.showMinimized()
+#mainWindow.TkMTestUI.showMinimized()
+#mainWindow.TESTUI.show()
 
-    app.exec() 
-
-
-# Run main
-if (__name__ == "__main__"):
-    main()
-        
+app.exec() 
