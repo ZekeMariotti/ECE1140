@@ -269,7 +269,7 @@ class TrainModel():
     def emergencyBrakeCommandSignalHandler(self, id, state):
         if (id == self.TrainID):
             self.eBrakes["trainController"] = state
-            if (self.eBrakes["trainControllerPrev"] == True) & (self.eBrakes["trainController"] == False):
+            if (self.eBrakes["trainController"] == False):
                 self.eBrakes["user"] = False
 
     # External Light Command input handler

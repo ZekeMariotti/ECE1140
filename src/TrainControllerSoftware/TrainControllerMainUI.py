@@ -13,6 +13,7 @@ from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from TrainControllerSW import TrainControllerSW
 from TrainControllerTestUI import TestWindow
+from Integration.TMTCSignals import *
 from animated_toggle import AnimatedToggle
 
 
@@ -662,9 +663,11 @@ class MainWindow(QMainWindow):
 
         def emergencyBrakeEnableClick(self):
             self.TrainControllerSW.outputs.emergencyBrakeCommand = True
+            TMTCSignals.emergencyBrakeCommandSignal.emit(self.TrainControllerSW.trainId, self.TrainControllerSW.outputs.emergencyBrakeCommand)
 
         def emergencyBrakeDisableClick(self):
             self.TrainControllerSW.outputs.emergencyBrakeCommand = False
+            TMTCSignals.emergencyBrakeCommandSignal.emit(self.TrainControllerSW.trainId, self.TrainControllerSW.outputs.emergencyBrakeCommand)
 
         def serviceBrakeEnableClick(self):
             self.TrainControllerSW.outputs.serviceBrakeCommand = True

@@ -121,7 +121,6 @@ class TrainControllerSW:
         TMTCSignals.leftDoorCommandSignal.emit(self.trainId, self.outputs.leftDoorCommand)
         TMTCSignals.rightDoorCommandSignal.emit(self.trainId, self.outputs.rightDoorCommand)
         TMTCSignals.serviceBrakeCommandSignal.emit(self.trainId, self.outputs.serviceBrakeCommand)
-        TMTCSignals.emergencyBrakeCommandSignal.emit(self.trainId, self.outputs.emergencyBrakeCommand)
         TMTCSignals.externalLightCommandSignal.emit(self.trainId, self.outputs.externalLightCommand)
         TMTCSignals.internalLightCommandSignal.emit(self.trainId, self.outputs.internalLightCommand)
 
@@ -476,7 +475,7 @@ class TrainControllerSW:
         if(self.trainId == id):
             if (emgBrk == True):
                 self.outputs.emergencyBrakeCommand = True
-                
+
             self.inputs.emergencyBrakeState = emgBrk
 
     def serviceBrakeStatusSignalHandler(self, id, srvcBrkStatus):

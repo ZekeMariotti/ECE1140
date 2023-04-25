@@ -697,7 +697,7 @@ with open(os.path.join(sys.path[0], "TrackModel", "Switches.csv"), 'r') as swi:
         backEndCalculations.csvConstants["switchBlockA"].append(row["BlockA"])
         backEndCalculations.csvConstants["switchBlockB"].append(row["BlockB"])
         backEndCalculations.csvConstants["switchBlockC"].append(row["BlockC"])
-        if row == 9 or row == 10:
+        if int(row["SwitchID"]) == 10 or int(row["SwitchID"]) == 11:
             backEndCalculations.data["switchPos"].append(1)
         else:
             backEndCalculations.data["switchPos"].append(0)
