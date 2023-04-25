@@ -199,7 +199,6 @@ class backEndCalculations():
 
     # Hander for the current block from the Train Model
     def currBlockHandler(self, id, currBlock, prevBlock, transition, backTrain):
-        print(id, currBlock, prevBlock, transition, backTrain)
         if (backTrain):
             self.data["nextBlock"] = 0
         else:
@@ -231,15 +230,12 @@ class backEndCalculations():
             else:
                 TMTkMSignals.switchSignal.emit(id, 0)
                 TMTkMSignals.switchStateSignal.emit(id, 0)
-            
             if (currBlock == self.data["moves"][id - 1][0]):
                 index = 0
             elif (currBlock == self.data["moves"][id - 1][1]):
                 index = 1
             elif (currBlock == self.data["moves"][id - 1][2]):
                 index = 2
-            else:
-                index = 0
             if (index != 0):
                 self.getTrainBlockInputFunction(index, id - 1, 0)
         elif self.data["trainLine"][id - 1] == 1 and transition:
@@ -255,14 +251,14 @@ class backEndCalculations():
             else:
                 TMTkMSignals.switchSignal.emit(id, 0)
                 TMTkMSignals.switchStateSignal.emit(id, 0)
+            print("currBlock: ", currBlock, "moves 2: ", self.data["moves"][id - 1])
             if (currBlock == self.data["moves"][id - 1][0]):
                 index = 0
             elif (currBlock == self.data["moves"][id - 1][1]):
                 index = 1
             elif (currBlock == self.data["moves"][id - 1][2]):
                 index = 2
-            else:
-                index = 0
+            print("index 2: ", index)
             if (index != 0):
                 self.getTrainBlockInputFunction(index, id - 1, 0)
             #self.data["nextBlock"] = 1
@@ -274,8 +270,6 @@ class backEndCalculations():
                 index = 1
             elif (currBlock == self.data["moves"][id - 1][2]):
                 index = 2
-            else:
-                index = 0
             if (index == 0):
                 self.getTrainBlockInputFunction(index, id - 1, 1)
         else:
