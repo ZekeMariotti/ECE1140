@@ -233,9 +233,9 @@ class PLC():
 
     #Always go to yard maybe change later
         self.Wayside1.setSwitchPositions(True,3)
-        self.Wayside1.setSwitchPositions(False,4)
+        self.Wayside1.setSwitchPositions(True,4)
         self.Wayside2.setSwitchPositions(True,3)
-        self.Wayside2.setSwitchPositions(False,4)
+        self.Wayside2.setSwitchPositions(True,4)
 
         for i in Gswitch5True:
             if(Gswitch5True[i]==True):
