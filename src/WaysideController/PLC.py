@@ -213,13 +213,13 @@ class PLC():
             if(Gswitch1True[i]==True):
                 self.Wayside1.setSwitchPositions(True,1)
                 self.Wayside2.setSwitchPositions(True,1)
-                print(self.Wayside1.switches[1])
+
 
         for i in Gswitch1False:
             if(Gswitch1False[i]==True):
                 self.Wayside1.setSwitchPositions(False,1)
                 self.Wayside2.setSwitchPositions(False,1)
-                print(self.Wayside1.switches[1])
+
                 
         for i in Gswitch2True:
             if(Gswitch2True[i]==True):
