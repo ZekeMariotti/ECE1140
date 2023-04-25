@@ -94,6 +94,12 @@ class Wayside:
     def setSignalLights(self,logic,number):
             self.signalLights[number]=logic
                 
+    def setSuggestedSpeed(self,block,value):
+            self.suggestedSpeed[block]=value
+
+    def setSuggestedAuthority(self,block,value):
+            self.suggestedAuthority[block]=value
+
     def WaysideToTrackInfoG1(self):
         with open(os.path.join(sys.path[0],"Green1Track.json"), "w") as filename:
             (json.dump(self.WaysideToTrack, filename, indent = 4))
