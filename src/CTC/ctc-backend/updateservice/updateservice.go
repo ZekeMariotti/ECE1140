@@ -4,7 +4,6 @@ import (
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/common"
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/datastore"
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/route"
-	"github.com/shopspring/decimal"
 )
 
 type UpdateService struct {
@@ -137,29 +136,14 @@ func (s *UpdateService) updateSpeeds(routeMap map[int][]int) {
 		line := lines[i].Name
 		blocks := s.data.Lines.Get(line).Blocks.GetSlice()
 		for j := range blocks {
-			s.data.Lines.SetBlockSpeed(line, blocks[j].Number, decimal.Zero)
+			s.data.Lines.SetBlockSpeed(line, blocks[j].Number, blocks[j].SpeedLimit)
 		}
 	}
 	// Add new speeds
-	for train, route := range routeMap {
-		line := s.data.Trains.Get(train).Line
-		lineData := s.data.Lines.Get(line)
-		for i := range route {
-			// Calculate suggested speed
-			blocks := route[i:]
-			distance := s.getDistanceToRouteEnd(line, blocks)
-			speed := s.getMaxSpeedFromDistance(distance)
-			limit := lineData.Blocks.Get(route[i]).SpeedLimit
-			if speed.Cmp(limit) > 0 {
-				speed = limit
-			}
-			// Set suggested speed
-			s.data.Lines.SetBlockSpeed(line, route[i], speed)
-		}
 
-	}
 }
 
+/*
 func (s *UpdateService) getDistanceToRouteEnd(line string, route []int) decimal.Decimal {
 	distance := decimal.NewFromInt(0)
 	lineData := s.data.Lines.Get(line)
@@ -177,7 +161,7 @@ func (s *UpdateService) getMaxSpeedFromDistance(distance decimal.Decimal) decima
 	speed = speed.Pow(half)
 	return speed
 }
-
+*/
 func (s *UpdateService) updateTrainAssignments() {
 	newMap := make(map[string]map[int]int)
 	lines := s.data.Lines.GetLineNames()
