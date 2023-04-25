@@ -12,6 +12,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "TrainControllerSoftware
 sys.path.append(os.path.join(os.path.dirname(__file__), "TrackModel"))
 
 
+
 from TrainModelFolder import TrainModelMainUI, TrainModelTestUI
 from TrainControllerSoftware import TrainControllerMainUI
 from TrackModel import TrackModelMainUI, TrackModelTestUI, IntegrationTestUI
@@ -38,8 +39,9 @@ class MainWindow(QMainWindow):
         def __init__(self):
             super().__init__()
 
-            #self.ctcBackendThread = QThread()
-            #self.ctcBackendThread.started.connect(self.ctcBackend)
+            self.ctcBackendThread = QThread()
+            self.ctcBackendThread.started.connect(self.ctcBackend)
+            self.ctcBackendThread.start()
 
             # Main clock and simulation speed
             self.RTC = datetime.now()
@@ -157,7 +159,14 @@ class MainWindow(QMainWindow):
             self.timerThread.started.connect(self.mainTimerSetup)
 
         def ctcBackend(self):
-            subprocess.call(f'{sys.path[0]}\CTC\ctc-backend\main\main.exe')
+            mainPath = os.getcwd()
+            #os.chdir(f'{sys.path[0]}\..\executables\ctcbackend')
+            subprocess.Popen(f'{sys.path[0]}\..\executables\ctcbackend\main.exe', shell=False)
+            #os.system("main.exe")
+            #subprocess.call(f'main.exe')
+            #subprocess.call(f'{sys.path[0]}\CTC\ctc-backend\main\main.exe')
+            print("test")
+            os.chdir(mainPath)
 
         def mainTimerSetup(self):     
             mainTimer = QTimer()
