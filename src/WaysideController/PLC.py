@@ -461,60 +461,60 @@ class PLC():
 
     def Rsetswitches(self):
         for i in Rswitch1True:
-            if(Rswitch1True[i]==False and self.Wayside1.authority[10]==False):
+            if(Rswitch1True[i]==True and self.Wayside1.authority[10]==False):
                 self.Wayside1.switches[1]=False
                 self.Wayside2.switches[1]=False
 
         for i in Rswitch1False:
-            if(Rswitch1False[i]==False and self.Wayside1.authority[8]==False ):
+            if(Rswitch1False[i]==True and self.Wayside1.authority[8]==False ):
                 self.Wayside1.switches[1]=True
                 self.Wayside2.switches[1]=True
         for i in Rswitch2True:
-            if(Rswitch2True[i]==False and self.Wayside1.authority[1]==False):
-                self.Wayside1.switches[2]=False
-                self.Wayside2.switches[2]=False
-        for i in Rswitch2False:
-            if(Rswitch2False[i]==False and self.Wayside1.authority[15]==False):
+            if(Rswitch2True[i]==True and self.Wayside1.authority[1]==False):
                 self.Wayside1.switches[2]=True
                 self.Wayside2.switches[2]=True
+        for i in Rswitch2False:
+            if(Rswitch2False[i]==True and self.Wayside1.authority[15]==False):
+                self.Wayside1.switches[2]=False
+                self.Wayside2.switches[2]=False
         for i in Rswitch3True:
-            if(Rswitch3True[i]==False and self.Wayside2.authority[76]==False):
+            if(Rswitch3True[i]==True and self.Wayside2.authority[76]==False):
                 self.Wayside1.switches[3]=True
                 self.Wayside2.switches[3]=True
         for i in Rswitch3False:
-            if(Rswitch3False[i]==False and self.Wayside1.authority[28]==False):
-                self.Wayside1.switches[3]=True
-                self.Wayside2.switches[3]=True
+            if(Rswitch3False[i]==True and self.Wayside1.authority[28]==False):
+                self.Wayside1.switches[3]=False
+                self.Wayside2.switches[3]=False
         for i in Rswitch4True:
-            if(Rswitch4True[i]==False and self.Wayside2.authority[72]==False):
+            if(Rswitch4True[i]==True and self.Wayside2.authority[72]==False):
                 self.Wayside1.switches[4]=True
                 self.Wayside2.switches[4]=True
         for i in Rswitch4False:
-            if(Rswitch4False[i]==False and self.Wayside1.authority[31]==False):
-                self.Wayside1.switches[4]=True
-                self.Wayside2.switches[4]=True
+            if(Rswitch4False[i]==True and self.Wayside1.authority[31]==False):
+                self.Wayside1.switches[4]=False
+                self.Wayside2.switches[4]=False
         for i in Rswitch5True:
-            if(Rswitch5True[i]==False and self.Wayside2.authority[71]==False):
+            if(Rswitch5True[i]==True and self.Wayside2.authority[71]==False):
                 self.Wayside1.switches[5]=True
                 self.Wayside2.switches[5]=True
         for i in Rswitch5False:
-            if(Rswitch5False[i]==False and self.Wayside1.authority[37]==False):
+            if(Rswitch5False[i]==True and self.Wayside1.authority[37]==False):
                 self.Wayside1.switches[5]=False
                 self.Wayside2.switches[5]=False
         for i in Rswitch6True:
-            if(Rswitch6True[i]==False and self.Wayside2.authority[67]==False):
+            if(Rswitch6True[i]==True and self.Wayside2.authority[67]==False):
                 self.Wayside1.switches[6]=True
                 self.Wayside2.switches[6]=True
         for i in Rswitch6False:
-            if(Rswitch6False[i]==False and self.Wayside1.authority[42]==False):
+            if(Rswitch6False[i]==True and self.Wayside1.authority[42]==False):
                 self.Wayside1.switches[6]=False
                 self.Wayside2.switches[6]=False
         for i in Rswitch7True:
-            if(Rswitch7False[i]==False and self.Wayside2.authority[66]==False):
+            if(Rswitch7False[i]==True and self.Wayside2.authority[66]==False):
                 self.Wayside1.switches[7]=True
                 self.Wayside2.switches[7]=True                   
         for i in Rswitch7False:
-            if(Rswitch7False[i]==False and self.Wayside2.authority[53]==False):
+            if(Rswitch7False[i]==True and self.Wayside2.authority[53]==False):
                 self.Wayside1.switches[7]=False
                 self.Wayside2.switches[7]=False                
         for i in range(0, len(Rgate)):
