@@ -13,6 +13,7 @@ from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from TrainControllerSW import TrainControllerSW
 from TrainControllerTestUI import TestWindow
+from Integration.TMTCSignals import *
 from animated_toggle import AnimatedToggle
 
 
@@ -24,36 +25,38 @@ class Worker(QObject):
 class MainWindow(QMainWindow):
 
         # Constructor 
-        def __init__(self, id=2):
+        def __init__(self, trainLine, id=2):
             super().__init__()
 
             # Enable Test UI
             self.testUI = True 
             
             # Initialize TrainControllerSW object
-            self.TrainControllerSW = TrainControllerSW(trainId=id, commandedSpeed=0, currentSpeed=0, authority=10, inputTime="2023-02-20T21:52:48.3940347-05:00", 
+            self.TrainControllerSW = TrainControllerSW(trainId=id, line = trainLine, commandedSpeed=0, currentSpeed=0, authority=10, inputTime="2023-02-20T21:52:48.3940347-05:00", 
                                                        undergroundState=False, temperature=0, stationName="setupStationName", platformSide=0, 
                                                        nextStationName="station2", isBeacon=False, externalLightsState=False, internalLightsState=False, leftDoorState=False, 
                                                        rightDoorState=False, serviceBrakeState=False, emergencyBrakeState=False, serviceBrakeStatus=False, engineStatus=False, 
                                                        communicationsStatus=False, power=0, leftDoorCommand=False, rightDoorCommand=False, serviceBrakeCommand=False, 
                                                        emergencyBrakeCommand=False, externalLightCommand=False, internalLightCommand=False, stationAnnouncement="setupStationAnnouncement")
             
+            # Get block list
+            self.TrainControllerSW.getBlocksData()
+
             # Update Inputs, Outputs, and time
             self.TrainControllerSW.writeOutputs()          
             self.TrainControllerSW.previousTime = self.TrainControllerSW.realTime
             self.TrainControllerSW.currentTime = self.TrainControllerSW.realTime
+            self.timeInterval = 100
 
             # Set window defaults
             self.setWindowTitle(f'Train Controller {self.TrainControllerSW.trainId}')
-            #self.resize(QSize(1366, 768-31))
             self.setFixedSize(QSize(960, 540))
-            self.setMinimumSize(1050, 550)
             self.move(100, 200)
 
             # Set element defaults
             self.windowWidth = self.frameGeometry().width()
             self.windowHeight = self.frameGeometry().height()
-            self.buttonWidth = round(0.13*self.windowWidth)
+            self.buttonWidth = round(0.14*self.windowWidth)
             self.buttonHeight = round(0.07*self.windowHeight)
             self.labelWidth = self.buttonWidth*2
             self.labelHeight = round(self.buttonHeight*1.3)
@@ -117,7 +120,7 @@ class MainWindow(QMainWindow):
 
         def mainTimerSetup(self):     
             mainTimer = QTimer()
-            mainTimer.setInterval(100)
+            mainTimer.setInterval(self.timeInterval)
             mainTimer.timeout.connect(self.mainEventLoop)
             mainTimer.setParent(self)
             mainTimer.start()
@@ -131,7 +134,7 @@ class MainWindow(QMainWindow):
             KpLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
             KpLabel.setWordWrap(True)
             x = round(self.frameGeometry().width()*0.8-KpLabel.frameGeometry().width())
-            y = round(self.frameGeometry().height()*0.8-KpLabel.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.6-KpLabel.frameGeometry().height()*0.5)
             KpLabel.move(x, y)
             KpLabel.setParent(self)
             return KpLabel
@@ -141,9 +144,10 @@ class MainWindow(QMainWindow):
             Kp.setFixedSize(QSize(round(self.buttonWidth*0.5), round(self.buttonHeight)))
             Kp.textChanged.connect(self.kpTextChanged)
             x = round(self.frameGeometry().width()*0.77-Kp.frameGeometry().width())
-            y = round(self.frameGeometry().height()*0.85-Kp.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.65-Kp.frameGeometry().height()*0.5)
             Kp.move(x, y)
             Kp.setParent(self)
+            Kp.setText(str(self.TrainControllerSW.Kp))
             return Kp
         
         def KiLabelSetup(self):
@@ -154,7 +158,7 @@ class MainWindow(QMainWindow):
             KiLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
             KiLabel.setWordWrap(True)
             x = round(self.frameGeometry().width()*0.9-KiLabel.frameGeometry().width())
-            y = round(self.frameGeometry().height()*0.8-KiLabel.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.6-KiLabel.frameGeometry().height()*0.5)
             KiLabel.move(x, y)
             KiLabel.setParent(self)
             return KiLabel
@@ -164,9 +168,10 @@ class MainWindow(QMainWindow):
             Ki.setFixedSize(QSize(round(self.buttonWidth*0.5), round(self.buttonHeight)))
             Ki.textChanged.connect(self.kiTextChanged)
             x = round(self.frameGeometry().width()*0.87-Ki.frameGeometry().width())
-            y = round(self.frameGeometry().height()*0.85-Ki.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.65-Ki.frameGeometry().height()*0.5)
             Ki.move(x, y)
             Ki.setParent(self)
+            Ki.setText(str(self.TrainControllerSW.Ki))
             return Ki
 
         def stationSetup(self):
@@ -340,6 +345,7 @@ class MainWindow(QMainWindow):
             serviceBrakeDisable.setParent(self)
             return serviceBrakeDisable
 
+        # slider in km/hr because slider.setRange only takes integer (need max to be exactly 70km/hr), user sees it as mph
         def commandedSpeedSliderSetup(self):
             commandedSpeedSlider = QSlider(Qt.Orientation.Horizontal)
             commandedSpeedSlider.setFixedSize(QSize(round(self.labelWidth*0.9), round(self.labelHeight*0.5)))
@@ -399,7 +405,7 @@ class MainWindow(QMainWindow):
         def temperatureSetup(self):
             temperature = QLabel()  
             temperature.setFont(self.labelFont)      
-            temperature.setText("Temperature:\n" + str(float(self.TrainControllerSW.inputs.temperature)) + " F")
+            temperature.setText("Temperature:\n" + str(round(float(self.TrainControllerSW.inputs.temperature), 1)) + " F")
             temperature.setFixedSize(QSize(self.labelWidth, self.labelHeight))
             temperature.setAlignment(Qt.AlignmentFlag.AlignCenter)
             temperature.setWordWrap(True)
@@ -491,8 +497,7 @@ class MainWindow(QMainWindow):
             leftDoorState.move(x, y)
             leftDoorState.setParent(self)
             return leftDoorState
-            
-            
+             
         def leftDoorOpenSetup(self):
             leftDoorOpen = QPushButton("Open Doors")
             leftDoorOpen.setFont(self.buttonFont)
@@ -552,28 +557,6 @@ class MainWindow(QMainWindow):
             
 
         # Event actions
-
-        # might use for resizing elements - adds 31 to height for some reason
-        # def resizeEvent(self, event):
-        #     self.windowWidth = self.frameGeometry().width()
-        #     self.windowHeight = self.frameGeometry().height()
-        #     self.buttonWidth = round(0.13*self.windowWidth)
-        #     self.buttonHeight = round(0.06*self.windowHeight)
-        #     self.labelWidth = self.buttonWidth*2
-        #     self.labelHeight = round(self.buttonHeight*1.3)
-            
-        #     emergencyBrakeState = self.emergencyBrakeState
-        #     emergencyBrakeState.move(round(self.frameGeometry().width()*0.05), round(self.frameGeometry().height()*0.25-emergencyBrakeState.frameGeometry().height()*0.6))
-        #     emergencyBrakeState.setFixedSize(QSize(self.labelWidth, self.labelHeight))
-
-        #     emergencyBrakeEnable = self.emergencyBrakeEnable
-        #     emergencyBrakeEnable.move(round(self.frameGeometry().width()*0.05), round(self.frameGeometry().height()*0.3-emergencyBrakeEnable.frameGeometry().height()*0.5))
-        #     emergencyBrakeEnable.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
-
-        #     emergencyBrakeDisable = self.emergencyBrakeDisable
-        #     emergencyBrakeDisable.move(round(self.frameGeometry().width()*0.05+emergencyBrakeDisable.frameGeometry().width()), round(self.frameGeometry().height()*0.3-emergencyBrakeDisable.frameGeometry().height()*0.5))
-        #     emergencyBrakeDisable.setFixedSize(QSize(self.buttonWidth, self.buttonHeight))
-        #     QMainWindow.resizeEvent(self, event)
         
         # Closes test UI if main window closes, minimizes if in main UI
         def closeEvent(self, event):
@@ -590,7 +573,6 @@ class MainWindow(QMainWindow):
             self.TrainControllerSW.currentTime = self.TrainControllerSW.realTime
             self.TrainControllerSW.calculatePower()     
             self.TrainControllerSW.failureMode()
-            #self.TrainControllerSW.setStationState()
 
             # Only run in automatic mode
             if(self.TrainControllerSW.manualMode == False):
@@ -657,7 +639,7 @@ class MainWindow(QMainWindow):
             
             self.authority.setText("Authority:\n" + str(self.TrainControllerSW.inputs.authority) + " Blocks")
             self.speedLimit.setText("Speed Limit:\n" + str(Conversions.metersPerSecondToMilesPerHour(float(self.TrainControllerSW.speedLimit))) + " MPH")
-            self.temperature.setText("Temperature:\n" + str(float(self.TrainControllerSW.inputs.temperature)) + " F")
+            self.temperature.setText("Temperature:\n" + str(round(float(self.TrainControllerSW.inputs.temperature), 1)) + " F")
             self.internalLightsState.setText("Internal Lights: " + self.TrainControllerSW.getInternalLightsState())
             self.externalLightsState.setText("External Lights: " + self.TrainControllerSW.getExternalLightsState())
             self.leftDoorState.setText("Left Door\n" + self.TrainControllerSW.getLeftDoorState())
@@ -683,9 +665,11 @@ class MainWindow(QMainWindow):
 
         def emergencyBrakeEnableClick(self):
             self.TrainControllerSW.outputs.emergencyBrakeCommand = True
+            TMTCSignals.emergencyBrakeCommandSignal.emit(self.TrainControllerSW.trainId, self.TrainControllerSW.outputs.emergencyBrakeCommand)
 
         def emergencyBrakeDisableClick(self):
             self.TrainControllerSW.outputs.emergencyBrakeCommand = False
+            TMTCSignals.emergencyBrakeCommandSignal.emit(self.TrainControllerSW.trainId, self.TrainControllerSW.outputs.emergencyBrakeCommand)
 
         def serviceBrakeEnableClick(self):
             self.TrainControllerSW.outputs.serviceBrakeCommand = True
@@ -735,7 +719,7 @@ class Color(QWidget):
 
 if(__name__ == "__main__"):
     app = QApplication(sys.argv)
-    mainWindow = MainWindow()
+    mainWindow = MainWindow("Green", 2)
     mainWindow.show()
 
     if (mainWindow.testUI):
