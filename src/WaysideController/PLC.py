@@ -262,7 +262,7 @@ class PLC():
                 
         for i in range(0, len(Gswitch6False)):
             if(Gswitch6False[i]==True):
-                self.WaysideControllerGreen1.setSwitchPositions(True,6)
+                self.Wayside1.setSwitchPositions(True,6)
                 self.Wayside2.setSwitchPositions(True,6)
  
         for i in range(0, len(Ggate)):
