@@ -8,6 +8,7 @@ import requests
 
 class Wayside:
     def __init__(self,simTime):
+            self.err = False
             self.simTime=simTime
             self.realtime=0
             self.maintenance=False
@@ -79,6 +80,9 @@ class Wayside:
          
     def setOccupancy(self,occupancy,Block):
         self.occupancy[Block]=occupancy
+
+    def setError(self,e):
+         self.err = e
 
     def setTime(self,time):
             self.time = time

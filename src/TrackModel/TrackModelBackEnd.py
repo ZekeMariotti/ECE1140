@@ -146,6 +146,7 @@ class backEndCalculations():
         TkMWCSignals.commandedSpeedSignal.connect(self.cSpeedHandler)
         TkMWCSignals.switchStateSignal.connect(self.getSwitchPositionInput)
         TkMWCSignals.signalStateSignal.connect(self.getSignalStateInput)
+        TkMWCSignals.gateStateInput.connect(self.getGatePositionInput)
 
         rtcSignals.rtcSignal.connect(self.realTimeHandler)
 
