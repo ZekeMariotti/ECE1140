@@ -1,7 +1,10 @@
 package datastore
 
 import (
+	"sort"
+
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/common"
+	"github.com/shopspring/decimal"
 )
 
 type DataStore struct {
@@ -42,6 +45,11 @@ func (d *DataStore) TrainFrontendToBackend(frontend common.TrainFrontend) common
 	}
 
 	line := d.Lines.Get(frontend.Line)
+	stops := frontend.Stops
+
+	sort.Slice(stops, func(i, j int) bool {
+		return stops[i].Time.Time.Before(stops[j].Time.Time)
+	})
 
 	for i, v := range frontend.Stops {
 		result.Stops[i] = common.TrainStop{
@@ -51,4 +59,11 @@ func (d *DataStore) TrainFrontendToBackend(frontend common.TrainFrontend) common
 	}
 
 	return result
+}
+
+func (d *DataStore) GetThroughput(line string) decimal.Decimal {
+	passengers := decimal.NewFromInt32(int32(d.Lines.GetPassengers(line)))
+	hours := decimal.NewFromFloat(d.TimeKeeper.GetElapsedTime().Hours())
+	throughput := passengers.Div(hours)
+	return throughput
 }

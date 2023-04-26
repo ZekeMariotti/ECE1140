@@ -53,6 +53,7 @@ func (a *OutputAPI) registerPaths() {
 	a.router.GET("/api/simulation/time", a.getSimulationTime)
 	a.router.GET("/api/simulation/speed", a.getSimulationSpeed)
 	a.router.PUT("/api/wayside/:line", a.putWayside)
+	a.router.PUT("/api/passengers/:line", a.putPassengers)
 }
 
 // HTTP GET handler for the latest dispatched train (runs once per train)
@@ -131,4 +132,12 @@ func (a *OutputAPI) putWayside(c *gin.Context) {
 	body, _ := io.ReadAll(c.Request.Body)
 	json.Unmarshal(body, &result)
 	a.data.Lines.UpdateWayside(line, result)
+}
+
+func (a *OutputAPI) putPassengers(c *gin.Context) {
+	result := int(0)
+	line := c.Param("line")
+	body, _ := io.ReadAll(c.Request.Body)
+	json.Unmarshal(body, &result)
+	a.data.Lines.ReportPassengers(line, result)
 }

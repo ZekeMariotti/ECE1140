@@ -1,9 +1,12 @@
 package updateservice
 
 import (
+	"time"
+
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/common"
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/datastore"
 	"github.com/ZekeMariotti/ECE1140/tree/master/src/CTC/ctc-backend/route"
+	"github.com/shopspring/decimal"
 )
 
 type UpdateService struct {
@@ -11,6 +14,7 @@ type UpdateService struct {
 	routeGen          *route.RouteCalculator
 	stop              chan bool
 	lastTrainBlockMap map[string]map[int]int
+	lastHoldMap       map[int]int
 }
 
 // New update service
@@ -20,6 +24,7 @@ func NewUpdateService(data *datastore.DataStore) *UpdateService {
 		routeGen:          route.NewRouteCalculator(data),
 		stop:              make(chan bool),
 		lastTrainBlockMap: make(map[string]map[int]int),
+		lastHoldMap:       make(map[int]int),
 	}
 
 	return &service
@@ -52,10 +57,43 @@ func (s *UpdateService) doUpdate() {
 	// Check if auto mode
 	if s.data.AutoMode {
 		// In auto mode
-		// Get all ideal routes for trains
-		trainRouteMap := make(map[int][]int)
-		blockUseMap := make(map[int][]int)
+		trainRouteMap := make(map[int][]int) // map[trainID]routeInBlockIDs
+		blockUseMap := make(map[int][]int)   // map[blockID]assignedTrainIDs
+		stationHoldsMap := make(map[int]int) // map[trainID]blockOfCurrentStation
+		holdBlocks := make(map[int]bool)     // map[blockID]hold?
 		trains := s.data.Trains.GetSlice()
+		// Update stops for each train
+		for i := range trains {
+			if len(trains[i].Stops) > 0 && len(trains[i].Location.Blocks) > 0 {
+				location := trains[i].Location.Blocks[len(trains[i].Location.Blocks)-1]
+				if location == trains[i].Stops[0].Station.BlockID {
+					// At station
+					// Assign block to be held
+					stationHoldsMap[trains[i].ID] = trains[i].Stops[0].Station.BlockID
+					holdBlocks[trains[i].Stops[0].Station.BlockID] = true
+
+					// Remove stop
+					train := s.data.Trains.Get(trains[i].ID)
+					train.Stops = train.Stops[1:]
+					s.data.Trains.Set(train.ID, train)
+				}
+			}
+			if len(trains[i].Stops) == 0 {
+				// Return to yard
+				train := s.data.Trains.Get(trains[i].ID)
+				train.Stops = append(train.Stops, common.TrainStop{
+					Station: common.Station{
+						Name:    "YARD",
+						Side:    common.STATIONSIDE_BOTH,
+						BlockID: 0,
+					},
+					Time: s.data.TimeKeeper.GetSimulationTime(),
+				})
+				s.data.Trains.Set(trains[i].ID, train)
+			}
+		}
+
+		// Get all ideal routes for trains
 		for _, v := range trains {
 			if len(v.Stops) > 0 {
 				// Get route
@@ -69,17 +107,30 @@ func (s *UpdateService) doUpdate() {
 				}
 			}
 		}
+		// Check prior holds
+		for trainid, blockid := range s.lastHoldMap {
+			train := s.data.Trains.Get(trainid)
+			if len(train.Stops) > 0 {
+				dur := s.getTimeToDestination(train.Line, trainRouteMap[trainid])
+				if train.Stops[0].Time.Sub(s.data.TimeKeeper.GetSimulationTime()) > dur {
+					stationHoldsMap[trainid] = blockid
+					holdBlocks[blockid] = true
+				}
+			}
+		}
+		s.lastHoldMap = stationHoldsMap
+
 		// Update authorities
-		s.updateAuthorities(trainRouteMap, blockUseMap)
+		s.updateAuthorities(trainRouteMap, blockUseMap, holdBlocks)
 		// Update suggested speeds
-		s.updateSpeeds(trainRouteMap)
+		s.updateSpeeds(trainRouteMap, holdBlocks)
 	}
 }
 
 // The function that follows below has come straight from the depths of hell.
 // Before continuing, understand that there is no turning back. Continuing to read this
 // may cause incurable mental insanity. You have been warned.
-func (s *UpdateService) updateAuthorities(routeMap map[int][]int, useMap map[int][]int) {
+func (s *UpdateService) updateAuthorities(routeMap map[int][]int, useMap map[int][]int, holdsMap map[int]bool) {
 	// Reset all authorities
 	lines := s.data.Lines.GetSlice()
 	for i := range lines {
@@ -124,23 +175,28 @@ func (s *UpdateService) updateAuthorities(routeMap map[int][]int, useMap map[int
 		line := s.data.Trains.Get(train).Line
 		for i := range route {
 			authority := len(route) - i - 1
+			if holdsMap[route[i]] == true {
+				authority = 0
+			}
 			s.data.Lines.SetBlockAuthority(line, route[i], authority)
 		}
 	}
 }
 
-func (s *UpdateService) updateSpeeds(routeMap map[int][]int) {
+func (s *UpdateService) updateSpeeds(routeMap map[int][]int, holdsMap map[int]bool) {
 	// Clear all speeds
 	lines := s.data.Lines.GetSlice()
 	for i := range lines {
 		line := lines[i].Name
 		blocks := s.data.Lines.Get(line).Blocks.GetSlice()
 		for j := range blocks {
-			s.data.Lines.SetBlockSpeed(line, blocks[j].Number, blocks[j].SpeedLimit)
+			speed := blocks[j].SpeedLimit
+			if holdsMap[blocks[j].Number] == true {
+				speed = decimal.Zero
+			}
+			s.data.Lines.SetBlockSpeed(line, blocks[j].Number, speed)
 		}
 	}
-	// Add new speeds
-
 }
 
 /*
@@ -301,4 +357,16 @@ func (s *UpdateService) updateTrainAssignments() {
 		}
 	}
 	s.lastTrainBlockMap = newMap
+}
+
+func (s *UpdateService) getTimeToDestination(line string, route []int) time.Duration {
+	durationSum, _ := time.ParseDuration("0s")
+	for i := range route {
+		block := s.data.Lines.Get(line).Blocks.Get(route[i])
+		dt := block.Length.Div(block.SpeedLimit)
+		str := dt.String() + "s"
+		dur, _ := time.ParseDuration(str)
+		durationSum += dur
+	}
+	return durationSum
 }

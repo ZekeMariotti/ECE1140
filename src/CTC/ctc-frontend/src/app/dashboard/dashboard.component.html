@@ -17,4 +17,21 @@
 <hr/>
 
 <!-- Content-->
-<p>dashboard works!</p>
+<div class="container p-md-3 text-center">
+  <h2>Throughput Metrics</h2>
+  <div class="container p-md-3 text-center">
+    <table>
+      <tr *ngFor="let line of lines; index as i" class="text-center">
+        <td class="p-md-3">
+          <label class="form-label">{{line}}</label>
+        </td>
+        <td>
+          <input type="number" class="form-control" [(ngModel)]="throughput[i]" disabled="true"/>
+        </td>
+        <td class="p-md-3">
+          <label class="form-label">Passengers / Hour</label>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
