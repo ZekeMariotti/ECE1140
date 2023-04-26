@@ -15,6 +15,7 @@ type UpdateService struct {
 	stop              chan bool
 	lastTrainBlockMap map[string]map[int]int
 	lastHoldMap       map[int]int
+	stationStopMap    map[int]time.Time
 }
 
 // New update service
@@ -25,6 +26,7 @@ func NewUpdateService(data *datastore.DataStore) *UpdateService {
 		stop:              make(chan bool),
 		lastTrainBlockMap: make(map[string]map[int]int),
 		lastHoldMap:       make(map[int]int),
+		stationStopMap:    make(map[int]time.Time),
 	}
 
 	return &service
@@ -71,6 +73,7 @@ func (s *UpdateService) doUpdate() {
 					// Assign block to be held
 					stationHoldsMap[trains[i].ID] = trains[i].Stops[0].Station.BlockID
 					holdBlocks[trains[i].Stops[0].Station.BlockID] = true
+					s.stationStopMap[trains[i].Stops[0].Station.BlockID] = s.data.TimeKeeper.GetSimulationTime()
 
 					// Remove stop
 					train := s.data.Trains.Get(trains[i].ID)
@@ -108,8 +111,14 @@ func (s *UpdateService) doUpdate() {
 			}
 		}
 		// Check prior holds
+		stopDuration, _ := time.ParseDuration("30s")
 		for trainid, blockid := range s.lastHoldMap {
 			train := s.data.Trains.Get(trainid)
+
+			if s.data.TimeKeeper.GetSimulationTime().Sub(s.stationStopMap[blockid]) < stopDuration {
+				stationHoldsMap[trainid] = blockid
+				holdBlocks[blockid] = true
+			}
 			if len(train.Stops) > 0 {
 				dur := s.getTimeToDestination(train.Line, trainRouteMap[trainid])
 				if train.Stops[0].Time.Sub(s.data.TimeKeeper.GetSimulationTime()) > dur {
