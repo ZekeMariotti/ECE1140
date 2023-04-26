@@ -819,7 +819,7 @@ class MainWindow(QMainWindow):
                   value="G"
                 else:
                   value="R"
-                if((k==1) | (k==13) | (k==77) | (k==100) | (k==84)):                  
+                if((k==1) | (k==13) | (k==77) | (k==100) | (k==84)|(k==101) |(k==150)):                  
                   if active and value != self.SignalLight.item(i,j).text():
                         if value == "G":
                               TkMWCSignals.signalStateSignal.emit(0, 1, k - 1)
