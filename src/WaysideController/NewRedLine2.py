@@ -851,6 +851,12 @@ class MainWindowR(QMainWindow):
                 else:
                      value="R"
                 if(k==52 or k==53 or k==66 or k==67 or k==71 or k==72 or k==76):                     
+                  if active and value != self.SignalLight.item(i,j).text():
+                        if value == "G":
+                              TkMWCSignals.signalStateSignal.emit(0, 0, k - 1)
+                        elif value == "R":
+                              TkMWCSignals.signalStateSignal.emit(2, 0, k - 1)                         
+                if(k==52 or k==53 or k==66 or k==67 or k==71 or k==72 or k==76):                     
                   self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
