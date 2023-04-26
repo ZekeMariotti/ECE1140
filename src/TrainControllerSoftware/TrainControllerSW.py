@@ -118,6 +118,7 @@ class TrainControllerSW:
 
     def writeOutputs(self):
         TMTCSignals.commandedPowerSignal.emit(self.trainId, self.outputs.power)
+        TMTCSignals.emergencyBrakeCommandSignal.emit(self.trainId, self.outputs.emergencyBrakeCommand)
         TMTCSignals.leftDoorCommandSignal.emit(self.trainId, self.outputs.leftDoorCommand)
         TMTCSignals.rightDoorCommandSignal.emit(self.trainId, self.outputs.rightDoorCommand)
         TMTCSignals.serviceBrakeCommandSignal.emit(self.trainId, self.outputs.serviceBrakeCommand)
@@ -486,7 +487,7 @@ class TrainControllerSW:
 
     def emergencyBrakeStateSignalHandler(self, id, emgBrk):
         if(self.trainId == id):
-            if (emgBrk == True):
+            if (emgBrk == True and self.outputs.emergencyBrakeCommand == False):
                 self.outputs.emergencyBrakeCommand = True
             self.inputs.emergencyBrakeState = emgBrk
 
