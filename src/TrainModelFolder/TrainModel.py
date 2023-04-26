@@ -71,6 +71,7 @@ class TrainModel():
 
     def __init__(self, trainId, Line):
         
+        # Creating the array of blocks
         self.blocks = []
 
         # data variable to store all the data needed for the back end
@@ -141,9 +142,11 @@ class TrainModel():
             "beacon"          : ["", 0, "", False, -1, 0, 0]  # Beacon Inputs from the most recent Beacon
         }
 
+        # Setting the train line and ID
         self.TrainID = trainId
         self.trackData["trainLine"] = Line
 
+        # Instantiating the array of blocks
         self.getBlocksData()
 
         # Signals from the Main UI
@@ -178,10 +181,12 @@ class TrainModel():
         # Time From Main Signal
         rtcSignals.rtcSignal.connect(self.realTimeHandler)
 
+        # Setting the initial RTC for the train
         self.data["rtc"] = datetime.now().isoformat() + "0-05:00"
         self.data["prevRTC"] = datetime.now().isoformat() + "0-05:00"
         self.data["length"] = self.constants["length"] * self.data["numCars"]
 
+    # Function to get the data for all the blocks from the CSVs, based on what line the train is on
     def getBlocksData(self):
         if (__main__.__file__[-7:] == "main.py"):
             greenPath = os.path.join(sys.path[0], "TrackModel", "GreenLine.csv")
@@ -209,9 +214,11 @@ class TrainModel():
                     else:
                         self.blocks[int(row[0])] = blocks(int(row[0]), float(row[1]), float(row[5]), float(row[3]), bool(int(row[7])))
 
+    # Handle the real time signal emitted from main
     def realTimeHandler(self, rtc):
         self.data["rtc"] = rtc
 
+    # Sets the first section for the block calculations
     def setFirstSection(self):
         if self.trackData["trainLine"] == "Green":
             self.trackData["trackSection"] = self.greenSection0
@@ -225,6 +232,8 @@ class TrainModel():
         TMTCSignals.authoritySignal.emit(self.TrainID, self.passThroughData["authority"])
         TMTCSignals.undergroundSignal.emit(self.TrainID, self.data["underground"])
         TMTCSignals.temperatureSignal.emit(self.TrainID, self.data["currTemp"])
+
+        # If it is a beacon, transmit the rest of the data. Otherwise, don't
         if (self.passThroughData["beacon"][3] == 1):
             TMTCSignals.stationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][0])
             TMTCSignals.platformSideSignal.emit(self.TrainID, self.passThroughData["beacon"][1])
@@ -349,29 +358,6 @@ class TrainModel():
     def elevationSignalHandler(self, id, height):
         if (id == self.TrainID):
             self.trackData["elevation"] = height
-
-    # Function to run all internal methods when the method is called by the updater in the UI
-    #def runFunctions(self): 
-    #    #self.readTrainControllerToTrainModel()
-    #    #self.readTrackModelToTrainModel()
-    #    tempTimeDiff = self.findTimeDifference()
-    #    self.failureStates()
-    #    self.brakeCaclulator()
-    #    self.findCurrentAcceleration(tempTimeDiff)
-    #    self.findCurrentVelocity(tempTimeDiff)
-    #    self.findCurrentDistance(tempTimeDiff)
-    #    self.findBlockExiting()
-    #    self.airConditioningControl()
-    #    if self.data["atStation"]:
-    #        self.passengersGettingOff()
-    #        self.passengersGettingOn()
-    #    self.findCurrentMass()
-    #    if tempTimeDiff != 0:
-    #        self.moveToPrevious()
-    #    #self.writeTrainModelToTrackModel()
-    #    #self.writeTrainModelToTrainController()
-    #    self.writeTMtoTkM()
-    #    self.writeTMtoTC()
         
     # Function to move the current velocity and acceleration to previous in order to calculate next time periods values
     def moveToPrevious(self):
@@ -571,6 +557,7 @@ class TrainModel():
                 self.trackData["prevBlock"] = self.trackData["currBlock"]
                 return 0
 
+            # Train hits a switch and the switch is in the default state (continuous numbers)
             elif (self.trackData["switch"] == True) & (self.trackData["switchState"] == 0):
                 if (self.trackData["currBlock"] == 0) | (self.trackData["currBlock"] == 9) | (self.trackData["currBlock"] == 10) | (self.trackData["currBlock"] == 15) | (self.trackData["currBlock"] == 16) | (self.trackData["currBlock"] == 27) | (self.trackData["currBlock"] == 28) | (self.trackData["currBlock"] == 32) | (self.trackData["currBlock"] == 33) | (self.trackData["currBlock"] == 38) | (self.trackData["currBlock"] == 39) | (self.trackData["currBlock"] == 43) | (self.trackData["currBlock"] == 44) | (self.trackData["currBlock"] == 52) | (self.trackData["currBlock"] == 53):
                     match self.trackData["currBlock"]:
@@ -611,6 +598,8 @@ class TrainModel():
                 elif (self.trackData["currBlock"] == 1) | (self.trackData["currBlock"] == 66) | (self.trackData["currBlock"] == 67) | (self.trackData["currBlock"] == 71) | (self.trackData["currBlock"] == 72) | (self.trackData["currBlock"] == 76):
                     print("Derailment4")
                     return 333
+                
+            # Train hits a switch and the switch is in the switched state (non-continuous numbers)
             elif (self.trackData["switch"] == True) & (self.trackData["switchState"] == 1):
                 if (self.trackData["currBlock"] == 0) | (self.trackData["currBlock"] == 1) | (self.trackData["currBlock"] == 9)  | (self.trackData["currBlock"] == 16) | (self.trackData["currBlock"] == 27) | (self.trackData["currBlock"] == 33) | (self.trackData["currBlock"] == 38) | (self.trackData["currBlock"] == 44) | (self.trackData["currBlock"] == 52) | (self.trackData["currBlock"] == 66) | (self.trackData["currBlock"] == 67) | (self.trackData["currBlock"] == 71) | (self.trackData["currBlock"] == 72) | (self.trackData["currBlock"] == 76):
                     match self.trackData["currBlock"]:
@@ -649,7 +638,7 @@ class TrainModel():
                 elif (self.trackData["currBlock"] == 10) | (self.trackData["currBlock"] == 15) | (self.trackData["currBlock"] == 28) | (self.trackData["currBlock"] == 32) | (self.trackData["currBlock"] == 39) | (self.trackData["currBlock"] == 43) | (self.trackData["currBlock"] == 53):
                     print("Derailment5")
                     return 333
-                        # Case where the train needs to just increase block by 1
+            # Case where the train needs to just increase block by 1
             else:
                 if self.trackData["trackSection"][0] < self.trackData["trackSection"][1]:
                     self.trackData["prevBlock"] = self.trackData["currBlock"]
@@ -657,6 +646,7 @@ class TrainModel():
                 elif self.trackData["trackSection"][0] > self.trackData["trackSection"][1]:
                     self.trackData["prevBlock"] = self.trackData["currBlock"]
                     return (self.trackData["currBlock"] - 1)
+        # Train Line is not set to Green
         else:
             print("IDK How I even got here")
 
@@ -713,12 +703,13 @@ class TrainModel():
     ##################
     # FAILURE STATES #
     ##################
-
+    
+    # Set the outputs based on the failure states
     def failureStates(self):
         if self.data["commStatus"] == False:
             self.passThroughData["commandedSpeed"] = 0.0
             self.passThroughData["authority"] = 0
-            self.passThroughData["beacon"] = ["", 0, "", False, -1, False, 0]
+            self.passThroughData["beacon"] = ["", 0, "", False, -1, -1, -1]
         if self.data["engineStatus"] == False:
             self.data["power"] = 0.0
         if self.data["brakeStatus"] == False:
