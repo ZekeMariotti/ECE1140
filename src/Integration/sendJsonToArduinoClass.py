@@ -30,7 +30,7 @@ class jsonToArduino(QRunnable):
         "stnNm"           : "The Yard",                          # Station Name, from the beacon
         "pltSide"          : 0,                                   # Platform Side, 0 if left, 1 if right, 2 if both, from the beacon
         "nxtStnNm"       : "",                                  # Name of the next station, from the beacon
-        "isBcn"              : False,                               # Whether or not a beacon is active
+        "isB"              : False,                               # Whether or not a beacon is active
         "extLiSt"   : False,                               # State of the External Lights, True if on, False if off
         "inLiSt"   : False,                               # State of the Internal Lights, True if on, False if off
         "lftDrSt"         : False,                               # State of the Left Doors, True if open, False if closed
@@ -185,7 +185,7 @@ class jsonToArduino(QRunnable):
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             # self.beaconHold(sock)
             # self.parseJson()
-            if (self.trainModelToTrainController["isBeacon"]!=1):
+            if (self.trainModelToTrainController["isB"]!=1):
                 sock.sendto(udpMessage.encode('utf-8'), (self.ip, self.port))
             self.counter+=1
             time.sleep(0.2)
