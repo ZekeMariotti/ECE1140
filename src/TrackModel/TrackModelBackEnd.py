@@ -183,8 +183,8 @@ class backEndCalculations():
         elif(line == "Red"):
             self.data["trainLine"][id - 1] = 0
             self.data["moves"][id - 1] = [0, 9, None]
-            TMTkMSignals.authoritySignal.emit(id, 0)
-            TMTkMSignals.commandedSpeedSignal.emit(id, 0)
+            TMTkMSignals.authoritySignal.emit(id, 1)
+            TMTkMSignals.commandedSpeedSignal.emit(id, 1)
         else:
             print("Something")
 
