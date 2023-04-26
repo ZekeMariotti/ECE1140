@@ -5,6 +5,7 @@ import os
 import requests
 import subprocess
 import json
+import webbrowser
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "Integration"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "TrainModel"))
@@ -330,7 +331,8 @@ class MainWindow(QMainWindow):
             self.trainDispatchCall()
 
         def launchCTCClick(self):
-             print("CTC")
+            webbrowser.get("windows-default").open_new("http://localhost")
+            print("CTC")
 
         def launchWaysideControllerOneClick(self):
             self.wc.setVisible(True)
