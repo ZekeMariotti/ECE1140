@@ -38,7 +38,7 @@ func (a *FrontendAPI) Serve() {
 
 // Intializes variables for the API
 func (a *FrontendAPI) initialize() {
-	a.router = gin.Default()
+	a.router = gin.New()
 	a.router.Use(cors.Default())
 	a.setupPaths()
 }

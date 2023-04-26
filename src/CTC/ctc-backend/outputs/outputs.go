@@ -25,7 +25,7 @@ func NewOutputAPI(port int, data *datastore.DataStore) *OutputAPI {
 	api := OutputAPI{
 		port:           port,
 		data:           data,
-		router:         gin.Default(),
+		router:         gin.New(),
 		informedTrains: make([]int, 0),
 	}
 
