@@ -337,7 +337,7 @@ class MainWindowR(QMainWindow):
     def GateSetup(self):
             gate = QLabel()
             gate.setFont(self.labelFont)
-            gate.setFixedSize(120,20)
+            gate.setFixedSize(160,20)
             if WaysideControllerRed.gates[1] == True:
                 gate.setText("Block 47 Gate:  UP")
 
