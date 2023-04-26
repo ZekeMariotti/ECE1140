@@ -144,6 +144,8 @@ class TrainControllerSW:
             self.blockList = [0] * 151
             self.blockCount = 62
             self.blockCountDirection = 1
+            self.inputs.nextStationName = "GLENBURY"
+            self.outputs.stationAnnouncement = "GLENBURY"
             with open (greenPath) as csvfile:
                 rows = csv.reader(csvfile, delimiter=',')
                 for row in rows:
@@ -155,6 +157,8 @@ class TrainControllerSW:
             self.blockList = [0] * 77
             self.blockCount = 10
             self.blockCountDirection = -1
+            self.inputs.nextStationName = "SHADYSIDE"
+            self.outputs.stationAnnouncement = "SHADYSIDE"
             with open(redPath) as csvfile:
                 rows = csv.reader(csvfile, delimiter=',')
                 for row in rows:
