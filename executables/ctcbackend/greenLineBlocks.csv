@@ -14,7 +14,7 @@ Number,Section,Line,Length,Grade,Speed,Direction,Station,PlatformL,PlatformR,Cro
 13,D,Green,150,0,70,BOTH,,,,,,0,0.5
 14,D,Green,150,0,70,BOTH,,,,,,0,0.5
 15,D,Green,150,0,70,BOTH,,,,,,0,0.5
-16,D,Green,150,0,70,BOTH,STATION,TRUE,TRUE,,,0,0.5
+16,D,Green,150,0,70,BOTH,BROOKLINE,TRUE,TRUE,,,0,0.5
 17,E,Green,150,0,60,BOTH,,,,,,0,0.5
 18,E,Green,150,0,60,BOTH,,,,,,0,0.5
 19,E,Green,150,0,60,BOTH,,,,TRUE,,0,0.5

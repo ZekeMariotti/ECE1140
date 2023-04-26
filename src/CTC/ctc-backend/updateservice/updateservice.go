@@ -262,7 +262,14 @@ func (s *UpdateService) updateTrainAssignments() {
 							if s.lastTrainBlockMap[line][swt.Source] > 0 {
 								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Source]
 							} else {
-								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2+1]
+								switch block.Direction {
+								case common.BLOCKDIRECTION_ASCENDING:
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2-1]
+								case common.BLOCKDIRECTION_BIDIRECTIONAL:
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2+1]
+								case common.BLOCKDIRECTION_DESCENDING:
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2+1]
+								}
 							}
 						}
 					case common.BLOCKSIDE_DESCEND:
@@ -283,7 +290,14 @@ func (s *UpdateService) updateTrainAssignments() {
 							if s.lastTrainBlockMap[line][swt.Source] > 0 {
 								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Source]
 							} else {
-								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2-1]
+								switch block.Direction {
+								case common.BLOCKDIRECTION_ASCENDING:
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2+1]
+								case common.BLOCKDIRECTION_BIDIRECTIONAL:
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2-1]
+								case common.BLOCKDIRECTION_DESCENDING:
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2-1]
+								}
 							}
 						}
 					}
