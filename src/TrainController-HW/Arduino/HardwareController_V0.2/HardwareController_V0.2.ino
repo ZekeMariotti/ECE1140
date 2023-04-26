@@ -300,16 +300,16 @@ void parseJSONDataUI(int *switchStateArray){
 }
 
 void parseJSONData(int *switchStateArray){
-  jsonDataOut["power"] = power;
-  jsonDataOut["leftDoorCommand"] = switchStateArray[3];
-  jsonDataOut["rightDoorCommand"] = switchStateArray[2];
-  jsonDataOut["serviceBrakeCommand"] = serviceBrakeCommand;
-  jsonDataOut["emergencyBrakeCommand"] = emergencyBrakeState;
-  jsonDataOut["externalLightCommand"] = switchStateArray[5];
-  jsonDataOut["internalLightCommand"] = switchStateArray[4];
-  jsonDataOut["stationAnnouncement"] = jsonDataIn["stnNm"];
-  jsonDataOut["isAtStation"] = stationState;
-  int x = jsonDataOut["power"];
+  jsonDataOut["pwr"] = power;
+  jsonDataOut["lftDrCmd"] = switchStateArray[3];
+  jsonDataOut["rtDrCmd"] = switchStateArray[2];
+  jsonDataOut["sbCmd"] = serviceBrakeCommand;
+  jsonDataOut["ebCmd"] = emergencyBrakeState;
+  jsonDataOut["extLiCmd"] = switchStateArray[5];
+  jsonDataOut["intLiCmd"] = switchStateArray[4];
+  jsonDataOut["stAnn"] = jsonDataIn["stnNm"];
+  jsonDataOut["isAtStn"] = stationState;
+  int x = jsonDataOut["pwr"];
   // Serial.print("JSON OUT:");
   // Serial.println(x);
   
