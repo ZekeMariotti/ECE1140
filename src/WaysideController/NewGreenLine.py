@@ -17,14 +17,20 @@ colheaders =["0","1","2","3","4","5","6","7","8","9"]
 rowheaders1 =["0","1","2","3","4","5","6","7","8","9","10"] 
 rowheaders2 =["0","1","2","3","4","5"]
 #Setup Green Waysides
-WaysideControllerGreen=Wayside(1,True)
-WaysideControllerGreen2=Wayside(1,True)
+WaysideControllerGreen=Wayside(1)
+WaysideControllerGreen2=Wayside(1)
 WaysideControllerGreen.setdictionarysizes(1,101)
 WaysideControllerGreen.setCommandedSpeed()
 WaysideControllerGreen.setAuthority()
 WaysideControllerGreen2.setdictionarysizes(101,151)
 WaysideControllerGreen2.setCommandedSpeed()
-WaysideControllerGreen2.setAuthority() 
+WaysideControllerGreen2.setAuthority()
+##set inital light states RED
+WaysideControllerGreen.setSignalLights(False,100) 
+WaysideControllerGreen.setSignalLights(False,1)
+WaysideControllerGreen2.setSignalLights(False,150)
+WaysideControllerGreen2.setSignalLights(False,101)
+
 
 class Worker(QObject):
       finished = pyqtSignal()
@@ -50,6 +56,7 @@ class MainWindow(QMainWindow):
         self.PLCMain = PLC(WaysideControllerGreen,WaysideControllerGreen2,"Green")
         activeSignals.activeSignal.connect(self.activeSignal)
         TkMWCSignals.failureSignal.connect(self.brokenRailHandler)
+        TkMWCSignals.stopSignal.connect(self.errorHandler)
         TkMWCSignals.currBlockSignal.connect(self.currBlockHandler)
         #Window
 
@@ -122,7 +129,7 @@ class MainWindow(QMainWindow):
         self.PLCLabel = self.PLCLabelSetup()
         self.PLC = self.PLCButton()
         ##Maintenance
-        self.maintenanceMode = False
+        self.maintenanceMode = WaysideControllerGreen.maintenance
         self.maintenanceButton = self.maintenanceButtonSetup()
         self.maintenanceLabel = self.maintenanceLabelSetup()
         #Test UI
@@ -275,8 +282,8 @@ class MainWindow(QMainWindow):
                   value="G"
                 else:
                   value="R"
-                if((k==1) | (k==13) | (k==77) | (k==100) | (k==84)):
-                  SignalLight.setItem(i,j,QTableWidgetItem((value)))
+                if(k==1 or k==13 or k==77 or k==100 or k==84):
+                  SignalLight.setItem(i,j,QTableWidgetItem((str(value))))
                 else:
                   SignalLight.setItem(i,j,QTableWidgetItem((" ")))
                 j=j+1
@@ -339,14 +346,14 @@ class MainWindow(QMainWindow):
     def GateSetup(self):
             gate = QLabel()
             gate.setFont(self.labelFont)
-
+            gate.setFixedSize(160,20)
             if WaysideControllerGreen.gates[1] == True:
                 gate.setText("Block 19 Gate:  UP")
 
             else:
                 gate.setText("Block 19 Gate:  DOWN")
 
-            gate.move(int(round(0.85*self.windowWidth)),int(round(0.55*self.windowHeight)))
+            gate.move(int(round(0.85*self.windowWidth)),580)
             gate.setParent(self)
             return(gate)
 
@@ -612,6 +619,9 @@ class MainWindow(QMainWindow):
          elif line == 1 and blockNo > 100:
             WaysideControllerGreen2.setOccupancy(logic, blockNo)
          
+    def errorHandler(status):
+         WaysideControllerGreen.setError(status)
+         WaysideControllerGreen2.setError(status)
          
             
     #Clicking stuff
@@ -679,16 +689,21 @@ class MainWindow(QMainWindow):
     def UpClicked(self):
            if self.maintenanceMode == True:
             WaysideControllerGreen.setGatePositions(True)
+            WaysideControllerGreen2.setGatePositions(True)
           
     def DownClicked(self):
            if self.maintenanceMode == True:
             WaysideControllerGreen.setGatePositions(False)
             WaysideControllerGreen2.setGatePositions(False)
+
     def maintenance(self):
-         if self.maintenanceMode==False:
-            self.maintenanceMode=True
-         else: 
-            self.maintenanceMode=False
+          if(self.maintenanceMode==True):
+           WaysideControllerGreen.setMaintenance(False)
+           WaysideControllerGreen2.setMaintenance(False)
+          else:
+           WaysideControllerGreen.setMaintenance(True)
+           WaysideControllerGreen2.setMaintenance(True)
+
     def maintenanceLabelSetup(self):
             MLabel = QLabel()
             MLabel.setFont(self.labelFont)
@@ -781,14 +796,14 @@ class MainWindow(QMainWindow):
           j=1
           for k in range(1,self.blocks1):
                 value=WaysideControllerGreen.commandedSpeed[k]
-                value=round(value*2.23694,2)
+                value2=value*2.23694
                 if active and value != float(self.CommandedSpeed.item(i,j).text()):
                   TkMWCSignals.commandedSpeedSignal.emit(k, float(value), 1)
-                self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(round(value * 2.23695, 2))))
+                self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(round(value2, 2))))
                 j=j+1
                 if j>9:
-                        j=0
-                        i=i+1
+                  j=0
+                  i=i+1
         
           #self.BrokenRail 
           i=0
@@ -812,16 +827,14 @@ class MainWindow(QMainWindow):
                   value="G"
                 else:
                   value="R"
-                if((k==1) | (k==13) | (k==77) | (k==100) | (k==84)):
+                if((k==1) or (k==13) or (k==77) or (k==100) or (k==84)):
                   if active and value != self.SignalLight.item(i,j).text():
                         if value == "G":
                               TkMWCSignals.signalStateSignal.emit(0, 1, k - 1)
                         elif value == "R":
                               TkMWCSignals.signalStateSignal.emit(2, 1, k - 1)
-                if((k==1) | (k==13) | (k==77) | (k==100) | (k==84)):
-                  self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
-                else:
-                  self.SignalLight.setItem(i,j,QTableWidgetItem((" ")))                
+                if((k==1) or (k==13) or (k==77) or (k==100) or (k==84)):
+                  self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))               
                 j=j+1
                 if j>9:
                  j=0
@@ -841,18 +854,27 @@ class MainWindow(QMainWindow):
                   j=0
                   i=i+1
           for k in range(1,self.blocks1):
-            if(WaysideControllerGreen.brokenRail[k]==True):
+            if(WaysideControllerGreen.err==True):
                  for i in range(1,self.blocks1):
                       WaysideControllerGreen.setAAuthority(0,i)
+
+          val = self.Gate.text()
           if WaysideControllerGreen.gates[1]==True:
                 self.Gate.setText("Block 19 Gate:  UP")
+                if active and val != "Block 19 Gate:  UP":
+                    TkMWCSignals.gateStateInput.emit(0, 1, 18)
           else:
-                  self.Gate.setText("Block 19 Gate:  DOWN")    
+                  self.Gate.setText("Block 19 Gate:  DOWN")
+                  if active and val != "Block 19 Gate:  DOWN":
+                    TkMWCSignals.gateStateInput.emit(1, 1, 18)
+
+
           if(self.maintenanceMode==False):                    
             self.PLCMain.GloadValues1(self.File1)
             self.PLCMain.setswitches()
             
     def mainEventLoop(self):
+          self.maintenanceMode = WaysideControllerGreen.maintenance
           self.updateVisualElements(self.active)
           WaysideControllerGreen.WaysideToCTCInfoG1()
           WaysideControllerGreen.getCTCBlocks()

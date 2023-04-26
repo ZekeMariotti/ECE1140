@@ -7,10 +7,11 @@ from json import JSONEncoder
 import requests
 
 class Wayside:
-    def __init__(self,simTime,maintenance):
+    def __init__(self,simTime):
+            self.err = False
             self.simTime=simTime
             self.realtime=0
-            self.maintenance=maintenance
+            self.maintenance=False
             self.gates={}
             self.suggestedAuthority={}
             self.authority={}
@@ -47,7 +48,6 @@ class Wayside:
           self.switches[4] = True
           self.switches[5] = False
           self.switches[6] = False
-          self.switches[7] = True
           for i in range(start,blocks):
                 self.occupancy[i] = False
           for i in range(start,blocks):
@@ -59,10 +59,11 @@ class Wayside:
 
     def setCommandedSpeed(self):
         for i in self.suggestedSpeed:
-            if float(self.suggestedSpeed[i])>19.444 or float(self.suggestedSpeed[i])<0.0:
-                self.commandedSpeed[i]=0.0
-            else:
-                self.commandedSpeed[i]=self.suggestedSpeed[i]
+            # if float(self.suggestedSpeed[i])>19.5 or float(self.suggestedSpeed[i])<0.0:
+            #     self.commandedSpeed[i]=0.0
+            # else:
+            #     self.commandedSpeed[i]=self.suggestedSpeed[i]
+            self.commandedSpeed[i]=self.suggestedSpeed[i]
 
     def setACommandedSpeed(self,Value,block):
           self.commandedSpeed[block]=Value   
@@ -79,6 +80,9 @@ class Wayside:
          
     def setOccupancy(self,occupancy,Block):
         self.occupancy[Block]=occupancy
+
+    def setError(self,e):
+         self.err = e
 
     def setTime(self,time):
             self.time = time
@@ -103,7 +107,8 @@ class Wayside:
 
     def setSuggestedAuthority(self,block,value):
             self.suggestedAuthority[block]=value
-           
+    def setMaintenance(self,logic):
+            self.maintenance=logic    
     def readCTCToWayside(self):
         with open(os.path.join(sys.path[0],".json"),"r") as filename:
             self.CTCToWayside = json.loads(filename.read())

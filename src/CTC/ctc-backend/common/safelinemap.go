@@ -217,3 +217,20 @@ func (m *SafeLineMap) SetBlockOccupancy(line string, block int, occupied bool) {
 	l.Blocks.SetBlockOccupancy(block, occupied)
 	m.data[line] = l
 }
+
+func (m *SafeLineMap) ReportPassengers(line string, passengers int) {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	l := m.data[line]
+	l.ReportPassengers(passengers)
+	m.data[line] = l
+}
+
+func (m *SafeLineMap) GetPassengers(line string) int {
+	m.mute.Lock()
+	defer m.mute.Unlock()
+
+	l := m.data[line]
+	return l.Passengers
+}

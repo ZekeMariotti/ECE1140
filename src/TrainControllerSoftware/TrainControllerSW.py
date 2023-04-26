@@ -121,7 +121,6 @@ class TrainControllerSW:
         TMTCSignals.leftDoorCommandSignal.emit(self.trainId, self.outputs.leftDoorCommand)
         TMTCSignals.rightDoorCommandSignal.emit(self.trainId, self.outputs.rightDoorCommand)
         TMTCSignals.serviceBrakeCommandSignal.emit(self.trainId, self.outputs.serviceBrakeCommand)
-        TMTCSignals.emergencyBrakeCommandSignal.emit(self.trainId, self.outputs.emergencyBrakeCommand)
         TMTCSignals.externalLightCommandSignal.emit(self.trainId, self.outputs.externalLightCommand)
         TMTCSignals.internalLightCommandSignal.emit(self.trainId, self.outputs.internalLightCommand)
 
@@ -142,6 +141,8 @@ class TrainControllerSW:
 
         if self.line == "Green":
             self.blockList = [0] * 151
+            self.blockCount = 62
+            self.blockCountDirection = 1
             with open (greenPath) as csvfile:
                 rows = csv.reader(csvfile, delimiter=',')
                 for row in rows:
@@ -151,6 +152,8 @@ class TrainControllerSW:
                         self.blockList[int(row[0])] = blocks(int(row[0]), float(row[1]), float(row[5]), float(row[3]), bool(int(row[7])))
         elif self.line == "Red":
             self.blockList = [0] * 77
+            self.blockCount = 10
+            self.blockCountDirection = -1
             with open(redPath) as csvfile:
                 rows = csv.reader(csvfile, delimiter=',')
                 for row in rows:
@@ -162,7 +165,7 @@ class TrainControllerSW:
     # Determines whether the train is at a station or not
     def setStationState(self):
         # If self.inputs.stationName != "" beacon is at a station
-        if (self.inputs.stationName != ""):
+        if (self.inputs.stationName != "0"):
             # if isBeacon and !firstBeaconPassed, entering station
             if(self.inputs.isBeacon == True and self.firstBeaconPassed == False):
                 self.firstBeaconPassed = True
@@ -182,8 +185,10 @@ class TrainControllerSW:
     # Increments or decrements block count after a polarity change
     def checkBlockPolarity(self):
         if (self.polarity != self.previousPolarity):
+            #print(f'Block Count Before: {self.blockCount}')
             self.blockCount += self.blockCountDirection
             self.previousPolarity = self.polarity
+            #print(f'Block Count After: {self.blockCount}')
 
     # Decides what to set the current block to based on data from beacons and switch blocks 
     def setCurrentBlock(self):
@@ -206,7 +211,13 @@ class TrainControllerSW:
                 self.atSwitchBlock = False
                 self.firstSwitchBeaconPassed = False
                 self.secondSwitchBeaconPassed = False
+
                 self.blockCount = self.nextBlock
+
+                if (self.countUpOrDown == 1):
+                    self.blockCountDirection = -1
+                else:
+                    self.blockCountDirection = 1
 
         # Set current block
         if (self.atSwitchBlock == True):
@@ -294,14 +305,9 @@ class TrainControllerSW:
         if(self.inputs.undergroundState == True):
             self.outputs.externalLightCommand = True
             self.outputs.internalLightCommand = True
-            self.undergroundStatePrevious = True
-            self.lightsEnabledPrevious = True
         else:
-            if(self.lightsEnabledPrevious == True and self.undergroundStatePrevious == True):
-                self.outputs.externalLightCommand = False
-                self.outputs.internalLightCommand = False
-                self.undergroundStatePrevious = False
-                self.lightsEnabledPrevious = False
+            self.outputs.externalLightCommand = False
+            self.outputs.internalLightCommand = False
 
         if(self.realTime.hour >= 20 or self.realTime.hour <= 5):
             self.outputs.externalLightCommand = True
@@ -320,7 +326,10 @@ class TrainControllerSW:
 
     # Lowers commanded speed if it's higher than speed limit
     def stayBelowSpeedLimitAndMaxSpeed(self):
-        self.speedLimit = Conversions.kmPerHourToMetersPerSecond(self.blockList[self.blockCount].speedLimit)
+        try:
+            self.speedLimit = Conversions.kmPerHourToMetersPerSecond(self.blockList[self.blockCount].speedLimit)
+        except:
+            self.getBlocksData()
 
         if(float(self.inputs.commandedSpeed) > float(self.speedLimit)):
             self.inputs.commandedSpeed = self.speedLimit
@@ -432,7 +441,7 @@ class TrainControllerSW:
             self.inputs.temperature = temp
 
     def stationNameSignalHandler(self, id, statName):
-        if(self.trainId == id and statName != ""):
+        if(self.trainId == id and statName != "0"):
             self.inputs.stationName = statName
 
     def platformSideSignalHandler(self, id, platSide):
@@ -440,7 +449,7 @@ class TrainControllerSW:
             self.inputs.platformSide = platSide
 
     def nextStationNameSignalHandler(self, id, nxtStatName):
-        if(self.trainId == id and nxtStatName != ""):
+        if(self.trainId == id and nxtStatName != "0"):
             self.inputs.nextStationName = nxtStatName
 
     def isBeaconSignalHandler(self, id, isBeac):
@@ -471,6 +480,9 @@ class TrainControllerSW:
 
     def emergencyBrakeStateSignalHandler(self, id, emgBrk):
         if(self.trainId == id):
+            if (emgBrk == True):
+                self.outputs.emergencyBrakeCommand = True
+
             self.inputs.emergencyBrakeState = emgBrk
 
     def serviceBrakeStatusSignalHandler(self, id, srvcBrkStatus):
@@ -490,11 +502,8 @@ class TrainControllerSW:
             self.nextBlock = nxtBlk
         
     def fromSwitchSignal(self, id, countUpOrDown):
-        if(self.trainId == id):
-            if (countUpOrDown == True):
-                self.blockCountDirection = -1
-            else:
-                self.blockCountDirection = 1
+        if((self.trainId == id) and (countUpOrDown != -1)):
+            self.countUpOrDown = countUpOrDown
 
     def switchBlockSignal(self, id, swtchBlk):
         if(self.trainId == id):

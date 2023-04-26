@@ -146,6 +146,7 @@ class backEndCalculations():
         TkMWCSignals.commandedSpeedSignal.connect(self.cSpeedHandler)
         TkMWCSignals.switchStateSignal.connect(self.getSwitchPositionInput)
         TkMWCSignals.signalStateSignal.connect(self.getSignalStateInput)
+        TkMWCSignals.gateStateInput.connect(self.getGatePositionInput)
 
         rtcSignals.rtcSignal.connect(self.realTimeHandler)
 
@@ -207,20 +208,17 @@ class backEndCalculations():
         # Setting CMD Speed and Authority during real time operations
         if (currBlock != 0):
             if self.data["trainLine"][id - 1] == 0:
-                self.data["authority"][id - 1] = int(self.data["redAuthority"].__getitem(currBlock - 1))
-                self.data["commandedSpeed"][id - 1] = float(self.data["redCommandedSpeed"].__getitem(currBlock - 1))
+                self.data["authority"][id - 1] = int(self.data["redAuthority"].__getitem__(currBlock - 1))
+                self.data["commandedSpeed"][id - 1] = float(self.data["redCommandedSpeed"].__getitem__(currBlock - 1))
                 TMTkMSignals.authoritySignal.emit(id, self.data["authority"][id - 1])
                 TMTkMSignals.commandedSpeedSignal.emit(id, self.data["commandedSpeed"][id - 1])
             elif self.data["trainLine"][id - 1] == 1:
-                self.data["authority"][id - 1] = int(self.data["greenAuthority"].__getitem(currBlock - 1))
-                self.data["commandedSpeed"][id - 1] = float(self.data["greenCommandedSpeed"].__getitem(currBlock - 1))
+                self.data["authority"][id - 1] = int(self.data["greenAuthority"].__getitem__(currBlock - 1))
+                self.data["commandedSpeed"][id - 1] = float(self.data["greenCommandedSpeed"].__getitem__(currBlock - 1))
                 TMTkMSignals.authoritySignal.emit(id, self.data["authority"][id - 1])
                 TMTkMSignals.commandedSpeedSignal.emit(id, self.data["commandedSpeed"][id - 1])
 
         if self.data["trainLine"][id - 1] == 0 and transition:
-            TMTkMSignals.blockLengthSignal.emit(id, float(self.csvConstants["lengthRed"].__getitem__(currBlock - 1)))
-            TMTkMSignals.elevationSignal.emit(id, float(self.csvConstants["elevationRed"].__getitem__(currBlock - 1)))
-            TMTkMSignals.undergroundStateSignal.emit(id, bool(int(self.csvConstants["undergroundRed"].__getitem__(currBlock - 1))))
             if (prevBlock == 0):
                 TMTkMSignals.switchSignal.emit(id, 0)
                 TMTkMSignals.switchStateSignal.emit(id, 1)
@@ -242,9 +240,6 @@ class backEndCalculations():
             if (index != 0):
                 self.getTrainBlockInputFunction(index, id - 1, 0)
         elif self.data["trainLine"][id - 1] == 1 and transition:
-            TMTkMSignals.blockLengthSignal.emit(id, float(self.csvConstants["lengthGreen"].__getitem__(currBlock - 1)))
-            TMTkMSignals.elevationSignal.emit(id, float(self.csvConstants["elevationGreen"].__getitem__(currBlock - 1)))
-            TMTkMSignals.undergroundStateSignal.emit(id, bool(int(self.csvConstants["undergroundGreen"].__getitem__(currBlock - 1))))
             if (prevBlock == 0):
                 TMTkMSignals.switchSignal.emit(id, 0)
                 TMTkMSignals.switchStateSignal.emit(id, 1)
@@ -390,26 +385,27 @@ class backEndCalculations():
                     if (int(self.csvConstants["stationRed"].__getitem__(self.data["moves"][trainNo][index] - 1)) > 0 or int(self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][index] - 1)[4]) != -1):
                         # Emit beacon before station or switch
                         beaconArr = self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][0] - 1)
-                        TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), int(beaconArr[4]), bool(beaconArr[5]), int(beaconArr[6]))
+                        TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), int(beaconArr[4]), int(beaconArr[5]), int(beaconArr[6]))
                 # If current block is not the yard
                 elif (int(self.data["moves"][trainNo][0] - 1) > 0):
                     # If current block is a station or a principal switch block
                     if (int(self.csvConstants["stationRed"].__getitem__(self.data["moves"][trainNo][0] - 1)) > 0 or int(self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][0] - 1)[4]) != -1):
                         # Emit beacon after station or switch
                         beaconArr = self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][index] - 1)
-                        TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), int(beaconArr[4]), bool(beaconArr[5]), int(beaconArr[6]))
+                        TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), int(beaconArr[4]), int(beaconArr[5]), int(beaconArr[6]))
                 else:
                     # Emit empty beacon
                     TMTkMSignals.beaconSignal.emit(trainNo + 1, "", 0, "", 0, -1, 0, -1)
             elif self.data["trainLine"][trainNo] == 1:
+                print("First Thing: ", (int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)) > 0), "Second Thing: ", int(self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)[4]) != -1)
                 if (int(self.data["moves"][trainNo][index] - 1) > 0):
                     if (int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)) > 0 or int(self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)[4]) != -1):
                         beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)
-                        TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), int(beaconArr[4]), bool(beaconArr[5]), int(beaconArr[6]))
+                        TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), int(beaconArr[4]), int(beaconArr[5]), int(beaconArr[6]))
                 elif (int(self.data["moves"][trainNo][0] - 1) > 0):
                     if (int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)) > 0 or int(self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)[4]) != -1):
                         beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)
-                        TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), int(beaconArr[4]), bool(beaconArr[5]), int(beaconArr[6]))
+                        TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), int(beaconArr[4]), int(beaconArr[5]), int(beaconArr[6]))
                 else:
                     TMTkMSignals.beaconSignal.emit(trainNo + 1, "", 0, "", 0, -1, 0, -1)
 
@@ -607,7 +603,7 @@ class backEndCalculations():
     # Wayside authority handler
     def authHandler(self, blockNo, auth, line):
         if line == 0:
-            self.data["redAuthority"].removeAt(blockNo - 1) 
+            self.data["redAuthority"].removeAt(blockNo - 1)
             self.data["redAuthority"].insertAt(auth, blockNo - 1)
         elif line == 1:
             self.data["greenAuthority"].removeAt(blockNo - 1) 
@@ -617,10 +613,10 @@ class backEndCalculations():
     def cSpeedHandler(self, blockNo, cSpeed, line):
         if line == 0:
             self.data["redCommandedSpeed"].removeAt(blockNo - 1)
-            self.data["redCommandedSpeed"].removeAt(cSpeed, blockNo - 1)
+            self.data["redCommandedSpeed"].insertAt(cSpeed, blockNo - 1)
         elif line == 1:
             self.data["greenCommandedSpeed"].removeAt(blockNo - 1)
-            self.data["greenCommandedSpeed"].removeAt(cSpeed, blockNo - 1)
+            self.data["greenCommandedSpeed"].insertAt(cSpeed, blockNo - 1)
 
 
 import csv
@@ -701,7 +697,7 @@ with open(os.path.join(sys.path[0], "TrackModel", "Switches.csv"), 'r') as swi:
         backEndCalculations.csvConstants["switchBlockA"].append(row["BlockA"])
         backEndCalculations.csvConstants["switchBlockB"].append(row["BlockB"])
         backEndCalculations.csvConstants["switchBlockC"].append(row["BlockC"])
-        if row == 9 or row == 10:
+        if int(row["SwitchID"]) == 10 or int(row["SwitchID"]) == 11:
             backEndCalculations.data["switchPos"].append(1)
         else:
             backEndCalculations.data["switchPos"].append(0)

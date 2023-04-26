@@ -141,7 +141,10 @@ class MainWindow(QMainWindow):
             self.TkM = TrackModelMainUI.TrackModelMainUI()
 
             # Instantiate Wayside Controllers
-            self.wc = NewGreenLine.MainWindow()
+            self.wc = NewGreenLine.MainWindow("GreenLine 1")
+            self.wc2 = NewGreenLine2.MainWindow("GreenLine 2")
+            self.wc3 = NewRedLine.MainWindowR("RedLine 1")
+            self.wc4 = NewRedLine2.MainWindowR("RedLine 2")
             activeSignals.activeSignal.emit()
 
             # Test TM and TC    
@@ -323,24 +326,20 @@ class MainWindow(QMainWindow):
              print("CTC")
 
         def launchWaysideControllerOneClick(self):
-            self.wc = NewGreenLine.MainWindow("GreenLine 1")
             self.wc.setVisible(True)
             #self.wc.WaysideControllerGreenTestUI.show()
             activeSignals.activeSignal.emit()
 
         def launchWaysideControllerTwoClick(self):
-            self.wc2 = NewGreenLine2.MainWindow("GreenLine 2")
             self.wc2.setVisible(True)
             activeSignals.activeSignal.emit()
 
         def launchWaysideControllerThreeClick(self):
-            self.wc3 = NewRedLine.MainWindowR("RedLine 1")
             self.wc3.setVisible(True)
             #self.wc3.WaysideControllerRedTestUI.show()
             activeSignals.activeSignal.emit()            
 
         def launchWaysideControllerFourClick(self):
-            self.wc4 = NewRedLine2.MainWindowR("RedLine 2")
             self.wc4.setVisible(True)
             activeSignals.activeSignal.emit()
 
@@ -374,7 +373,7 @@ class MainWindow(QMainWindow):
         def trainDispatch(self, trainId, line):
             # trainId of 1 corresponds with train controller hardware
             if(trainId != 1):
-                self.TrainControllerList.append(TrainControllerMainUI.MainWindow(trainId, line))
+                self.TrainControllerList.append(TrainControllerMainUI.MainWindow(line, trainId))
                 self.TrainModelList.append(TrainModelMainUI.TrainModelUI(trainId, line))
                 self.TkM.backEnd.newTrainMade(trainId, line)
                 self.TrainControllerList[len(self.TrainControllerList)-1].move(800, 10)

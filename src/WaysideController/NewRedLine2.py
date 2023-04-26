@@ -31,6 +31,9 @@ class MainWindowR(QMainWindow):
         self.TestUI = True
         self.active = False
         activeSignals.activeSignal.connect(self.activeSignal)
+        TkMWCSignals.failureSignal.connect(self.brokenRailHandler)
+        TkMWCSignals.stopSignal.connect(self.errorHandler)
+        TkMWCSignals.currBlockSignal.connect(self.currBlockHandler) 
         #Window
         self.name = name
         self.setWindowTitle(str(self.name))
@@ -104,13 +107,28 @@ class MainWindowR(QMainWindow):
         #PLC
         self.PLCLabel = self.PLCLabelSetup()
         self.PLC = self.PLCButton()     
-
-        self.maintenanceMode = False
+        self.maintenanceMode = WaysideControllerRed2.maintenance
         self.maintenanceButton = self.maintenanceButtonSetup() 
         self.maintenanceLabel = self.maintenanceLabelSetup()          
         self.PLCMain = PLC(WaysideControllerRed,WaysideControllerRed2,"Red")
         if self.TestUI :
-              self.WaysideControllerRedTestUI = TestWindow(WaysideControllerRed,WaysideControllerRed2)        
+              self.WaysideControllerRedTestUI = TestWindow(WaysideControllerRed,WaysideControllerRed2)             
+
+    def brokenRailHandler(self, line, logic, blockNo):
+         if line == 0 and blockNo <= 50:
+            WaysideControllerRed.setBrokenRail(bool(logic), blockNo)
+         elif line == 0 and blockNo > 50:
+            WaysideControllerRed2.setBrokenRail(bool(logic), blockNo)
+
+    def currBlockHandler(self, line, logic, blockNo):
+         if line == 0 and blockNo <= 50:
+            WaysideControllerRed.setOccupancy(logic, blockNo)
+         elif line == 0 and blockNo > 50:
+            WaysideControllerRed2.setOccupancy(logic, blockNo)
+
+    def errorHandler(status):
+         WaysideControllerRed.setError(status)
+         WaysideControllerRed2.setError(status) 
        
     def activeSignal(self):
          self.active = True
@@ -324,7 +342,7 @@ class MainWindowR(QMainWindow):
     def GateSetup(self):
             gate = QLabel()
             gate.setFont(self.labelFont)
-            gate.setFixedSize(120,20)
+            gate.setFixedSize(160,20)
             if WaysideControllerRed2.gates[1] == True:
                 gate.setText("Block 47 Gate:  UP")
 
@@ -699,9 +717,11 @@ class MainWindowR(QMainWindow):
 
     def maintenance(self):
           if(self.maintenanceMode==True):
-            self.maintenanceMode=False
+           WaysideControllerRed.setMaintenance(False)
+           WaysideControllerRed2.setMaintenance(False)
           else:
-            self.maintenanceMode=True 
+           WaysideControllerRed.setMaintenance(True)
+           WaysideControllerRed2.setMaintenance(True)
 
     def maintenanceLabelSetup(self):
             MLabel = QLabel()
@@ -731,19 +751,19 @@ class MainWindowR(QMainWindow):
             WaysideControllerRed2.setAuthority()
 
           if (self.Switch1Out.text() == "Yard to 9" and WaysideControllerRed2.switches[1] == False) or (self.Switch1Out.text() == "9 to Yard" and WaysideControllerRed2.switches[1] == True):
-            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[1]), 0, 9)
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[1]), 0, 8)
           if (self.Switch2Out.text() == "1 to 16" and WaysideControllerRed2.switches[2] == False) or (self.Switch2Out.text() == "15 to 16" and WaysideControllerRed2.switches[2] == True):
-            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[2]), 0, 16)
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[2]), 0, 15)
           if (self.Switch3Out.text() == "27 to 76" and WaysideControllerRed2.switches[3] == False) or (self.Switch3Out.text() == "27 to 28" and WaysideControllerRed2.switches[3] == True):
-            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[3]), 0, 27)
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[3]), 0, 26)
           if (self.Switch4Out.text() == "33 to 72" and WaysideControllerRed2.switches[4] == False) or (self.Switch4Out.text() == "32 to 33" and WaysideControllerRed2.switches[4] == True):
-            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[4]), 0, 33)
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[4]), 0, 32)
           if (self.Switch5Out.text() == "38 to 71" and WaysideControllerRed2.switches[5] == False) or (self.Switch5Out.text() == "38 to 39" and WaysideControllerRed2.switches[5] == True):
-            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[5]), 0, 38)
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[5]), 0, 37)
           if (self.Switch6Out.text() == "44 to 67" and WaysideControllerRed2.switches[6] == False) or (self.Switch6Out.text() == "43 to 44" and WaysideControllerRed2.switches[6] == True):
-            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[6]), 0, 44)
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[6]), 0, 43)
           if (self.Switch7Out.text() == "52 to 66" and WaysideControllerRed2.switches[7] == False)  or (self.Switch7Out.text() == "52 to 53" and WaysideControllerRed2.switches[7] == True):
-            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[7]),0,52)
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed2.switches[7]),0,51)
 
           if(self.maintenanceMode==True):                
                   self.maintenanceLabel.setText("Maintenance ON")
@@ -802,10 +822,10 @@ class MainWindowR(QMainWindow):
           j=1
           for k in range(51,77):
                 value=WaysideControllerRed2.commandedSpeed[k]
-                value=round(value*2.23694,2)                
+                value2=value*2.23694               
                 if active and value != float(self.CommandedSpeed.item(i,j).text()):
                   TkMWCSignals.commandedSpeedSignal.emit(k, value, 0)                
-                self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
+                self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(round(value2,2))))
                 j=j+1
                 if j>9:
                         j=0
@@ -849,19 +869,26 @@ class MainWindowR(QMainWindow):
                         i=i+1 
 
           for k in range(51,77):
-            if(WaysideControllerRed2.brokenRail[k]==True):
+            if(WaysideControllerRed2.err==True):
                  for i in range(51,77):
                       WaysideControllerRed2.setAAuthority(0,i)
 
+          val = self.Gate.text()
           if WaysideControllerRed2.gates[1]==True:
                 self.Gate.setText("Block 47 Gate:  UP")
+                if active and val != "Block 47 Gate:  UP":
+                    TkMWCSignals.gateStateInput.emit(0, 0, 46)
           else:
-                self.Gate.setText("Block 47 Gate:  DOWN")
+                  self.Gate.setText("Block 47 Gate:  DOWN")
+                  if active and val != "Block 47 Gate:  DOWN":
+                    TkMWCSignals.gateStateInput.emit(1, 0, 46)
+
           if(self.maintenanceMode==False):
             self.PLCMain.RloadValues2(self.File2)
             self.PLCMain.Rsetswitches()
 
     def mainEventLoop(self):
+          self.maintenanceMode = WaysideControllerRed2.maintenance
           self.updateVisualElements(self.active)
           WaysideControllerRed2.WaysideToCTCInfoR2()
           WaysideControllerRed2.getCTCBlocksRed()

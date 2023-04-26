@@ -393,7 +393,7 @@ def kpAndKiTest():
 
 if (__name__ == "__main__"):
     # Used to test TrainModel communication
-    testTrainModelIntegration = False
+    testTrainModelIntegration = True
 
     app = QApplication(sys.argv)
     mainUI = MainWindow("Green", 2)

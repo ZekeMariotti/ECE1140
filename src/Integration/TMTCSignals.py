@@ -12,7 +12,7 @@ class trainModelTrainControllerSignals(QObject):
     nextStationNameSignal = pyqtSignal(int, str)
     isBeaconSignal = pyqtSignal(int, bool)
     blockCountSignal = pyqtSignal(int, int)
-    fromSwitchSignal = pyqtSignal(int, bool)
+    fromSwitchSignal = pyqtSignal(int, int)
     switchBlockSignal = pyqtSignal(int, int)
     externalLightsStateSignal = pyqtSignal(int, bool)
     internalLightsStateSignal = pyqtSignal(int, bool)

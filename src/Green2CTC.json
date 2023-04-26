@@ -3,13 +3,12 @@
         "1": false,
         "2": false,
         "3": true,
-        "4": false,
+        "4": true,
         "5": false,
-        "6": false,
-        "7": true
+        "6": false
     },
     "Lights": {
-        "101": true,
+        "101": false,
         "102": true,
         "103": true,
         "104": true,
@@ -58,7 +57,7 @@
         "147": true,
         "148": true,
         "149": true,
-        "150": true
+        "150": false
     },
     "Occupancy": {
         "101": false,
