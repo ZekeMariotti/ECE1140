@@ -113,7 +113,7 @@ class MainWindow(QMainWindow):
         self.PLCLabel = self.PLCLabelSetup()
         self.PLC = self.PLCButton()
         ##Maintenance
-        self.maintenanceMode = False
+        self.maintenanceMode = WaysideControllerGreen2.maintenance
         self.maintenanceButton = self.maintenanceButtonSetup()
         self.maintenanceLabel = self.maintenanceLabelSetup()
         #Test UI
@@ -347,14 +347,14 @@ class MainWindow(QMainWindow):
     def GateSetup(self):
             gate = QLabel()
             gate.setFont(self.labelFont)
-
+            gate.setFixedSize(160,20)
             if WaysideControllerGreen2.gates[1] == True:
                 gate.setText("Block 19 Gate:  UP")
 
             else:
                 gate.setText("Block 19 Gate:  DOWN")
 
-            gate.move(int(round(0.85*self.windowWidth)),int(round(0.55*self.windowHeight)))
+            gate.move(int(round(0.85*self.windowWidth)),580)
             gate.setParent(self)
             return(gate)
 
@@ -694,10 +694,13 @@ class MainWindow(QMainWindow):
             WaysideControllerGreen.setGatePositions(False)
             WaysideControllerGreen2.setGatePositions(False)
     def maintenance(self):
-         if self.maintenanceMode==False:
-            self.maintenanceMode=True
-         else: 
-            self.maintenanceMode=False
+          if(self.maintenanceMode==True):
+           WaysideControllerGreen.setMaintenance(False)
+           WaysideControllerGreen2.setMaintenance(False)
+          else:
+           WaysideControllerGreen.setMaintenance(True)
+           WaysideControllerGreen2.setMaintenance(True)
+
     def maintenanceLabelSetup(self):
             MLabel = QLabel()
             MLabel.setFont(self.labelFont)
@@ -819,7 +822,7 @@ class MainWindow(QMainWindow):
                   value="G"
                 else:
                   value="R"
-                if((k==1) | (k==13) | (k==77) | (k==100) | (k==84)):                  
+                if((k==1) | (k==13) | (k==77) | (k==100) | (k==84)|(k==101) |(k==150)):                  
                   if active and value != self.SignalLight.item(i,j).text():
                         if value == "G":
                               TkMWCSignals.signalStateSignal.emit(0, 1, k - 1)
@@ -866,6 +869,7 @@ class MainWindow(QMainWindow):
             self.PLCMain.setswitches()
 
     def mainEventLoop(self):
+          self.maintenanceMode = WaysideControllerGreen2.maintenance
           self.updateVisualElements(self.active)
           WaysideControllerGreen2.WaysideToCTCInfoG2()
           WaysideControllerGreen2.getCTCBlocks()

@@ -107,8 +107,7 @@ class MainWindowR(QMainWindow):
         #PLC
         self.PLCLabel = self.PLCLabelSetup()
         self.PLC = self.PLCButton()     
-
-        self.maintenanceMode = False
+        self.maintenanceMode = WaysideControllerRed2.maintenance
         self.maintenanceButton = self.maintenanceButtonSetup() 
         self.maintenanceLabel = self.maintenanceLabelSetup()          
         self.PLCMain = PLC(WaysideControllerRed,WaysideControllerRed2,"Red")
@@ -343,7 +342,7 @@ class MainWindowR(QMainWindow):
     def GateSetup(self):
             gate = QLabel()
             gate.setFont(self.labelFont)
-            gate.setFixedSize(120,20)
+            gate.setFixedSize(160,20)
             if WaysideControllerRed2.gates[1] == True:
                 gate.setText("Block 47 Gate:  UP")
 
@@ -718,9 +717,11 @@ class MainWindowR(QMainWindow):
 
     def maintenance(self):
           if(self.maintenanceMode==True):
-            self.maintenanceMode=False
+           WaysideControllerRed.setMaintenance(False)
+           WaysideControllerRed2.setMaintenance(False)
           else:
-            self.maintenanceMode=True 
+           WaysideControllerRed.setMaintenance(True)
+           WaysideControllerRed2.setMaintenance(True)
 
     def maintenanceLabelSetup(self):
             MLabel = QLabel()
@@ -887,6 +888,7 @@ class MainWindowR(QMainWindow):
             self.PLCMain.Rsetswitches()
 
     def mainEventLoop(self):
+          self.maintenanceMode = WaysideControllerRed2.maintenance
           self.updateVisualElements(self.active)
           WaysideControllerRed2.WaysideToCTCInfoR2()
           WaysideControllerRed2.getCTCBlocksRed()

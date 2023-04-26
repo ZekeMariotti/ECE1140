@@ -42,7 +42,7 @@
         <td>{{block.occupied}}</td>
         <td>
           <div *ngIf="automode; else manualSpeed">
-            {{block.suggestedspeed}}
+            {{block.suggestedspeed | number: '1.0-2'}}
           </div>
           <ng-template #manualSpeed>
             <input type="number" class="form-control" [(ngModel)]="block.suggestedspeed" (focusout)="putBlockSpeed(block.number, block.suggestedspeed)"/>

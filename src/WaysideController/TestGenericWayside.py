@@ -7,11 +7,11 @@ from json import JSONEncoder
 import requests
 
 class Wayside:
-    def __init__(self,simTime,maintenance):
+    def __init__(self,simTime):
             self.err = False
             self.simTime=simTime
             self.realtime=0
-            self.maintenance=maintenance
+            self.maintenance=False
             self.gates={}
             self.suggestedAuthority={}
             self.authority={}
@@ -107,7 +107,8 @@ class Wayside:
 
     def setSuggestedAuthority(self,block,value):
             self.suggestedAuthority[block]=value
-           
+    def setMaintenance(self,logic):
+            self.maintenance=logic    
     def readCTCToWayside(self):
         with open(os.path.join(sys.path[0],".json"),"r") as filename:
             self.CTCToWayside = json.loads(filename.read())
