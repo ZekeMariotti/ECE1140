@@ -138,6 +138,7 @@ class PLC():
                 GLight84.append(logic)  
             if(line=="gate"):
                 line=file.readline()
+                line=line.strip()
                 logic=self.Wayside1.occupancy[int(line)]
                 Ggate.append(logic)                              
         file.close()
@@ -209,10 +210,6 @@ class PLC():
                 line=line.strip()
                 logic=self.Wayside2.occupancy[int(line)]
                 Gswitch6False.append(logic)
-            if(line=="gate"):
-                line=file.readline()
-                logic=self.Wayside2.occupancy[int(line)]
-                Ggate.append(logic)   
         file.close()
 
     def setswitches(self):
@@ -395,7 +392,12 @@ class PLC():
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside1.occupancy[int(line)]
-                Rswitch7False.append(logic)                
+                Rswitch7False.append(logic)
+            if(line=="gate"):
+                line=file.readline()
+                line=line.strip()
+                logic=self.Wayside1.occupancy[int(line)]
+                Rgate.append(logic)                   
         file.close()
 
     def RloadValues2(self,file):

@@ -18,8 +18,8 @@ rowheaders2 =["5","6","7"]
 colheaders =["0","1","2","3","4","5","6","7","8","9"]
 
 #setup Wayside Controllers
-WaysideControllerRed=Wayside(1,True)
-WaysideControllerRed2=Wayside(1,True)
+WaysideControllerRed=Wayside(1)
+WaysideControllerRed2=Wayside(1)
 WaysideControllerRed.setdictionarysizes(1,51)
 WaysideControllerRed.setCommandedSpeed()
 WaysideControllerRed.setAuthority()
@@ -114,7 +114,7 @@ class MainWindowR(QMainWindow):
         self.PLCLabel = self.PLCLabelSetup()
         self.PLC = self.PLCButton()     
 
-        self.maintenanceMode = False
+        self.maintenanceMode = WaysideControllerRed.maintenance
         self.maintenanceButton = self.maintenanceButtonSetup() 
         self.maintenanceLabel = self.maintenanceLabelSetup()          
         self.PLCMain = PLC(WaysideControllerRed,WaysideControllerRed2,"Red")
@@ -712,10 +712,12 @@ class MainWindowR(QMainWindow):
 
     def maintenance(self):
           if(self.maintenanceMode==True):
-            self.maintenanceMode=False
+           WaysideControllerRed.setMaintenance(False)
+           WaysideControllerRed2.setMaintenance(False)
           else:
-            self.maintenanceMode=True 
-
+           WaysideControllerRed.setMaintenance(True)
+           WaysideControllerRed2.setMaintenance(True)
+           
     def maintenanceLabelSetup(self):
             MLabel = QLabel()
             MLabel.setFont(self.labelFont)
@@ -872,7 +874,7 @@ class MainWindowR(QMainWindow):
             self.PLCMain.RloadValues1(self.File1)
             self.PLCMain.Rsetswitches()
     def mainEventLoop(self):
-
+          self.maintenanceMode = WaysideControllerRed.maintenance
           self.updateVisualElements(self.active)
           WaysideControllerRed.WaysideToCTCInfoR1()
           WaysideControllerRed.getCTCBlocksRed()
