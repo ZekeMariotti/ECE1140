@@ -587,9 +587,11 @@ class backEndCalculations():
         if self.data["trainLine"][trainNo - 1] == 0:
             passOn = randint(0, int(self.data["stationOccupancy"].__getitem__(int(self.csvConstants["stationRed"].__getitem__(self.data["trainBlock"][trainNo - 1] - 1)) - 1)))
             self.getOnInput(int(self.csvConstants["stationRed"].__getitem__(self.data["trainBlock"][trainNo - 1] - 1)) - 1, passOn)
+            requests.put("http://localhost:8090/api/passengers/Red", passOn)
         elif self.data["trainLine"][trainNo - 1] == 1:
             passOn = randint(0, int(self.data["stationOccupancy"].__getitem__(int(self.csvConstants["stationGreen"].__getitem__(self.data["trainBlock"][trainNo - 1] - 1)) - 1)))
             self.getOnInput(int(self.csvConstants["stationGreen"].__getitem__(self.data["trainBlock"][trainNo - 1] - 1)) - 1, passOn)
+            requests.put("http://localhost:8090/api/passengers/Green", passOn)
         TMTkMSignals.passengersEnteringSignal.emit(trainNo, passOn)
 
     # Determines how many passengers get off at each station
