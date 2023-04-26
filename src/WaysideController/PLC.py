@@ -218,23 +218,27 @@ class PLC():
             if(Gswitch1True[i]==True):
                 self.Wayside1.setSwitchPositions(False,1)
                 self.Wayside2.setSwitchPositions(False,1)
-
+                self.Wayside1.setSignalLights(False,1)
+                self.Wayside1.setSignalLights(True,13)
 
         for i in range(0, len(Gswitch1False)):
             if(Gswitch1False[i]==True):
                 self.Wayside1.setSwitchPositions(True,1)
                 self.Wayside2.setSwitchPositions(True,1)
-
+                self.Wayside1.setSignalLights(True,1)
+                self.Wayside1.setSignalLghts(False,13)
                 
         for i in range(0, len(Gswitch2True)):
             if(Gswitch2True[i]==True):
                 self.Wayside1.setSwitchPositions(False,2)
                 self.Wayside2.setSwitchPositions(False,2)
+                self.Wayside2.setSignalLights(False,150)
 
         for i in range(0, len(Gswitch2False)):
             if(Gswitch2False[i]==True):
                 self.Wayside1.setSwitchPositions(True,1)
                 self.Wayside2.setSwitchPositions(True,1)
+                self.Wayside2.setSignalLights(True,150)
 
     #Always go to yard maybe change later
         self.Wayside1.setSwitchPositions(True,3)
@@ -246,11 +250,15 @@ class PLC():
             if(Gswitch5True[i]==True):
                 self.Wayside1.setSwitchPositions(False,5)
                 self.Wayside2.setSwitchPositions(False,5)
+                self.Wayside2.setSignalLights(False,101)
+                self.Wayside1.setSignalLights(True,77)
 
         for i in range(0, len(Gswitch5False)):
             if(Gswitch5False[i]==True):
                 self.Wayside1.setSwitchPositions(True,5)
                 self.Wayside2.setSwitchPositions(True,5)
+                self.Wayside2.setSignalLights(101,True)
+                self.Wayside1.setSignalLights(77,False)
 
         for i in range(0, len(Gswitch6True)):
             if(Gswitch6True[i]==True):
@@ -321,83 +329,82 @@ class PLC():
         for i in range(0,100):
             line=file.readline()
             line=line.strip()
-            #TruePath        
-            if(line=="auT1"):
-                line=file.readline()
-                line=line.strip()
-                logic=self.Wayside1.occupancy[int(line)]
-                Rswitch1True.append(logic)
-            if(line=="auT2"):
-                line=file.readline()
-                line=line.strip()              
-                logic=self.Wayside1.occupancy[int(line)]
-                Rswitch2True.append(logic)
-            if(line=="auT3"):
-                line=file.readline()
-                line=line.strip()
-                logic=self.Wayside1.occupancy[int(line)]               
-                Rswitch3True.append(logic)
-            if(line=="auT4"):
-                line=file.readline()
-                line=line.strip()
-                logic=self.Wayside1.occupancy[int(line)]              
-                Rswitch4True.append(logic)
-            if(line=="auT5"):
-                line=file.readline()
-                line=line.strip()
-                logic=self.Wayside1.occupancy[int(line)]
-                Rswitch5True.append(logic)
-            if(line=="auT6"):
-                line=file.readline()
-                line=line.strip()
-                logic=self.Wayside1.occupancy[int(line)]
-                Rswitch6True.append(logic)
-            if(line=="auT7"):
-                line=file.readline()
-                line=line.strip()
-                logic=self.Wayside1.occupancy[int(line)]
-                Rswitch7True.append(logic)            
-            # False Path
-            if(line=="auF1"):
-                line=file.readline()
-                line=line.strip()
-                logic=self.Wayside1.occupancy[int(line)]
-                Rswitch1False.append(logic)
-            if(line=="auF2"):
-                line=file.readline()
-                line=line.strip()
-                logic=self.Wayside1.occupancy[int(line)]
-                Rswitch2False.append(logic)
-            if(line=="auF3"):
-                line=file.readline()
-                line=line.strip()
-                logic=self.Wayside1.occupancy[int(line)]
-                Rswitch3False.append(logic)
-            if(line=="auF4"):
-                line=file.readline()
-                line=line.strip()
-                logic=self.Wayside1.occupancy[int(line)]
-                Rswitch4False.append(logic)
-            if(line=="auF5"):
-                line=file.readline()
-                line=line.strip()
-                logic=self.Wayside1.occupancy[int(line)]
-                Rswitch5False.append(logic)
-            if(line=="auF6"):
-                line=file.readline()
-                line=line.strip()
-                logic=self.Wayside1.occupancy[int(line)]
-                Rswitch6False.append(logic)
-            if(line=="auF7"):
-                line=file.readline()
-                line=line.strip()
-                logic=self.Wayside1.occupancy[int(line)]
-                Rswitch7False.append(logic)
             if(line=="gate"):
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside1.occupancy[int(line)]
-                Rgate.append(logic)                   
+                Rgate.append(logic)
+            if(line=="ocT1"):
+                line=file.readline()
+                line=line.strip()
+                logic=self.Wayside1.occupancy[int(line)]
+                Gswitch1True.append(logic)
+            if(line=="ocT2"):
+                line=file.readline()
+                line=line.strip()              
+                logic=self.Wayside1.occupancy[int(line)]
+                Gswitch2True.append(logic)
+            if(line=="ocT3"):
+                line=file.readline()
+                line=line.strip()
+                logic=self.Wayside1.occupancy[int(line)]               
+                Gswitch3True.append(logic)
+            if(line=="ocT4"):
+                line=file.readline()
+                line=line.strip()
+                logic=self.Wayside1.occupancy[int(line)]              
+                Gswitch4True.append(logic)
+            if(line=="ocT5"):
+                line=file.readline()
+                line=line.strip()
+                logic=self.Wayside1.occupancy[int(line)]
+                Gswitch5True.append(logic)
+            if(line=="ocT6"):
+                line=file.readline()
+                line=line.strip()
+                logic=self.Wayside1.occupancy[int(line)]
+                Gswitch6True.append(logic)
+            if(line=="ocT7"):
+                line=file.readline()
+                line=line.strip()
+                logic=self.Wayside1.occupancy[int(line)]
+                Gswitch6True.append(logic)                
+            # False Path
+            if(line=="ocF1"):
+                line=file.readline()
+                line=line.strip()
+                logic=self.Wayside1.occupancy[int(line)]
+                Gswitch1False.append(logic)
+            if(line=="ocF2"):
+                line=file.readline()
+                line=line.strip()
+                logic=self.Wayside1.occupancy[int(line)]
+                Gswitch2False.append(logic)
+            if(line=="ocF3"):
+                line=file.readline()
+                line=line.strip()
+                logic=self.Wayside1.occupancy[int(line)]
+                Gswitch3False.append(logic)
+            if(line=="ocF4"):
+                line=file.readline()
+                line=line.strip()
+                logic=self.Wayside1.occupancy[int(line)]
+                Gswitch4False.append(logic)
+            if(line=="ocF5"):
+                line=file.readline()
+                line=line.strip()
+                logic=self.Wayside1.occupancy[int(line)]
+                Gswitch5False.append(logic)
+            if(line=="ocF6"):
+                line=file.readline()
+                line=line.strip()
+                logic=self.Wayside1.occupancy[int(line)]
+                Gswitch6False.append(logic) 
+            if(line=="ocF7"):
+                line=file.readline()
+                line=line.strip()
+                logic=self.Wayside1.occupancy[int(line)]
+                Gswitch6False.append(logic)                                    
         file.close()
 
     def RloadValues2(self,file):
@@ -406,130 +413,138 @@ class PLC():
             line=file.readline()
             line=line.strip()
             #TruePath        
-            if(line=="auT1"):
+            if(line=="ocT1"):
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside2.occupancy[int(line)]
-                Rswitch1True.append(logic)
-            if(line=="auT2"):
+                Gswitch1True.append(logic)
+            if(line=="ocT2"):
                 line=file.readline()
                 line=line.strip()              
                 logic=self.Wayside2.occupancy[int(line)]
-                Rswitch2True.append(logic)
-            if(line=="auT3"):
+                Gswitch2True.append(logic)
+            if(line=="ocT3"):
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside2.occupancy[int(line)]               
-                Rswitch3True.append(logic)
-            if(line=="auT4"):
+                Gswitch3True.append(logic)
+            if(line=="ocT4"):
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside2.occupancy[int(line)]              
-                Rswitch4True.append(logic)
-            if(line=="auT5"):
+                Gswitch4True.append(logic)
+            if(line=="ocT5"):
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside2.occupancy[int(line)]
-                Rswitch5True.append(logic)
-            if(line=="auT6"):
+                Gswitch5True.append(logic)
+            if(line=="ocT6"):
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside2.occupancy[int(line)]
-                Rswitch6True.append(logic)
-            if(line=="auT7"):
+                Gswitch6True.append(logic)  
+            if(line=="ocT7"):
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside2.occupancy[int(line)]
-                Rswitch7True.append(logic)                
+                Gswitch6True.append(logic)                 
+
             # False Path
-            if(line=="auF1"):
+            if(line=="ocF1"):
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside2.occupancy[int(line)]
-                Rswitch1False.append(logic)
-            if(line=="auF2"):
+                Gswitch1False.append(logic)
+            if(line=="ocF2"):
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside2.occupancy[int(line)]
-                Rswitch2False.append(logic)
-            if(line=="auF3"):
+                Gswitch2False.append(logic)
+            if(line=="ocF3"):
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside2.occupancy[int(line)]
-                Rswitch3False.append(logic)
-            if(line=="auF4"):
+                Gswitch3False.append(logic)
+            if(line=="ocF4"):
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside2.occupancy[int(line)]
-                Rswitch4False.append(logic)
-            if(line=="auF5"):
+                Gswitch4False.append(logic)
+            if(line=="ocF5"):
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside2.occupancy[int(line)]
-                Rswitch5False.append(logic)
-            if(line=="auF6"):
+                Gswitch5False.append(logic)
+            if(line=="ocF6"):
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside2.occupancy[int(line)]
-                Rswitch6False.append(logic)
-            if(line=="auF7"):
+                Gswitch6False.append(logic)
+            if(line=="ocF7"):
                 line=file.readline()
                 line=line.strip()
                 logic=self.Wayside2.occupancy[int(line)]
-                Rswitch7False.append(logic)                
+                Gswitch6False.append(logic)                                 
         file.close()
 
     def Rsetswitches(self):
         for i in Rswitch1True:
-            if(Rswitch1True[i]==False):
+            if(Rswitch1True[i]==False and self.Wayside1.authority[10]==False):
                 self.Wayside1.switches[1]=False
                 self.Wayside2.switches[1]=False
+
         for i in Rswitch1False:
-            if(Rswitch1False[i]==False):
+            if(Rswitch1False[i]==False and self.Wayside1.authority[8]==False ):
                 self.Wayside1.switches[1]=True
                 self.Wayside2.switches[1]=True
         for i in Rswitch2True:
-            if(Rswitch2True[i]==False):
+            if(Rswitch2True[i]==False and self.Wayside1.authority[1]==False):
                 self.Wayside1.switches[2]=False
                 self.Wayside2.switches[2]=False
         for i in Rswitch2False:
-            if(Rswitch2False[i]==False):
+            if(Rswitch2False[i]==False and self.Wayside1.authority[15]==False):
                 self.Wayside1.switches[2]=True
                 self.Wayside2.switches[2]=True
         for i in Rswitch3True:
-            if(Rswitch3True[i]==False):
-                self.Wayside1.switches[3]=False
-                self.Wayside2.switches[3]=False
+            if(Rswitch3True[i]==False and self.Wayside2.authority[76]==False):
+                self.Wayside1.switches[3]=True
+                self.Wayside2.switches[3]=True
         for i in Rswitch3False:
-            if(Rswitch3False[i]==False):
+            if(Rswitch3False[i]==False and self.Wayside1.authority[28]==False):
                 self.Wayside1.switches[3]=True
                 self.Wayside2.switches[3]=True
         for i in Rswitch4True:
-            if(Rswitch4True[i]==False):
-                self.Wayside1.switches[4]=False
-                self.Wayside2.switches[4]=False
+            if(Rswitch4True[i]==False and self.Wayside2.authority[72]==False):
+                self.Wayside1.switches[4]=True
+                self.Wayside2.switches[4]=True
         for i in Rswitch4False:
-            if(Rswitch4False[i]==False):
+            if(Rswitch4False[i]==False and self.Wayside1.authority[31]==False):
                 self.Wayside1.switches[4]=True
                 self.Wayside2.switches[4]=True
         for i in Rswitch5True:
-            if(Rswitch5True[i]==False):
+            if(Rswitch5True[i]==False and self.Wayside2.authority[71]==False):
+                self.Wayside1.switches[5]=True
+                self.Wayside2.switches[5]=True
+        for i in Rswitch5False:
+            if(Rswitch5False[i]==False and self.Wayside1.authority[37]==False):
                 self.Wayside1.switches[5]=False
                 self.Wayside2.switches[5]=False
-        for i in Rswitch5False:
-            if(Rswitch5False[i]==False):
-                self.Wayside1.switches[5]=True
-                self.Wayside2.switches[6]=True
         for i in Rswitch6True:
-            if(Rswitch6True[i]==False):
-                self.Wayside1.switches[6]=False
-                self.Wayside2.switches[6]=False
-        for i in Rswitch6False:
-            if(Rswitch6False[i]==False):
+            if(Rswitch6True[i]==False and self.Wayside2.authority[67]==False):
                 self.Wayside1.switches[6]=True
                 self.Wayside2.switches[6]=True
-        self.Wayside1.switches[7]=True
-        self.Wayside2.switches[7]=True
+        for i in Rswitch6False:
+            if(Rswitch6False[i]==False and self.Wayside1.authority[42]==False):
+                self.Wayside1.switches[6]=False
+                self.Wayside2.switches[6]=False
+        for i in Rswitch7True:
+            if(Rswitch7False[i]==False and self.Wayside2.authority[66]==False):
+                self.Wayside1.switches[7]=True
+                self.Wayside2.switches[7]=True                   
+        for i in Rswitch7False:
+            if(Rswitch7False[i]==False and self.Wayside2.authority[53]==False):
+                self.Wayside1.switches[7]=False
+                self.Wayside2.switches[7]=False                
         for i in range(0, len(Rgate)):
             if(Rgate[i]==True): 
                 self.Wayside1.setGatePositions(False)

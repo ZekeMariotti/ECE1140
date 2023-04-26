@@ -24,7 +24,13 @@ WaysideControllerGreen.setCommandedSpeed()
 WaysideControllerGreen.setAuthority()
 WaysideControllerGreen2.setdictionarysizes(101,151)
 WaysideControllerGreen2.setCommandedSpeed()
-WaysideControllerGreen2.setAuthority() 
+WaysideControllerGreen2.setAuthority()
+##set inital light states RED
+WaysideControllerGreen.setSignalLights(False,100) 
+WaysideControllerGreen.setSignalLights(False,1)
+WaysideControllerGreen2.setSignalLights(False,150)
+WaysideControllerGreen2.setSignalLights(False,101)
+
 
 class Worker(QObject):
       finished = pyqtSignal()

@@ -1,15 +1,3 @@
-auF1
-28
-auF2
-33
-auF3
-39
-auF4
-44
-auT6
-16
-auF6
-1
 gate
 47
 gate
@@ -20,3 +8,5 @@ gate
 48
 gate
 49
+ocT7
+50

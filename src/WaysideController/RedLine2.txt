@@ -1,12 +1,4 @@
-auT1
-76
-auT2
-72
-auT3
-71
-auT5
-66
-auF5
-53
-auT4
-67
+ocF7
+65
+ocF7
+64
