@@ -45,7 +45,7 @@ class backEndCalculations():
         "sigState" : DynamicArray(),         # States of signals on each block next to a switch
         "gatePos" : DynamicArray(),          # Position of crossing gates
         "temp" : current_temperature,        # Outdoor temperature
-        "numPassengers" : [222, 222, 0, 0, 0, 0,
+        "numPassengers" : [0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0],                   # number of passengers on each train
@@ -61,7 +61,7 @@ class backEndCalculations():
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0],                   # block of the front of the train
-        "trainLine" : [0, 1, 0, 0, 0, 0,
+        "trainLine" : [0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0],                   # train line
