@@ -74,6 +74,7 @@ class TrainControllerSW:
         self.nextBlock = 0
         self.switchBlock = 0
         self.blockCountDirection = 1
+        self.countUpOrDown = 0
         self.polarity = False
         self.previousPolarity = False
 
@@ -203,8 +204,8 @@ class TrainControllerSW:
         if (self.switchBlock != -1):
             # if isBeacon and !firstSwitchBeaconPassed, entering station
             if (self.inputs.isBeacon == True and self.firstSwitchBeaconPassed == False):
-                self.firstSwitchBeaconPassed
-            elif (self.inputs.isBeacon == False and self.firstSwitchBeaconPassed):
+                self.firstSwitchBeaconPassed = True
+            elif (self.inputs.isBeacon == False and self.firstSwitchBeaconPassed == True):
                 self.atSwitchBlock = True
 
             # if isBeacon and atSwitchBlock and !secondSwitchBeaconPassed, exiting station
