@@ -140,13 +140,16 @@ func (s *UpdateService) doUpdate() {
 // Before continuing, understand that there is no turning back. Continuing to read this
 // may cause incurable mental insanity. You have been warned.
 func (s *UpdateService) updateAuthorities(routeMap map[int][]int, useMap map[int][]int, holdsMap map[int]bool) {
+	newAuthorities := make(map[string][]int)
 	// Reset all authorities
 	lines := s.data.Lines.GetSlice()
 	for i := range lines {
 		line := lines[i].Name
 		blocks := s.data.Lines.Get(line).Blocks.GetSlice()
+		newAuthorities[line] = make([]int, len(blocks))
 		for j := range blocks {
-			s.data.Lines.SetBlockAuthority(line, blocks[j].Number, 0)
+			newAuthorities[line][j] = 0
+			//s.data.Lines.SetBlockAuthority(line, blocks[j].Number, 0)
 		}
 	}
 	// Set new authorities
@@ -187,7 +190,14 @@ func (s *UpdateService) updateAuthorities(routeMap map[int][]int, useMap map[int
 			if holdsMap[route[i]] == true {
 				authority = 0
 			}
-			s.data.Lines.SetBlockAuthority(line, route[i], authority)
+			newAuthorities[line][route[i]] = authority
+			//s.data.Lines.SetBlockAuthority(line, route[i], authority)
+		}
+	}
+
+	for line, blocks := range newAuthorities {
+		for i := range blocks {
+			s.data.Lines.SetBlockAuthority(line, i, blocks[i])
 		}
 	}
 }
