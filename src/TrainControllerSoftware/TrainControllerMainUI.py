@@ -32,7 +32,7 @@ class MainWindow(QMainWindow):
             self.testUI = True 
             
             # Initialize TrainControllerSW object
-            self.TrainControllerSW = TrainControllerSW(trainId=id, line = trainLine, commandedSpeed=0, currentSpeed=0, authority=10, inputTime="2023-02-20T21:52:48.3940347-05:00", 
+            self.TrainControllerSW = TrainControllerSW(trainId=id, line = trainLine, commandedSpeed=0, currentSpeed=0, authority=0, inputTime="2023-02-20T21:52:48.3940347-05:00", 
                                                        undergroundState=False, temperature=0, stationName="setupStationName", platformSide=0, 
                                                        nextStationName="station2", isBeacon=False, externalLightsState=False, internalLightsState=False, leftDoorState=False, 
                                                        rightDoorState=False, serviceBrakeState=False, emergencyBrakeState=False, serviceBrakeStatus=True, engineStatus=True, 
