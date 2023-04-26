@@ -5,6 +5,7 @@ import os
 import requests
 import subprocess
 import json
+import webbrowser
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "Integration"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "TrainModel"))
@@ -12,11 +13,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "TrainControllerSoftware
 sys.path.append(os.path.join(os.path.dirname(__file__), "TrackModel"))
 
 
+
 from TrainModelFolder import TrainModelMainUI, TrainModelTestUI
 from TrainControllerSoftware import TrainControllerMainUI
 from TrackModel import TrackModelMainUI, TrackModelTestUI, IntegrationTestUI
+from WaysideController import NewGreenLine,NewGreenLine2,GreenLineTestUi,NewRedLine,NewRedLine2,RedLineTestUI
 from Integration import sendJsonToArduinoClass, receiveJsonFromArduinoClass
-from WaysideController import NewGreenLine,GreenLineTestUi
 from Integration.TimeSignals import *
 from Integration.TMTCSignals import *
 from Integration.ActiveSignals import *
@@ -38,13 +40,14 @@ class MainWindow(QMainWindow):
         def __init__(self):
             super().__init__()
 
-            #subprocess.call(f'{sys.path[0]}')
+            #self.ctcBackendThread = QThread()
+            #self.ctcBackendThread.started.connect(self.ctcBackend)
+            #self.ctcBackendThread.start()
 
             # Main clock and simulation speed
-            self.RTC = datetime.now() # Temporarily set time manually
+            self.RTC = datetime.now()
             self.simulationSpeed = 1
             self.timerInterval = 100  
-            rtcSignals.rtcSignal.connect(self.rtcSignalHandler) # Temporary for testing rtc
 
             # Set window defaults
             self.setWindowTitle(" ")
@@ -141,12 +144,14 @@ class MainWindow(QMainWindow):
             self.TkM = TrackModelMainUI.TrackModelMainUI()
 
             # Instantiate Wayside Controllers
-            self.wc = NewGreenLine.MainWindow()
+            self.wc = NewGreenLine.MainWindow("GreenLine 1")
+            self.wc2 = NewGreenLine2.MainWindow("GreenLine 2")
+            self.wc3 = NewRedLine.MainWindowR("RedLine 1")
+            self.wc4 = NewRedLine2.MainWindowR("RedLine 2")
             activeSignals.activeSignal.emit()
 
-            # Test TM and TC
-            #for i in range(2, 4):
-            #    self.trainDispatch(i)    
+            # Test TM and TC    
+            self.trainDispatch(2, "Green")
 
             #self.TkMTestUI = TrackModelTestUI.TrackModelTestUI()
             #self.TESTUI = IntegrationTestUI.BasicTestUI()
@@ -156,6 +161,9 @@ class MainWindow(QMainWindow):
         def mainThreadSetup(self):
             self.timerThread = QThread()
             self.timerThread.started.connect(self.mainTimerSetup)
+
+        def ctcBackend(self):
+            self.ctcBackendProcess = subprocess.Popen(f'{sys.path[0]}\..\executables\ctcbackend\main.exe', shell=False)
 
         def mainTimerSetup(self):     
             mainTimer = QTimer()
@@ -302,6 +310,12 @@ class MainWindow(QMainWindow):
 
         # Close all windows when closing main UI
         def closeEvent(self, event):
+            try:
+                self.ctcBackendProcess.terminate()
+                self.ctcBackendProcess.wait()
+            except Exception as ex:
+                print(ex)
+
             for TC in self.TrainControllerList:
                 TC.close()
 
@@ -312,25 +326,34 @@ class MainWindow(QMainWindow):
             self.wc.close()
             self.TkM.close()
 
+            sys.exit()
+
         # Runs all functions during each time interval
         def mainEventLoop(self):
             self.getRTC()
             self.trainDispatchCall()
 
         def launchCTCClick(self):
-             print("CTC")
+            webbrowser.get("windows-default").open_new("http://localhost")
+            print("CTC")
 
         def launchWaysideControllerOneClick(self):
             self.wc.setVisible(True)
+            #self.wc.WaysideControllerGreenTestUI.show()
+            activeSignals.activeSignal.emit()
 
         def launchWaysideControllerTwoClick(self):
-            print("Wayside Controller Two")
+            self.wc2.setVisible(True)
+            activeSignals.activeSignal.emit()
 
         def launchWaysideControllerThreeClick(self):
-            print("Wayside Controller Three")
+            self.wc3.setVisible(True)
+            #self.wc3.WaysideControllerRedTestUI.show()
+            activeSignals.activeSignal.emit()            
 
         def launchWaysideControllerFourClick(self):
-            print("Wayside Controller Four")
+            self.wc4.setVisible(True)
+            activeSignals.activeSignal.emit()
 
         def launchTrackModelClick(self):
             self.TkM.setVisible(True)
@@ -362,7 +385,7 @@ class MainWindow(QMainWindow):
         def trainDispatch(self, trainId, line):
             # trainId of 1 corresponds with train controller hardware
             if(trainId != 1):
-                self.TrainControllerList.append(TrainControllerMainUI.MainWindow(trainId))
+                self.TrainControllerList.append(TrainControllerMainUI.MainWindow(line, trainId))
                 self.TrainModelList.append(TrainModelMainUI.TrainModelUI(trainId, line))
                 self.TkM.backEnd.newTrainMade(trainId, line)
                 self.TrainControllerList[len(self.TrainControllerList)-1].move(800, 10)
@@ -388,10 +411,6 @@ class MainWindow(QMainWindow):
                 self.TrainModelList[len(self.TrainModelList)-1].move(self.screen().availableGeometry().width()-1480, 
                                                                     self.screen().availableGeometry().height()-self.TrainModelList[len(self.TrainModelList)-1].frameGeometry().height()-40)
                 self.selectTrainModel.addItems([str(trainId)])
-
-        def rtcSignalHandler(self, rtc):
-            #print(rtc)
-            test=1
             
         def trainDispatchCall(self):
             test = requests.get('http://localhost:8090/api/dispatchedtrain').text
@@ -408,22 +427,28 @@ def stringRemove(string, n):
             
 
 
+def main():
+    # Start application
+    app = QApplication(sys.argv)
+    #exec(open("\Integration\\receiveJsonFromArduino.py").read())
+    #exec(open(os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py")).read())
+    #os.system("python" + os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py"))
+    #subprocess.Popen(['python', os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py")])
+    #subprocess.Popen(['python', os.path.join(sys.path[0], "Integration", "sendJsonToArduino.py")])
 
-# Start application
-app = QApplication(sys.argv)
-#exec(open("\Integration\\receiveJsonFromArduino.py").read())
-#exec(open(os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py")).read())
-#os.system("python" + os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py"))
-#subprocess.Popen(['python', os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py")])
-#subprocess.Popen(['python', os.path.join(sys.path[0], "Integration", "sendJsonToArduino.py")])
+
+    mainWindow = MainWindow()
+    mainWindow.show()
+
+    # Temporary
+    #mainWindow.TMTestUI.showMinimized()
+    #mainWindow.TkMTestUI.showMinimized()
+    #mainWindow.TESTUI.show()
+
+    app.exec() 
 
 
-mainWindow = MainWindow()
-mainWindow.show()
-
-# Temporary
-#mainWindow.TMTestUI.showMinimized()
-#mainWindow.TkMTestUI.showMinimized()
-#mainWindow.TESTUI.show()
-
-app.exec() 
+# Run main
+if (__name__ == "__main__"):
+    main()
+        

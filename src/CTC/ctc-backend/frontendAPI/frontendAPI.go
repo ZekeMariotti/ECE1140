@@ -38,7 +38,7 @@ func (a *FrontendAPI) Serve() {
 
 // Intializes variables for the API
 func (a *FrontendAPI) initialize() {
-	a.router = gin.Default()
+	a.router = gin.New()
 	a.router.Use(cors.Default())
 	a.setupPaths()
 }
@@ -48,6 +48,7 @@ func (a *FrontendAPI) setupPaths() {
 	// GET (Read) Commands
 	a.router.GET("/api/frontend/lines", a.getLines)
 	a.router.GET("/api/frontend/lines/:name", a.getLineByName)
+	a.router.GET("/api/frontend/lines/:name/throughput", a.getThroughput)
 	a.router.GET("/api/frontend/lines/:name/blocks", a.getBlocks)
 	a.router.GET("/api/frontend/lines/:name/stations", a.getStations)
 	a.router.GET("/api/frontend/trains", a.getTrains)
@@ -75,6 +76,16 @@ func (a *FrontendAPI) getLineByName(c *gin.Context) {
 	name := c.Param("name")
 	if a.datastore.Lines.HasKey(name) {
 		c.IndentedJSON(http.StatusOK, a.datastore.Lines.Get(name))
+		return
+	}
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("Line %s not found", name)})
+}
+
+// Handler for GET /lines/{name}
+func (a *FrontendAPI) getThroughput(c *gin.Context) {
+	name := c.Param("name")
+	if a.datastore.Lines.HasKey(name) {
+		c.IndentedJSON(http.StatusOK, a.datastore.GetThroughput(name))
 		return
 	}
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("Line %s not found", name)})

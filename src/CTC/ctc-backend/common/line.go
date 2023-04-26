@@ -5,10 +5,11 @@ import (
 )
 
 type Line struct {
-	Name     string        `json:"name"`
-	Blocks   *SafeBlockMap `json:"blocks"`
-	Switches []Switch      `json:"switches"`
-	Stations []Station     `json:"stations"`
+	Name       string        `json:"name"`
+	Blocks     *SafeBlockMap `json:"blocks"`
+	Switches   []Switch      `json:"switches"`
+	Stations   []Station     `json:"stations"`
+	Passengers int           `json:"passengers"`
 }
 
 func NewLineFromSlice(name string, blocks []Block, switches []Switch, stations []Station) *Line {
@@ -121,4 +122,8 @@ func (l *Line) GetStationByName(name string) Station {
 
 	// Failed
 	return Station{}
+}
+
+func (l *Line) ReportPassengers(passengers int) {
+	l.Passengers += passengers
 }

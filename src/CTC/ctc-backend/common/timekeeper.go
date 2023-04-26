@@ -5,6 +5,7 @@ import (
 )
 
 type TimeKeeper struct {
+	startTime       time.Time
 	simulationTime  time.Time
 	simulationSpeed int
 	lastUpdateTime  time.Time
@@ -21,7 +22,8 @@ func NewTimeKeeper() *TimeKeeper {
 func (t *TimeKeeper) StartSimulation() {
 	// Initialize variables
 	t.simulationSpeed = 1
-	t.simulationTime = time.Now()
+	t.startTime = time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 12, 0, 0, 0, time.Local)
+	t.simulationTime = t.startTime
 	t.lastUpdateTime = time.Now()
 
 	// Start service to update simulation time
@@ -55,6 +57,10 @@ func (t *TimeKeeper) SetSimulationSpeed(simSpeed int) {
 
 func (t *TimeKeeper) GetSimulationSpeed() int {
 	return t.simulationSpeed
+}
+
+func (t *TimeKeeper) GetElapsedTime() time.Duration {
+	return t.simulationTime.Sub(t.startTime)
 }
 
 // Service to continuously update the simulation time
