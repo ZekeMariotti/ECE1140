@@ -141,6 +141,8 @@ class TrainControllerSW:
 
         if self.line == "Green":
             self.blockList = [0] * 151
+            self.blockCount = 63
+            self.blockCountDirection = 1
             with open (greenPath) as csvfile:
                 rows = csv.reader(csvfile, delimiter=',')
                 for row in rows:
@@ -150,6 +152,8 @@ class TrainControllerSW:
                         self.blockList[int(row[0])] = blocks(int(row[0]), float(row[1]), float(row[5]), float(row[3]), bool(int(row[7])))
         elif self.line == "Red":
             self.blockList = [0] * 77
+            self.blockCount = 9
+            self.blockCountDirection = -1
             with open(redPath) as csvfile:
                 rows = csv.reader(csvfile, delimiter=',')
                 for row in rows:
@@ -161,7 +165,7 @@ class TrainControllerSW:
     # Determines whether the train is at a station or not
     def setStationState(self):
         # If self.inputs.stationName != "" beacon is at a station
-        if (self.inputs.stationName != ""):
+        if (self.inputs.stationName != "0"):
             # if isBeacon and !firstBeaconPassed, entering station
             if(self.inputs.isBeacon == True and self.firstBeaconPassed == False):
                 self.firstBeaconPassed = True
@@ -181,8 +185,10 @@ class TrainControllerSW:
     # Increments or decrements block count after a polarity change
     def checkBlockPolarity(self):
         if (self.polarity != self.previousPolarity):
+            print(f'Block Count Before: {self.blockCount}')
             self.blockCount += self.blockCountDirection
             self.previousPolarity = self.polarity
+            print(f'Block Count After: {self.blockCount}')
 
     # Decides what to set the current block to based on data from beacons and switch blocks 
     def setCurrentBlock(self):
