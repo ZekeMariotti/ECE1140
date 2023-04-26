@@ -5,11 +5,13 @@ import os
 import requests
 import subprocess
 import json
+import webbrowser
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "Integration"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "TrainModel"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "TrainControllerSoftware"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "TrackModel"))
+
 
 
 from TrainModelFolder import TrainModelMainUI, TrainModelTestUI
@@ -40,6 +42,7 @@ class MainWindow(QMainWindow):
 
             #self.ctcBackendThread = QThread()
             #self.ctcBackendThread.started.connect(self.ctcBackend)
+            #self.ctcBackendThread.start()
 
             # Main clock and simulation speed
             self.RTC = datetime.now()
@@ -148,7 +151,7 @@ class MainWindow(QMainWindow):
             activeSignals.activeSignal.emit()
 
             # Test TM and TC    
-            #self.trainDispatch(2, "Green")
+            self.trainDispatch(2, "Green")
 
             #self.TkMTestUI = TrackModelTestUI.TrackModelTestUI()
             #self.TESTUI = IntegrationTestUI.BasicTestUI()
@@ -160,7 +163,7 @@ class MainWindow(QMainWindow):
             self.timerThread.started.connect(self.mainTimerSetup)
 
         def ctcBackend(self):
-            subprocess.call(f'{sys.path[0]}\CTC\ctc-backend\main\main.exe')
+            self.ctcBackendProcess = subprocess.Popen(f'{sys.path[0]}\..\executables\ctcbackend\main.exe', shell=False)
 
         def mainTimerSetup(self):     
             mainTimer = QTimer()
@@ -307,6 +310,12 @@ class MainWindow(QMainWindow):
 
         # Close all windows when closing main UI
         def closeEvent(self, event):
+            try:
+                self.ctcBackendProcess.terminate()
+                self.ctcBackendProcess.wait()
+            except Exception as ex:
+                print(ex)
+
             for TC in self.TrainControllerList:
                 TC.close()
 
@@ -317,13 +326,16 @@ class MainWindow(QMainWindow):
             self.wc.close()
             self.TkM.close()
 
+            sys.exit()
+
         # Runs all functions during each time interval
         def mainEventLoop(self):
             self.getRTC()
             self.trainDispatchCall()
 
         def launchCTCClick(self):
-             print("CTC")
+            webbrowser.get("windows-default").open_new("http://localhost")
+            print("CTC")
 
         def launchWaysideControllerOneClick(self):
             self.wc.setVisible(True)
@@ -415,22 +427,28 @@ def stringRemove(string, n):
             
 
 
+def main():
+    # Start application
+    app = QApplication(sys.argv)
+    #exec(open("\Integration\\receiveJsonFromArduino.py").read())
+    #exec(open(os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py")).read())
+    #os.system("python" + os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py"))
+    #subprocess.Popen(['python', os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py")])
+    #subprocess.Popen(['python', os.path.join(sys.path[0], "Integration", "sendJsonToArduino.py")])
 
-# Start application
-app = QApplication(sys.argv)
-#exec(open("\Integration\\receiveJsonFromArduino.py").read())
-#exec(open(os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py")).read())
-#os.system("python" + os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py"))
-#subprocess.Popen(['python', os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py")])
-#subprocess.Popen(['python', os.path.join(sys.path[0], "Integration", "sendJsonToArduino.py")])
+
+    mainWindow = MainWindow()
+    mainWindow.show()
+
+    # Temporary
+    #mainWindow.TMTestUI.showMinimized()
+    #mainWindow.TkMTestUI.showMinimized()
+    #mainWindow.TESTUI.show()
+
+    app.exec() 
 
 
-mainWindow = MainWindow()
-mainWindow.show()
-
-# Temporary
-#mainWindow.TMTestUI.showMinimized()
-#mainWindow.TkMTestUI.showMinimized()
-#mainWindow.TESTUI.show()
-
-app.exec() 
+# Run main
+if (__name__ == "__main__"):
+    main()
+        

@@ -25,7 +25,7 @@ class Worker(QObject):
 class MainWindow(QMainWindow):
 
         # Constructor 
-        def __init__(self, trainLine , id=2):
+        def __init__(self, trainLine, id=2):
             super().__init__()
 
             # Enable Test UI
@@ -46,17 +46,17 @@ class MainWindow(QMainWindow):
             self.TrainControllerSW.writeOutputs()          
             self.TrainControllerSW.previousTime = self.TrainControllerSW.realTime
             self.TrainControllerSW.currentTime = self.TrainControllerSW.realTime
+            self.timeInterval = 100
 
             # Set window defaults
             self.setWindowTitle(f'Train Controller {self.TrainControllerSW.trainId}')
             self.setFixedSize(QSize(960, 540))
-            self.setMinimumSize(1050, 550)
             self.move(100, 200)
 
             # Set element defaults
             self.windowWidth = self.frameGeometry().width()
             self.windowHeight = self.frameGeometry().height()
-            self.buttonWidth = round(0.13*self.windowWidth)
+            self.buttonWidth = round(0.14*self.windowWidth)
             self.buttonHeight = round(0.07*self.windowHeight)
             self.labelWidth = self.buttonWidth*2
             self.labelHeight = round(self.buttonHeight*1.3)
@@ -120,7 +120,7 @@ class MainWindow(QMainWindow):
 
         def mainTimerSetup(self):     
             mainTimer = QTimer()
-            mainTimer.setInterval(100)
+            mainTimer.setInterval(self.timeInterval)
             mainTimer.timeout.connect(self.mainEventLoop)
             mainTimer.setParent(self)
             mainTimer.start()
@@ -134,7 +134,7 @@ class MainWindow(QMainWindow):
             KpLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
             KpLabel.setWordWrap(True)
             x = round(self.frameGeometry().width()*0.8-KpLabel.frameGeometry().width())
-            y = round(self.frameGeometry().height()*0.8-KpLabel.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.6-KpLabel.frameGeometry().height()*0.5)
             KpLabel.move(x, y)
             KpLabel.setParent(self)
             return KpLabel
@@ -144,9 +144,10 @@ class MainWindow(QMainWindow):
             Kp.setFixedSize(QSize(round(self.buttonWidth*0.5), round(self.buttonHeight)))
             Kp.textChanged.connect(self.kpTextChanged)
             x = round(self.frameGeometry().width()*0.77-Kp.frameGeometry().width())
-            y = round(self.frameGeometry().height()*0.85-Kp.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.65-Kp.frameGeometry().height()*0.5)
             Kp.move(x, y)
             Kp.setParent(self)
+            Kp.setText(str(self.TrainControllerSW.Kp))
             return Kp
         
         def KiLabelSetup(self):
@@ -157,7 +158,7 @@ class MainWindow(QMainWindow):
             KiLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
             KiLabel.setWordWrap(True)
             x = round(self.frameGeometry().width()*0.9-KiLabel.frameGeometry().width())
-            y = round(self.frameGeometry().height()*0.8-KiLabel.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.6-KiLabel.frameGeometry().height()*0.5)
             KiLabel.move(x, y)
             KiLabel.setParent(self)
             return KiLabel
@@ -167,9 +168,10 @@ class MainWindow(QMainWindow):
             Ki.setFixedSize(QSize(round(self.buttonWidth*0.5), round(self.buttonHeight)))
             Ki.textChanged.connect(self.kiTextChanged)
             x = round(self.frameGeometry().width()*0.87-Ki.frameGeometry().width())
-            y = round(self.frameGeometry().height()*0.85-Ki.frameGeometry().height()*0.5)
+            y = round(self.frameGeometry().height()*0.65-Ki.frameGeometry().height()*0.5)
             Ki.move(x, y)
             Ki.setParent(self)
+            Ki.setText(str(self.TrainControllerSW.Ki))
             return Ki
 
         def stationSetup(self):
@@ -403,7 +405,7 @@ class MainWindow(QMainWindow):
         def temperatureSetup(self):
             temperature = QLabel()  
             temperature.setFont(self.labelFont)      
-            temperature.setText("Temperature:\n" + str(float(self.TrainControllerSW.inputs.temperature)) + " F")
+            temperature.setText("Temperature:\n" + str(round(float(self.TrainControllerSW.inputs.temperature), 1)) + " F")
             temperature.setFixedSize(QSize(self.labelWidth, self.labelHeight))
             temperature.setAlignment(Qt.AlignmentFlag.AlignCenter)
             temperature.setWordWrap(True)
@@ -637,7 +639,7 @@ class MainWindow(QMainWindow):
             
             self.authority.setText("Authority:\n" + str(self.TrainControllerSW.inputs.authority) + " Blocks")
             self.speedLimit.setText("Speed Limit:\n" + str(Conversions.metersPerSecondToMilesPerHour(float(self.TrainControllerSW.speedLimit))) + " MPH")
-            self.temperature.setText("Temperature:\n" + str(float(self.TrainControllerSW.inputs.temperature)) + " F")
+            self.temperature.setText("Temperature:\n" + str(round(float(self.TrainControllerSW.inputs.temperature), 1)) + " F")
             self.internalLightsState.setText("Internal Lights: " + self.TrainControllerSW.getInternalLightsState())
             self.externalLightsState.setText("External Lights: " + self.TrainControllerSW.getExternalLightsState())
             self.leftDoorState.setText("Left Door\n" + self.TrainControllerSW.getLeftDoorState())

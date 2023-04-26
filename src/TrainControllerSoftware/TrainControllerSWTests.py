@@ -272,10 +272,12 @@ def manualModeTest():
         mainUI.manualModeToggle.setChecked(False)
         mainUI.mainEventLoop()
         assert(mainUI.manualModeToggle.isChecked() == False), "manualModeTest Failed"
+        assert(mainUI.TrainControllerSW.manualMode == False), "manualModeTest Failed"
 
         mainUI.manualModeToggle.setChecked(True)
         mainUI.mainEventLoop()
         assert(mainUI.manualModeToggle.isChecked() == True), "manualModeTest Failed"
+        assert(mainUI.TrainControllerSW.manualMode == True), "manualModeTest Failed"
 
         print("manualModeTest Passed")
         global passed
@@ -390,6 +392,45 @@ def kpAndKiTest():
         global failed
         failed = failed + 1
 
+# Test power calculations
+def powerCalculationTest():
+    try:
+        mainUI.manualModeToggle.setChecked(False)
+        mainUI.TrainControllerTestUI.setAuthority.setText("5")
+        mainUI.TrainControllerTestUI.setEmergencyBrakeState.setCurrentIndex(0)
+        mainUI.TrainControllerTestUI.setServiceBrakeState.setCurrentIndex(0)
+        mainUI.TrainControllerTestUI.setAuthorityTextChanged()
+        mainUI.TrainControllerTestUI.setEmergencyBrakeStateActivated()
+        mainUI.TrainControllerTestUI.setServiceBrakeStateActivated()
+
+        mainUI.TrainControllerTestUI.commandedSpeedSlider.setValue(0)
+        mainUI.TrainControllerTestUI.commandedSpeedSliderRelease()
+        mainUI.TrainControllerTestUI.currentSpeedSlider.setValue(10)
+        mainUI.TrainControllerTestUI.currentSpeedSliderRelease()
+        mainUI.Kp.setText("1")
+        mainUI.Ki.setText("1")
+        mainUI.mainEventLoop()
+        mainUI.TrainControllerSW.calculatePower()
+        assert(mainUI.TrainControllerSW.outputs.power == 0), "powerCalculationTest failed"
+
+        mainUI.TrainControllerTestUI.commandedSpeedSlider.setValue(15)
+        mainUI.TrainControllerTestUI.commandedSpeedSliderRelease()
+        mainUI.TrainControllerTestUI.currentSpeedSlider.setValue(0)
+        mainUI.TrainControllerTestUI.currentSpeedSliderRelease()
+        mainUI.Kp.setText("10000")
+        mainUI.Ki.setText("1")
+        mainUI.mainEventLoop()
+        mainUI.TrainControllerSW.calculatePower()
+        assert(mainUI.TrainControllerSW.outputs.power == 120000), "powerCalculationTest failed"
+
+        print("powerCalculationTest Passed")
+        global passed
+        passed = passed + 1
+    except Exception as exception:
+        print(str(exception))
+        global failed
+        failed = failed + 1 
+
 
 if (__name__ == "__main__"):
     # Used to test TrainModel communication
@@ -424,10 +465,19 @@ if (__name__ == "__main__"):
     speedLimitTest()
     temperatureTest()
     kpAndKiTest()
+    powerCalculationTest()
     
     print(f'\nTotal Tests: {passed+failed}\nTests passed: {passed}\nTests Failed: {failed}')
 
     if (testTrainModelIntegration == True):
+        mainUI.close()
+
+        mainUI = MainWindow("Green", 2)
+        mainUI.show()
+
+        if (mainUI.testUI):
+            mainUI.TrainControllerTestUI.show()
+            
         trainModelUI = TrainModelUI(2, "Green")
         trainModelUI.show()
 
