@@ -226,7 +226,7 @@ class PLC():
                 self.Wayside1.setSwitchPositions(True,1)
                 self.Wayside2.setSwitchPositions(True,1)
                 self.Wayside1.setSignalLights(True,1)
-                self.Wayside1.setSignalLghts(False,13)
+                self.Wayside1.setSignalLights(False,13)
                 
         for i in range(0, len(Gswitch2True)):
             if(Gswitch2True[i]==True):
@@ -478,6 +478,7 @@ class PLC():
                 self.Wayside2.switches[2]=True
                 self.Wayside1.setSignalLights(True,15)
                 self.Wayside1.setSignalLights(False,1)
+                self.Wayside1.setSignalLights(True,16)                
 
         # 1 to 16
         for i in range(0,len(Rswitch2False)):
@@ -486,6 +487,8 @@ class PLC():
                 self.Wayside2.switches[2]=False
                 self.Wayside1.setSignalLights(False,15)
                 self.Wayside1.setSignalLights(True,1)
+                self.Wayside1.setSignalLights(False,16)                
+
 
         # 27 to 28
         for i in range(0,len(Rswitch3True)):
@@ -493,7 +496,8 @@ class PLC():
                 self.Wayside1.switches[3]=True
                 self.Wayside2.switches[3]=True
                 self.Wayside1.setSignalLights(True,27)
-                self.Wayside1.setSignalLights(True,28)                
+                self.Wayside1.setSignalLights(True,28)
+                self.Wayside2.setSignalLights(False,76)                
         # 27 to 76
         for i in range(0,len(Rswitch3False)):
             if(Rswitch3False[i]==True and self.Wayside1.authority[28]==False):
@@ -501,6 +505,8 @@ class PLC():
                 self.Wayside2.switches[3]=False
                 self.Wayside1.setSignalLights(False,27)
                 self.Wayside1.setSignalLights(False,28)
+                self.Wayside2.setSignalLights(True,76)                
+
 
         # 32 to 33
         for i in range(0,len(Rswitch4True)):
@@ -508,42 +514,49 @@ class PLC():
                 self.Wayside1.switches[4]=True
                 self.Wayside2.switches[4]=True
                 self.Wayside1.setSignalLights(False,32)
-                self.Wayside1.setSignalLights(True,33)                
+                self.Wayside1.setSignalLights(True,33)
+                self.Wayside2.setSignalLights(False,72)                
         # 33 to 72
         for i in range(0,len(Rswitch4False)):
             if(Rswitch4False[i]==True and self.Wayside1.authority[31]==False):
                 self.Wayside1.switches[4]=False
                 self.Wayside2.switches[4]=False
                 self.Wayside1.setSignalLights(True,32)
-                self.Wayside1.setSignalLights(False,33)                
+                self.Wayside1.setSignalLights(False,33)
+                self.Wayside2.setSignalLights(True,72)                                
         #38 to 39
         for i in range(0,len(Rswitch5True)):
             if(Rswitch5True[i]==True and self.Wayside2.authority[71]==False):
                 self.Wayside1.switches[5]=True
                 self.Wayside2.switches[5]=True
                 self.Wayside1.setSignalLights(True,38)
-                self.Wayside1.setSignalLights(True,39)                 
+                self.Wayside1.setSignalLights(True,39)
+                self.Wayside2.setSignalLights(False,71)                 
         # 38 to 71
         for i in range(0,len(Rswitch5False)):
             if(Rswitch5False[i]==True and self.Wayside1.authority[37]==False):
                 self.Wayside1.switches[5]=False
                 self.Wayside2.switches[5]=False
                 self.Wayside1.setSignalLights(False,38)
-                self.Wayside1.setSignalLights(False,39)                
+                self.Wayside1.setSignalLights(False,39)
+                self.Wayside2.setSignalLights(True,71)                 
+
         #43 to 44
         for i in range(0,len(Rswitch6True)):
             if(Rswitch6True[i]==True and self.Wayside2.authority[67]==False):
                 self.Wayside1.switches[6]=True
                 self.Wayside2.switches[6]=True
                 self.Wayside1.setSignalLights(True,43)
-                self.Wayside1.setSignalLights(True,44)                
+                self.Wayside1.setSignalLights(True,44) 
+                self.Wayside1.setSignalLights(False,67)               
         # 44 to 67
         for i in range(0,len(Rswitch6False)):
             if(Rswitch6False[i]==True and self.Wayside1.authority[42]==False):
                 self.Wayside1.switches[6]=False
                 self.Wayside2.switches[6]=False
                 self.Wayside1.setSignalLights(False,43)
-                self.Wayside1.setSignalLights(False,44)                 
+                self.Wayside1.setSignalLights(False,44)
+                self.Wayside1.setSignalLights(True,67)                                 
         #52 to 53
         for i in range(0,len(Rswitch7True)):
             if(Rswitch7False[i]==True and self.Wayside2.authority[66]==False):
@@ -551,14 +564,16 @@ class PLC():
                 self.Wayside2.switches[7]=True
                 self.Wayside2.setSignalLights(True,52)
                 self.Wayside2.setSignalLights(True,53)
-                #self.Wayside2.setSignalLights()                 
+                self.Wayside2.setSignalLights(False,66)                 
         #52 to 66                   
         for i in range(0,len(Rswitch7False)):
             if(Rswitch7False[i]==True and self.Wayside2.authority[53]==False):
                 self.Wayside1.switches[7]=False
                 self.Wayside2.switches[7]=False 
                 self.Wayside2.setSignalLights(False,52)
-                self.Wayside2.setSignalLights(False,53)                               
+                self.Wayside2.setSignalLights(False,53)
+                self.Wayside2.setSignalLights(True,66)                 
+
         for i in range(0, len(Rgate)):
             if(Rgate[i]==True): 
                 self.Wayside1.setGatePositions(False)
