@@ -551,7 +551,7 @@ class PLC():
                 self.Wayside2.switches[7]=True
                 self.Wayside2.setSignalLights(True,52)
                 self.Wayside2.setSignalLights(True,53)
-                self.Wayside2.setSignalLights()                 
+                #self.Wayside2.setSignalLights()                 
         #52 to 66                   
         for i in range(0,len(Rswitch7False)):
             if(Rswitch7False[i]==True and self.Wayside2.authority[53]==False):
