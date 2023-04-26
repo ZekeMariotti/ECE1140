@@ -397,6 +397,7 @@ class backEndCalculations():
                     # Emit empty beacon
                     TMTkMSignals.beaconSignal.emit(trainNo + 1, "", 0, "", 0, -1, 0, -1)
             elif self.data["trainLine"][trainNo] == 1:
+                print("First Thing: ", (int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)) > 0), "Second Thing: ", int(self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)[4]) != -1)
                 if (int(self.data["moves"][trainNo][index] - 1) > 0):
                     if (int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)) > 0 or int(self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)[4]) != -1):
                         beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)

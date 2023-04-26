@@ -329,6 +329,7 @@ class TrainModel():
             self.passThroughData["beacon"][5] = fromSwitch
             self.passThroughData["beacon"][6] = switchBlock
 
+
     # Switch Input Handler
     def switchSignalHandler(self, id, state):
         if (id == self.TrainID):

@@ -185,10 +185,10 @@ class TrainControllerSW:
     # Increments or decrements block count after a polarity change
     def checkBlockPolarity(self):
         if (self.polarity != self.previousPolarity):
-            print(f'Block Count Before: {self.blockCount}')
+            #print(f'Block Count Before: {self.blockCount}')
             self.blockCount += self.blockCountDirection
             self.previousPolarity = self.polarity
-            print(f'Block Count After: {self.blockCount}')
+            #print(f'Block Count After: {self.blockCount}')
 
     # Decides what to set the current block to based on data from beacons and switch blocks 
     def setCurrentBlock(self):
@@ -305,14 +305,9 @@ class TrainControllerSW:
         if(self.inputs.undergroundState == True):
             self.outputs.externalLightCommand = True
             self.outputs.internalLightCommand = True
-            self.undergroundStatePrevious = True
-            self.lightsEnabledPrevious = True
         else:
-            if(self.lightsEnabledPrevious == True and self.undergroundStatePrevious == True):
-                self.outputs.externalLightCommand = False
-                self.outputs.internalLightCommand = False
-                self.undergroundStatePrevious = False
-                self.lightsEnabledPrevious = False
+            self.outputs.externalLightCommand = False
+            self.outputs.internalLightCommand = False
 
         if(self.realTime.hour >= 20 or self.realTime.hour <= 5):
             self.outputs.externalLightCommand = True
@@ -446,7 +441,7 @@ class TrainControllerSW:
             self.inputs.temperature = temp
 
     def stationNameSignalHandler(self, id, statName):
-        if(self.trainId == id and statName != ""):
+        if(self.trainId == id and statName != "0"):
             self.inputs.stationName = statName
 
     def platformSideSignalHandler(self, id, platSide):
@@ -454,7 +449,7 @@ class TrainControllerSW:
             self.inputs.platformSide = platSide
 
     def nextStationNameSignalHandler(self, id, nxtStatName):
-        if(self.trainId == id and nxtStatName != ""):
+        if(self.trainId == id and nxtStatName != "0"):
             self.inputs.nextStationName = nxtStatName
 
     def isBeaconSignalHandler(self, id, isBeac):
