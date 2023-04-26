@@ -35,8 +35,8 @@ class MainWindow(QMainWindow):
             self.TrainControllerSW = TrainControllerSW(trainId=id, line = trainLine, commandedSpeed=0, currentSpeed=0, authority=10, inputTime="2023-02-20T21:52:48.3940347-05:00", 
                                                        undergroundState=False, temperature=0, stationName="setupStationName", platformSide=0, 
                                                        nextStationName="station2", isBeacon=False, externalLightsState=False, internalLightsState=False, leftDoorState=False, 
-                                                       rightDoorState=False, serviceBrakeState=False, emergencyBrakeState=False, serviceBrakeStatus=False, engineStatus=False, 
-                                                       communicationsStatus=False, power=0, leftDoorCommand=False, rightDoorCommand=False, serviceBrakeCommand=False, 
+                                                       rightDoorState=False, serviceBrakeState=False, emergencyBrakeState=False, serviceBrakeStatus=True, engineStatus=True, 
+                                                       communicationsStatus=True, power=0, leftDoorCommand=False, rightDoorCommand=False, serviceBrakeCommand=False, 
                                                        emergencyBrakeCommand=False, externalLightCommand=False, internalLightCommand=False, stationAnnouncement="setupStationAnnouncement")
             
             # Get block list
