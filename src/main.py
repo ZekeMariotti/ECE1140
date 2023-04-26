@@ -151,7 +151,7 @@ class MainWindow(QMainWindow):
             activeSignals.activeSignal.emit()
 
             # Test TM and TC    
-            self.trainDispatch(2, "Green")
+            #self.trainDispatch(2, "Green")
 
             #self.TkMTestUI = TrackModelTestUI.TrackModelTestUI()
             #self.TESTUI = IntegrationTestUI.BasicTestUI()
