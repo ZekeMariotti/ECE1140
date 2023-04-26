@@ -42,6 +42,7 @@ class MainWindow(QMainWindow):
         TkMWCSignals.failureSignal.connect(self.brokenRailHandler)
         TkMWCSignals.stopSignal.connect(self.errorHandler)
         TkMWCSignals.currBlockSignal.connect(self.currBlockHandler)
+        self.PLCMain = PLC(WaysideControllerGreen,WaysideControllerGreen2,"Green")
         #Window
 
         self.setWindowTitle(str(self.name))
@@ -728,7 +729,6 @@ class MainWindow(QMainWindow):
           if WaysideControllerGreen2.authority!=WaysideControllerGreen2.suggestedAuthority:
             WaysideControllerGreen2.setAuthority()
 
-          self.PLCMain = PLC(WaysideControllerGreen,WaysideControllerGreen2,"Green")
           if (self.Switch1Out.text() == "1 to 13" and WaysideControllerGreen2.switches[1] == False) or (self.Switch1Out.text() == "12 to 13" and WaysideControllerGreen2.switches[1] == True):
             TkMWCSignals.switchStateSignal.emit(int(WaysideControllerGreen2.switches[1]), 1, 12)
           if (self.Switch2Out.text() == "29 to 150" and WaysideControllerGreen2.switches[2] == False) or (self.Switch2Out.text() == "29 to 30" and WaysideControllerGreen2.switches[2] == True):

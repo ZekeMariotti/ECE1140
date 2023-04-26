@@ -279,34 +279,6 @@ class PLC():
                 self.Wayside1.setGatePositions(True)
                 self.Wayside2.setGatePositions(True)
                 #set Lights
-
-        for i in range(0, len(GLight1)):
-            if(GLight1[i]==True):
-                self.Wayside1.setSignalLights(False,1)
-                break
-            else:
-                self.Wayside1.setSignalLights(True,1)
-
-        for i in range(0,len(GLight13)):
-            if(GLight13[i]==True):
-                self.Wayside1.setSignalLights(False,13)
-                break
-            else:
-                self.Wayside1.setSignalLights(True,13)
-        
-        for i in range(0, len(GLight77)):
-            if(GLight77[i]==True):
-                self.Wayside1.setSignalLights(False,77)
-                break
-            else:
-                self.Wayside1.setSignalLights(True,77)
-        
-        for i in range(0, len(GLight100)):
-            if(GLight100[i]==True):
-                self.Wayside1.setSignalLights(False,100)
-                break
-            else:
-                self.Wayside1.setSignalLights(True,100)
         Gswitch1True.clear()
         Gswitch1False.clear()
         Gswitch2True.clear()
