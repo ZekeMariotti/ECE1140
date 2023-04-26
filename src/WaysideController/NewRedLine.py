@@ -28,6 +28,7 @@ WaysideControllerRed2.setdictionarysizes(51,77)
 WaysideControllerRed2.setCommandedSpeed()
 WaysideControllerRed2.setAuthority()
 WaysideControllerRed2.setSwitchPositions(True,7) 
+WaysideControllerRed.setSignalLights(False,10)
 
 class Worker(QObject):
       finished = pyqtSignal()
