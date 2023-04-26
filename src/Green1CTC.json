@@ -8,7 +8,7 @@
         "6": false
     },
     "Lights": {
-        "1": true,
+        "1": false,
         "2": true,
         "3": true,
         "4": true,
@@ -107,7 +107,7 @@
         "97": true,
         "98": true,
         "99": true,
-        "100": true
+        "100": false
     },
     "Occupancy": {
         "1": false,
