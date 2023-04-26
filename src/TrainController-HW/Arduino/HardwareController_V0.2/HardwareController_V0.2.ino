@@ -281,19 +281,19 @@ void parseJSONDataUI(int *switchStateArray){
   jsonDataUI["Station Announcement"] = "text";
   jsonDataUI["Engine State"] = switchStateArray[0];
   jsonDataUI["Emergency Brake State"] = emergencyBrakeState;
-  jsonDataUI["Service Brake State"] = jsonDataIn["serviceBrakeState"];
+  jsonDataUI["Service Brake State"] = jsonDataIn["sbSt"];
   jsonDataUI["Internal Lights State"] = switchStateArray[4];
   jsonDataUI["External Lights State"] = switchStateArray[5];
-  jsonDataUI["Left Door State"] = jsonDataIn["leftDoorState"];
-  jsonDataUI["Right Door State"] = jsonDataIn["rightDoorState"];
-  jsonDataUI["Station"] = (stationState) ? jsonDataIn["stationName"] : jsonDataIn["nextStationName"];
-  jsonDataUI["Current Speed"] = jsonDataIn["currentSpeed"];
-  jsonDataUI["Commanded Speed"] = jsonDataIn["commandedSpeed"];
+  jsonDataUI["Left Door State"] = jsonDataIn["lftDrSt"];
+  jsonDataUI["Right Door State"] = jsonDataIn["rtDrSt"];
+  jsonDataUI["Station"] = (stationState) ? jsonDataIn["stnNm"] : jsonDataIn["nxtStnNm"];
+  jsonDataUI["Current Speed"] = jsonDataIn["curSpd"];
+  jsonDataUI["Commanded Speed"] = jsonDataIn["cmdSpd"];
   jsonDataUI["Manual Commanded Speed"] = manualCommandedSpeed;
-  jsonDataUI["Authority"] = jsonDataIn["authority"];
+  jsonDataUI["Authority"] = jsonDataIn["auth"];
   jsonDataUI["Speed Limit"] = 999;
   jsonDataUI["Temperature"] = 999;
-  jsonDataUI["Communications Status"] = jsonDataIn["communicationsStatus"];
+  jsonDataUI["Communications Status"] = jsonDataIn["commSt"];
   jsonDataUI["Kp"] = Kp;
   jsonDataUI["Ki"] = Ki;
   
@@ -307,7 +307,7 @@ void parseJSONData(int *switchStateArray){
   jsonDataOut["emergencyBrakeCommand"] = emergencyBrakeState;
   jsonDataOut["externalLightCommand"] = switchStateArray[5];
   jsonDataOut["internalLightCommand"] = switchStateArray[4];
-  jsonDataOut["stationAnnouncement"] = jsonDataIn["stationName"];
+  jsonDataOut["stationAnnouncement"] = jsonDataIn["stnNm"];
   jsonDataOut["isAtStation"] = stationState;
   int x = jsonDataOut["power"];
   // Serial.print("JSON OUT:");
@@ -406,9 +406,9 @@ void drive(int dt){
     //This also calls the power and brake functions
   autoDriveCommand = switchStateArray[1];//jsonDataIn["Manual Speed Override"];
   // Serial.println(autoDriveCommand);
-  currentSpeed = jsonDataIn["currentSpeed"];
-  commandedSpeed = jsonDataIn["commandedSpeed"];
-  authority = jsonDataIn["authority"];
+  currentSpeed = jsonDataIn["curSpd"];
+  commandedSpeed = jsonDataIn["cmdSpd"];
+  authority = jsonDataIn["auth"];
   if(autoDriveCommand){
     if (authority>0){
       autodrive(currentSpeed, commandedSpeed, dt);
@@ -453,7 +453,7 @@ bool emergencyBrake(){
 
 //==============BEACON SHIT================
 void setStationState(){
-  isBeacon = jsonDataIn["isBeacon"];
+  isBeacon = jsonDataIn["isB"];
   // # if isBeacon and !firstBeaconPassed, entering station
   if(isBeacon && !firstBeaconPassed){
     firstBeaconPassed = true;
