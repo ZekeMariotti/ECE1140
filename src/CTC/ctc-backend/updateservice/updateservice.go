@@ -144,23 +144,23 @@ func (s *UpdateService) updateSpeeds(routeMap map[int][]int) {
 }
 
 /*
-func (s *UpdateService) getDistanceToRouteEnd(line string, route []int) decimal.Decimal {
-	distance := decimal.NewFromInt(0)
-	lineData := s.data.Lines.Get(line)
-	for i := range route {
-		distance.Add(lineData.Blocks.Get(route[i]).Length)
+	func (s *UpdateService) getDistanceToRouteEnd(line string, route []int) decimal.Decimal {
+		distance := decimal.NewFromInt(0)
+		lineData := s.data.Lines.Get(line)
+		for i := range route {
+			distance.Add(lineData.Blocks.Get(route[i]).Length)
+		}
+		return distance
 	}
-	return distance
-}
 
-func (s *UpdateService) getMaxSpeedFromDistance(distance decimal.Decimal) decimal.Decimal {
-	acceleration, _ := decimal.NewFromString(MAX_TRAIN_DESCELERATION_STR)
-	speed := acceleration.Mul(decimal.NewFromInt(2))
-	speed = speed.Mul(distance)
-	half, _ := decimal.NewFromString("0.5")
-	speed = speed.Pow(half)
-	return speed
-}
+	func (s *UpdateService) getMaxSpeedFromDistance(distance decimal.Decimal) decimal.Decimal {
+		acceleration, _ := decimal.NewFromString(MAX_TRAIN_DESCELERATION_STR)
+		speed := acceleration.Mul(decimal.NewFromInt(2))
+		speed = speed.Mul(distance)
+		half, _ := decimal.NewFromString("0.5")
+		speed = speed.Pow(half)
+		return speed
+	}
 */
 func (s *UpdateService) updateTrainAssignments() {
 	newMap := make(map[string]map[int]int)
@@ -187,70 +187,47 @@ func (s *UpdateService) updateTrainAssignments() {
 				}
 				isSwitch, swt := s.routeGen.IsSwitchBlock(block.Number, s.data.Lines.Get(line))
 				if isSwitch {
-					isSource := swt.Source == block.Number
-					if block.Direction == common.BLOCKDIRECTION_ASCENDING {
-						switch swt.Side {
-						case common.BLOCKSIDE_ASCEND:
-							if isSource {
-								newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number-1]
+					switch swt.Side {
+					case common.BLOCKSIDE_ASCEND:
+						switch block.Number {
+						case swt.Source:
+							if s.lastTrainBlockMap[line][swt.Source-1] > 0 {
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Source-1]
 							} else {
-								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Source]
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.GetDestination()]
 							}
-						case common.BLOCKSIDE_DESCEND:
-							if isSource {
+						case swt.Destination1:
+							if s.lastTrainBlockMap[line][swt.Source] > 0 {
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Source]
+							} else {
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination1+1]
+							}
+						case swt.Destination2:
+							if s.lastTrainBlockMap[line][swt.Source] > 0 {
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Source]
+							} else {
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2+1]
+							}
+						}
+					case common.BLOCKSIDE_DESCEND:
+						switch block.Number {
+						case swt.Source:
+							if s.lastTrainBlockMap[line][swt.Source+1] > 0 {
 								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Source+1]
 							} else {
-								if s.lastTrainBlockMap[line][swt.Destination1] != -1 {
-									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination1]
-								} else {
-									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2]
-								}
-							}
-						}
-					} else if block.Direction == common.BLOCKDIRECTION_BIDIRECTIONAL {
-						switch swt.Side {
-						case common.BLOCKSIDE_ASCEND:
-							if isSource {
-								if s.lastTrainBlockMap[line][swt.GetDestination()] != -1 {
-									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.GetDestination()]
-								} else if s.lastTrainBlockMap[line][block.Number-1] != -1 {
-									newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number-1]
-								}
-							} else {
-								if s.lastTrainBlockMap[line][block.Number+1] != -1 {
-									newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number+1]
-								} else {
-									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Source]
-								}
-							}
-						case common.BLOCKSIDE_DESCEND:
-							if isSource {
-								if s.lastTrainBlockMap[line][swt.GetDestination()] != -1 {
-									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.GetDestination()]
-								} else if s.lastTrainBlockMap[line][block.Number+1] != -1 {
-									newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number+1]
-								}
-							} else {
-								if s.lastTrainBlockMap[line][block.Number-1] != -1 {
-									newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number-1]
-								} else {
-									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Source]
-								}
-							}
-						}
-					} else if block.Direction == common.BLOCKDIRECTION_DESCENDING {
-						switch swt.Side {
-						case common.BLOCKSIDE_ASCEND:
-							if isSource {
 								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.GetDestination()]
-							} else {
-								newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number+1]
 							}
-						case common.BLOCKSIDE_DESCEND:
-							if isSource {
-								newMap[line][block.Number] = s.lastTrainBlockMap[line][block.Number+1]
+						case swt.Destination1:
+							if s.lastTrainBlockMap[line][swt.Source] > 0 {
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Source]
 							} else {
-								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.GetDestination()]
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination1-1]
+							}
+						case swt.Destination2:
+							if s.lastTrainBlockMap[line][swt.Source] > 0 {
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Source]
+							} else {
+								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2-1]
 							}
 						}
 					}
@@ -294,6 +271,26 @@ func (s *UpdateService) updateTrainAssignments() {
 			}
 		}
 	}
+	/* // Code for debugging this function
+	printMap := make(map[string]map[int]int)
+	for line, blocks := range newMap {
+		printMap[line] = make(map[int]int)
+		for id, train := range blocks {
+			if train != -1 {
+				printMap[line][id] = train
+			}
+		}
+	}
+	for line, blocks := range printMap {
+		if len(blocks) > 0 {
+			fmt.Print(line)
+			for id, train := range blocks {
+				fmt.Print("[", id, ":", train, "] ")
+			}
+			fmt.Println()
+		}
+	} */
+
 	// Update values and cache result
 	s.data.Trains.ResetTrainLocations()
 	for _, blocks := range newMap {
