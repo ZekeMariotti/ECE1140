@@ -141,7 +141,7 @@ class TrainControllerSW:
 
         if self.line == "Green":
             self.blockList = [0] * 151
-            self.blockCount = 63
+            self.blockCount = 62
             self.blockCountDirection = 1
             with open (greenPath) as csvfile:
                 rows = csv.reader(csvfile, delimiter=',')
@@ -152,7 +152,7 @@ class TrainControllerSW:
                         self.blockList[int(row[0])] = blocks(int(row[0]), float(row[1]), float(row[5]), float(row[3]), bool(int(row[7])))
         elif self.line == "Red":
             self.blockList = [0] * 77
-            self.blockCount = 9
+            self.blockCount = 10
             self.blockCountDirection = -1
             with open(redPath) as csvfile:
                 rows = csv.reader(csvfile, delimiter=',')
@@ -501,8 +501,8 @@ class TrainControllerSW:
             self.nextBlock = nxtBlk
         
     def fromSwitchSignal(self, id, countUpOrDown):
-        if(self.trainId == id):
-            if (countUpOrDown == True):
+        if((self.trainId == id) and (countUpOrDown != -1)):
+            if (countUpOrDown == 1):
                 self.blockCountDirection = -1
             else:
                 self.blockCountDirection = 1
