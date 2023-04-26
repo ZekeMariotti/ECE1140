@@ -211,7 +211,13 @@ class TrainControllerSW:
                 self.atSwitchBlock = False
                 self.firstSwitchBeaconPassed = False
                 self.secondSwitchBeaconPassed = False
+
                 self.blockCount = self.nextBlock
+
+                if (self.countUpOrDown == 1):
+                    self.blockCountDirection = -1
+                else:
+                    self.blockCountDirection = 1
 
         # Set current block
         if (self.atSwitchBlock == True):
@@ -502,10 +508,7 @@ class TrainControllerSW:
         
     def fromSwitchSignal(self, id, countUpOrDown):
         if((self.trainId == id) and (countUpOrDown != -1)):
-            if (countUpOrDown == 1):
-                self.blockCountDirection = -1
-            else:
-                self.blockCountDirection = 1
+            self.countUpOrDown = countUpOrDown
 
     def switchBlockSignal(self, id, swtchBlk):
         if(self.trainId == id):
