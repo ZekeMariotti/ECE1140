@@ -544,6 +544,8 @@ class TrainModel():
                 
             # Case where the train needs to just increase block by 1
             else:
+                if (self.trackData["currBlock"] == 150):
+                    print("Derailment End of Green Nums")
                 if self.trackData["trackSection"][0] < self.trackData["trackSection"][1]:
                     self.trackData["prevBlock"] = self.trackData["currBlock"]
                     return (self.trackData["currBlock"] + 1)
@@ -640,6 +642,8 @@ class TrainModel():
                     return 333
             # Case where the train needs to just increase block by 1
             else:
+                if (self.trackData["currBlock"] == 76):
+                    print("Derailment End of Red Nums")
                 if self.trackData["trackSection"][0] < self.trackData["trackSection"][1]:
                     self.trackData["prevBlock"] = self.trackData["currBlock"]
                     return (self.trackData["currBlock"] + 1)
