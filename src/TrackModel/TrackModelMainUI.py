@@ -452,8 +452,10 @@ class TrackModelMainUI(QWidget):
         trackSignals.powerPressedSignal.emit()
         self.backEnd.data["powerStatus"] = 1 if self.backEnd.data["powerStatus"] == 0 else 0
         if (self.backEnd.data["powerStatus"] == 0):
+            TkMWCSignals.stopSignal.emit(False)
             self.powerButton.setStyleSheet("background-color: green; color: white")
         else:
+            TkMWCSignals.stopSignal.emit(True)
             self.powerButton.setStyleSheet("background-color: red")
         self.updateInterface()
         
@@ -465,22 +467,26 @@ class TrackModelMainUI(QWidget):
                 self.backEnd.data["circuitStatusRed"].removeAt(self.backEnd.data["blockNo"])
                 self.backEnd.data["circuitStatusRed"].insertAt(1, self.backEnd.data["blockNo"])
                 self.circuitButton.setStyleSheet("background-color: red")
+                TkMWCSignals.stopSignal.emit(True)
                 TkMWCSignals.currBlockSignal.emit(0, True, self.backEnd.data["blockNo"] + 1)
             else:
                 self.backEnd.data["circuitStatusRed"].removeAt(self.backEnd.data["blockNo"])
                 self.backEnd.data["circuitStatusRed"].insertAt(0, self.backEnd.data["blockNo"])
                 self.circuitButton.setStyleSheet("background-color: green; color: white")
+                TkMWCSignals.stopSignal.emit(False)
                 TkMWCSignals.currBlockSignal.emit(0, False, self.backEnd.data["blockNo"] + 1)
         elif self.backEnd.data["line"] == 1:
             if self.backEnd.data["circuitStatusGreen"][self.backEnd.data["blockNo"]] == 0:
                 self.backEnd.data["circuitStatusGreen"].removeAt(self.backEnd.data["blockNo"])
                 self.backEnd.data["circuitStatusGreen"].insertAt(1, self.backEnd.data["blockNo"])
                 self.circuitButton.setStyleSheet("background-color: red")
+                TkMWCSignals.stopSignal.emit(True)
                 TkMWCSignals.currBlockSignal.emit(1, True, self.backEnd.data["blockNo"] + 1)
             else:
                 self.backEnd.data["circuitStatusGreen"].removeAt(self.backEnd.data["blockNo"])
                 self.backEnd.data["circuitStatusGreen"].insertAt(0, self.backEnd.data["blockNo"])
                 self.circuitButton.setStyleSheet("background-color: green; color: white")
+                TkMWCSignals.stopSignal.emit(False)
                 TkMWCSignals.currBlockSignal.emit(1, False, self.backEnd.data["blockNo"] + 1)
 
     # Handler for when Brake Failure State button is pressed
@@ -495,6 +501,7 @@ class TrackModelMainUI(QWidget):
                 self.backEnd.data["railStatusRed"].insertAt(0, self.backEnd.data["blockNo"])
                 self.brokenRailButton.setStyleSheet("background-color: green; color: white")
             TkMWCSignals.failureSignal.emit(0, int(self.backEnd.data["railStatusRed"].__getitem__(self.backEnd.data["blockNo"])), self.backEnd.data["blockNo"] + 1)
+            TkMWCSignals.stopSignal.emit(bool(self.backEnd.data["railStatusRed"].__getitem__(self.backEnd.data["blockNo"])))
         elif self.backEnd.data["line"] == 1:
             if self.backEnd.data["railStatusGreen"][self.backEnd.data["blockNo"]] == 0:
                 self.backEnd.data["railStatusGreen"].removeAt(self.backEnd.data["blockNo"])
@@ -505,6 +512,7 @@ class TrackModelMainUI(QWidget):
                 self.backEnd.data["railStatusGreen"].insertAt(0, self.backEnd.data["blockNo"])
                 self.brokenRailButton.setStyleSheet("background-color: green; color: white")
             TkMWCSignals.failureSignal.emit(1, int(self.backEnd.data["railStatusGreen"].__getitem__(self.backEnd.data["blockNo"])), self.backEnd.data["blockNo"] + 1)
+            TkMWCSignals.stopSignal.emit(bool(self.backEnd.data["railStatusGreen"].__getitem__(self.backEnd.data["blockNo"])))
 
     # Gets the Line from the UI
     def getLineInput(self, index):

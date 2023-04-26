@@ -21,6 +21,8 @@ from sys import argv
 import sys
 sys.path.append(__file__.replace("\TrainModelFolder\TrainModelMainUI.py", ""))
 
+import os
+import __main__
 from TrainModelFolder.TrainModel import TrainModel
 from TrainModelFolder.TrainModelSignals import *
 from Integration.TMTkMSignals import *
@@ -438,9 +440,15 @@ class TrainModelUI(QWidget):
         # Advertisements Labels #
         #########################
         self.adLabel = QLabel()
-        Mpixmap = QPixmap(sys.path[0] + "\MarlboroGoldAd.png")
-        Ppixmap = QPixmap(sys.path[0] + "\PlantersAd.png")
-        JDpixmap = QPixmap(sys.path[0] + "\JackDanielsAd.png")
+        if (__main__.__file__[-7:] == "main.py"):
+            basePath = os.path.join(sys.path[0], "TrainModelFolder")
+            
+        else:   
+            basePath = os.path.join(sys.path[0], "..", "TrainModelFolder")
+
+        Mpixmap = QPixmap(basePath + "\MarlboroGoldAd.png")
+        Ppixmap = QPixmap(basePath + "\PlantersAd.png")
+        JDpixmap = QPixmap(basePath + "\JackDanielsAd.png")
         self.pixMaps = [Mpixmap, Ppixmap, JDpixmap]
 
         self.adLabel.setPixmap(Mpixmap)

@@ -36,7 +36,12 @@ export class BackendService {
   }
 
   getBlocks(line: string): Observable<Block[]> {
-    return this.http.get<Block[]>(`${environment.api_be}/api/frontend/lines/${line}/blocks`);  }
+    return this.http.get<Block[]>(`${environment.api_be}/api/frontend/lines/${line}/blocks`);
+  }
+
+  getThroughput(line: string): Observable<number> {
+    return this.http.get<number>(`${environment.api_be}/api/frontend/lines/${line}/throughput`);
+  }
 
   getStations(line: string): Observable<string[]> {
     return this.http.get<string[]>(`${environment.api_be}/api/frontend/lines/${line}/stations`, {responseType: 'json'});

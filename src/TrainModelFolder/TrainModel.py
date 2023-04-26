@@ -269,7 +269,7 @@ class TrainModel():
     def emergencyBrakeCommandSignalHandler(self, id, state):
         if (id == self.TrainID):
             self.eBrakes["trainController"] = state
-            if (self.eBrakes["trainControllerPrev"] == True) & (self.eBrakes["trainController"] == False):
+            if (self.eBrakes["trainController"] == False):
                 self.eBrakes["user"] = False
 
     # External Light Command input handler
@@ -328,6 +328,7 @@ class TrainModel():
             self.passThroughData["beacon"][4] = blockCount
             self.passThroughData["beacon"][5] = fromSwitch
             self.passThroughData["beacon"][6] = switchBlock
+
 
     # Switch Input Handler
     def switchSignalHandler(self, id, state):

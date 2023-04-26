@@ -11,7 +11,7 @@ class trainModelTrackModelSignals(QObject):
     commandedSpeedSignal     = pyqtSignal(int, float)
     passengersEnteringSignal = pyqtSignal(int, int)
     undergroundStateSignal   = pyqtSignal(int, bool)
-    beaconSignal             = pyqtSignal(int, str, int, str, bool, int, bool, int)
+    beaconSignal             = pyqtSignal(int, str, int, str, bool, int, int, int)
     switchSignal             = pyqtSignal(int, bool)
     switchStateSignal        = pyqtSignal(int, bool)
     blockLengthSignal        = pyqtSignal(int, float)

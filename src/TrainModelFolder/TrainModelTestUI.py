@@ -708,7 +708,7 @@ class TrainModelTestUI(QWidget):
 
     # Gets the positive negative beacon input from the UI
     def getPositiveNegativeInput(self, index):
-        self.testDataInputs["beacon"][5] = bool(index)
+        self.testDataInputs["beacon"][5] = int(index)
 
     # Gets the switch block input from the UI
     def getSwitchBlock(self):

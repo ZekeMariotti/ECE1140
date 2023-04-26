@@ -13,44 +13,54 @@ from WaysideController.PLC import PLC
 
 #global variables
 
-rowheaders =["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"]
 colheaders =["0","1","2","3","4","5","6","7","8","9"]
 rowheaders1 =["0","1","2","3","4","5","6","7","8","9","10"] 
 rowheaders2 =["0","1","2","3","4","5"]
-colheaders1 =["0","1","2","3","4","5","6","7","8","9"]
-colheaders2 =["0","1","2","3","4","5","6","7","8","9"]
+#Setup Green Waysides
+WaysideControllerGreen=Wayside(1)
+WaysideControllerGreen2=Wayside(1)
+WaysideControllerGreen.setdictionarysizes(1,101)
+WaysideControllerGreen.setCommandedSpeed()
+WaysideControllerGreen.setAuthority()
+WaysideControllerGreen2.setdictionarysizes(101,151)
+WaysideControllerGreen2.setCommandedSpeed()
+WaysideControllerGreen2.setAuthority()
+##set inital light states RED
+WaysideControllerGreen.setSignalLights(False,100) 
+WaysideControllerGreen.setSignalLights(False,1)
+WaysideControllerGreen2.setSignalLights(False,150)
+WaysideControllerGreen2.setSignalLights(False,101)
+
+
 class Worker(QObject):
       finished = pyqtSignal()
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self,name):
 
         super().__init__()
 
         #Intialize Wayside class
-        self.WaysideControllerGreen = Wayside(1,True)
-        self.WaysideControllerGreen2 = Wayside(1,True)
+        #No longer needed so communication can be simulated
+        #self.WaysideControllerGreen = Wayside(1,True)
+        #self.WaysideControllerGreen2 = Wayside(1,True)
         #self.File1 = "C:\\Systems and Progect Engineering\ECE1140-1\src\waysideController\GreenLine.txt"
         #self.File2 = "C:\\Systems and Progect Engineering\ECE1140-1\src\waysideController\GreenLine2.txt"
         self.File1 = os.path.join(sys.path[0], "WaysideController", "GreenLine.txt")
         self.File2 = os.path.join(sys.path[0], "WaysideController", "GreenLine2.txt")
+        self.name = name
         self.blocks1 =101
         self.blocks2 =151
-        self.WaysideControllerGreen.setdictionarysizes(1,self.blocks1,7)
-        self.WaysideControllerGreen.setCommandedSpeed()
-        self.WaysideControllerGreen.setAuthority()
-        self.WaysideControllerGreen2.setdictionarysizes(self.blocks1,self.blocks2,6)
-        self.WaysideControllerGreen2.setCommandedSpeed()
-        self.WaysideControllerGreen2.setAuthority()        
-        self.testUI = False
+        self.TestUI = True
         self.active = False
-        self.PLCMain = PLC(self.WaysideControllerGreen,self.WaysideControllerGreen2,"Green")
+        self.PLCMain = PLC(WaysideControllerGreen,WaysideControllerGreen2,"Green")
         activeSignals.activeSignal.connect(self.activeSignal)
         TkMWCSignals.failureSignal.connect(self.brokenRailHandler)
+        TkMWCSignals.stopSignal.connect(self.errorHandler)
         TkMWCSignals.currBlockSignal.connect(self.currBlockHandler)
         #Window
 
-        self.setWindowTitle("Green Line")
+        self.setWindowTitle(str(self.name))
         self.setMinimumSize(1100,650)
         self.move(0,0)
         self.windowWidth = self.frameGeometry().width()
@@ -119,11 +129,12 @@ class MainWindow(QMainWindow):
         self.PLCLabel = self.PLCLabelSetup()
         self.PLC = self.PLCButton()
         ##Maintenance
-        self.maintenanceMode = False
+        self.maintenanceMode = WaysideControllerGreen.maintenance
         self.maintenanceButton = self.maintenanceButtonSetup()
+        self.maintenanceLabel = self.maintenanceLabelSetup()
         #Test UI
-        if self.testUI :
-              self.WaysideControllerGreenTestUI = TestWindow(self.WaysideControllerGreen,self.WaysideControllerGreen2)
+        if self.TestUI :
+              self.WaysideControllerGreenTestUI = TestWindow(WaysideControllerGreen,WaysideControllerGreen2)
         #widget setups
     def mainThreadSetup(self):
           self.timerThread = QThread()
@@ -145,7 +156,8 @@ class MainWindow(QMainWindow):
             CommandedLabel = QLabel()
             CommandedLabel.setFont(self.titleFont)
             CommandedLabel.setText("Commanded Speed (MPH)")
-            CommandedLabel.move(450,-220)
+            CommandedLabel.setFixedSize(QSize(230,25))
+            CommandedLabel.move(450,0)
             CommandedLabel.setParent(self)
             return(CommandedLabel)
     
@@ -154,23 +166,20 @@ class MainWindow(QMainWindow):
             CommandedSpeed.setFont(self.labelFont)
             CommandedSpeed.setFixedSize(QSize(int(round(0.6*self.windowWidth)),int(round(0.12*self.windowHeight))))
             CommandedSpeed.setColumnCount(10)
-            CommandedSpeed.setRowCount(16)
-            CommandedSpeed.setVerticalHeaderLabels(rowheaders)
+            CommandedSpeed.setRowCount(11)
+            CommandedSpeed.setVerticalHeaderLabels(rowheaders1)
             CommandedSpeed.setHorizontalHeaderLabels(colheaders)
             CommandedSpeed.setItem(0,0,QTableWidgetItem("-"))
             i=0
             j=1
             for k in range(1,self.blocks1):
-                value=self.WaysideControllerGreen.commandedSpeed[k]
+                value=WaysideControllerGreen.commandedSpeed[k]
                 CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
                  j=0
                  i=i+1
-            j=1
-            for k in range(152,161):
-                CommandedSpeed.setItem(15,j,QTableWidgetItem("-"))
-                j=j+1
+
             CommandedSpeed.setParent(self)
             CommandedSpeed.move(0,50)
             return(CommandedSpeed)
@@ -181,7 +190,8 @@ class MainWindow(QMainWindow):
           AuthorityLabel = QLabel()
           AuthorityLabel.setFont(self.titleFont)
           AuthorityLabel.setText("Authority (Blocks)")
-          AuthorityLabel.move(480,-100)
+          AuthorityLabel.setFixedSize(QSize(230,25))
+          AuthorityLabel.move(480,140)
           AuthorityLabel.setParent(self)
           return(AuthorityLabel)
     
@@ -190,23 +200,20 @@ class MainWindow(QMainWindow):
             Authority.setFont(self.labelFont)
             Authority.setFixedSize(QSize(int(round(0.6*self.windowWidth)),int(round(0.12*self.windowHeight))))
             Authority.setColumnCount(10)
-            Authority.setRowCount(16)
-            Authority.setVerticalHeaderLabels(rowheaders)
+            Authority.setRowCount(11)
+            Authority.setVerticalHeaderLabels(rowheaders1)
             Authority.setHorizontalHeaderLabels(colheaders)
             Authority.setItem(0,0,QTableWidgetItem("-"))
             i=0
             j=1
             for k in range(1,self.blocks1):
-                value=self.WaysideControllerGreen.authority[k]
+                value=WaysideControllerGreen.authority[k]
                 Authority.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
                  j=0
                  i=i+1
-            j=1
-            for k in range(152,161):
-                Authority.setItem(15,j,QTableWidgetItem("-"))
-                j=j+1            
+         
             Authority.setParent(self)
             Authority.move(0,170)
             return(Authority)
@@ -217,7 +224,8 @@ class MainWindow(QMainWindow):
           RailLabel = QLabel()
           RailLabel.setFont(self.titleFont)
           RailLabel.setText("Broken Rail")
-          RailLabel.move(500,25)
+          RailLabel.setFixedSize(QSize(230,25))
+          RailLabel.move(500,250)
           RailLabel.setParent(self)
           return(RailLabel)
     
@@ -226,14 +234,14 @@ class MainWindow(QMainWindow):
             BrokenRail.setFont(self.labelFont)
             BrokenRail.setFixedSize(QSize(int(round(0.6*self.windowWidth)),int(round(0.12*self.windowHeight))))
             BrokenRail.setColumnCount(10)
-            BrokenRail.setRowCount(16)
-            BrokenRail.setVerticalHeaderLabels(rowheaders)
+            BrokenRail.setRowCount(11)
+            BrokenRail.setVerticalHeaderLabels(rowheaders1)
             BrokenRail.setHorizontalHeaderLabels(colheaders)
             BrokenRail.setItem(0,0,QTableWidgetItem("-"))
             i=0
             j=1
             for k in range(1,self.blocks1):
-                if self.WaysideControllerGreen.brokenRail[k] == True:
+                if WaysideControllerGreen.brokenRail[k] == True:
                     value="ERROR"
                 else:
                     value=" "
@@ -242,10 +250,7 @@ class MainWindow(QMainWindow):
                 if j>9:
                  j=0
                  i=i+1
-            j=1
-            for k in range(152,161):
-                BrokenRail.setItem(15,j,QTableWidgetItem("-"))
-                j=j+1
+
             BrokenRail.setParent(self)
             BrokenRail.move(0,290)
             return(BrokenRail)
@@ -256,8 +261,9 @@ class MainWindow(QMainWindow):
           ColorLabel = QLabel()
           ColorLabel.setFont(self.titleFont)
           ColorLabel.setText("Signal Color (G/R)")
+          ColorLabel.setFixedSize(QSize(230,25))
           ColorLabel.setParent(self)
-          ColorLabel.move(470,155)
+          ColorLabel.move(470,380)
           return(ColorLabel)
     
     def SignalLightSetup(self):
@@ -265,27 +271,26 @@ class MainWindow(QMainWindow):
             SignalLight.setFont(self.labelFont)
             SignalLight.setFixedSize(QSize(int(round(0.6*self.windowWidth)),int(round(0.12*self.windowHeight))))
             SignalLight.setColumnCount(10)
-            SignalLight.setRowCount(16)
-            SignalLight.setVerticalHeaderLabels(rowheaders)
+            SignalLight.setRowCount(11)
+            SignalLight.setVerticalHeaderLabels(rowheaders1)
             SignalLight.setHorizontalHeaderLabels(colheaders)
             SignalLight.setItem(0,0,QTableWidgetItem("-"))
             i=0
             j=1
             for k in range(1,self.blocks1):
-                if self.WaysideControllerGreen.signalLights[k]==True:
+                if WaysideControllerGreen.signalLights[k]==True:
                   value="G"
                 else:
                   value="R"
-                             
-                SignalLight.setItem(i,j,QTableWidgetItem((value)))
+                if(k==1 or k==13 or k==77 or k==100 or k==84):
+                  SignalLight.setItem(i,j,QTableWidgetItem((str(value))))
+                else:
+                  SignalLight.setItem(i,j,QTableWidgetItem((" ")))
                 j=j+1
                 if j>9:
                  j=0
                  i=i+1
-            j=1
-            for k in range(152,161):
-                SignalLight.setItem(15,j,QTableWidgetItem("-"))
-                j=j+1            
+
             SignalLight.setParent(self)
             SignalLight.move(0,420)
             return(SignalLight)
@@ -296,7 +301,8 @@ class MainWindow(QMainWindow):
           OccupancyLabel = QLabel()
           OccupancyLabel.setFont(self.titleFont)
           OccupancyLabel.setText("Occupancy")
-          OccupancyLabel.move(500,275)
+          OccupancyLabel.setFixedSize(QSize(230,25))
+          OccupancyLabel.move(500,510)
           OccupancyLabel.setParent(self)
           return(OccupancyLabel)  
             
@@ -305,14 +311,14 @@ class MainWindow(QMainWindow):
             Occupancy.setFont(self.labelFont)
             Occupancy.setFixedSize(QSize(int(round(0.6*self.windowWidth)),int(round(0.12*self.windowHeight))))
             Occupancy.setColumnCount(10)
-            Occupancy.setRowCount(16)
-            Occupancy.setVerticalHeaderLabels(rowheaders)
+            Occupancy.setRowCount(11)
+            Occupancy.setVerticalHeaderLabels(rowheaders1)
             Occupancy.setHorizontalHeaderLabels(colheaders)
             Occupancy.setItem(0,0,QTableWidgetItem("-"))
             i=0
             j=1
             for k in range(1,self.blocks1):
-                if self.WaysideControllerGreen.occupancy[k]==True:
+                if WaysideControllerGreen.occupancy[k]==True:
                   value="X"
                 else:
                   value=" "
@@ -322,10 +328,6 @@ class MainWindow(QMainWindow):
                 if j>9:
                  j=0
                  i=i+1
-            j=1
-            for k in range(152,161):
-                Occupancy.setItem(15,j,QTableWidgetItem("-"))
-                j=j+1            
             Occupancy.setParent(self)
             Occupancy.move(int(round(0.0*self.windowWidth)),int(round(0.85*self.windowHeight)))
             return(Occupancy)
@@ -336,21 +338,22 @@ class MainWindow(QMainWindow):
           GateLabel = QLabel()
           GateLabel.setFont(self.titleFont)
           GateLabel.setText("Gate State")
-          GateLabel.move(int(round(0.85*self.windowWidth)),int(round(0.45*self.windowHeight)))
+          GateLabel.setFixedSize(QSize(100,20))
+          GateLabel.move(int(round(0.85*self.windowWidth)),560)
           GateLabel.setParent(self)
           return(GateLabel)  
     
     def GateSetup(self):
             gate = QLabel()
             gate.setFont(self.labelFont)
-
-            if self.WaysideControllerGreen.gates[1] == True:
+            gate.setFixedSize(160,20)
+            if WaysideControllerGreen.gates[1] == True:
                 gate.setText("Block 19 Gate:  UP")
 
             else:
                 gate.setText("Block 19 Gate:  DOWN")
 
-            gate.move(int(round(0.85*self.windowWidth)),int(round(0.55*self.windowHeight)))
+            gate.move(int(round(0.85*self.windowWidth)),580)
             gate.setParent(self)
             return(gate)
 
@@ -387,16 +390,18 @@ class MainWindow(QMainWindow):
           MainSwitchLabel = QLabel()
           MainSwitchLabel.setFont(self.titleFont)
           MainSwitchLabel.setText("Switches")
+          MainSwitchLabel.setFixedSize(QSize(80,20))
           MainSwitchLabel.setParent(self)
-          MainSwitchLabel.move(875,-200)
+          MainSwitchLabel.move(830,20)
           return(MainSwitchLabel)
     
     def SwitchLabels(self):
           Switch1Label = QLabel()
           Switch1Label.setFont(self.labelFont)
+          Switch1Label.setFixedSize(QSize(60,290))
           Switch1Label.setText("\nSwitch 1\n\n\nSwitch 2\n\n\nSwitch 3\n\n\nSwitch 4\n\n\nSwitch 5\n\n\nSwitch 6") 
           Switch1Label.setParent(self)
-          Switch1Label.move(int(round(0.62*self.windowWidth)),int(round(-0.05*self.windowHeight)))
+          Switch1Label.move(int(round(0.62*self.windowWidth)),60)
           return(Switch1Label)
       
     def Switch1ButtonL(self):
@@ -509,252 +514,268 @@ class MainWindow(QMainWindow):
     def Switch1OutSetup(self):
           Output1 = QLabel()
           Output1.setFont(self.labelFont)
-
-          if self.WaysideControllerGreen.switches[1]==True:
+          Output1.setFixedSize(70,20)
+          if WaysideControllerGreen.switches[1]==True:
                 Output1.setText("1 to 13")
           else:
                 Output1.setText("12 to 13")
 
           Output1.setParent(self)
-          Output1.move(1000,-165)
+          Output1.move(1000,60)
           return(Output1)
     
     def Switch2OutSetup(self):
           Output2 = QLabel()
           Output2.setFont(self.labelFont)
 
-          if self.WaysideControllerGreen.switches[2]==True:
+          if WaysideControllerGreen.switches[2]==True:
                 Output2.setText("29 to 150")
           else:
                 Output2.setText("29 to 30")
-
+          Output2.setFixedSize(QSize(70,20))
           Output2.setParent(self)
-          Output2.move(1000,-115)
+          Output2.move(1000,120)
           return(Output2)
 
     def Switch3OutSetup(self):
           Output3 = QLabel()
           Output3.setFont(self.labelFont)
 
-          if self.WaysideControllerGreen.switches[3]==True:
+          if WaysideControllerGreen.switches[3]==True:
                 Output3.setText("57 to Yard")
           else:
                 Output3.setText("57 to 58")
-
+          Output3.setFixedSize(QSize(70,20))  
           Output3.setParent(self)
-          Output3.move(1000,-60)
+          Output3.move(1000,180)
           return(Output3)
 
     def Switch4OutSetup(self):
           Output4 = QLabel()
           Output4.setFont(self.labelFont)
 
-          if self.WaysideControllerGreen.switches[4]==True:
+          if WaysideControllerGreen.switches[4]==True:
                 Output4.setText("Yard to 63")
           else:
                 Output4.setText("62 to 63")
-
+          Output4.setFixedSize(QSize(70,20))
           Output4.setParent(self)
-          Output4.move(1000,-5)
+          Output4.move(1000,240)
           return(Output4)
 
     def Switch5OutSetup(self):
           Output5 = QLabel()
           Output5.setFont(self.labelFont)
 
-          if self.WaysideControllerGreen.switches[5]==True:
+          if WaysideControllerGreen.switches[5]==True:
                 Output5.setText("77 to 101")
           else:
                 Output5.setText("76 to 77")
-
+          Output5.setFixedSize(QSize(70,20))
           Output5.setParent(self)
-          Output5.move(1000,50)
+          Output5.move(1000,300)
           return(Output5)
 
     def Switch6OutSetup(self):
-          Output5 = QLabel()
-          Output5.setFont(self.labelFont)
+          Output6 = QLabel()
+          Output6.setFont(self.labelFont)
 
-          if self.WaysideControllerGreen.switches[5]==True:
-                Output5.setText("85 to 100")
+          if WaysideControllerGreen.switches[5]==True:
+                Output6.setText("85 to 100")
           else:
-                Output5.setText("85 to 86")
-
-          Output5.setParent(self)
-          Output5.move(1000,105)
-          return(Output5)    
+                Output6.setText("85 to 86")
+          Output6.setFixedSize(QSize(70,20))
+          Output6.setParent(self)
+          Output6.move(1000,360)
+          return(Output6)    
 
     def PLCLabelSetup(self):
           PLCLabel = QLabel()
           PLCLabel.setFont(self.titleFont)
           PLCLabel.setText("Upload PLC")
-          PLCLabel.move(860,170)
+          PLCLabel.setFixedSize(QSize(110,40))
+          PLCLabel.move(860,400)
           PLCLabel.setParent(self)
           return(PLCLabel)
 
     def PLCButton(self):
          PLCButton = QPushButton("PLC")
          PLCButton.setFont(self.labelFont) 
-         PLCButton.setFixedSize(QSize(70,40))  
-         #PLCButton.clicked.connect()
+         PLCButton.setFixedSize(QSize(70,40))
+         PLCButton.clicked.connect(self.getfiles)
          PLCButton.setParent(self)
          PLCButton.move(870,450)
          return(PLCButton) 
     
     def brokenRailHandler(self, line, logic, blockNo):
          if line == 1 and blockNo <= 100:
-            self.WaysideControllerGreen.setBrokenRail(bool(logic), blockNo)
+            WaysideControllerGreen.setBrokenRail(bool(logic), blockNo)
          elif line == 1 and blockNo > 100:
-            self.WaysideControllerGreen2.setBrokenRail(bool(logic), blockNo)
+            WaysideControllerGreen2.setBrokenRail(bool(logic), blockNo)
 
     def currBlockHandler(self, line, logic, blockNo):
          if line == 1 and blockNo <= 100:
-            self.WaysideControllerGreen.setOccupancy(logic, blockNo)
+            WaysideControllerGreen.setOccupancy(logic, blockNo)
          elif line == 1 and blockNo > 100:
-            self.WaysideControllerGreen2.setOccupancy(logic, blockNo)
+            WaysideControllerGreen2.setOccupancy(logic, blockNo)
          
+    def errorHandler(status):
+         WaysideControllerGreen.setError(status)
+         WaysideControllerGreen2.setError(status)
          
             
     #Clicking stuff
     def Switch1ButtonLClick(self):
           if self.maintenanceMode == True:
-            self.WaysideControllerGreen.setSwitchPositions(True,1)
-            self.WaysideControllerGreen2.setSwitchPositions(True,1)
+            WaysideControllerGreen.setSwitchPositions(True,1)
+            WaysideControllerGreen2.setSwitchPositions(True,1)
     
     def Switch1ButtonRClick(self):
            if self.maintenanceMode == True:
-            self.WaysideControllerGreen.setSwitchPositions(False,1)
-            self.WaysideControllerGreen2.setSwitchPositions(False,1)
+            WaysideControllerGreen.setSwitchPositions(False,1)
+            WaysideControllerGreen2.setSwitchPositions(False,1)
     
     def Switch2ButtonLClick(self):
            if self.maintenanceMode == True:
-            self.WaysideControllerGreen.setSwitchPositions(True,2)
-            self.WaysideControllerGreen2.setSwitchPositions(True,2)
+            WaysideControllerGreen.setSwitchPositions(True,2)
+            WaysideControllerGreen2.setSwitchPositions(True,2)
     
     def Switch2ButtonRClick(self):
            if self.maintenanceMode == True:
-            self.WaysideControllerGreen.setSwitchPositions(False,2)
-            self.WaysideControllerGreen2.setSwitchPositions(False,2)
+            WaysideControllerGreen.setSwitchPositions(False,2)
+            WaysideControllerGreen2.setSwitchPositions(False,2)
     
     def Switch3ButtonLClick(self):
            if self.maintenanceMode == True:
-            self.WaysideControllerGreen.setSwitchPositions(True,3)
-            self.WaysideControllerGreen2.setSwitchPositions(True,3)
+            WaysideControllerGreen.setSwitchPositions(True,3)
+            WaysideControllerGreen2.setSwitchPositions(True,3)
     
     def Switch3ButtonRClick(self):
            if self.maintenanceMode == True:
-            self.WaysideControllerGreen.setSwitchPositions(False,3)
-            self.WaysideControllerGreen2.setSwitchPositions(False,3)
+            WaysideControllerGreen.setSwitchPositions(False,3)
+            WaysideControllerGreen2.setSwitchPositions(False,3)
     
     def Switch4ButtonLClick(self):
            if self.maintenanceMode == True:
-            self.WaysideControllerGreen.setSwitchPositions(True,4)
-            self.WaysideControllerGreen2.setSwitchPositions(True,4)
+            WaysideControllerGreen.setSwitchPositions(True,4)
+            WaysideControllerGreen2.setSwitchPositions(True,4)
     
     def Switch4ButtonRClick(self):
            if self.maintenanceMode == True:
-            self.WaysideControllerGreen.setSwitchPositions(False,4)
-            self.WaysideControllerGreen2.setSwitchPositions(False,4)          
+            WaysideControllerGreen.setSwitchPositions(False,4)
+            WaysideControllerGreen2.setSwitchPositions(False,4)          
     
     def Switch5ButtonLClick(self):
            if self.maintenanceMode == True:
-            self.WaysideControllerGreen.setSwitchPositions(True,5)
-            self.WaysideControllerGreen2.setSwitchPositions(True,5)          
+            WaysideControllerGreen.setSwitchPositions(True,5)
+            WaysideControllerGreen2.setSwitchPositions(True,5)          
           
     def Switch5ButtonRClick(self):
            if self.maintenanceMode == True:
-            self.WaysideControllerGreen.setSwitchPositions(False,5)
-            self.WaysideControllerGreen2.setSwitchPositions(False,5)
+            WaysideControllerGreen.setSwitchPositions(False,5)
+            WaysideControllerGreen2.setSwitchPositions(False,5)
 
     def Switch6ButtonLClick(self):
            if self.maintenanceMode == True:
-            self.WaysideControllerGreen.setSwitchPositions(True,6)
-            self.WaysideControllerGreen2.setSwitchPositions(True,6)
+            WaysideControllerGreen.setSwitchPositions(True,6)
+            WaysideControllerGreen2.setSwitchPositions(True,6)
 
 
     def Switch6ButtonRClick(self):
            if self.maintenanceMode == True:
-            self.WaysideControllerGreen.setSwitchPositions(False,6)
-            self.WaysideControllerGreen2.setSwitchPositions(False,6)            
+            WaysideControllerGreen.setSwitchPositions(False,6)
+            WaysideControllerGreen2.setSwitchPositions(False,6)            
 
     def UpClicked(self):
            if self.maintenanceMode == True:
-            self.WaysideControllerGreen.setGatePositions(True)
+            WaysideControllerGreen.setGatePositions(True)
+            WaysideControllerGreen2.setGatePositions(True)
           
     def DownClicked(self):
            if self.maintenanceMode == True:
-            self.WaysideControllerGreen.setGatePositions(False)
-            self.WaysideControllerGreen2.setGatePositions(False)
+            WaysideControllerGreen.setGatePositions(False)
+            WaysideControllerGreen2.setGatePositions(False)
+
     def maintenance(self):
-         if self.maintenanceMode==False:
-            self.maintenanceMode=True
-         else: 
-            self.maintenanceMode=False
-          
-    def updateVisualElements(self, active):
-          #hour = str(self.WaysideController.realTime.hour) if self.WaysideController.realTime.hour <=12 else str(self.WaysideController.realTime.hour - 12)   
-          #if(int(hour)==0):
-           #     hour = "12"
-          #minute = str(self.WaysideController.realTime.minute)
-          #second = str(self.WaysideController.realTime.second)
-          #might add to ui
-          #self.realTimeClock.setText(f'Time: {hour}:{minute}:{second}')
-          
-          if self.WaysideControllerGreen.commandedSpeed!=self.WaysideControllerGreen.suggestedSpeed:
-            self.WaysideControllerGreen.setCommandedSpeed()
-          if self.WaysideControllerGreen.commandedSpeed!=self.WaysideControllerGreen.suggestedSpeed:
-            self.WaysideControllerGreen2.setCommandedSpeed()
-          if self.WaysideControllerGreen.authority!=self.WaysideControllerGreen.suggestedAuthority:
-            self.WaysideControllerGreen.setAuthority()
-          if self.WaysideControllerGreen2.authority!=self.WaysideControllerGreen.suggestedAuthority:
-            self.WaysideControllerGreen2.setAuthority()
+          if(self.maintenanceMode==True):
+           WaysideControllerGreen.setMaintenance(False)
+           WaysideControllerGreen2.setMaintenance(False)
+          else:
+           WaysideControllerGreen.setMaintenance(True)
+           WaysideControllerGreen2.setMaintenance(True)
 
-
-          if(self.maintenanceMode==False):                    
-            self.PLCMain.GloadValues1(self.File1)
-            self.PLCMain.GloadValues2(self.File2)
-            self.PLCMain.setswitches()
+    def maintenanceLabelSetup(self):
+            MLabel = QLabel()
+            MLabel.setFont(self.labelFont)
+            if(self.maintenanceMode==True):                
+                  MLabel.setText("Maintenance ON")
+            else:
+                  MLabel.setText("Maintenance OFF")
+            MLabel.setWordWrap(True)
+            MLabel.setFixedSize(QSize(120,50))
+            MLabel.setParent(self)
+            return(MLabel)
     
-          if (self.Switch1Out.text() == "1 to 13" and self.WaysideControllerGreen.switches[1] == False) or (self.Switch1Out.text() == "12 to 13" and self.WaysideControllerGreen.switches[1] == True):
-            TkMWCSignals.switchStateSignal.emit(int(self.WaysideControllerGreen.switches[1]), 1, 12)
-          if (self.Switch2Out.text() == "29 to 150" and self.WaysideControllerGreen.switches[2] == False) or (self.Switch2Out.text() == "29 to 30" and self.WaysideControllerGreen.switches[2] == True):
-            TkMWCSignals.switchStateSignal.emit(int(self.WaysideControllerGreen.switches[2]), 1, 28)
-          if (self.Switch3Out.text() == "57 to Yard" and self.WaysideControllerGreen.switches[3] == False) or (self.Switch3Out.text() == "57 to 58" and self.WaysideControllerGreen.switches[3] == True):
-            TkMWCSignals.switchStateSignal.emit(int(self.WaysideControllerGreen.switches[3]), 1, 56)
-          if (self.Switch4Out.text() == "Yard to 63" and self.WaysideControllerGreen.switches[4] == False) or (self.Switch4Out.text() == "62 to 63" and self.WaysideControllerGreen.switches[4] == True):
-            TkMWCSignals.switchStateSignal.emit(int(self.WaysideControllerGreen.switches[4]), 1, 62)
-          if (self.Switch5Out.text() == "77 to 101" and self.WaysideControllerGreen.switches[5] == False) or (self.Switch5Out.text() == "76 to 77" and self.WaysideControllerGreen.switches[5] == True):
-            TkMWCSignals.switchStateSignal.emit(int(self.WaysideControllerGreen.switches[5]), 1, 76)
-          if (self.Switch6Out.text() == "85 to 100" and self.WaysideControllerGreen.switches[6] == False) or (self.Switch6Out.text() == "85 to 86" and self.WaysideControllerGreen.switches[6] == True):
-            print("emitSig")
-            TkMWCSignals.switchStateSignal.emit(int(self.WaysideControllerGreen.switches[6]), 1, 84)
+    def getfiles(self):
+            if self.maintenanceMode == True: 
+                  name = QFileDialog.getOpenFileName(self,'Open file','c:\\',"Text files (*.txt)")
+                  stringname=(str(name[0]))            
+                  self.File1=stringname
+                  self.File1 = os.path.join(sys.path[0], "WaysideController", stringname)
 
-          if self.WaysideControllerGreen.switches[1]==True:
+
+    def updateVisualElements(self, active):
+          
+          if WaysideControllerGreen.commandedSpeed!=WaysideControllerGreen.suggestedSpeed:
+            WaysideControllerGreen.setCommandedSpeed()
+
+          if WaysideControllerGreen.authority!=WaysideControllerGreen.suggestedAuthority:
+            WaysideControllerGreen.setAuthority()
+
+          if (self.Switch1Out.text() == "1 to 13" and WaysideControllerGreen.switches[1] == False) or (self.Switch1Out.text() == "12 to 13" and WaysideControllerGreen.switches[1] == True):
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerGreen.switches[1]), 1, 12)
+          if (self.Switch2Out.text() == "29 to 150" and WaysideControllerGreen.switches[2] == False) or (self.Switch2Out.text() == "29 to 30" and WaysideControllerGreen.switches[2] == True):
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerGreen.switches[2]), 1, 28)
+          if (self.Switch3Out.text() == "57 to Yard" and WaysideControllerGreen.switches[3] == False) or (self.Switch3Out.text() == "57 to 58" and WaysideControllerGreen.switches[3] == True):
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerGreen.switches[3]), 1, 56)
+          if (self.Switch4Out.text() == "Yard to 63" and WaysideControllerGreen.switches[4] == False) or (self.Switch4Out.text() == "62 to 63" and WaysideControllerGreen.switches[4] == True):
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerGreen.switches[4]), 1, 62)
+          if (self.Switch5Out.text() == "77 to 101" and WaysideControllerGreen.switches[5] == False) or (self.Switch5Out.text() == "76 to 77" and WaysideControllerGreen.switches[5] == True):
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerGreen.switches[5]), 1, 76)
+          if (self.Switch6Out.text() == "85 to 100" and WaysideControllerGreen.switches[6] == False) or (self.Switch6Out.text() == "85 to 86" and WaysideControllerGreen.switches[6] == True):
+            TkMWCSignals.switchStateSignal.emit(int(WaysideControllerGreen.switches[6]), 1, 84)
+
+          if(self.maintenanceMode==True):                
+                  self.maintenanceLabel.setText("Maintenance ON")
+          else:
+                  self.maintenanceLabel.setText("Maintenance OFF")
+
+          if WaysideControllerGreen.switches[1]==True:
                 self.Switch1Out.setText("1 to 13")
           else:
                 self.Switch1Out.setText("12 to 13")
 
-          if self.WaysideControllerGreen.switches[2]==True:
+          if WaysideControllerGreen.switches[2]==True:
                 self.Switch2Out.setText("29 to 150")
           else:
                 self.Switch2Out.setText("29 to 30")    
 
-          if self.WaysideControllerGreen.switches[3]==True:
+          if WaysideControllerGreen.switches[3]==True:
                 self.Switch3Out.setText("57 to Yard")
           else:
                 self.Switch3Out.setText("57 to 58")
 
-          if self.WaysideControllerGreen.switches[4]==True:
+          if WaysideControllerGreen.switches[4]==True:
                 self.Switch4Out.setText("Yard to 63")
           else:
                 self.Switch4Out.setText("62 to 63")
 
-          if self.WaysideControllerGreen.switches[5]==True:
+          if WaysideControllerGreen.switches[5]==True:
                 self.Switch5Out.setText("77 to 101")
           else:
                 self.Switch5Out.setText("76 to 77")
 
-          if self.WaysideControllerGreen.switches[6]==True:
+          if WaysideControllerGreen.switches[6]==True:
                 self.Switch6Out.setText("85 to 100")
           else:
                 self.Switch6Out.setText("85 to 86")
@@ -762,7 +783,7 @@ class MainWindow(QMainWindow):
           i=0
           j=1
           for k in range(1,self.blocks1):
-                value=self.WaysideControllerGreen.authority[k]
+                value=WaysideControllerGreen.authority[k]
                 if active and value != int(self.Authority.item(i,j).text()):
                   TkMWCSignals.authoritySignal.emit(k, value, 1)
                 self.Authority.setItem(i,j,QTableWidgetItem(str(value)))
@@ -770,45 +791,25 @@ class MainWindow(QMainWindow):
                 if j>9:
                  j=0
                  i=i+1
-          i=10
-          j=1
-          for k in range(101,self.blocks2):
-                #value=self.WaysideControllerGreen2.authority[k]
-                #if active and value != int(self.Authority.item(i,j).text()):
-                  #TkMWCSignals.authoritySignal.emit(k, value, 1)
-                self.Authority.setItem(i,j,QTableWidgetItem(str(value)))
-                j=j+1
-                if j>9:
-                  j=0
-                  i=i+1 
           #self.CommandedSpeed
           i=0
           j=1
           for k in range(1,self.blocks1):
-                value=self.WaysideControllerGreen.commandedSpeed[k]
+                value=WaysideControllerGreen.commandedSpeed[k]
+                value2=value*2.23694
                 if active and value != float(self.CommandedSpeed.item(i,j).text()):
                   TkMWCSignals.commandedSpeedSignal.emit(k, float(value), 1)
-                self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(round(value * 2.23695, 2))))
+                self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(round(value2, 2))))
                 j=j+1
                 if j>9:
-                        j=0
-                        i=i+1
-          j=1
-          i=10
-          for k in range(101,self.blocks2):
-                #value=self.WaysideControllerGreen2.commandedSpeed[k]
-                #if active and value != float(self.CommandedSpeed.item(i,j).text()):
-                  #TkMWCSignals.commandedSpeedSignal.emit(k, float(value), 1)
-                self.CommandedSpeed.setItem(i,j,QTableWidgetItem(str(value)))
-                j=j+1
-                if j>9:
-                        j=0
-                        i=i+1          
+                  j=0
+                  i=i+1
+        
           #self.BrokenRail 
           i=0
           j=1
           for k in range(1,self.blocks1):
-                if self.WaysideControllerGreen.brokenRail[k] == True:
+                if WaysideControllerGreen.brokenRail[k] == True:
                     value="Error"
                 else:
                     value=" "
@@ -817,60 +818,33 @@ class MainWindow(QMainWindow):
                 if j>9:
                  j=0
                  i=i+1
-          j=1
-          i=10
-          for k in range(101,self.blocks2):
-                if self.WaysideControllerGreen2.brokenRail[k] == True:
-                    value="Error"
-                else:
-                    value=" "
-                self.BrokenRail.setItem(i,j,QTableWidgetItem(str(value)))
-                j=j+1
-                if j>9:
-                        j=0
-                        i=i+1   
+
           #self.SignalLight 
           i=0
           j=1
           for k in range(1,self.blocks1):
-                if self.WaysideControllerGreen.signalLights[k]==True:
+                if WaysideControllerGreen.signalLights[k]==True:
                   value="G"
                 else:
                   value="R"
-                if active and value != self.SignalLight.item(i,j).text():
-                  if value == "G":
-                        TkMWCSignals.signalStateSignal.emit(0, 1, k - 1)
-                  elif value == "R":
-                        TkMWCSignals.signalStateSignal.emit(2, 1, k - 1)
-                if((k==1)|(k==13)|(k==77)|(k==100)|(k==84)):
-                  self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
+                if((k==1) or (k==13) or (k==77) or (k==100) or (k==84)):
+                  if active and value != self.SignalLight.item(i,j).text():
+                        if value == "G":
+                              TkMWCSignals.signalStateSignal.emit(0, 1, k - 1)
+                        elif value == "R":
+                              TkMWCSignals.signalStateSignal.emit(2, 1, k - 1)
+                if((k==1) or (k==13) or (k==77) or (k==100) or (k==84)):
+                  self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))               
                 j=j+1
                 if j>9:
                  j=0
                  i=i+1
-          j=1
-          i=10
-          for k in range(101,self.blocks2):
-                if self.WaysideControllerGreen2.signalLights[k]==True:
-                  value="G"
-                else:
-                  value="R"
-                #if active and value != self.SignalLight.item(i,j).text():
-                  #if value == "G":
-                        #TkMWCSignals.signalStateSignal.emit(0, 1, k - 1)
-                  #elif value == "R":
-                        #TkMWCSignals.signalStateSignal.emit(2, 1, k - 1)
-                if((k==1)|(k==13)|(k==77)|(k==100)|(k==84)):                        
-                  self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
-                j=j+1
-                if j>9:
-                 j=0
-                 i=i+1       
+
          #self.Occupancy
           i=0
           j=1
           for k in range(1,self.blocks1):
-                if self.WaysideControllerGreen.occupancy[k]==True:
+                if WaysideControllerGreen.occupancy[k]==True:
                     value="X"
                 else:
                     value=" "
@@ -879,37 +853,32 @@ class MainWindow(QMainWindow):
                 if j>9:
                   j=0
                   i=i+1
-          for k in range(101,self.blocks2):
-                if self.WaysideControllerGreen2.occupancy[k]==True:
-                  value="X"
-                else:
-                  value=" "
-                self.Occupancy.setItem(i,j,QTableWidgetItem(str(value)))
-                j=j+1
-                if j>9:
-                 j=0
-                 i=i+1
-          if self.WaysideControllerGreen.gates[1]==True:
+          for k in range(1,self.blocks1):
+            if(WaysideControllerGreen.err==True):
+                 for i in range(1,self.blocks1):
+                      WaysideControllerGreen.setAAuthority(0,i)
+
+          val = self.Gate.text()
+          if WaysideControllerGreen.gates[1]==True:
                 self.Gate.setText("Block 19 Gate:  UP")
+                if active and val != "Block 19 Gate:  UP":
+                    TkMWCSignals.gateStateInput.emit(0, 1, 18)
           else:
-                  self.Gate.setText("Block 19 Gate:  DOWN") 
+                  self.Gate.setText("Block 19 Gate:  DOWN")
+                  if active and val != "Block 19 Gate:  DOWN":
+                    TkMWCSignals.gateStateInput.emit(1, 1, 18)
 
-    def closeEvent(self, event):
-            if(self.testUI):
-                    self.GreenLineTestUi.close()
-            if(__name__ == "__main__"):
-                self.close()
-            else:
-                self.setVisible(False)
 
+          if(self.maintenanceMode==False):                    
+            self.PLCMain.GloadValues1(self.File1)
+            self.PLCMain.setswitches()
+            
     def mainEventLoop(self):
+          self.maintenanceMode = WaysideControllerGreen.maintenance
           self.updateVisualElements(self.active)
-          self.WaysideControllerGreen.WaysideToTrackInfoG1()
-          self.WaysideControllerGreen2.WaysideToTrackInfoG2()
-          self.WaysideControllerGreen.WaysideToCTCInfoG1()
-          self.WaysideControllerGreen2.WaysideToCTCInfoG2()
-          self.WaysideControllerGreen.getCTCBlocks()
-          self.WaysideControllerGreen2.getCTCBlocks()
+          WaysideControllerGreen.WaysideToCTCInfoG1()
+          WaysideControllerGreen.getCTCBlocks()
+
           
 
 def main():

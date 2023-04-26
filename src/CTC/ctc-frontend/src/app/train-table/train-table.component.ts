@@ -19,7 +19,7 @@ export class TrainTableComponent {
   ngOnInit(): void {
     this.getData();
 
-    //interval(1000).subscribe(() => {this.getData()});
+    interval(500).subscribe(() => {this.getData()});
   }
 
   getData(): void {
