@@ -281,8 +281,8 @@ class MainWindow(QMainWindow):
                   value="G"
                 else:
                   value="R"
-                if((k==1) | (k==13) | (k==77) | (k==100) | (k==84)):
-                  SignalLight.setItem(i,j,QTableWidgetItem((value)))
+                if(k==1 or k==13 or k==77 or k==100 or k==84):
+                  SignalLight.setItem(i,j,QTableWidgetItem((str(value))))
                 else:
                   SignalLight.setItem(i,j,QTableWidgetItem((" ")))
                 j=j+1
@@ -823,16 +823,14 @@ class MainWindow(QMainWindow):
                   value="G"
                 else:
                   value="R"
-                if((k==1) | (k==13) | (k==77) | (k==100) | (k==84)):
+                if((k==1) or (k==13) or (k==77) or (k==100) or (k==84)):
                   if active and value != self.SignalLight.item(i,j).text():
                         if value == "G":
                               TkMWCSignals.signalStateSignal.emit(0, 1, k - 1)
                         elif value == "R":
                               TkMWCSignals.signalStateSignal.emit(2, 1, k - 1)
-                if((k==1) | (k==13) | (k==77) | (k==100) | (k==84)):
-                  self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))
-                else:
-                  self.SignalLight.setItem(i,j,QTableWidgetItem((" ")))                
+                if((k==1) or (k==13) or (k==77) or (k==100) or (k==84)):
+                  self.SignalLight.setItem(i,j,QTableWidgetItem(str(value)))               
                 j=j+1
                 if j>9:
                  j=0
