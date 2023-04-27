@@ -1,4 +1,4 @@
-# tests file for TrainControllerSW
+# Tests file for TrainControllerSW
 
 from distutils.cmd import Command
 import sys
@@ -484,6 +484,7 @@ if (__name__ == "__main__"):
     
     print(f'\nTotal Tests: {passed+failed}\nTests passed: {passed}\nTests Failed: {failed}')
 
+    # Creates a Train Model to test with the Train Controller
     if (testTrainModelIntegration == True):
         mainUI.close()
 

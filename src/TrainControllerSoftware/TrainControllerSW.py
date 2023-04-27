@@ -1,4 +1,4 @@
-# Main Class for the Train Controller Software
+# Main class for the Train Controller Software
 
 from datetime import *
 from distutils.cmd import Command
@@ -117,6 +117,7 @@ class TrainControllerSW:
 
     # methods   
 
+    # Sends all output signals
     def writeOutputs(self):
         TMTCSignals.commandedPowerSignal.emit(self.trainId, self.outputs.power)
         TMTCSignals.emergencyBrakeCommandSignal.emit(self.trainId, self.outputs.emergencyBrakeCommand)
@@ -133,6 +134,7 @@ class TrainControllerSW:
 
         TMTCSignals.stationStateSignal.emit(self.trainId, self.stationState)
 
+    # Gets a list of blocks based on green or red line
     def getBlocksData(self):
         if (__main__.__file__[-7:] == "main.py"):
             greenPath = os.path.join(sys.path[0], "TrackModel", "GreenLine.csv")
@@ -170,7 +172,7 @@ class TrainControllerSW:
 
     # Determines whether the train is at a station or not
     def setStationState(self):
-        # If self.inputs.stationName != "" beacon is at a station
+        # If self.inputs.stationName != "", beacon is at a station
         if (self.inputs.stationName != "0"):
             # if isBeacon and !firstBeaconPassed, entering station
             if(self.inputs.isBeacon == True and self.firstBeaconPassed == False):
@@ -200,13 +202,13 @@ class TrainControllerSW:
 
         # If self.switchBlock != -1, train is at a switch beacon
         if (self.switchBlock != -1):
-            # if isBeacon and !firstSwitchBeaconPassed, entering station
+            # if isBeacon and !firstSwitchBeaconPassed, entering switch
             if (self.inputs.isBeacon == True and self.firstSwitchBeaconPassed == False):
                 self.firstSwitchBeaconPassed = True
             elif (self.inputs.isBeacon == False and self.firstSwitchBeaconPassed == True):
                 self.atSwitchBlock = True
 
-            # if isBeacon and atSwitchBlock and !secondSwitchBeaconPassed, exiting station
+            # if isBeacon and atSwitchBlock and !secondSwitchBeaconPassed, exiting switch
             if(self.inputs.isBeacon == True and self.atSwitchBlock == True and self.secondSwitchBeaconPassed == False):
                 self.secondSwitchBeaconPassed = True
 
@@ -312,8 +314,7 @@ class TrainControllerSW:
             self.outputs.leftDoorCommand = False
             self.outputs.rightDoorCommand = False
     
-    # Automatically turns on/off lights based on underground state
-    # NOTE: update based on time of day? (currently always on between 8pm - 5am)
+    # Automatically turns on/off lights based on underground state and time (lights on between 8pm and 6am)
     def autoUpdateLights(self):
         if(self.inputs.undergroundState == True):
             self.outputs.externalLightCommand = True
@@ -330,7 +331,7 @@ class TrainControllerSW:
     def autoSetServiceBrake(self):
         if (self.inputs.authority == 0):
             self.outputs.serviceBrakeCommand = True
-        elif (self.inputs.commandedSpeed == 0):   # ADDED IF FOR COMMANDED SPEED
+        elif (self.inputs.commandedSpeed == 0):
             self.outputs.serviceBrakeCommand = True
         elif(self.inputs.currentSpeed > self.inputs.commandedSpeed + 0.5):
             self.outputs.serviceBrakeCommand = True

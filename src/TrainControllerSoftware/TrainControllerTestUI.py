@@ -1,4 +1,4 @@
-# Main UI for the Train Controller Software
+# Test UI for the Train Controller Software
 
 from distutils.cmd import Command
 import sys
