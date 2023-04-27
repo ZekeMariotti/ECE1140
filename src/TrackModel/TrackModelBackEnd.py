@@ -408,6 +408,21 @@ class backEndCalculations():
                 self.data["tag"][trainNo] = 1
             elif self.data["tag2"][trainNo] == 1:
                 self.data["tag2"][trainNo] = 0
+
+            if self.data["trainLine"][trainNo] == 0:
+                if (int(self.data["moves"][trainNo][0] - 1) > 0):
+                    # If current block is a station
+                    if int(self.csvConstants["stationRed"].__getitem__(self.data["moves"][trainNo][0] - 1)) > 0:
+                        self.runOnce = 0
+            elif self.data["trainLine"][trainNo] == 0:
+                if (int(self.data["moves"][trainNo][0] - 1) > 0):
+                    # If current block is a station
+                    if int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)) > 0:
+                        self.runOnce = 0
+
+
+
+
             # If train line is red
             #if self.data["trainLine"][trainNo] == 0:
             #    if (int(self.data["moves"][trainNo][index] - 1) > 0):
