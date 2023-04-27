@@ -401,8 +401,8 @@ class MainWindow(QMainWindow):
             test = requests.get('http://localhost:8090/api/dispatchedtrain').text
             if(test!="\"\""):
                 jsonTest = json.loads(test)
-                if(jsonTest["id"] != 1):
-                    self.trainDispatch(jsonTest["id"], jsonTest["line"])
+                #if(jsonTest["id"] != 1):
+                self.trainDispatch(jsonTest["id"], jsonTest["line"])
 
 # Function to remove character from a string at nth position
 def stringRemove(string, n):  

@@ -610,6 +610,7 @@ class MainWindow(QMainWindow):
     def brokenRailHandler(self, line, logic, blockNo):
          if line == 1 and blockNo <= 100:
             WaysideControllerGreen.setBrokenRail(bool(logic), blockNo)
+
          elif line == 1 and blockNo > 100:
             WaysideControllerGreen2.setBrokenRail(bool(logic), blockNo)
 
