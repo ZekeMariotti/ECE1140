@@ -748,7 +748,7 @@ class MainWindowR(QMainWindow):
     def updateVisualElements(self,active):
           
           if WaysideControllerRed2.commandedSpeed!=WaysideControllerRed2.suggestedSpeed:
-            WaysideControllerRed.setCommandedSpeed()
+            WaysideControllerRed2.setCommandedSpeed()
 
           if WaysideControllerRed2.authority!=WaysideControllerRed2.suggestedAuthority:
             WaysideControllerRed2.setAuthority()
