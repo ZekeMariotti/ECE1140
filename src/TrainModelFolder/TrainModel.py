@@ -654,12 +654,10 @@ class TrainModel():
                     self.trackData["prevBlock"] = self.trackData["currBlock"]
                     return self.trackData["trackSection"][0]
                 elif (self.trackData["currBlock"] == 10) | (self.trackData["currBlock"] == 15) | (self.trackData["currBlock"] == 28) | (self.trackData["currBlock"] == 32) | (self.trackData["currBlock"] == 39) | (self.trackData["currBlock"] == 43) | (self.trackData["currBlock"] == 53):
-                    print("Derailment Red: Switch State Default, should be Switched")
+                    print("Derailment Red: Switch State Switched, should be Default")
                     return 333
             # Case where the train needs to just increase block by 1
             else:
-                if (self.trackData["currBlock"] == 1) & (self.trackData["prevBlock"] == 2):
-                    print("Derailment Red Block 0")
                 if self.trackData["trackSection"][0] < self.trackData["trackSection"][1]:
                     if (self.trackData["currBlock"] == 76):
                         print("Derailment Red: Block 76 to 77")
