@@ -171,6 +171,8 @@ class jsonToArduino(QRunnable):
             sock.sendto(udpMessage.encode('utf-8'), (self.ip, self.port))
 
 
+
+
     def run(self):
         while True:
             #readJsonFromFile()
