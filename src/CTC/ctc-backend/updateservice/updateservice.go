@@ -195,6 +195,16 @@ func (s *UpdateService) updateAuthorities(routeMap map[int][]int, useMap map[int
 		}
 	}
 
+	// Send to yards
+	for _, val := range s.data.Lines.GetSlice() {
+		switch val.Name {
+		case "Green":
+			newAuthorities[val.Name][57] = 1
+		case "Red":
+			newAuthorities[val.Name][9] = 1
+		}
+	}
+
 	for line, blocks := range newAuthorities {
 		for i := range blocks {
 			s.data.Lines.SetBlockAuthority(line, i, blocks[i])
@@ -212,6 +222,16 @@ func (s *UpdateService) updateSpeeds(routeMap map[int][]int, holdsMap map[int]bo
 			speed := blocks[j].SpeedLimit
 			if holdsMap[blocks[j].Number] == true {
 				speed = decimal.Zero
+			}
+			switch line {
+			case "Green":
+				if blocks[j].Number == 57 {
+					speed = decimal.NewFromInt(1)
+				}
+			case "Red":
+				if blocks[j].Number == 9 {
+					speed = decimal.NewFromInt(1)
+				}
 			}
 			s.data.Lines.SetBlockSpeed(line, blocks[j].Number, speed)
 		}
