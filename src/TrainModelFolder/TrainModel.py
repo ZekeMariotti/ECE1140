@@ -523,7 +523,7 @@ class TrainModel():
                 
                 # Cases for derailment
                 elif (self.trackData["currBlock"] == 77) | (self.trackData["currBlock"] == 100) | (self.trackData["currBlock"] == 150) | (self.trackData["currBlock"] == 1) | (self.trackData["currBlock"] == 0):
-                    print("Derailment1")
+                    print("Derailment Green: Switch State Default, should be Switched")
                     return 333
                 
             # If the train is on a switch block and the switch state is 1
@@ -531,7 +531,7 @@ class TrainModel():
 
                 # Cases for derailment
                 if (self.trackData["currBlock"] == 76) | (self.trackData["currBlock"] == 85) | (self.trackData["currBlock"] == 13) | (self.trackData["currBlock"] == 29) | (self.trackData["currBlock"] == 62):
-                    print("Derailment2")
+                    print("Derailment Green: Switch State Switched, should be Default")
                     return 333
                 
                 # Cases where the train would proceed normally
@@ -556,14 +556,16 @@ class TrainModel():
                 
             # Case where the train needs to just increase block by 1
             else:
-                if (self.trackData["currBlock"] == 150):
-                    print("Derailment End of Green Nums")
-                if (self.trackData["currBlock"] == 1):
-                    print("Derailment Block 0 Green Line")
                 if self.trackData["trackSection"][0] < self.trackData["trackSection"][1]:
+                    if (self.trackData["currBlock"] == 150):
+                        print("Derailment Green: Block 150 to 151")
+                        return 333
                     self.trackData["prevBlock"] = self.trackData["currBlock"]
                     return (self.trackData["currBlock"] + 1)
                 elif self.trackData["trackSection"][0] > self.trackData["trackSection"][1]:
+                    if (self.trackData["currBlock"] == 1):
+                        print("Derailment Green: Block 1 to 0")
+                        return 333
                     self.trackData["prevBlock"] = self.trackData["currBlock"]
                     return (self.trackData["currBlock"] - 1)
         # Case if the train is on the red line
@@ -578,7 +580,7 @@ class TrainModel():
                 if (self.trackData["currBlock"] == 0) | (self.trackData["currBlock"] == 9) | (self.trackData["currBlock"] == 10) | (self.trackData["currBlock"] == 15) | (self.trackData["currBlock"] == 16) | (self.trackData["currBlock"] == 27) | (self.trackData["currBlock"] == 28) | (self.trackData["currBlock"] == 32) | (self.trackData["currBlock"] == 33) | (self.trackData["currBlock"] == 38) | (self.trackData["currBlock"] == 39) | (self.trackData["currBlock"] == 43) | (self.trackData["currBlock"] == 44) | (self.trackData["currBlock"] == 52) | (self.trackData["currBlock"] == 53):
                     match self.trackData["currBlock"]:
                         case 0:
-                            print("Derailment3")
+                            print("Derailment Red: Yard")
                             return 333
                         case 9:
                             self.trackData["trackSection"] = self.redSection10R
@@ -612,7 +614,7 @@ class TrainModel():
                     return self.trackData["trackSection"][0]
 
                 elif (self.trackData["currBlock"] == 1) | (self.trackData["currBlock"] == 66) | (self.trackData["currBlock"] == 67) | (self.trackData["currBlock"] == 71) | (self.trackData["currBlock"] == 72) | (self.trackData["currBlock"] == 76):
-                    print("Derailment4")
+                    print("Derailment Red: Switch State Default, should be Switched")
                     return 333
                 
             # Train hits a switch and the switch is in the switched state (non-continuous numbers)
@@ -652,18 +654,22 @@ class TrainModel():
                     self.trackData["prevBlock"] = self.trackData["currBlock"]
                     return self.trackData["trackSection"][0]
                 elif (self.trackData["currBlock"] == 10) | (self.trackData["currBlock"] == 15) | (self.trackData["currBlock"] == 28) | (self.trackData["currBlock"] == 32) | (self.trackData["currBlock"] == 39) | (self.trackData["currBlock"] == 43) | (self.trackData["currBlock"] == 53):
-                    print("Derailment5")
+                    print("Derailment Red: Switch State Default, should be Switched")
                     return 333
             # Case where the train needs to just increase block by 1
             else:
-                if (self.trackData["currBlock"] == 76):
-                    print("Derailment End of Red Nums")
                 if (self.trackData["currBlock"] == 1) & (self.trackData["prevBlock"] == 2):
                     print("Derailment Red Block 0")
                 if self.trackData["trackSection"][0] < self.trackData["trackSection"][1]:
+                    if (self.trackData["currBlock"] == 76):
+                        print("Derailment Red: Block 76 to 77")
+                        return 333
                     self.trackData["prevBlock"] = self.trackData["currBlock"]
                     return (self.trackData["currBlock"] + 1)
                 elif self.trackData["trackSection"][0] > self.trackData["trackSection"][1]:
+                    if (self.trackData["currBlock"] == 1):
+                        print("Derailment Red: Block 1 to 0")
+                        return 333
                     self.trackData["prevBlock"] = self.trackData["currBlock"]
                     return (self.trackData["currBlock"] - 1)
         # Train Line is not set to Green
