@@ -58,6 +58,20 @@ func (d *DataStore) TrainFrontendToBackend(frontend common.TrainFrontend) common
 		}
 	}
 
+	// Append station for last before yard
+	switch frontend.Line {
+	case "Green":
+		result.Stops = append(result.Stops, common.TrainStop{
+			Station: line.GetStationByName("OVERBROOK"),
+			Time:    d.TimeKeeper.GetSimulationTime(),
+		})
+	case "Red":
+		result.Stops = append(result.Stops, common.TrainStop{
+			Station: line.GetStationByName("HERRON AVE"),
+			Time:    d.TimeKeeper.GetSimulationTime(),
+		})
+	}
+
 	return result
 }
 

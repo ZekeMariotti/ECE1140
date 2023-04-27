@@ -29,11 +29,11 @@ ocF5
 ocF5
 79
 gate
-13
+20
 gate
-12
+19
 gate
-11
+18
 ocS1
 12
 ocS13

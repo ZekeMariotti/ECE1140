@@ -592,6 +592,9 @@ class TrainModelTestUI(QWidget):
     
     def catchEmergencyBrakeState(self, id, emergencyBrake):
         self.testDataOutputs["emergencyBrakeState"] = emergencyBrake
+        if (self.testDataOutputs["emergencyBrakeState"] and self.testDataInputs["emergencyBrakeCommand"] == False):
+            self.testDataInputs["emergencyBrakeCommand"] = True
+            self.emergencyBrakeInput.setCurrentIndex(1)
 
     def catchServiceBrakeStatus(self, id, status):
         self.testDataOutputs["serviceBrakeStatus"] = status
@@ -641,6 +644,7 @@ class TrainModelTestUI(QWidget):
     # Gets the Emergency Brake state from the UI
     def getEmergencyBrakeInput(self, index):
         self.testDataInputs["emergencyBrakeCommand"] = bool(index)
+        TMTCSignals.emergencyBrakeCommandSignal.emit(self.testDataInputs["id"], bool(index))
 
     # Gets the Left Door state from the UI
     def getLeftDoorInput(self, index):

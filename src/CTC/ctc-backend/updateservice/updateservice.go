@@ -185,13 +185,23 @@ func (s *UpdateService) updateAuthorities(routeMap map[int][]int, useMap map[int
 		}
 		// Generate authorities
 		line := s.data.Trains.Get(train).Line
-		for i := range route {
+		for i := len(route) - 1; i >= 0; i-- {
 			authority := len(route) - i - 1
 			if holdsMap[route[i]] == true {
 				authority = 0
 			}
 			newAuthorities[line][route[i]] = authority
 			//s.data.Lines.SetBlockAuthority(line, route[i], authority)
+		}
+	}
+
+	// Send to yards
+	for _, val := range s.data.Lines.GetSlice() {
+		switch val.Name {
+		case "Green":
+			newAuthorities[val.Name][57] = 1
+		case "Red":
+			newAuthorities[val.Name][9] = 1
 		}
 	}
 
@@ -212,6 +222,16 @@ func (s *UpdateService) updateSpeeds(routeMap map[int][]int, holdsMap map[int]bo
 			speed := blocks[j].SpeedLimit
 			if holdsMap[blocks[j].Number] == true {
 				speed = decimal.Zero
+			}
+			switch line {
+			case "Green":
+				if blocks[j].Number == 57 {
+					speed = decimal.NewFromInt(1)
+				}
+			case "Red":
+				if blocks[j].Number == 9 {
+					speed = decimal.NewFromInt(1)
+				}
 			}
 			s.data.Lines.SetBlockSpeed(line, blocks[j].Number, speed)
 		}
@@ -240,6 +260,7 @@ func (s *UpdateService) updateSpeeds(routeMap map[int][]int, holdsMap map[int]bo
 func (s *UpdateService) updateTrainAssignments() {
 	newMap := make(map[string]map[int]int)
 	lines := s.data.Lines.GetLineNames()
+	trainsToFlip := make([]int, 0)
 	for _, line := range lines {
 		newMap[line] = make(map[int]int)
 		blocks := s.data.Lines.Get(line).Blocks.GetSlice()
@@ -280,6 +301,9 @@ func (s *UpdateService) updateTrainAssignments() {
 						case swt.Destination2:
 							if s.lastTrainBlockMap[line][swt.Source] > 0 {
 								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Source]
+								if s.data.Lines.Get(line).Blocks.Get(block.Number).Direction != common.BLOCKDIRECTION_ASCENDING {
+									trainsToFlip = append(trainsToFlip, s.lastTrainBlockMap[line][swt.Source])
+								}
 							} else {
 								switch block.Direction {
 								case common.BLOCKDIRECTION_ASCENDING:
@@ -288,6 +312,9 @@ func (s *UpdateService) updateTrainAssignments() {
 									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2+1]
 								case common.BLOCKDIRECTION_DESCENDING:
 									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2+1]
+								}
+								if block.Number > swt.Source {
+									trainsToFlip = append(trainsToFlip, newMap[line][block.Number])
 								}
 							}
 						}
@@ -308,14 +335,20 @@ func (s *UpdateService) updateTrainAssignments() {
 						case swt.Destination2:
 							if s.lastTrainBlockMap[line][swt.Source] > 0 {
 								newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Source]
+								if s.data.Lines.Get(line).Blocks.Get(block.Number).Direction != common.BLOCKDIRECTION_DESCENDING {
+									trainsToFlip = append(trainsToFlip, s.lastTrainBlockMap[line][swt.Source])
+								}
 							} else {
 								switch block.Direction {
 								case common.BLOCKDIRECTION_ASCENDING:
-									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2+1]
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2-1]
 								case common.BLOCKDIRECTION_BIDIRECTIONAL:
-									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2-1]
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2+1]
 								case common.BLOCKDIRECTION_DESCENDING:
-									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2-1]
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2+1]
+								}
+								if block.Number < swt.Source {
+									trainsToFlip = append(trainsToFlip, newMap[line][block.Number])
 								}
 							}
 						}
@@ -389,6 +422,22 @@ func (s *UpdateService) updateTrainAssignments() {
 			}
 		}
 	}
+
+	for i := range trainsToFlip {
+		trainid := trainsToFlip[i]
+		if trainid != -1 {
+			train := s.data.Trains.Get(trainid)
+			switch train.Direction {
+			case common.TRAINDIRECTION_ASCENDING:
+				train.Direction = common.TRAINDIRECTION_DESCENDING
+			case common.TRAINDIRECTION_DESCENDING:
+				train.Direction = common.TRAINDIRECTION_ASCENDING
+			}
+			s.data.Trains.Set(trainid, train)
+			//fmt.Printf("Flipped train %d on block %d: %d\n", trainid, train.Location.Blocks[0], train.Direction)
+		}
+	}
+
 	s.lastTrainBlockMap = newMap
 }
 

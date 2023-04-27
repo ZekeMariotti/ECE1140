@@ -234,14 +234,16 @@ class TrainModel():
         TMTCSignals.temperatureSignal.emit(self.TrainID, self.data["currTemp"])
 
         # If it is a beacon, transmit the rest of the data. Otherwise, don't
-        if (self.passThroughData["beacon"][3] == 1):
-            TMTCSignals.stationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][0])
-            TMTCSignals.platformSideSignal.emit(self.TrainID, self.passThroughData["beacon"][1])
-            TMTCSignals.nextStationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][2])
-            TMTCSignals.blockCountSignal.emit(self.TrainID, self.passThroughData["beacon"][4])
-            TMTCSignals.fromSwitchSignal.emit(self.TrainID, self.passThroughData["beacon"][5])
-            TMTCSignals.switchBlockSignal.emit(self.TrainID, self.passThroughData["beacon"][6])
-        TMTCSignals.isBeaconSignal.emit(self.TrainID, self.passThroughData["beacon"][3])
+        #if (self.passThroughData["beacon"][3] == 1):
+        #    TMTCSignals.stationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][0])
+        #    TMTCSignals.platformSideSignal.emit(self.TrainID, self.passThroughData["beacon"][1])
+        #    TMTCSignals.nextStationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][2])
+        #    TMTCSignals.blockCountSignal.emit(self.TrainID, self.passThroughData["beacon"][4])
+        #    TMTCSignals.fromSwitchSignal.emit(self.TrainID, self.passThroughData["beacon"][5])
+        #    TMTCSignals.switchBlockSignal.emit(self.TrainID, self.passThroughData["beacon"][6])
+        #    print("Train Model Emit: ", self.passThroughData["beacon"])
+
+        #TMTCSignals.isBeaconSignal.emit(self.TrainID, self.passThroughData["beacon"][3])
         TMTCSignals.externalLightsStateSignal.emit(self.TrainID, self.data["eLights"])
         TMTCSignals.internalLightsStateSignal.emit(self.TrainID, self.data["iLights"])
         TMTCSignals.leftDoorStateSignal.emit(self.TrainID, self.data["lDoors"])
@@ -337,6 +339,15 @@ class TrainModel():
             self.passThroughData["beacon"][4] = blockCount
             self.passThroughData["beacon"][5] = fromSwitch
             self.passThroughData["beacon"][6] = switchBlock
+        if (self.passThroughData["beacon"][3]):
+            TMTCSignals.stationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][0])
+            TMTCSignals.platformSideSignal.emit(self.TrainID, self.passThroughData["beacon"][1])
+            TMTCSignals.nextStationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][2])
+            TMTCSignals.blockCountSignal.emit(self.TrainID, self.passThroughData["beacon"][4])
+            TMTCSignals.fromSwitchSignal.emit(self.TrainID, self.passThroughData["beacon"][5])
+            TMTCSignals.switchBlockSignal.emit(self.TrainID, self.passThroughData["beacon"][6])
+            print("Train Model Emit: ", self.passThroughData["beacon"])
+        TMTCSignals.isBeaconSignal.emit(self.TrainID, self.passThroughData["beacon"][3])
 
 
     # Switch Input Handler
@@ -469,10 +480,11 @@ class TrainModel():
             
             # Get the data from the blocks class for the new block that the train is entering
             self.trackData["remDistance"] = 100 - tempDistance
-            self.data["underground"] = self.blocks[self.trackData["currBlock"]].undergroundState
-            self.trackData["blockLength"] = self.blocks[self.trackData["currBlock"]].blockLength
-            self.trackData["elevation"] = self.blocks[self.trackData["currBlock"]].elevation
-            self.trackData["polarity"] = self.trackData["currBlock"] % 2
+            if (self.trackData["currBlock"] != 0):
+                self.data["underground"] = self.blocks[self.trackData["currBlock"]].undergroundState
+                self.trackData["blockLength"] = self.blocks[self.trackData["currBlock"]].blockLength
+                self.trackData["elevation"] = self.blocks[self.trackData["currBlock"]].elevation
+                self.trackData["polarity"] = self.trackData["currBlock"] % 2
             if (tempDistance < (self.data["length"] / 2)):
                 self.trackData["backTrain"] = True
             else:
@@ -546,6 +558,8 @@ class TrainModel():
             else:
                 if (self.trackData["currBlock"] == 150):
                     print("Derailment End of Green Nums")
+                if (self.trackData["currBlock"] == 1):
+                    print("Derailment Block 0 Green Line")
                 if self.trackData["trackSection"][0] < self.trackData["trackSection"][1]:
                     self.trackData["prevBlock"] = self.trackData["currBlock"]
                     return (self.trackData["currBlock"] + 1)
@@ -644,6 +658,8 @@ class TrainModel():
             else:
                 if (self.trackData["currBlock"] == 76):
                     print("Derailment End of Red Nums")
+                if (self.trackData["currBlock"] == 1) & (self.trackData["prevBlock"] == 2):
+                    print("Derailment Red Block 0")
                 if self.trackData["trackSection"][0] < self.trackData["trackSection"][1]:
                     self.trackData["prevBlock"] = self.trackData["currBlock"]
                     return (self.trackData["currBlock"] + 1)
