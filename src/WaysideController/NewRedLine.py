@@ -321,6 +321,9 @@ class MainWindowR(QMainWindow):
             for k in range(1,51):
                 if WaysideControllerRed.brokenRail[k] == True:
                     Occupancy.setItem(i,j,QTableWidgetItem("X"))
+                else:
+                    value=" "
+                    Occupancy.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
                  j=0
@@ -868,6 +871,9 @@ class MainWindowR(QMainWindow):
                 value = WaysideControllerRed.occupancy[k]
                 if value == True:
                         self.Occupancy.setItem(i,j,QTableWidgetItem(str("X")))
+                else:
+                    value=" "
+                    self.Occupancy.setItem(i,j,QTableWidgetItem(str(value)))
                 j=j+1
                 if j>9:
                         j=0
