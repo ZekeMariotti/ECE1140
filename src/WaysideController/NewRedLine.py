@@ -422,7 +422,7 @@ class MainWindowR(QMainWindow):
           return(Push1R)
     
     def Switch2ButtonL(self):
-          Push2L = QPushButton("15 to 16")
+          Push2L = QPushButton("1 to 16")
           Push2L.setFont(self.labelFont) 
           Push2L.setFixedSize(QSize(70,40))  
           Push2L.clicked.connect(self.Switch2ButtonLClick)
@@ -431,7 +431,7 @@ class MainWindowR(QMainWindow):
           return(Push2L)
     
     def Switch2ButtonR(self):
-          Push2R = QPushButton("1 to 16")
+          Push2R = QPushButton("15 to 16")
           Push2R.setFont(self.labelFont) 
           Push2R.setFixedSize(QSize(70,40))  
           Push2R.clicked.connect(self.Switch2ButtonRClick)
@@ -440,7 +440,7 @@ class MainWindowR(QMainWindow):
           return(Push2R)
     
     def Switch3ButtonL(self):
-          Push3L = QPushButton("27 to 28")
+          Push3L = QPushButton("27 to 76")
           Push3L.setFont(self.labelFont) 
           Push3L.setFixedSize(QSize(70,40))  
           Push3L.clicked.connect(self.Switch3ButtonLClick)
@@ -449,7 +449,7 @@ class MainWindowR(QMainWindow):
           return(Push3L)
     
     def Switch3ButtonR(self):
-          Push3R = QPushButton("27 to 76")
+          Push3R = QPushButton("27 to 28")
           Push3R.setFont(self.labelFont) 
           Push3R.setFixedSize(QSize(70,40))  
           Push3R.clicked.connect(self.Switch3ButtonRClick)
@@ -458,7 +458,7 @@ class MainWindowR(QMainWindow):
           return(Push3R)
 
     def Switch4ButtonL(self):
-          Push4L = QPushButton("32 to 33")
+          Push4L = QPushButton("33 to 72")
           Push4L.setFont(self.labelFont) 
           Push4L.setFixedSize(QSize(70,40))  
           Push4L.clicked.connect(self.Switch4ButtonLClick)
@@ -467,7 +467,7 @@ class MainWindowR(QMainWindow):
           return(Push4L)
     
     def Switch4ButtonR(self):
-          Push4R = QPushButton("33 to 72")
+          Push4R = QPushButton("32 to 33")
           Push4R.setFont(self.labelFont) 
           Push4R.setFixedSize(QSize(70,40))  
           Push4R.clicked.connect(self.Switch4ButtonRClick)
@@ -476,7 +476,7 @@ class MainWindowR(QMainWindow):
           return(Push4R)
     
     def Switch5ButtonL(self):
-          Push5L = QPushButton("38 to 39")
+          Push5L = QPushButton("38 to 71")
           Push5L.setFont(self.labelFont) 
           Push5L.setFixedSize(QSize(70,40))  
           Push5L.clicked.connect(self.Switch5ButtonLClick)
@@ -485,7 +485,7 @@ class MainWindowR(QMainWindow):
           return(Push5L)
     
     def Switch5ButtonR(self):
-          Push5R = QPushButton("38 to 71")
+          Push5R = QPushButton("38 to 39")
           Push5R.setFont(self.labelFont) 
           Push5R.setFixedSize(QSize(70,40))  
           Push5R.clicked.connect(self.Switch5ButtonRClick)
@@ -494,7 +494,7 @@ class MainWindowR(QMainWindow):
           return(Push5R)
 
     def Switch6ButtonL(self):
-          Push6L = QPushButton("43 to 44")
+          Push6L = QPushButton("44 to 67")
           Push6L.setFont(self.labelFont) 
           Push6L.setFixedSize(QSize(70,40))  
           Push6L.clicked.connect(self.Switch6ButtonLClick)
@@ -503,7 +503,7 @@ class MainWindowR(QMainWindow):
           return(Push6L)
     
     def Switch6ButtonR(self):
-          Push6R = QPushButton("44 to 67")
+          Push6R = QPushButton("43 to 44")
           Push6R.setFont(self.labelFont) 
           Push6R.setFixedSize(QSize(70,40))  
           Push6R.clicked.connect(self.Switch6ButtonRClick)
@@ -512,7 +512,7 @@ class MainWindowR(QMainWindow):
           return(Push6R)
 
     def Switch7ButtonL(self):
-          Push7L = QPushButton("52 to 53")
+          Push7L = QPushButton("52 to 66")
           Push7L.setFont(self.labelFont) 
           Push7L.setFixedSize(QSize(70,40))  
           Push7L.clicked.connect(self.Switch7ButtonLClick)
@@ -521,7 +521,7 @@ class MainWindowR(QMainWindow):
           return(Push7L)
     
     def Switch7ButtonR(self):
-          Push7R = QPushButton("52 to 66")
+          Push7R = QPushButton("52 to 53")
           Push7R.setFont(self.labelFont) 
           Push7R.setFixedSize(QSize(70,40))  
           Push7R.clicked.connect(self.Switch7ButtonRClick)
@@ -573,7 +573,7 @@ class MainWindowR(QMainWindow):
           Output4.setFont(self.labelFont)
           Output4.setFixedSize(70,20)
           if WaysideControllerRed.switches[4]==True:
-                Output4.setText("32 to 72")
+                Output4.setText("33 to 72")
           else:
                 Output4.setText("32 to 33")
 
@@ -756,17 +756,17 @@ class MainWindowR(QMainWindow):
 
           if (self.Switch1Out.text() == "Yard to 9" and WaysideControllerRed.switches[1] == False) or (self.Switch1Out.text() == "9 to Yard" and WaysideControllerRed.switches[1] == True):
             TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[1]), 0, 8)
-          if (self.Switch2Out.text() == "1 to 16" and WaysideControllerRed.switches[2] == False) or (self.Switch2Out.text() == "15 to 16" and WaysideControllerRed.switches[2] == True):
+          if (self.Switch2Out.text() == "15 to 16" and WaysideControllerRed.switches[2] == False) or (self.Switch2Out.text() == "1 to 16" and WaysideControllerRed.switches[2] == True):
             TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[2]), 0, 15)
-          if (self.Switch3Out.text() == "27 to 76" and WaysideControllerRed.switches[3] == False) or (self.Switch3Out.text() == "27 to 28" and WaysideControllerRed.switches[3] == True):
+          if (self.Switch3Out.text() == "27 to 28" and WaysideControllerRed.switches[3] == False) or (self.Switch3Out.text() == "27 to 76" and WaysideControllerRed.switches[3] == True):
             TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[3]), 0, 26)
-          if (self.Switch4Out.text() == "33 to 72" and WaysideControllerRed.switches[4] == False) or (self.Switch4Out.text() == "32 to 33" and WaysideControllerRed.switches[4] == True):
+          if (self.Switch4Out.text() == "32 to 33" and WaysideControllerRed.switches[4] == False) or (self.Switch4Out.text() == "33 to 72" and WaysideControllerRed.switches[4] == True):
             TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[4]), 0, 32)
-          if (self.Switch5Out.text() == "38 to 71" and WaysideControllerRed.switches[5] == False) or (self.Switch5Out.text() == "38 to 39" and WaysideControllerRed.switches[5] == True):
+          if (self.Switch5Out.text() == "38 to 39" and WaysideControllerRed.switches[5] == False) or (self.Switch5Out.text() == "38 to 71" and WaysideControllerRed.switches[5] == True):
             TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[5]), 0, 37)
-          if (self.Switch6Out.text() == "44 to 67" and WaysideControllerRed.switches[6] == False) or (self.Switch6Out.text() == "43 to 44" and WaysideControllerRed.switches[6] == True):
+          if (self.Switch6Out.text() == "43 to 44" and WaysideControllerRed.switches[6] == False) or (self.Switch6Out.text() == "44 to 67" and WaysideControllerRed.switches[6] == True):
             TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[6]), 0, 43)
-          if (self.Switch7Out.text() == "52 to 66" and WaysideControllerRed.switches[7] == False)  or (self.Switch7Out.text() == "52 to 53" and WaysideControllerRed.switches[7] == True):
+          if (self.Switch7Out.text() == "52 to 53" and WaysideControllerRed.switches[7] == False)  or (self.Switch7Out.text() == "52 to 66" and WaysideControllerRed.switches[7] == True):
             TkMWCSignals.switchStateSignal.emit(int(WaysideControllerRed.switches[7]),0,51)
           if(self.maintenanceMode==True):                
                   self.maintenanceLabel.setText("Maintenance ON")
@@ -779,34 +779,34 @@ class MainWindowR(QMainWindow):
                 self.Switch1Out.setText("Yard to 9")
 
           if WaysideControllerRed.switches[2]==True:
-                self.Switch2Out.setText("15 to 16")
+                self.Switch2Out.setText("1 to 16")
           else:
-                self.Switch2Out.setText("1 to 16")    
+                self.Switch2Out.setText("15 to 16")    
 
           if WaysideControllerRed.switches[3]==True:
-                self.Switch3Out.setText("27 to 28")
-          else:
                 self.Switch3Out.setText("27 to 76")
+          else:
+                self.Switch3Out.setText("27 to 28")
 
           if WaysideControllerRed.switches[4]==True:
-                self.Switch4Out.setText("32 to 33")
-          else:
                 self.Switch4Out.setText("33 to 72")
+          else:
+                self.Switch4Out.setText("32 to 33")
 
           if WaysideControllerRed.switches[5]==True:
-                self.Switch5Out.setText("38 to 39")
-          else:
                 self.Switch5Out.setText("38 to 71")
+          else:
+                self.Switch5Out.setText("38 to 39")
 
           if WaysideControllerRed.switches[6]==True:
-                self.Switch6Out.setText("43 to 44")
-          else:
                 self.Switch6Out.setText("44 to 67")
+          else:
+                self.Switch6Out.setText("43 to 44")
 
           if WaysideControllerRed.switches[7]==True:
-                self.Switch7Out.setText("52 to 53")
-          else:
                 self.Switch7Out.setText("52 to 66")
+          else:
+                self.Switch7Out.setText("52 to 53")
 
 #self.Authority
           i=0
