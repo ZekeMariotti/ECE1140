@@ -110,6 +110,17 @@ func (s *UpdateService) doUpdate() {
 				}
 			}
 		}
+		// Check to dispatch trains
+		for i := range trains {
+			train := trains[i]
+			if !train.ReadyDispatch && len(train.Stops) > 1 {
+				if s.getTimeToDestination(train.Line, trainRouteMap[train.ID]) >= train.Stops[0].Time.Sub(s.data.TimeKeeper.GetSimulationTime()) {
+					t := s.data.Trains.Get(train.ID)
+					t.ReadyDispatch = true
+					s.data.Trains.Set(train.ID, t)
+				}
+			}
+		}
 		// Check prior holds
 		stopDuration, _ := time.ParseDuration("30s")
 		for trainid, blockid := range s.lastHoldMap {

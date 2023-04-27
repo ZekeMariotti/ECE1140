@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { BackendService } from '../services/backend.service';
+import { interval } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,6 +17,8 @@ export class DashboardComponent {
 
   ngOnInit() {
     this.getData()
+
+    interval(300).subscribe(() => this.getData());
   }
 
   getData() {

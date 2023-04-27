@@ -37,11 +37,12 @@ func (d *DataStore) GetNextTrainID() int {
 
 func (d *DataStore) TrainFrontendToBackend(frontend common.TrainFrontend) common.Train {
 	result := common.Train{
-		ID:       frontend.ID,
-		Line:     frontend.Line,
-		Driver:   frontend.Driver,
-		Location: frontend.Location,
-		Stops:    make([]common.TrainStop, len(frontend.Stops)),
+		ID:            frontend.ID,
+		Line:          frontend.Line,
+		Driver:        frontend.Driver,
+		Location:      frontend.Location,
+		Stops:         make([]common.TrainStop, len(frontend.Stops)),
+		ReadyDispatch: false,
 	}
 
 	line := d.Lines.Get(frontend.Line)
