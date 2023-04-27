@@ -249,9 +249,9 @@ class MainWindowR(QMainWindow):
             for k in range(1,51):
                 value = WaysideControllerRed.brokenRail[k]             
                 if value == True:
-                        self.BrokenRail.setItem(i,j,QTableWidgetItem(str("ERROR")))
+                        BrokenRail.setItem(i,j,QTableWidgetItem(str("ERROR")))
                 else: 
-                        self.BrokenRail.setItem(i,j,QTableWidgetItem(str(" ")))                 
+                        BrokenRail.setItem(i,j,QTableWidgetItem(str(" ")))                 
                 j=j+1
                 if j>9:
                  j=0
