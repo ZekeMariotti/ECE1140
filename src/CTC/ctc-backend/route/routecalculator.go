@@ -124,7 +124,7 @@ func (r *RouteCalculator) getNextBlocks(last common.Block, block common.Block, t
 					if nextSwitchBlocks[i] == last.Number {
 						nextBlocksIDs = append(nextBlocksIDs, block.Number+1)
 						nextBlockDirs = append(nextBlockDirs, trainDir)
-					} else if nextSwitchBlocks[i] < block.Number {
+					} else if nextSwitchBlocks[i] < block.Number || block.Number == 0 {
 						nextBlockDirs = append(nextBlockDirs, common.TRAINDIRECTION_DESCENDING)
 						nextBlocksIDs = append(nextBlocksIDs, nextSwitchBlocks[i])
 					} else {
