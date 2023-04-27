@@ -103,7 +103,7 @@ void loop() {
   float dt = currTime-prevTime;
   updateSwitchStates(switchStateArray);
   // printSwitchStates();//this is to test the hardware
-  drive(dt/1000);
+  drive(dt);
   emergencyBrake();
   setStationState();
   // automaticSpeedControl();
@@ -434,11 +434,12 @@ void autodrive(int currentSpeed, int commandedSpeed, int dt){
   int error = commandedSpeed - currentSpeed;
   // int dt=0;
   if(error>0){
-    power = tControl.calculatePower(currentSpeed, commandedSpeed, dt, Kp, Ki);
+    power = tControl.calculatePower2(currentSpeed, commandedSpeed, dt, Kp, Ki);
+    Serial.println(Kp);
     serviceBrakeCommand = tControl.calculateBrake(false);    
   }else if (error<0){
     serviceBrakeCommand = tControl.calculateBrake(true);
-    power = tControl.calculatePower(0, 0, dt, Kp, Ki);
+    power = tControl.calculatePower2(0, 0, dt, Kp, Ki);
     power = 0;
   }else{
     power=0;
