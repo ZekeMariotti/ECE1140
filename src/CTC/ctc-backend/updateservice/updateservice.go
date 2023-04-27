@@ -114,7 +114,7 @@ func (s *UpdateService) doUpdate() {
 		for i := range trains {
 			train := trains[i]
 			if !train.ReadyDispatch && len(train.Stops) > 1 {
-				if s.getTimeToDestination(train.Line, trainRouteMap[train.ID]) >= train.Stops[0].Time.Sub(s.data.TimeKeeper.GetSimulationTime()) {
+				if s.getTimeToDestination(train.Line, trainRouteMap[train.ID]) < train.Stops[0].Time.Sub(s.data.TimeKeeper.GetSimulationTime()) {
 					t := s.data.Trains.Get(train.ID)
 					t.ReadyDispatch = true
 					s.data.Trains.Set(train.ID, t)
@@ -190,7 +190,11 @@ func (s *UpdateService) updateAuthorities(routeMap map[int][]int, useMap map[int
 			}
 			if !hasAuthority {
 				// Set new stop for the route
-				routeMap[train] = route[:i-1]
+				if i >= 2 {
+					routeMap[train] = route[:i-2]
+				} else {
+					routeMap[train] = route[:i-1]
+				}
 				route = routeMap[train]
 			}
 		}

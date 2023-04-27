@@ -10,7 +10,7 @@ from PyQt6.QtCore import QRunnable
 
 class arduinoToJson(QRunnable):
 
-    ip = "192.168.1.2"
+    ip = "192.168.1.3"
     port = 27001
 
     def __init__(self):
