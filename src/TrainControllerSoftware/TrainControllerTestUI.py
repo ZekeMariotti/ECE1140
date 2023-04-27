@@ -98,6 +98,9 @@ class TestWindow(QMainWindow):
             self.setEmergencyBrakeStateLabel = self.setEmergencyBrakeStateLabelSetup()
             self.setEmergencyBrakeState = self.setEmergencyBrakeStateSetup()
 
+            self.setStationNameLabel = self.setStationNameLabelSetup()
+            self.setStationName = self.setStationNameSetup()
+
             self.setServiceBrakeStateLabel = self.setServiceBrakeStateLabelSetup()
             self.setServiceBrakeState = self.setServiceBrakeStateSetup()
 
@@ -178,6 +181,9 @@ class TestWindow(QMainWindow):
 
             self.gridLayout.addWidget(self.setAuthorityLabel, 4, 2)
             self.gridLayout.addWidget(self.setAuthority, 4, 3)
+
+            self.gridLayout.addWidget(self.setStationNameLabel, 5, 2)
+            self.gridLayout.addWidget(self.setStationName, 5, 3)
 
             self.gridLayout.addWidget(self.setTemperatureLabel, 3, 2)
             self.gridLayout.addWidget(self.setTemperature, 3, 3)
@@ -623,6 +629,7 @@ class TestWindow(QMainWindow):
         def setIsBeaconActivated(self):
             self.TrainControllerSW.inputs.isBeacon = (self.setIsBeacon.currentText() == "Enabled")
             TMTCSignals.isBeaconSignal.emit(self.TrainControllerSW.trainId, self.setIsBeacon.currentText() == "Enabled")
+            self.setStationNameTextChanged()
 
         def engineStatusActivated(self):
             self.TrainControllerSW.inputs.engineStatus = (self.setEngineStatus.currentText() == "Enabled")

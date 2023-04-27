@@ -191,10 +191,8 @@ class TrainControllerSW:
     # Increments or decrements block count after a polarity change
     def checkBlockPolarity(self):
         if (self.polarity != self.previousPolarity):
-            #print(f'Block Count Before: {self.blockCount}')
             self.blockCount += self.blockCountDirection
             self.previousPolarity = self.polarity
-            #print(f'Block Count After: {self.blockCount}')
 
     # Decides what to set the current block to based on data from beacons and switch blocks 
     def setCurrentBlock(self):
@@ -218,7 +216,8 @@ class TrainControllerSW:
                 self.firstSwitchBeaconPassed = False
                 self.secondSwitchBeaconPassed = False
 
-                self.blockCount = self.nextBlock
+                if (self.nextBlock > 0):
+                    self.blockCount = self.nextBlock
 
                 if (self.countUpOrDown == 1):
                     self.blockCountDirection = -1
@@ -226,7 +225,7 @@ class TrainControllerSW:
                     self.blockCountDirection = 1
 
         # Set current block
-        if (self.atSwitchBlock == True):
+        if (self.atSwitchBlock == True and self.switchBlock > 0):
             self.blockCount = self.switchBlock
 
     # Calculates the power to output to the train model 
@@ -334,7 +333,7 @@ class TrainControllerSW:
     def stayBelowSpeedLimitAndMaxSpeed(self):
         try:
             self.speedLimit = Conversions.kmPerHourToMetersPerSecond(self.blockList[self.blockCount].speedLimit)
-        except:
+        except Exception as ex:
             self.getBlocksData()
 
         if(float(self.inputs.commandedSpeed) > float(self.speedLimit)):

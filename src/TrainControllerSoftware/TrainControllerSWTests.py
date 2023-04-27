@@ -476,7 +476,7 @@ if (__name__ == "__main__"):
         mainUI.show()
 
         if (mainUI.testUI):
-            mainUI.TrainControllerTestUI.show()
+            mainUI.TrainControllerTestUI.close()
             
         trainModelUI = TrainModelUI(2, "Green")
         trainModelUI.show()
