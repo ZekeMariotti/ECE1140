@@ -20,7 +20,6 @@ from animated_toggle import AnimatedToggle
 import os
 import json
 
-# TODO: Change testing of speed limit
 # Class for the main window
 class TestWindow(QMainWindow):
 
@@ -96,12 +95,6 @@ class TestWindow(QMainWindow):
             self.setCommunicationsStatusLabel = self.setCommunicationsStatusLabelSetup()
             self.setCommunicationsStatus = self.setCommunicationsStatusSetup()
 
-            self.setStationNameLabel = self.setStationNameLabelSetup()
-            self.setStationName = self.setStationNameSetup()
-
-            self.setStationStateLabel = self.setStationStateLabelSetup()
-            self.setStationState = self.setStationStateSetup()
-
             self.setEmergencyBrakeStateLabel = self.setEmergencyBrakeStateLabelSetup()
             self.setEmergencyBrakeState = self.setEmergencyBrakeStateSetup()
 
@@ -119,9 +112,6 @@ class TestWindow(QMainWindow):
 
             self.setAuthorityLabel = self.setAuthorityLabelSetup()
             self.setAuthority = self.setAuthoritySetup()
-
-            self.setSpeedLimitLabel = self.setSpeedLimitLabelSetup()
-            self.setSpeedLimit = self.setSpeedLimitSetup()
 
             self.setTemperatureLabel = self.setTemperatureLabelSetup()
             self.setTemperature = self.setTemperatureSetup()
@@ -168,23 +158,17 @@ class TestWindow(QMainWindow):
             self.gridLayout.addWidget(self.setCommunicationsStatusLabel, 4, 0)
             self.gridLayout.addWidget(self.setCommunicationsStatus, 4, 1)
 
-            self.gridLayout.addWidget(self.setStationNameLabel, 5, 0)
-            self.gridLayout.addWidget(self.setStationName, 5, 1)
+            self.gridLayout.addWidget(self.setEmergencyBrakeStateLabel, 5, 0)
+            self.gridLayout.addWidget(self.setEmergencyBrakeState, 5, 1)
 
-            self.gridLayout.addWidget(self.setStationStateLabel, 6, 0)
-            self.gridLayout.addWidget(self.setStationState, 6, 1)
+            self.gridLayout.addWidget(self.setServiceBrakeStateLabel, 6, 0)
+            self.gridLayout.addWidget(self.setServiceBrakeState, 6, 1)
 
-            self.gridLayout.addWidget(self.setEmergencyBrakeStateLabel, 7, 0)
-            self.gridLayout.addWidget(self.setEmergencyBrakeState, 7, 1)
+            self.gridLayout.addWidget(self.setServiceBrakeStatusLabel, 7, 0)
+            self.gridLayout.addWidget(self.setServiceBrakeStatus, 7, 1)
 
-            self.gridLayout.addWidget(self.setServiceBrakeStateLabel, 8, 0)
-            self.gridLayout.addWidget(self.setServiceBrakeState, 8, 1)
-
-            self.gridLayout.addWidget(self.setServiceBrakeStatusLabel, 9, 0)
-            self.gridLayout.addWidget(self.setServiceBrakeStatus, 9, 1)
-
-            self.gridLayout.addWidget(self.setUndergroundStateLabel, 10, 0)
-            self.gridLayout.addWidget(self.setUndergroundState, 10, 1)
+            self.gridLayout.addWidget(self.setUndergroundStateLabel, 8, 0)
+            self.gridLayout.addWidget(self.setUndergroundState, 8, 1)
 
             self.gridLayout.addWidget(self.currentSpeedSliderLabel, 1, 2)
             self.gridLayout.addWidget(self.currentSpeedSlider, 1, 3)
@@ -192,14 +176,11 @@ class TestWindow(QMainWindow):
             self.gridLayout.addWidget(self.commandedSpeedSliderLabel, 2, 2)
             self.gridLayout.addWidget(self.commandedSpeedSlider, 2, 3)
 
-            self.gridLayout.addWidget(self.setAuthorityLabel, 3, 2)
-            self.gridLayout.addWidget(self.setAuthority, 3, 3)
+            self.gridLayout.addWidget(self.setAuthorityLabel, 4, 2)
+            self.gridLayout.addWidget(self.setAuthority, 4, 3)
 
-            self.gridLayout.addWidget(self.setSpeedLimitLabel, 4, 2)
-            self.gridLayout.addWidget(self.setSpeedLimit, 4, 3)
-
-            self.gridLayout.addWidget(self.setTemperatureLabel, 5, 2)
-            self.gridLayout.addWidget(self.setTemperature, 5, 3)
+            self.gridLayout.addWidget(self.setTemperatureLabel, 3, 2)
+            self.gridLayout.addWidget(self.setTemperature, 3, 3)
 
             self.gridLayout.addWidget(self.setInternalLightStateLabel, 6, 2)
             self.gridLayout.addWidget(self.setInternalLightState, 6, 3)
@@ -207,16 +188,15 @@ class TestWindow(QMainWindow):
             self.gridLayout.addWidget(self.setExternalLightStateLabel, 7, 2)
             self.gridLayout.addWidget(self.setExternalLightState, 7, 3)
 
-            self.gridLayout.addWidget(self.setLeftDoorStateLabel, 8, 2)
-            self.gridLayout.addWidget(self.setLeftDoorState, 8, 3)
+            self.gridLayout.addWidget(self.setLeftDoorStateLabel, 9, 0)
+            self.gridLayout.addWidget(self.setLeftDoorState, 9, 1)
 
-            self.gridLayout.addWidget(self.setRightDoorStateLabel, 9, 2)
-            self.gridLayout.addWidget(self.setRightDoorState, 9, 3)
+            self.gridLayout.addWidget(self.setRightDoorStateLabel, 10, 0)
+            self.gridLayout.addWidget(self.setRightDoorState, 10, 1)
 
-            self.gridLayout.addWidget(self.setPlatformSideLabel, 10, 2)
-            self.gridLayout.addWidget(self.setPlatformSide, 10, 3)
+            self.gridLayout.addWidget(self.setPlatformSideLabel, 8, 2)
+            self.gridLayout.addWidget(self.setPlatformSide, 8, 3)
 
-            #self.gridLayout.addWidget(self.connectOutputsToInputs, 9, 5)
             self.gridLayout.addWidget(self.toggleOutputToInputConnection, 9, 6)
 
             self.gridLayout.addWidget(self.showAllOutputsLabel, 1, 5)
@@ -323,22 +303,6 @@ class TestWindow(QMainWindow):
             setStationName.textChanged.connect(self.setStationNameTextChanged)
             setStationName.setParent(self)
             return setStationName
-
-        def setStationStateLabelSetup(self):
-            setStationStateLabel = QLabel()
-            setStationStateLabel.setFixedSize(QSize(round(self.labelWidth), round(self.labelHeight)))
-            setStationStateLabel.setText("Station State:")
-            setStationStateLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            setStationStateLabel.setParent(self)
-            return setStationStateLabel
-
-        def setStationStateSetup(self):
-            setStationState = QComboBox()
-            setStationState.setFixedSize(QSize(round(self.buttonWidth), round(self.buttonHeight)))
-            setStationState.addItems(["Disabled", "Enabled"])
-            setStationState.activated.connect(self.setStationStateActivated)
-            setStationState.setParent(self)
-            return setStationState
         
         def setEmergencyBrakeStateLabelSetup(self):
             setEmergencyBrakeStateLabel = QLabel()
@@ -676,10 +640,6 @@ class TestWindow(QMainWindow):
                 self.TrainControllerSW.inputs.nextStationName = self.setStationName.text()
                 TMTCSignals.nextStationNameSignal.emit(self.TrainControllerSW.trainId, self.setStationName.text())
 
-        def setStationStateActivated(self):
-            #TMTCSignals.stationNameSignal.emit(self.TrainControllerSW.trainId, )
-            test=1
-
         def currentSpeedSliderRelease(self):
             self.TrainControllerSW.inputs.currentSpeed = self.currentSpeedSlider.value()
             TMTCSignals.currentSpeedSignal.emit(self.TrainControllerSW.trainId, self.currentSpeedSlider.value())
@@ -703,11 +663,6 @@ class TestWindow(QMainWindow):
         def setAuthorityTextChanged(self):
             self.TrainControllerSW.inputs.authority = int(self.setAuthority.text() if self.setAuthority.text() != "" else 0)
             TMTCSignals.authoritySignal.emit(self.TrainControllerSW.trainId, int(self.setAuthority.text() if self.setAuthority.text() != "" else 0))
-
-        def setSpeedLimitValueChanged(self):
-            #self.TrainControllerSW.speedLimit = self.setSpeedLimit.value()
-            #TMTCSignals.asdf.emit(self.TrainControllerSW.trainId, )
-            test=1
 
         def setTemperatureValueChanged(self):
             self.TrainControllerSW.inputs.temperature = self.setTemperature.value()
