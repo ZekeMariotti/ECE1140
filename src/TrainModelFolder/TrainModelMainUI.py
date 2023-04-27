@@ -86,15 +86,16 @@ class TrainModelUI(QWidget):
 
         # Station Label and Output
         self.stationLabel = QLabel("Station:")
-        self.stationLabel.setFont(self.timesNewRoman18)
+        self.stationLabel.setFont(QFont("Times New Roman", 17))
         self.stationLabel.setAlignment(self.alignCenter)
         self.stationLabel.setFixedWidth(150)
         self.stationOutput = QLineEdit()
         self.stationOutput.setReadOnly(True)
-        self.stationOutput.setFont(self.timesNewRoman24)
+        self.stationOutput.setFont(QFont("Times New Roman", 21))
         self.stationOutput.setAlignment(self.alignCenter)
         self.stationOutput.setText("Shadyside")
         self.stationOutput.setFixedHeight(40)
+        self.stationOutput.setFixedWidth(300)
 
         layout.addWidget(self.stationLabel, 0, 5, 1, 1, self.alignCenter)
         layout.addWidget(self.stationOutput, 0, 6, 1, 2, self.alignCenter)

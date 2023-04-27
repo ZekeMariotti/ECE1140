@@ -17,9 +17,6 @@ from Integration.TMTCSignals import *
 from animated_toggle import AnimatedToggle
 
 
-# Class for Worker (multithreading)
-class Worker(QObject):
-    finished = pyqtSignal()
 
 # Class for the main window
 class MainWindow(QMainWindow):
@@ -65,9 +62,6 @@ class MainWindow(QMainWindow):
             self.labelFont = QFont(self.globalFont, 13)
             self.buttonFont = QFont(self.globalFont, 9)
             self.stationFont = QFont(self.globalFont, 16)  
-
-            # Styling elements
-            #self.setStyleSheet("QLabel { background-color: rgb(180, 180, 180); border: 1px solid; border-color: rgb(0, 0, 0) }")
                 
             # Create visual elements
             self.mainTimer = self.mainTimerSetup()
@@ -108,7 +102,7 @@ class MainWindow(QMainWindow):
 
             # Test UI
             if (self.testUI):
-                self.TrainControllerTestUI = TestWindow()
+                self.TrainControllerTestUI = TestWindow(self.TrainControllerSW.trainId)
                 self.TrainControllerTestUI.move(self.frameGeometry().width()+round(1.1*self.frameGeometry().x()), 200)
 
 
@@ -345,7 +339,7 @@ class MainWindow(QMainWindow):
             serviceBrakeDisable.setParent(self)
             return serviceBrakeDisable
 
-        # slider in km/hr because slider.setRange only takes integer (need max to be exactly 70km/hr), user sees it as mph
+        # Slider in km/hr because the PyQt slider.setRange only takes integer (need max to be exactly 70km/hr), user sees it as mph
         def commandedSpeedSliderSetup(self):
             commandedSpeedSlider = QSlider(Qt.Orientation.Horizontal)
             commandedSpeedSlider.setFixedSize(QSize(round(self.labelWidth*0.9), round(self.labelHeight*0.5)))

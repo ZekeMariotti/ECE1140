@@ -1,4 +1,4 @@
-# tests file for TrainControllerSW
+# Tests file for TrainControllerSW
 
 from distutils.cmd import Command
 import sys
@@ -54,6 +54,7 @@ def emergencyBrakeCommandTest():
 # Test that service brake sends and receives correct signals
 def serviceBrakeCommandTest():
     try:
+        mainUI.manualModeToggle.setChecked(True)
         mainUI.serviceBrakeDisableClick()
         mainUI.TrainControllerSW.writeOutputs()
         assert (mainUI.TrainControllerTestUI.serviceBrakeCommand == False), "serviceBrakeCommandTest Failed"
@@ -122,6 +123,7 @@ def engineStateTest():
 # Test that lights send and receive correct signals
 def lightsTest():
     try:
+        mainUI.manualModeToggle.setChecked(True)
         mainUI.internalLightsEnableClick()
         mainUI.externalLightsEnableClick()
         mainUI.mainEventLoop()
@@ -157,6 +159,7 @@ def lightsTest():
 # Test that doors send and receive correct signals
 def doorTest():
     try:
+        mainUI.manualModeToggle.setChecked(True)
         mainUI.leftDoorCloseClick()
         mainUI.rightDoorCloseClick()
         mainUI.TrainControllerSW.writeOutputs()
@@ -348,8 +351,11 @@ def authorityTest():
 # Test that speed limit is set properly 
 def speedLimitTest():
     try:
+        mainUI.manualModeToggle.setChecked(False)
         mainUI.TrainControllerSW.blockCount = 1
         speedLimit = str(Conversions.metersPerSecondToMilesPerHour(Conversions.kmPerHourToMetersPerSecond(mainUI.TrainControllerSW.blockList[1].speedLimit)))
+        mainUI.TrainControllerSW.stayBelowSpeedLimitAndMaxSpeed()
+        mainUI.mainEventLoop()
         assert(speedLimit in mainUI.speedLimit.text()), "speedLimitTest Failed"
 
         print("speedLimitTest Passed")
@@ -433,6 +439,15 @@ def powerCalculationTest():
 
 
 if (__name__ == "__main__"):
+    # Start tests message
+    print("\n")
+    print("#################################################")
+    print("Train Controller Software Tests\n")
+    print("Train Model Integration can be manually tested by\nsetting testTrainModelIntegration = True")
+    print("#################################################\n")
+    print("Running tests...")
+    
+
     # Used to test TrainModel communication
     testTrainModelIntegration = True
 
@@ -446,7 +461,7 @@ if (__name__ == "__main__"):
     print("")
 
     # Test that the Test UI is created
-    assert (mainUI.testUI == True), "Test UI must be enabled (self.testUI = True)"
+    assert (mainUI.testUI == True), "Test UI must be enabled (self.testUI = True in TrainControllerMainUI.py)"
 
     # Run tests
     emergencyBrakeCommandTest()
@@ -469,6 +484,7 @@ if (__name__ == "__main__"):
     
     print(f'\nTotal Tests: {passed+failed}\nTests passed: {passed}\nTests Failed: {failed}')
 
+    # Creates a Train Model to test with the Train Controller
     if (testTrainModelIntegration == True):
         mainUI.close()
 
@@ -476,7 +492,7 @@ if (__name__ == "__main__"):
         mainUI.show()
 
         if (mainUI.testUI):
-            mainUI.TrainControllerTestUI.show()
+            mainUI.TrainControllerTestUI.close()
             
         trainModelUI = TrainModelUI(2, "Green")
         trainModelUI.show()

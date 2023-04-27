@@ -22,7 +22,8 @@ export class BlockTableComponent {
     this.getBlocks();
     this.getAutoMode();
 
-    interval(30*1000).subscribe(() => this.getBlocks())
+    interval(250).subscribe(() => this.getBlocks());
+    interval(250).subscribe(() => this.getAutoMode());
   }
 
   setLine(line: string) {

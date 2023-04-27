@@ -18,7 +18,7 @@ export class HeaderComponent {
     this.backendService.getTime()
     this.getTime();
 
-    interval(250).subscribe(() => {this.getTime()});
+    interval(100).subscribe(() => {this.getTime()});
   }
 
   getTime(): void {

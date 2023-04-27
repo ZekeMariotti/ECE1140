@@ -1,4 +1,4 @@
-# Main Class for the Train Controller Software
+# Main class for the Train Controller Software
 
 from datetime import *
 from distutils.cmd import Command
@@ -117,6 +117,7 @@ class TrainControllerSW:
 
     # methods   
 
+    # Sends all output signals
     def writeOutputs(self):
         TMTCSignals.commandedPowerSignal.emit(self.trainId, self.outputs.power)
         TMTCSignals.emergencyBrakeCommandSignal.emit(self.trainId, self.outputs.emergencyBrakeCommand)
@@ -133,6 +134,7 @@ class TrainControllerSW:
 
         TMTCSignals.stationStateSignal.emit(self.trainId, self.stationState)
 
+    # Gets a list of blocks based on green or red line
     def getBlocksData(self):
         if (__main__.__file__[-7:] == "main.py"):
             greenPath = os.path.join(sys.path[0], "TrackModel", "GreenLine.csv")
@@ -170,7 +172,7 @@ class TrainControllerSW:
 
     # Determines whether the train is at a station or not
     def setStationState(self):
-        # If self.inputs.stationName != "" beacon is at a station
+        # If self.inputs.stationName != "", beacon is at a station
         if (self.inputs.stationName != "0"):
             # if isBeacon and !firstBeaconPassed, entering station
             if(self.inputs.isBeacon == True and self.firstBeaconPassed == False):
@@ -191,10 +193,8 @@ class TrainControllerSW:
     # Increments or decrements block count after a polarity change
     def checkBlockPolarity(self):
         if (self.polarity != self.previousPolarity):
-            #print(f'Block Count Before: {self.blockCount}')
             self.blockCount += self.blockCountDirection
             self.previousPolarity = self.polarity
-            #print(f'Block Count After: {self.blockCount}')
 
     # Decides what to set the current block to based on data from beacons and switch blocks 
     def setCurrentBlock(self):
@@ -202,13 +202,13 @@ class TrainControllerSW:
 
         # If self.switchBlock != -1, train is at a switch beacon
         if (self.switchBlock != -1):
-            # if isBeacon and !firstSwitchBeaconPassed, entering station
+            # if isBeacon and !firstSwitchBeaconPassed, entering switch
             if (self.inputs.isBeacon == True and self.firstSwitchBeaconPassed == False):
                 self.firstSwitchBeaconPassed = True
             elif (self.inputs.isBeacon == False and self.firstSwitchBeaconPassed == True):
                 self.atSwitchBlock = True
 
-            # if isBeacon and atSwitchBlock and !secondSwitchBeaconPassed, exiting station
+            # if isBeacon and atSwitchBlock and !secondSwitchBeaconPassed, exiting switch
             if(self.inputs.isBeacon == True and self.atSwitchBlock == True and self.secondSwitchBeaconPassed == False):
                 self.secondSwitchBeaconPassed = True
 
@@ -218,7 +218,8 @@ class TrainControllerSW:
                 self.firstSwitchBeaconPassed = False
                 self.secondSwitchBeaconPassed = False
 
-                self.blockCount = self.nextBlock
+                if (self.nextBlock > 0):
+                    self.blockCount = self.nextBlock
 
                 if (self.countUpOrDown == 1):
                     self.blockCountDirection = -1
@@ -226,7 +227,7 @@ class TrainControllerSW:
                     self.blockCountDirection = 1
 
         # Set current block
-        if (self.atSwitchBlock == True):
+        if (self.atSwitchBlock == True and self.switchBlock > 0):
             self.blockCount = self.switchBlock
 
     # Calculates the power to output to the train model 
@@ -262,7 +263,15 @@ class TrainControllerSW:
             self.ek = 0
             self.uk = 0
         else:
-            self.outputs.power = float(self.Kp*self.ek) + float(self.Ki*self.uk)
+            power1 = float(self.Kp*self.ek) + float(self.Ki*self.uk)
+            power2 = float(self.Kp*self.ek) + float(self.Ki*self.uk)
+            power3 = float(self.Kp*self.ek) + float(self.Ki*self.uk)
+
+            if (power1 == power2 == power3):
+                self.outputs.power = power1
+            else:
+                self.outputs.emergencyBrakeCommand = True
+                print("Power calculation error, setting emergency brake.")
 
         # 0 <= power <= 120000 Watts
         if (self.inputs.authority == 0):
@@ -305,8 +314,7 @@ class TrainControllerSW:
             self.outputs.leftDoorCommand = False
             self.outputs.rightDoorCommand = False
     
-    # Automatically turns on/off lights based on underground state
-    # NOTE: update based on time of day? (currently always on between 8pm - 5am)
+    # Automatically turns on/off lights based on underground state and time (lights on between 8pm and 6am)
     def autoUpdateLights(self):
         if(self.inputs.undergroundState == True):
             self.outputs.externalLightCommand = True
@@ -323,7 +331,7 @@ class TrainControllerSW:
     def autoSetServiceBrake(self):
         if (self.inputs.authority == 0):
             self.outputs.serviceBrakeCommand = True
-        elif (self.inputs.commandedSpeed == 0):   # ADDED IF FOR COMMANDED SPEED
+        elif (self.inputs.commandedSpeed == 0):
             self.outputs.serviceBrakeCommand = True
         elif(self.inputs.currentSpeed > self.inputs.commandedSpeed + 0.5):
             self.outputs.serviceBrakeCommand = True
@@ -334,7 +342,7 @@ class TrainControllerSW:
     def stayBelowSpeedLimitAndMaxSpeed(self):
         try:
             self.speedLimit = Conversions.kmPerHourToMetersPerSecond(self.blockList[self.blockCount].speedLimit)
-        except:
+        except Exception as ex:
             self.getBlocksData()
 
         if(float(self.inputs.commandedSpeed) > float(self.speedLimit)):
@@ -467,6 +475,8 @@ class TrainControllerSW:
     def isBeaconSignalHandler(self, id, isBeac):
         if(self.trainId == id):
             self.inputs.isBeacon = isBeac
+            if (isBeac):
+                print(f'stationName: {self.inputs.stationName}, platform: {self.inputs.platformSide}, nextStation: {self.inputs.nextStationName}, IsBeacon: {self.inputs.isBeacon}, outwardBlock: {self.nextBlock}, up/down: {self.countUpOrDown}, switchBlock: {self.switchBlock} ')
             self.setStationState()
             self.setCurrentBlock()
 

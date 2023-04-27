@@ -81,6 +81,14 @@ class backEndCalculations():
         "greenAuthority" : DynamicArray(),
         "greenCommandedSpeed" : DynamicArray(),
         "val" : 0,
+        "tag" : [0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0],
+        "tag2" : [0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0],
         "nextBlock" : 0,
         "blockDel" : 0,
         "moves" : [[0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None], [0, 9, None],
@@ -183,8 +191,8 @@ class backEndCalculations():
         elif(line == "Red"):
             self.data["trainLine"][id - 1] = 0
             self.data["moves"][id - 1] = [0, 9, None]
-            TMTkMSignals.authoritySignal.emit(id, 0)
-            TMTkMSignals.commandedSpeedSignal.emit(id, 0)
+            TMTkMSignals.authoritySignal.emit(id, 1)
+            TMTkMSignals.commandedSpeedSignal.emit(id, 1)
         else:
             print("Something")
 
@@ -237,10 +245,14 @@ class backEndCalculations():
                 index = 1
             elif (currBlock == self.data["moves"][id - 1][2]):
                 index = 2
+            print(currBlock, self.data["moves"][id - 1])
             if (index != 0):
                 self.getTrainBlockInputFunction(index, id - 1, 0)
         elif self.data["trainLine"][id - 1] == 1 and transition:
-            if (prevBlock == 0):
+            if (currBlock == 0):
+                TMTkMSignals.switchSignal.emit(id, 0)
+                TMTkMSignals.switchStateSignal.emit(id, 1)
+            elif (prevBlock == 0):
                 TMTkMSignals.switchSignal.emit(id, 0)
                 TMTkMSignals.switchStateSignal.emit(id, 1)
             elif (int(self.csvConstants["switchGreen"].__getitem__(currBlock - 1)) > 0) & (int(self.csvConstants["switchGreen"].__getitem__(prevBlock - 1)) > 0):
@@ -365,11 +377,11 @@ class backEndCalculations():
             if self.data["trainLine"][trainNo] == 0 and self.data["moves"][trainNo][index] != 0:
                 self.data["blockTrainNoRed"].removeAt(self.data["moves"][trainNo][index] - 1)
                 self.data["blockTrainNoRed"].insertAt(trainNo + 1, self.data["moves"][trainNo][index] - 1)
-                TkMWCSignals.currBlockSignal.emit(1, True, self.data["moves"][trainNo][index])
+                TkMWCSignals.currBlockSignal.emit(self.data["trainLine"][trainNo], True, self.data["moves"][trainNo][index])
             elif self.data["trainLine"][trainNo] == 1 and self.data["moves"][trainNo][index] != 0:
                 self.data["blockTrainNoGreen"].removeAt(self.data["moves"][trainNo][index] - 1)
                 self.data["blockTrainNoGreen"].insertAt(trainNo + 1, self.data["moves"][trainNo][index] - 1)
-                TkMWCSignals.currBlockSignal.emit(1, True, self.data["moves"][trainNo][index])
+                TkMWCSignals.currBlockSignal.emit(self.data["trainLine"][trainNo], True, self.data["moves"][trainNo][index])
 
             # Update Authority
             #if (self.data["authority"][trainNo] != 0):  
@@ -377,45 +389,62 @@ class backEndCalculations():
             #TMTkMSignals.authoritySignal.emit(trainNo + 1, self.data["authority"][trainNo])
 
             # Send Beacon
+            if self.data["tag2"][trainNo] == 0 and int(self.data["moves"][trainNo][0] - 1) > 0 and self.data["tag"][trainNo] == 1 and ((self.data["trainLine"][trainNo] == 0 and self.data["moves"][trainNo][0] != 38 and self.data["moves"][trainNo][0] != 33 and self.data["moves"][trainNo][0] != 27 and self.data["moves"][trainNo][0] != 16 and self.data["moves"][trainNo][0] != 7 and self.data["moves"][trainNo][0] != 21 and self.data["moves"][trainNo][0] != 25 and self.data["moves"][trainNo][0] != 35 and self.data["moves"][trainNo][0] != 48 and self.data["moves"][trainNo][0] != 60) or (self.data["trainLine"][trainNo] == 1 and self.data["moves"][trainNo][0] != 2 and self.data["moves"][trainNo][0] != 9 and self.data["moves"][trainNo][0] != 13 and self.data["moves"][trainNo][0] != 16 and self.data["moves"][trainNo][0] != 22 and self.data["moves"][trainNo][0] != 29 and self.data["moves"][trainNo][0] != 31 and self.data["moves"][trainNo][0] != 39 and self.data["moves"][trainNo][0] != 48 and self.data["moves"][trainNo][0] != 57 and self.data["moves"][trainNo][0] != 65 and self.data["moves"][trainNo][0] != 73 and self.data["moves"][trainNo][0] != 77 and self.data["moves"][trainNo][0] != 85 and self.data["moves"][trainNo][0] != 88 and self.data["moves"][trainNo][0] != 96 and self.data["moves"][trainNo][0] != 105 and self.data["moves"][trainNo][0] != 114 and self.data["moves"][trainNo][0] != 123 and self.data["moves"][trainNo][0] != 132 and self.data["moves"][trainNo][0] != 141)):
+                if self.data["trainLine"][trainNo] == 0:
+                    beaconArr = self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][0] - 1)
+                else:
+                    beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)
+                TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(int(beaconArr[3])), int(beaconArr[4]), int(beaconArr[5]), int(beaconArr[6]))
+                print(beaconArr, self.data["moves"][trainNo][0], self.data["moves"][trainNo][index])
+            elif self.data["tag2"][trainNo] == 0 and int(self.data["moves"][trainNo][index] - 1) > 0 and self.data["tag"][trainNo] == 1 and ((self.data["trainLine"][trainNo] == 0 and (self.data["moves"][trainNo][0] == 38 or self.data["moves"][trainNo][0] == 33 or self.data["moves"][trainNo][0] == 27 or self.data["moves"][trainNo][0] == 16 or self.data["moves"][trainNo][0] == 7 or self.data["moves"][trainNo][0] == 21 or self.data["moves"][trainNo][0] == 25 or self.data["moves"][trainNo][0] == 35 or self.data["moves"][trainNo][0] == 48 or self.data["moves"][trainNo][0] == 60)) or (self.data["trainLine"][trainNo] == 1 and (self.data["moves"][trainNo][0] == 2 or self.data["moves"][trainNo][0] == 9 or self.data["moves"][trainNo][0] == 13 or self.data["moves"][trainNo][0] == 16 or self.data["moves"][trainNo][0] == 22 or self.data["moves"][trainNo][0] == 29 or self.data["moves"][trainNo][0] == 31 or self.data["moves"][trainNo][0] == 39 or self.data["moves"][trainNo][0] == 48 or self.data["moves"][trainNo][0] == 57 or self.data["moves"][trainNo][0] == 65 or self.data["moves"][trainNo][0] == 73 or self.data["moves"][trainNo][0] == 77 or self.data["moves"][trainNo][0] == 85 or self.data["moves"][trainNo][0] == 88 or self.data["moves"][trainNo][0] == 96 or self.data["moves"][trainNo][0] == 105 or self.data["moves"][trainNo][0] == 114 or self.data["moves"][trainNo][0] == 123 or self.data["moves"][trainNo][0] == 132 or self.data["moves"][trainNo][0] == 141))):
+                self.data["tag2"][trainNo] = 1
+                if self.data["trainLine"][trainNo] == 0:
+                    beaconArr = self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][index] - 1)
+                else:
+                    beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)
+                TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(int(beaconArr[3])), int(beaconArr[4]), int(beaconArr[5]), int(beaconArr[6]))
+                print(beaconArr, self.data["moves"][trainNo][0], self.data["moves"][trainNo][index])
+            elif self.data["tag2"][trainNo] == 0 and self.data["tag"][trainNo] == 0 and ((self.data["moves"][trainNo][0] <= 9 and self.data["trainLine"][trainNo] == 0) or (self.data["moves"][trainNo][0] >= 63 and self.data["trainLine"][trainNo] == 1)):
+                self.data["tag"][trainNo] = 1
+            elif self.data["tag2"][trainNo] == 1:
+                self.data["tag2"][trainNo] = 0
             # If train line is red
-            if self.data["trainLine"][trainNo] == 0:
-                # If next block is not the yard
-                if (int(self.data["moves"][trainNo][index] - 1) > 0):
-                    # If next block is a station or principal switch block
-                    if (int(self.csvConstants["stationRed"].__getitem__(self.data["moves"][trainNo][index] - 1)) > 0 or int(self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][index] - 1)[4]) != -1):
-                        # Emit beacon before station or switch
-                        beaconArr = self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][0] - 1)
-                        if (beaconArr[0] != "0" or int(beaconArr[1]) != 0 or beaconArr[2] != "0" or int(beaconArr[4]) != -1 or int(beaconArr[5]) != -1 or int(beaconArr[6]) != -1):
-                            TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), int(beaconArr[4]), int(beaconArr[5]), int(beaconArr[6]))
-                else:
-                    # Emit empty beacon
-                    TMTkMSignals.beaconSignal.emit(trainNo + 1, "0", 0, "0", 0, -1, 0, -1)
-                # If current block is not the yard
-                if (int(self.data["moves"][trainNo][0] - 1) > 0):
-                    # If current block is a station or a principal switch block
-                    if (int(self.csvConstants["stationRed"].__getitem__(self.data["moves"][trainNo][0] - 1)) > 0 or int(self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][0] - 1)[4]) != -1):
-                        # Emit beacon after station or switch
-                        beaconArr = self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][index] - 1)
-                        if (beaconArr[0] != "0" or int(beaconArr[1]) != 0 or beaconArr[2] != "0" or int(beaconArr[4]) != -1 or int(beaconArr[5]) != -1 or int(beaconArr[6]) != -1):
-                            TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), int(beaconArr[4]), int(beaconArr[5]), int(beaconArr[6]))
-                else:
-                    # Emit empty beacon
-                    TMTkMSignals.beaconSignal.emit(trainNo + 1, "0", 0, "0", 0, -1, 0, -1)
-            elif self.data["trainLine"][trainNo] == 1:
-                if (int(self.data["moves"][trainNo][index] - 1) > 0):
-                    if (int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)) > 0 or int(self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)[4]) != -1):
-                        beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)
-                        if (beaconArr[0] != "0" or int(beaconArr[1]) != 0 or beaconArr[2] != "0" or int(beaconArr[4]) != -1 or int(beaconArr[5]) != -1 or int(beaconArr[6]) != -1):
-                            TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), int(beaconArr[4]), int(beaconArr[5]), int(beaconArr[6]))
-                else:
-                    TMTkMSignals.beaconSignal.emit(trainNo + 1, "0", 0, "0", 0, -1, 0, -1)
-                if (int(self.data["moves"][trainNo][0] - 1) > 0):
-                    if (int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)) > 0 or int(self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)[4]) != -1):
-                        beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)
-                        if (beaconArr[0] != "0" or int(beaconArr[1]) != 0 or beaconArr[2] != "0" or int(beaconArr[4]) != -1 or int(beaconArr[5]) != -1 or int(beaconArr[6]) != -1):
-                            TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), int(beaconArr[4]), int(beaconArr[5]), int(beaconArr[6]))
-                else:
-                    TMTkMSignals.beaconSignal.emit(trainNo + 1, "0", 0, "0", 0, -1, 0, -1)
+            #if self.data["trainLine"][trainNo] == 0:
+            #    if (int(self.data["moves"][trainNo][index] - 1) > 0):
+            #        if int(self.csvConstants["stationRed"].__getitem__(self.data["moves"][trainNo][index] - 1)) > 0 or (self.csvConstants["switchBlockA"].__getitem__(int(self.csvConstants["switchRed"].__getitem__(self.data["moves"][trainNo][index] - 1)) - 1) == self.data["moves"][trainNo][index]):
+            #            beaconArr = self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][0] - 1)
+            #            if (beaconArr[0] != "0" or int(beaconArr[1]) != 0 or beaconArr[2] != "0" or int(beaconArr[4]) != -1 or int(beaconArr[5]) != -1 or int(beaconArr[6]) != -1):
+            #                TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), int(beaconArr[4]), int(beaconArr[5]), int(beaconArr[6]))
+            #    else:
+            #        TMTkMSignals.beaconSignal.emit(trainNo + 1, "0", 0, "0", 0, -1, 0, -1)
+            #    if (int(self.data["moves"][trainNo][0] - 1) > 0):
+            #        # If current block is a station or a principal switch block
+            #        if int(self.csvConstants["stationRed"].__getitem__(self.data["moves"][trainNo][0] - 1)) > 0 or (self.csvConstants["switchBlockA"].__getitem__(int(self.csvConstants["switchRed"].__getitem__(self.data["moves"][trainNo][0] - 1)) - 1) == self.data["moves"][trainNo][0]):
+            #            beaconArr = self.csvConstants["beaconRed"].__getitem__(self.data["moves"][trainNo][index] - 1)
+            #            # Emit beacon after station or switch
+            #            if (beaconArr[0] != "0" or int(beaconArr[1]) != 0 or beaconArr[2] != "0" or int(beaconArr[4]) != -1 or int(beaconArr[5]) != -1 or int(beaconArr[6]) != -1):
+            #                TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), int(beaconArr[4]), int(beaconArr[5]), int(beaconArr[6]))
+            #                print(beaconArr, self.data["moves"][trainNo][index], self.data["moves"][trainNo][0])
+            #    else:
+            #        TMTkMSignals.beaconSignal.emit(trainNo + 1, "0", 0, "0", 0, -1, 0, -1)
+            #elif self.data["trainLine"][trainNo] == 1:
+            #    if (int(self.data["moves"][trainNo][index] - 1) > 0):
+            #        if int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)) > 0 or (self.csvConstants["switchBlockA"].__getitem__(int(self.csvConstants["switchGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)) - 1) == self.data["moves"][trainNo][index]):
+            #            beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)
+            #            if (beaconArr[0] != "0" or int(beaconArr[1]) != 0 or beaconArr[2] != "0" or int(beaconArr[4]) != -1 or int(beaconArr[5]) != -1 or int(beaconArr[6]) != -1):
+            #                TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), int(beaconArr[4]), int(beaconArr[5]), int(beaconArr[6]))
+            #    else:
+            #        TMTkMSignals.beaconSignal.emit(trainNo + 1, "0", 0, "0", 0, -1, 0, -1)
+            #    if (int(self.data["moves"][trainNo][0] - 1) > 0):
+            #        # If current block is a station or a principal switch block
+            #        if (int(self.csvConstants["stationGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)) > 0 or (self.csvConstants["switchBlockA"].__getitem__(int(self.csvConstants["switchGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)) - 1) == self.data["moves"][trainNo][0])) and self.data["moves"][trainNo][index] != 0:
+            #            beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)
+            #            # Emit beacon after station or switch
+            #            if (beaconArr[0] != "0" or int(beaconArr[1]) != 0 or beaconArr[2] != "0" or int(beaconArr[4]) != -1 or int(beaconArr[5]) != -1 or int(beaconArr[6]) != -1):
+            #                TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(beaconArr[3]), int(beaconArr[4]), int(beaconArr[5]), int(beaconArr[6]))
+            #                print(beaconArr, self.data["moves"][trainNo][index], self.data["moves"][trainNo][0])
+            #    else:
+            #        TMTkMSignals.beaconSignal.emit(trainNo + 1, "0", 0, "0", 0, -1, 0, -1)
 
             # Update Block vector
             self.data["moves"][trainNo][0] = self.data["moves"][trainNo][index]
@@ -492,6 +521,9 @@ class backEndCalculations():
 
     def updateVector(self, trainNo):
         if self.data["moves"][trainNo][0] == 0 and self.data["trainLine"][trainNo] == 0:
+            if(trainNo == 1):
+                self.data["switchPos"].removeAt(1)
+                self.data["switchPos"].insertAt(1,1)
             if int(self.data["switchPos"].__getitem__(1)) == 1:
                 self.data["moves"][trainNo][1] = 9
             else:
@@ -584,15 +616,16 @@ class backEndCalculations():
     # Determines how many passengers get on at each station
     def passengersGettingOn(self, trainNo):
         # Generate number of passengers getting on the train at the station
-        if self.data["trainLine"][trainNo - 1] == 0:
-            passOn = randint(0, int(self.data["stationOccupancy"].__getitem__(int(self.csvConstants["stationRed"].__getitem__(self.data["trainBlock"][trainNo - 1] - 1)) - 1)))
-            self.getOnInput(int(self.csvConstants["stationRed"].__getitem__(self.data["trainBlock"][trainNo - 1] - 1)) - 1, passOn)
-            requests.put("http://localhost:8090/api/passengers/Red", str(passOn))
-        elif self.data["trainLine"][trainNo - 1] == 1:
-            passOn = randint(0, int(self.data["stationOccupancy"].__getitem__(int(self.csvConstants["stationGreen"].__getitem__(self.data["trainBlock"][trainNo - 1] - 1)) - 1)))
-            self.getOnInput(int(self.csvConstants["stationGreen"].__getitem__(self.data["trainBlock"][trainNo - 1] - 1)) - 1, passOn)
-            requests.put("http://localhost:8090/api/passengers/Green", str(passOn))
-        TMTkMSignals.passengersEnteringSignal.emit(trainNo, passOn)
+        if self.data["trainBlock"][trainNo - 1] != 57:
+            if self.data["trainLine"][trainNo - 1] == 0:
+                passOn = randint(0, int(self.data["stationOccupancy"].__getitem__(int(self.csvConstants["stationRed"].__getitem__(self.data["trainBlock"][trainNo - 1] - 1)) - 1)))
+                self.getOnInput(int(self.csvConstants["stationRed"].__getitem__(self.data["trainBlock"][trainNo - 1] - 1)) - 1, passOn)
+                requests.put("http://localhost:8090/api/passengers/Red", str(passOn))
+            elif self.data["trainLine"][trainNo - 1] == 1:
+                passOn = randint(0, int(self.data["stationOccupancy"].__getitem__(int(self.csvConstants["stationGreen"].__getitem__(self.data["trainBlock"][trainNo - 1] - 1)) - 1)))
+                self.getOnInput(int(self.csvConstants["stationGreen"].__getitem__(self.data["trainBlock"][trainNo - 1] - 1)) - 1, passOn)
+                requests.put("http://localhost:8090/api/passengers/Green", str(passOn))
+            TMTkMSignals.passengersEnteringSignal.emit(trainNo, passOn)
 
     # Determines how many passengers get off at each station
     def passengersGettingOff(self, trainNo, passOff):
@@ -707,7 +740,7 @@ with open(os.path.join(sys.path[0], "TrackModel", "Switches.csv"), 'r') as swi:
         backEndCalculations.csvConstants["switchBlockA"].append(row["BlockA"])
         backEndCalculations.csvConstants["switchBlockB"].append(row["BlockB"])
         backEndCalculations.csvConstants["switchBlockC"].append(row["BlockC"])
-        if int(row["SwitchID"]) == 10 or int(row["SwitchID"]) == 11:
+        if int(row["SwitchID"]) == 10 or int(row["SwitchID"]) == 11 or int(row["SwitchID"]) == 2:
             backEndCalculations.data["switchPos"].append(1)
         else:
             backEndCalculations.data["switchPos"].append(0)

@@ -59,10 +59,25 @@ func (a *OutputAPI) registerPaths() {
 // HTTP GET handler for the latest dispatched train (runs once per train)
 func (a *OutputAPI) getDispatched(c *gin.Context) {
 	// Check if latest train was informed
-	trains := a.data.Trains.GetFrontendSlice()
+	trains := a.data.Trains.GetSlice()
 	if len(trains) > 0 && len(a.informedTrains) > 0 {
 		if trains[len(trains)-1].ID != a.informedTrains[len(a.informedTrains)-1] {
 			train := trains[len(trains)-1]
+			if train.ReadyDispatch {
+				c.IndentedJSON(http.StatusOK, common.TrainPython{
+					ID:   train.ID,
+					Line: train.Line,
+				})
+				a.informedTrains = append(a.informedTrains, train.ID)
+			} else {
+				c.IndentedJSON(http.StatusOK, "")
+			}
+		} else {
+			c.IndentedJSON(http.StatusOK, "")
+		}
+	} else if len(trains) > 0 && len(a.informedTrains) == 0 {
+		train := trains[len(trains)-1]
+		if train.ReadyDispatch {
 			c.IndentedJSON(http.StatusOK, common.TrainPython{
 				ID:   train.ID,
 				Line: train.Line,
@@ -71,13 +86,6 @@ func (a *OutputAPI) getDispatched(c *gin.Context) {
 		} else {
 			c.IndentedJSON(http.StatusOK, "")
 		}
-	} else if len(trains) > 0 && len(a.informedTrains) == 0 {
-		train := trains[len(trains)-1]
-		c.IndentedJSON(http.StatusOK, common.TrainPython{
-			ID:   train.ID,
-			Line: train.Line,
-		})
-		a.informedTrains = append(a.informedTrains, train.ID)
 	} else {
 		c.IndentedJSON(http.StatusOK, "")
 	}

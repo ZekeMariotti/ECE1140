@@ -37,11 +37,12 @@ func (d *DataStore) GetNextTrainID() int {
 
 func (d *DataStore) TrainFrontendToBackend(frontend common.TrainFrontend) common.Train {
 	result := common.Train{
-		ID:       frontend.ID,
-		Line:     frontend.Line,
-		Driver:   frontend.Driver,
-		Location: frontend.Location,
-		Stops:    make([]common.TrainStop, len(frontend.Stops)),
+		ID:            frontend.ID,
+		Line:          frontend.Line,
+		Driver:        frontend.Driver,
+		Location:      frontend.Location,
+		Stops:         make([]common.TrainStop, len(frontend.Stops)),
+		ReadyDispatch: false,
 	}
 
 	line := d.Lines.Get(frontend.Line)
@@ -56,6 +57,20 @@ func (d *DataStore) TrainFrontendToBackend(frontend common.TrainFrontend) common
 			Station: line.GetStationByName(v.Station),
 			Time:    v.Time.Time,
 		}
+	}
+
+	// Append station for last before yard
+	switch frontend.Line {
+	case "Green":
+		result.Stops = append(result.Stops, common.TrainStop{
+			Station: line.GetStationByName("OVERBROOK"),
+			Time:    d.TimeKeeper.GetSimulationTime(),
+		})
+	case "Red":
+		result.Stops = append(result.Stops, common.TrainStop{
+			Station: line.GetStationByName("HERRON AVE"),
+			Time:    d.TimeKeeper.GetSimulationTime(),
+		})
 	}
 
 	return result
