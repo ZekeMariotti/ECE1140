@@ -619,7 +619,7 @@ class MainWindow(QMainWindow):
          elif line == 1 and blockNo > 100:
             WaysideControllerGreen2.setOccupancy(logic, blockNo)
          
-    def errorHandler(status):
+    def errorHandler(self,status):
          WaysideControllerGreen.setError(status)
          WaysideControllerGreen2.setError(status)
          
