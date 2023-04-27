@@ -54,6 +54,7 @@ def emergencyBrakeCommandTest():
 # Test that service brake sends and receives correct signals
 def serviceBrakeCommandTest():
     try:
+        mainUI.manualModeToggle.setChecked(True)
         mainUI.serviceBrakeDisableClick()
         mainUI.TrainControllerSW.writeOutputs()
         assert (mainUI.TrainControllerTestUI.serviceBrakeCommand == False), "serviceBrakeCommandTest Failed"
@@ -122,6 +123,7 @@ def engineStateTest():
 # Test that lights send and receive correct signals
 def lightsTest():
     try:
+        mainUI.manualModeToggle.setChecked(True)
         mainUI.internalLightsEnableClick()
         mainUI.externalLightsEnableClick()
         mainUI.mainEventLoop()
@@ -157,6 +159,7 @@ def lightsTest():
 # Test that doors send and receive correct signals
 def doorTest():
     try:
+        mainUI.manualModeToggle.setChecked(True)
         mainUI.leftDoorCloseClick()
         mainUI.rightDoorCloseClick()
         mainUI.TrainControllerSW.writeOutputs()
@@ -348,8 +351,11 @@ def authorityTest():
 # Test that speed limit is set properly 
 def speedLimitTest():
     try:
+        mainUI.manualModeToggle.setChecked(False)
         mainUI.TrainControllerSW.blockCount = 1
         speedLimit = str(Conversions.metersPerSecondToMilesPerHour(Conversions.kmPerHourToMetersPerSecond(mainUI.TrainControllerSW.blockList[1].speedLimit)))
+        mainUI.TrainControllerSW.stayBelowSpeedLimitAndMaxSpeed()
+        mainUI.mainEventLoop()
         assert(speedLimit in mainUI.speedLimit.text()), "speedLimitTest Failed"
 
         print("speedLimitTest Passed")
