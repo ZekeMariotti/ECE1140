@@ -321,11 +321,11 @@ func (s *UpdateService) updateTrainAssignments() {
 							} else {
 								switch block.Direction {
 								case common.BLOCKDIRECTION_ASCENDING:
-									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2+1]
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2-1]
 								case common.BLOCKDIRECTION_BIDIRECTIONAL:
-									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2-1]
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2+1]
 								case common.BLOCKDIRECTION_DESCENDING:
-									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2-1]
+									newMap[line][block.Number] = s.lastTrainBlockMap[line][swt.Destination2+1]
 								}
 								if block.Number < swt.Source {
 									trainsToFlip = append(trainsToFlip, newMap[line][block.Number])
