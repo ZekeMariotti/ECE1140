@@ -782,6 +782,10 @@ class MainWindow(QMainWindow):
                 if active and value != int(self.Authority.item(i,j).text()):
                     TkMWCSignals.authoritySignal.emit(k, value, 1)
                 self.Authority.setItem(i,j,QTableWidgetItem(str(value)))
+                if(WaysideControllerGreen2.err==True):
+                        self.Authority.setItem(i,j,QTableWidgetItem(str("0")))
+                        value=0
+                        TkMWCSignals.authoritySignal.emit(k, value, 0) 
                 j=j+1
                 if j>9:
                   j=0

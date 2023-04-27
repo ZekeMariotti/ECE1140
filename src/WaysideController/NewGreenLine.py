@@ -788,6 +788,10 @@ class MainWindow(QMainWindow):
                 if active and value != int(self.Authority.item(i,j).text()):
                   TkMWCSignals.authoritySignal.emit(k, value, 1)
                 self.Authority.setItem(i,j,QTableWidgetItem(str(value)))
+                if(WaysideControllerGreen.err==True):
+                        self.Authority.setItem(i,j,QTableWidgetItem(str("0")))
+                        value=0
+                        TkMWCSignals.authoritySignal.emit(k, value, 0) 
                 j=j+1
                 if j>9:
                  j=0
@@ -854,10 +858,9 @@ class MainWindow(QMainWindow):
                 if j>9:
                   j=0
                   i=i+1
-          for k in range(1,self.blocks1):
-            if(WaysideControllerGreen.err==True):
+          if(WaysideControllerGreen.err==True):
                  for i in range(1,self.blocks1):
-                      WaysideControllerGreen.setAAuthority(0,i)
+                      WaysideControllerGreen.setAAuthority(int(0),i)
 
           val = self.Gate.text()
           if WaysideControllerGreen.gates[1]==True:
@@ -878,7 +881,10 @@ class MainWindow(QMainWindow):
           self.maintenanceMode = WaysideControllerGreen.maintenance
           self.updateVisualElements(self.active)
           WaysideControllerGreen.WaysideToCTCInfoG1()
-          WaysideControllerGreen.getCTCBlocks()
+          if(WaysideControllerGreen.err==True):
+               pass
+          else:
+            WaysideControllerGreen.getCTCBlocks()
 
           
 
