@@ -102,7 +102,7 @@ class MainWindow(QMainWindow):
 
             # Test UI
             if (self.testUI):
-                self.TrainControllerTestUI = TestWindow()
+                self.TrainControllerTestUI = TestWindow(self.TrainControllerSW.trainId)
                 self.TrainControllerTestUI.move(self.frameGeometry().width()+round(1.1*self.frameGeometry().x()), 200)
 
 
