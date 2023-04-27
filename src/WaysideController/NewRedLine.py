@@ -130,6 +130,7 @@ class MainWindowR(QMainWindow):
     def brokenRailHandler(self, line, logic, blockNo):
          if line == 0 and blockNo <= 50:
             WaysideControllerRed.setBrokenRail(bool(logic), blockNo)
+
          elif line == 0 and blockNo > 50:
             WaysideControllerRed2.setBrokenRail(bool(logic), blockNo)
 
@@ -322,7 +323,7 @@ class MainWindowR(QMainWindow):
             i=0
             j=1
             for k in range(1,51):
-                if WaysideControllerRed.brokenRail[k] == True:
+                if WaysideControllerRed.occupancy[k] == True:
                     Occupancy.setItem(i,j,QTableWidgetItem("X"))
                 else:
                     value=" "
