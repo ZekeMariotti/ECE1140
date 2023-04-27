@@ -40,10 +40,6 @@ class MainWindow(QMainWindow):
         def __init__(self):
             super().__init__()
 
-            #self.ctcBackendThread = QThread()
-            #self.ctcBackendThread.started.connect(self.ctcBackend)
-            #self.ctcBackendThread.start()
-
             # Main clock and simulation speed
             self.RTC = datetime.now()
             self.simulationSpeed = 1
@@ -86,12 +82,6 @@ class MainWindow(QMainWindow):
 
             # Sub Thread Setup
             pool = QThreadPool.globalInstance()
-
-            # sendJson = sendJsonToArduinoClass.jsonToArduino()
-            # pool.start(sendJson)
-
-            # fromArduino = receiveJsonFromArduinoClass.arduinoToJson()
-            # pool.start(fromArduino)
 
             self.CTCLabelSetup()
             self.launchCTCSetup()
@@ -150,12 +140,7 @@ class MainWindow(QMainWindow):
             self.wc4 = NewRedLine2.MainWindowR("RedLine 2")
             activeSignals.activeSignal.emit()
 
-            # Test TM and TC    
-            #self.trainDispatch(2, "Green")
 
-            #self.TkMTestUI = TrackModelTestUI.TrackModelTestUI()
-            #self.TESTUI = IntegrationTestUI.BasicTestUI()
-            #self.TESTUI = GreenLineTestUi.TestWindow()
         
         # Widget Setups
         def mainThreadSetup(self):
@@ -322,7 +307,6 @@ class MainWindow(QMainWindow):
             for TM in self.TrainModelList:
                 TM.close()
 
-            #self.TMTestUI.close()
             self.wc.close()
             self.TkM.close()
 
@@ -334,12 +318,14 @@ class MainWindow(QMainWindow):
             self.trainDispatchCall()
 
         def launchCTCClick(self):
-            webbrowser.get("windows-default").open_new("http://localhost")
-            print("CTC")
+            try:
+                webbrowser.get("windows-default").open_new("http://localhost")
+            except Exception as ex:
+                print(ex)
+
 
         def launchWaysideControllerOneClick(self):
             self.wc.setVisible(True)
-            #self.wc.WaysideControllerGreenTestUI.show()
             activeSignals.activeSignal.emit()
 
         def launchWaysideControllerTwoClick(self):
@@ -348,7 +334,6 @@ class MainWindow(QMainWindow):
 
         def launchWaysideControllerThreeClick(self):
             self.wc3.setVisible(True)
-            #self.wc3.WaysideControllerRedTestUI.show()
             activeSignals.activeSignal.emit()            
 
         def launchWaysideControllerFourClick(self):
@@ -430,20 +415,9 @@ def stringRemove(string, n):
 def main():
     # Start application
     app = QApplication(sys.argv)
-    #exec(open("\Integration\\receiveJsonFromArduino.py").read())
-    #exec(open(os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py")).read())
-    #os.system("python" + os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py"))
-    #subprocess.Popen(['python', os.path.join(sys.path[0], "Integration", "receiveJsonFromArduino.py")])
-    #subprocess.Popen(['python', os.path.join(sys.path[0], "Integration", "sendJsonToArduino.py")])
-
 
     mainWindow = MainWindow()
     mainWindow.show()
-
-    # Temporary
-    #mainWindow.TMTestUI.showMinimized()
-    #mainWindow.TkMTestUI.showMinimized()
-    #mainWindow.TESTUI.show()
 
     app.exec() 
 
