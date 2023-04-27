@@ -496,23 +496,27 @@ class TrackModelMainUI(QWidget):
                 self.backEnd.data["railStatusRed"].removeAt(self.backEnd.data["blockNo"])
                 self.backEnd.data["railStatusRed"].insertAt(1, self.backEnd.data["blockNo"])
                 self.brokenRailButton.setStyleSheet("background-color: red")
+                TkMWCSignals.failureSignal.emit(0, 1, self.backEnd.data["blockNo"] + 1)
+                TkMWCSignals.stopSignal.emit(True)
             else:
                 self.backEnd.data["railStatusRed"].removeAt(self.backEnd.data["blockNo"])
                 self.backEnd.data["railStatusRed"].insertAt(0, self.backEnd.data["blockNo"])
                 self.brokenRailButton.setStyleSheet("background-color: green; color: white")
-            TkMWCSignals.failureSignal.emit(0, int(self.backEnd.data["railStatusRed"].__getitem__(self.backEnd.data["blockNo"])), self.backEnd.data["blockNo"] + 1)
-            TkMWCSignals.stopSignal.emit(bool(self.backEnd.data["railStatusRed"].__getitem__(self.backEnd.data["blockNo"])))
+                TkMWCSignals.failureSignal.emit(1, 0, self.backEnd.data["blockNo"] + 1)
+                TkMWCSignals.stopSignal.emit(False)
         elif self.backEnd.data["line"] == 1:
             if self.backEnd.data["railStatusGreen"].__getitem__(self.backEnd.data["blockNo"]) == 0:
                 self.backEnd.data["railStatusGreen"].removeAt(self.backEnd.data["blockNo"])
                 self.backEnd.data["railStatusGreen"].insertAt(1, self.backEnd.data["blockNo"])
                 self.brokenRailButton.setStyleSheet("background-color: red")
+                TkMWCSignals.failureSignal.emit(1, 1, self.backEnd.data["blockNo"] + 1)
+                TkMWCSignals.stopSignal.emit(True)
             else:
                 self.backEnd.data["railStatusGreen"].removeAt(self.backEnd.data["blockNo"])
                 self.backEnd.data["railStatusGreen"].insertAt(0, self.backEnd.data["blockNo"])
                 self.brokenRailButton.setStyleSheet("background-color: green; color: white")
-            TkMWCSignals.failureSignal.emit(1, int(self.backEnd.data["railStatusGreen"].__getitem__(self.backEnd.data["blockNo"])), self.backEnd.data["blockNo"] + 1)
-            TkMWCSignals.stopSignal.emit(bool(self.backEnd.data["railStatusGreen"].__getitem__(self.backEnd.data["blockNo"])))
+                TkMWCSignals.failureSignal.emit(1, 0, self.backEnd.data["blockNo"] + 1)
+                TkMWCSignals.stopSignal.emit(False)
 
     # Gets the Line from the UI
     def getLineInput(self, index):
