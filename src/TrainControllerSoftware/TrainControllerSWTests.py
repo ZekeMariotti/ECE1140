@@ -452,7 +452,7 @@ if (__name__ == "__main__"):
     print("")
 
     # Test that the Test UI is created
-    assert (mainUI.testUI == True), "Test UI must be enabled (self.testUI = True)"
+    assert (mainUI.testUI == True), "Test UI must be enabled (self.testUI = True in TrainControllerMainUI.py)"
 
     # Run tests
     emergencyBrakeCommandTest()
