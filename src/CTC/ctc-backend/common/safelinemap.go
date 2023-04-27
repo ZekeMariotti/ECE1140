@@ -192,7 +192,9 @@ func (m *SafeLineMap) UpdateWayside(line string, data WaysideToCTC) {
 			l.Blocks.SetBlockOccupancy(id, val)
 			switch line {
 			case "Red":
-
+				if id == 9 {
+					l.Blocks.SetBlockOccupancy(0, val)
+				}
 			case "Green":
 				if id == 63 {
 					l.Blocks.SetBlockOccupancy(0, val)
