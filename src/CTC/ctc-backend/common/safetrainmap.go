@@ -47,7 +47,13 @@ func (m *SafeTrainMap) GetSlice() []Train {
 	m.mute.Lock()
 	defer m.mute.Unlock()
 
-	return maps.Values(m.data)
+	trains := maps.Values(m.data)
+
+	sort.Slice(trains, func(i, j int) bool {
+		return trains[i].ID < trains[j].ID
+	})
+
+	return trains
 }
 
 func (m *SafeTrainMap) GetFrontendSlice() []TrainFrontend {

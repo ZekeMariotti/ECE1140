@@ -1,10 +1,11 @@
 package common
 
 type Train struct {
-	ID        int            `json:"id"`
-	Line      string         `json:"line"`
-	Driver    string         `json:"driver"`
-	Location  TrainLocation  `json:"location"`
-	Stops     []TrainStop    `json:"stops"`
-	Direction TrainDirection `json:"direction"`
+	ID            int            `json:"id"`
+	Line          string         `json:"line"`
+	Driver        string         `json:"driver"`
+	Location      TrainLocation  `json:"location"`
+	Stops         []TrainStop    `json:"stops"`
+	Direction     TrainDirection `json:"direction"`
+	ReadyDispatch bool           `json:"ready-dispatch"`
 }
