@@ -369,11 +369,11 @@ class backEndCalculations():
             if self.data["trainLine"][trainNo] == 0 and self.data["moves"][trainNo][index] != 0:
                 self.data["blockTrainNoRed"].removeAt(self.data["moves"][trainNo][index] - 1)
                 self.data["blockTrainNoRed"].insertAt(trainNo + 1, self.data["moves"][trainNo][index] - 1)
-                TkMWCSignals.currBlockSignal.emit(1, True, self.data["moves"][trainNo][index])
+                TkMWCSignals.currBlockSignal.emit(self.data["trainLine"][trainNo], True, self.data["moves"][trainNo][index])
             elif self.data["trainLine"][trainNo] == 1 and self.data["moves"][trainNo][index] != 0:
                 self.data["blockTrainNoGreen"].removeAt(self.data["moves"][trainNo][index] - 1)
                 self.data["blockTrainNoGreen"].insertAt(trainNo + 1, self.data["moves"][trainNo][index] - 1)
-                TkMWCSignals.currBlockSignal.emit(1, True, self.data["moves"][trainNo][index])
+                TkMWCSignals.currBlockSignal.emit(self.data["trainLine"][trainNo], True, self.data["moves"][trainNo][index])
 
             # Update Authority
             #if (self.data["authority"][trainNo] != 0):  
