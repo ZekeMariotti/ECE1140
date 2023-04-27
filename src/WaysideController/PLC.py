@@ -296,6 +296,8 @@ class PLC():
         GLight77.clear()
         GLight84.clear()
         GLight100.clear()
+        Ggate.clear()
+        
     def RloadValues1(self,file):
         file = open(file, "r")
         for i in range(0,100):
