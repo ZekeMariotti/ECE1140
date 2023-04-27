@@ -10,9 +10,9 @@
     </div>
   </div>
   <button type="button" class="btn btn-outline-primary p-md-3" (click)="getBlocks()">Refresh Table</button>
-  <div class="container text-center p-md-3">
+  <div class="col-md-2 container text-center p-md-3">
     <div class="form-check form-switch">
-      <input class="form-check-input" type="checkbox" role="switch" id="autoModeCheckSwitch" [(ngModel)]="this.automode" (click)="putAutoMode()">
+      <input class="form-check-input p-md-2" type="checkbox" role="switch" id="autoModeCheckSwitch" [(ngModel)]="this.automode" (click)="putAutoMode()">
       <label class="form-check-label" for="autoModeCheckSwitch">Auto Mode</label>
     </div>
   </div>
@@ -33,13 +33,16 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let block of blocks;">
+      <tr *ngFor="let block of blocks;" class="row-no-gutters my-0">
         <th scope="row">{{block.number}}</th>
         <td>{{block.line}}</td>
         <td>{{block.section}}</td>
         <td>{{block.length | number: '1.0-0'}}</td>
         <td>{{block.signal}}</td>
-        <td>{{block.occupied}}</td>
+        <td [ngClass]="{
+          'bgFalse': !block.occupied,
+          'bgTrue': block.occupied
+        }">{{block.occupied.toString() | titlecase}}</td>
         <td>
           <div *ngIf="automode; else manualSpeed">
             {{block.suggestedspeed | number: '1.0-2'}}
