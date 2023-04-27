@@ -503,7 +503,7 @@ class TrackModelMainUI(QWidget):
             TkMWCSignals.failureSignal.emit(0, int(self.backEnd.data["railStatusRed"].__getitem__(self.backEnd.data["blockNo"])), self.backEnd.data["blockNo"] + 1)
             TkMWCSignals.stopSignal.emit(bool(self.backEnd.data["railStatusRed"].__getitem__(self.backEnd.data["blockNo"])))
         elif self.backEnd.data["line"] == 1:
-            if self.backEnd.data["railStatusGreen"][self.backEnd.data["blockNo"]] == 0:
+            if self.backEnd.data["railStatusGreen"].__getitem__(self.backEnd.data["blockNo"]) == 0:
                 self.backEnd.data["railStatusGreen"].removeAt(self.backEnd.data["blockNo"])
                 self.backEnd.data["railStatusGreen"].insertAt(1, self.backEnd.data["blockNo"])
                 self.brokenRailButton.setStyleSheet("background-color: red")
