@@ -241,7 +241,10 @@ class backEndCalculations():
             if (index != 0):
                 self.getTrainBlockInputFunction(index, id - 1, 0)
         elif self.data["trainLine"][id - 1] == 1 and transition:
-            if (prevBlock == 0):
+            if (currBlock == 0):
+                TMTkMSignals.switchSignal.emit(id, 0)
+                TMTkMSignals.switchStateSignal.emit(id, 1)
+            elif (prevBlock == 0):
                 TMTkMSignals.switchSignal.emit(id, 0)
                 TMTkMSignals.switchStateSignal.emit(id, 1)
             elif (int(self.csvConstants["switchGreen"].__getitem__(currBlock - 1)) > 0) & (int(self.csvConstants["switchGreen"].__getitem__(prevBlock - 1)) > 0):
