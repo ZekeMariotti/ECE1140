@@ -804,11 +804,11 @@ class MainWindow(QMainWindow):
           j=1
           i=0
           for k in range(101,self.blocks2):
-                if WaysideControllerGreen2.brokenRail[k] == True:
-                    value="Error"
-                else:
-                    value=" "
-                self.BrokenRail.setItem(i,j,QTableWidgetItem(str(value)))
+                value = WaysideControllerGreen.brokenRail[k]             
+                if value == True:
+                        self.BrokenRail.setItem(i,j,QTableWidgetItem(str("ERROR")))
+                else: 
+                        self.BrokenRail.setItem(i,j,QTableWidgetItem(str(" ")))
                 j=j+1
                 if j>9:
                         j=0
