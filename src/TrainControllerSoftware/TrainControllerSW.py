@@ -261,7 +261,15 @@ class TrainControllerSW:
             self.ek = 0
             self.uk = 0
         else:
-            self.outputs.power = float(self.Kp*self.ek) + float(self.Ki*self.uk)
+            power1 = float(self.Kp*self.ek) + float(self.Ki*self.uk)
+            power2 = float(self.Kp*self.ek) + float(self.Ki*self.uk)
+            power3 = float(self.Kp*self.ek) + float(self.Ki*self.uk)
+
+            if (power1 == power2 == power3):
+                self.outputs.power = power1
+            else:
+                self.outputs.emergencyBrakeCommand = True
+                print("Power calculation error, setting emergency brake.")
 
         # 0 <= power <= 120000 Watts
         if (self.inputs.authority == 0):

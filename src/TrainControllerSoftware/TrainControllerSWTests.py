@@ -439,6 +439,15 @@ def powerCalculationTest():
 
 
 if (__name__ == "__main__"):
+    # Start tests message
+    print("\n")
+    print("#################################################")
+    print("Train Controller Software Tests\n")
+    print("Train Model Integration can be manually tested by\nsetting testTrainModelIntegration = True")
+    print("#################################################\n")
+    print("Running tests...")
+    
+
     # Used to test TrainModel communication
     testTrainModelIntegration = True
 
