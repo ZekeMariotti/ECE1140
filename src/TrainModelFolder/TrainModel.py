@@ -234,14 +234,16 @@ class TrainModel():
         TMTCSignals.temperatureSignal.emit(self.TrainID, self.data["currTemp"])
 
         # If it is a beacon, transmit the rest of the data. Otherwise, don't
-        if (self.passThroughData["beacon"][3] == 1):
-            TMTCSignals.stationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][0])
-            TMTCSignals.platformSideSignal.emit(self.TrainID, self.passThroughData["beacon"][1])
-            TMTCSignals.nextStationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][2])
-            TMTCSignals.blockCountSignal.emit(self.TrainID, self.passThroughData["beacon"][4])
-            TMTCSignals.fromSwitchSignal.emit(self.TrainID, self.passThroughData["beacon"][5])
-            TMTCSignals.switchBlockSignal.emit(self.TrainID, self.passThroughData["beacon"][6])
-        TMTCSignals.isBeaconSignal.emit(self.TrainID, self.passThroughData["beacon"][3])
+        #if (self.passThroughData["beacon"][3] == 1):
+        #    TMTCSignals.stationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][0])
+        #    TMTCSignals.platformSideSignal.emit(self.TrainID, self.passThroughData["beacon"][1])
+        #    TMTCSignals.nextStationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][2])
+        #    TMTCSignals.blockCountSignal.emit(self.TrainID, self.passThroughData["beacon"][4])
+        #    TMTCSignals.fromSwitchSignal.emit(self.TrainID, self.passThroughData["beacon"][5])
+        #    TMTCSignals.switchBlockSignal.emit(self.TrainID, self.passThroughData["beacon"][6])
+        #    print("Train Model Emit: ", self.passThroughData["beacon"])
+
+        #TMTCSignals.isBeaconSignal.emit(self.TrainID, self.passThroughData["beacon"][3])
         TMTCSignals.externalLightsStateSignal.emit(self.TrainID, self.data["eLights"])
         TMTCSignals.internalLightsStateSignal.emit(self.TrainID, self.data["iLights"])
         TMTCSignals.leftDoorStateSignal.emit(self.TrainID, self.data["lDoors"])
@@ -337,6 +339,15 @@ class TrainModel():
             self.passThroughData["beacon"][4] = blockCount
             self.passThroughData["beacon"][5] = fromSwitch
             self.passThroughData["beacon"][6] = switchBlock
+        if (self.passThroughData["beacon"][3]):
+            TMTCSignals.stationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][0])
+            TMTCSignals.platformSideSignal.emit(self.TrainID, self.passThroughData["beacon"][1])
+            TMTCSignals.nextStationNameSignal.emit(self.TrainID, self.passThroughData["beacon"][2])
+            TMTCSignals.blockCountSignal.emit(self.TrainID, self.passThroughData["beacon"][4])
+            TMTCSignals.fromSwitchSignal.emit(self.TrainID, self.passThroughData["beacon"][5])
+            TMTCSignals.switchBlockSignal.emit(self.TrainID, self.passThroughData["beacon"][6])
+            print("Train Model Emit: ", self.passThroughData["beacon"])
+        TMTCSignals.isBeaconSignal.emit(self.TrainID, self.passThroughData["beacon"][3])
 
 
     # Switch Input Handler

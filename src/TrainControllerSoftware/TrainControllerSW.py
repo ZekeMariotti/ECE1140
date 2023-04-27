@@ -467,6 +467,8 @@ class TrainControllerSW:
     def isBeaconSignalHandler(self, id, isBeac):
         if(self.trainId == id):
             self.inputs.isBeacon = isBeac
+            if (isBeac):
+                print(f'stationName: {self.inputs.stationName}, platform: {self.inputs.platformSide}, nextStation: {self.inputs.nextStationName}, IsBeacon: {self.inputs.isBeacon}, outwardBlock: {self.nextBlock}, up/down: {self.countUpOrDown}, switchBlock: {self.switchBlock} ')
             self.setStationState()
             self.setCurrentBlock()
 
