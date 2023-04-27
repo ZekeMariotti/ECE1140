@@ -480,7 +480,7 @@ class TrainModel():
             
             # Get the data from the blocks class for the new block that the train is entering
             self.trackData["remDistance"] = 100 - tempDistance
-            if (self.data["currBlock"] != 0):
+            if (self.trackData["currBlock"] != 0):
                 self.data["underground"] = self.blocks[self.trackData["currBlock"]].undergroundState
                 self.trackData["blockLength"] = self.blocks[self.trackData["currBlock"]].blockLength
                 self.trackData["elevation"] = self.blocks[self.trackData["currBlock"]].elevation
