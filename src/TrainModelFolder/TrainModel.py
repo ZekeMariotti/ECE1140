@@ -557,6 +557,8 @@ class TrainModel():
             else:
                 if (self.trackData["currBlock"] == 150):
                     print("Derailment End of Green Nums")
+                if (self.trackData["currBlock"] == 1):
+                    print("Derailment Block 0 Green Line")
                 if self.trackData["trackSection"][0] < self.trackData["trackSection"][1]:
                     self.trackData["prevBlock"] = self.trackData["currBlock"]
                     return (self.trackData["currBlock"] + 1)
