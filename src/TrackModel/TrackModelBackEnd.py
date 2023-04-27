@@ -245,7 +245,6 @@ class backEndCalculations():
                 index = 1
             elif (currBlock == self.data["moves"][id - 1][2]):
                 index = 2
-            print(currBlock, self.data["moves"][id - 1])
             if (index != 0):
                 self.getTrainBlockInputFunction(index, id - 1, 0)
         elif self.data["trainLine"][id - 1] == 1 and transition:
@@ -395,7 +394,7 @@ class backEndCalculations():
                 else:
                     beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][0] - 1)
                 TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(int(beaconArr[3])), int(beaconArr[4]), int(beaconArr[5]), int(beaconArr[6]))
-                print(beaconArr, self.data["moves"][trainNo][0], self.data["moves"][trainNo][index])
+                print(self.data["moves"][trainNo][0], self.data["moves"][trainNo][index])
             elif self.data["tag2"][trainNo] == 0 and int(self.data["moves"][trainNo][index] - 1) > 0 and self.data["tag"][trainNo] == 1 and ((self.data["trainLine"][trainNo] == 0 and (self.data["moves"][trainNo][0] == 38 or self.data["moves"][trainNo][0] == 33 or self.data["moves"][trainNo][0] == 27 or self.data["moves"][trainNo][0] == 16 or self.data["moves"][trainNo][0] == 7 or self.data["moves"][trainNo][0] == 21 or self.data["moves"][trainNo][0] == 25 or self.data["moves"][trainNo][0] == 35 or self.data["moves"][trainNo][0] == 48 or self.data["moves"][trainNo][0] == 60)) or (self.data["trainLine"][trainNo] == 1 and (self.data["moves"][trainNo][0] == 2 or self.data["moves"][trainNo][0] == 9 or self.data["moves"][trainNo][0] == 13 or self.data["moves"][trainNo][0] == 16 or self.data["moves"][trainNo][0] == 22 or self.data["moves"][trainNo][0] == 29 or self.data["moves"][trainNo][0] == 31 or self.data["moves"][trainNo][0] == 39 or self.data["moves"][trainNo][0] == 48 or self.data["moves"][trainNo][0] == 57 or self.data["moves"][trainNo][0] == 65 or self.data["moves"][trainNo][0] == 73 or self.data["moves"][trainNo][0] == 77 or self.data["moves"][trainNo][0] == 85 or self.data["moves"][trainNo][0] == 88 or self.data["moves"][trainNo][0] == 96 or self.data["moves"][trainNo][0] == 105 or self.data["moves"][trainNo][0] == 114 or self.data["moves"][trainNo][0] == 123 or self.data["moves"][trainNo][0] == 132 or self.data["moves"][trainNo][0] == 141))):
                 self.data["tag2"][trainNo] = 1
                 if self.data["trainLine"][trainNo] == 0:
@@ -403,7 +402,6 @@ class backEndCalculations():
                 else:
                     beaconArr = self.csvConstants["beaconGreen"].__getitem__(self.data["moves"][trainNo][index] - 1)
                 TMTkMSignals.beaconSignal.emit(trainNo + 1, beaconArr[0], int(beaconArr[1]), beaconArr[2], bool(int(beaconArr[3])), int(beaconArr[4]), int(beaconArr[5]), int(beaconArr[6]))
-                print(beaconArr, self.data["moves"][trainNo][0], self.data["moves"][trainNo][index])
             elif self.data["tag2"][trainNo] == 0 and self.data["tag"][trainNo] == 0 and ((self.data["moves"][trainNo][0] <= 9 and self.data["trainLine"][trainNo] == 0) or (self.data["moves"][trainNo][0] >= 63 and self.data["trainLine"][trainNo] == 1)):
                 self.data["tag"][trainNo] = 1
             elif self.data["tag2"][trainNo] == 1:
