@@ -80,7 +80,7 @@ class backEndCalculations():
         "redCommandedSpeed" : DynamicArray(),    # commanded speed of each block
         "greenAuthority" : DynamicArray(),
         "greenCommandedSpeed" : DynamicArray(),
-        "val" : 0,
+        "val" : -22960,
         "tag" : [0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -165,8 +165,10 @@ class backEndCalculations():
     def realTimeHandler(self, rtc):
         self.data["rtc"] = rtc
         # Random number of passengers arrive every n = 20 seconds
+        print(int(self.findTimeDifference()) % 20, int(self.findTimeDifference()), self.data["val"])
         if int(self.findTimeDifference()) % 20 == 0 and int(self.findTimeDifference()) == self.data["val"]:
             for i in range(self.data["stationOccupancy"].__len__()):
+                print("gen")
                 self.generatePassengers(i)
             self.data["val"] += 20
 
